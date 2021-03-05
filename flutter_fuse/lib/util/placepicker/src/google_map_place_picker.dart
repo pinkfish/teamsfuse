@@ -68,7 +68,7 @@ class GoogleMapPlacePicker extends StatelessWidget {
     // We don't want to search location again if camera location is changed
     // by zooming in/out.
     //
-    bool hasZoomChanged = provider.cameraPosition != null &&
+    var hasZoomChanged = provider.cameraPosition != null &&
         provider.prevCameraPosition != null &&
         provider.cameraPosition.zoom != provider.prevCameraPosition.zoom;
 
@@ -79,8 +79,7 @@ class GoogleMapPlacePicker extends StatelessWidget {
 
     provider.placeSearchingState = SearchingState.Searching;
 
-    final GeocodingResponse response =
-        await provider.geocoding.searchByLocation(
+    final response = await provider.geocoding.searchByLocation(
       Location(pos?.latitude ?? provider.cameraPosition.target.latitude,
           pos?.longitude ?? provider.cameraPosition.target.longitude),
       language: language,
@@ -96,8 +95,7 @@ class GoogleMapPlacePicker extends StatelessWidget {
     }
 
     if (usePlaceDetailSearch) {
-      final PlacesDetailsResponse detailResponse =
-          await provider.places.getDetailsByPlaceId(
+      final detailResponse = await provider.places.getDetailsByPlaceId(
         response.results[0].placeId,
         language: language,
       );
@@ -139,7 +137,7 @@ class GoogleMapPlacePicker extends StatelessWidget {
           var provider = PlaceProvider.of(context, listen: false);
           var initialCameraPosition =
               CameraPosition(target: initialTarget, zoom: 15);
-          var markers = Set<Marker>.of([]);
+          var markers = <Marker>{};
 
           if (provider.selectedPlace != null) {
             var markerUuid = MarkerId(Uuid().v4());
@@ -185,9 +183,9 @@ class GoogleMapPlacePicker extends StatelessWidget {
 
             // gestureRecognizers make it possible to navigate the map when it's a
             // child in a scroll view e.g ListView, SingleChildScrollView...
-            gestureRecognizers: Set()
-              ..add(Factory<EagerGestureRecognizer>(
-                  () => EagerGestureRecognizer())),
+            gestureRecognizers: <dynamic>{}..add(
+                Factory<EagerGestureRecognizer>(
+                    () => EagerGestureRecognizer())),
           );
         });
   }
@@ -255,16 +253,16 @@ class GoogleMapPlacePicker extends StatelessWidget {
           SizedBox(height: 10),
           RaisedButton(
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: Text(
-              'Select here',
-              style: TextStyle(fontSize: 16),
-            ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4.0),
             ),
             onPressed: () {
               onPlacePicked(result);
             },
+            child: Text(
+              'Select here',
+              style: TextStyle(fontSize: 16),
+            ),
           ),
         ],
       ),

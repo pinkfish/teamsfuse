@@ -23,10 +23,10 @@ class IncrementDurationStepper extends BaseDurationStepper {
   /// Ex. Time is Aug 20 6 AM, increment is 4 hours. Returns 4 AM.
   @override
   Duration getStepTimeBeforeInclusive(Duration time, int tickIncrement) {
-    final int ticks = time.inMilliseconds ~/ millisecondsInIncrement;
-    final int remainder = ticks % tickIncrement;
+    final ticks = time.inMilliseconds ~/ millisecondsInIncrement;
+    final remainder = ticks % tickIncrement;
 
-    final int rewindIncrement = remainder == 0 ? 0 : tickIncrement - remainder;
+    final rewindIncrement = remainder == 0 ? 0 : tickIncrement - remainder;
     final stepBefore = Duration(
         milliseconds:
             time.inMilliseconds - rewindIncrement * millisecondsInIncrement);

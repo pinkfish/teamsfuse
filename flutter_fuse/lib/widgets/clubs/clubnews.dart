@@ -61,11 +61,11 @@ class ClubNewsItems extends StatelessWidget {
               var buttons = <Widget>[];
               if (clubAdmin) {
                 buttons.add(TextButton(
+                  onPressed: () =>
+                      Navigator.pushNamed(context, '/Club/News/Add/$clubUid'),
                   child: Text(
                     Messages.of(context).addNews,
                   ),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, '/Club/News/Add/$clubUid'),
                 ));
               }
 
@@ -102,11 +102,11 @@ class ClubNewsItems extends StatelessWidget {
                               children: [
                                 ...buttons,
                                 TextButton(
+                                  onPressed: () =>
+                                      _onPressed(singleClubBloc, clubState),
                                   child: Text(
                                     Messages.of(context).loadMore,
                                   ),
-                                  onPressed: () =>
-                                      _onPressed(singleClubBloc, clubState),
                                 ),
                               ],
                             ),

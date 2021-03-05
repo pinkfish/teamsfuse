@@ -16,7 +16,7 @@ abstract class InviteToClub
   String get clubUid;
   bool get admin;
 
-  static const String CLUBUID = "clubUid";
+  static const String CLUBUID = 'clubUid';
 
   factory InviteToClub([void Function(InviteToClubBuilder) updates]) =
       _$InviteToClub;

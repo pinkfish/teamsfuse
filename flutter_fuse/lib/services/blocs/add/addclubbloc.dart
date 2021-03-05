@@ -57,8 +57,9 @@ class AddClubBloc extends Bloc<AddClubEvent, AddItemState> {
             .addClub(wrap, updated.build());
         if (event.imageFile != null) {
           updated.uid = uid;
-          coordinationBloc.databaseUpdateModel.updateClubImage(updated.build(),
-              event.imageFile != null ? await event.imageFile : null);
+          await coordinationBloc.databaseUpdateModel.updateClubImage(
+              updated.build(),
+              event.imageFile != null ? event.imageFile : null);
         }
         yield AddItemDone(uid: uid);
       } on Exception catch (e, stack) {

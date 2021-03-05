@@ -81,7 +81,7 @@ class SingleSharedGameBloc
   @override
   Future<void> close() async {
     await super.close();
-    _gameSub?.cancel();
+    await _gameSub?.cancel();
   }
 
   @override
@@ -138,8 +138,7 @@ class SingleSharedGameBloc
     }
 
     try {
-      SingleSharedGameBlocStateType type =
-          SingleSharedGameBlocStateType.valueOf(json['type']);
+      var type = SingleSharedGameBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleSharedGameBlocStateType.Uninitialized:
           return SingleSharedGameUninitialized();

@@ -290,7 +290,7 @@ class GameSharedCard extends StatelessWidget {
         ],
       ),
     );
-    if (buttons.length > 0) {
+    if (buttons.isNotEmpty) {
       return Card(
         color: color,
         child: Column(

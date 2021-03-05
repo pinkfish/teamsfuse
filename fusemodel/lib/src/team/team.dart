@@ -74,7 +74,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
       archivedData.containsKey(userUid) && archivedData[userUid];
 
   Team._();
-  factory Team([updates(TeamBuilder b)]) = _$Team;
+  factory Team([Function(TeamBuilder b) updates]) = _$Team;
 
   static const String ADMINS = 'admins';
   static const String ATTENDANCE = 'trackAttendence';
@@ -85,7 +85,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
   static const String ISPUBLIC = 'isPublic';
 
   static void _initializeBuilder(TeamBuilder b) => b
-    ..userUid = ""
+    ..userUid = ''
     ..isPublic = false
     ..publicOnly = false;
 

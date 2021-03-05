@@ -41,15 +41,15 @@ class TeamPicker extends StatelessWidget {
     var ret = <DropdownMenuItem<String>>[];
     if (includeCreateNew) {
       ret.add(DropdownMenuItem<String>(
-        child: Text(Messages.of(context).addTeam),
         value: TeamPicker.createNew,
+        child: Text(Messages.of(context).addTeam),
       ));
     }
     for (var teamUid in state.allTeamUids) {
       var team = state.getTeam(teamUid);
       ret.add(DropdownMenuItem<String>(
-        child: Text(team.name),
         value: team.uid,
+        child: Text(team.name),
       ));
     }
     return ret;

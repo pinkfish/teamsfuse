@@ -23,17 +23,16 @@ class BasketballGameSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle headerStyle = Theme.of(context).textTheme.subtitle1.copyWith(
+    var headerStyle = Theme.of(context).textTheme.subtitle1.copyWith(
         fontSize: Theme.of(context).textTheme.subtitle1.fontSize * 1.25,
         color: LocalUtilities.darken(Theme.of(context).indicatorColor, 20),
         fontWeight: FontWeight.bold);
-    TextStyle dataStyle = Theme.of(context).textTheme.subtitle1.copyWith(
+    var dataStyle = Theme.of(context).textTheme.subtitle1.copyWith(
           fontSize: Theme.of(context).textTheme.subtitle1.fontSize * 1.35,
         );
-    TextStyle opponentDataStyle =
-        Theme.of(context).textTheme.subtitle1.copyWith(
-              fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
-            );
+    var opponentDataStyle = Theme.of(context).textTheme.subtitle1.copyWith(
+          fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
+        );
     //TextStyle pointsStyle = Theme.of(context).textTheme.subtitle1.copyWith(
     //    fontSize: Theme.of(context).textTheme.subtitle1.fontSize * 4.0);
 

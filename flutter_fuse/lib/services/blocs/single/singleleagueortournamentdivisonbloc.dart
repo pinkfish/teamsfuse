@@ -119,7 +119,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
       @required this.crashes})
       : super(SingleLeagueOrTournamentDivisonUninitialized(),
             'LeagueDivison.$leagueDivisonUid}') {
-    assert(this.db != null);
+    assert(db != null);
     _divSub = db
         .getLeagueDivisionData(leagueDivisionUid: leagueDivisonUid)
         .listen((LeagueOrTournamentDivison div) {
@@ -137,11 +137,11 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
   Future<void> close() async {
     await super.close();
     _cleanupStuff();
-    _divSub?.cancel();
+    await _divSub?.cancel();
     _divSub = null;
-    _leagueOrTournamentSnapshot?.cancel();
+    await _leagueOrTournamentSnapshot?.cancel();
     _leagueOrTournamentSnapshot = null;
-    _leagueOrTournamentTeamSnapshot?.cancel();
+    await _leagueOrTournamentTeamSnapshot?.cancel();
     _leagueOrTournamentTeamSnapshot = null;
   }
 
@@ -179,7 +179,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
       {String teamName}) async* {
     yield SingleLeagueOrTournamentDivisonSaving.fromState(state).build();
     try {
-      LeagueOrTournamentTeam teamData = LeagueOrTournamentTeam((b) => b
+      var teamData = LeagueOrTournamentTeam((b) => b
         ..leagueOrTournamentDivisonUid = state.divison.uid
         ..leagueOrTournamentUid = state.divison.leagueOrTournamentUid
         ..name = teamName);
@@ -280,7 +280,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
     }
 
     try {
-      SingleLeagueOrTournamentDivisonBlocStateType type =
+      var type =
           SingleLeagueOrTournamentDivisonBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleLeagueOrTournamentDivisonBlocStateType.Uninitialized:

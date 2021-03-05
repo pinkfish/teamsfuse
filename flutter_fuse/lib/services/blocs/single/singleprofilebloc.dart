@@ -92,7 +92,7 @@ class SingleProfileBloc
   @override
   Future<void> close() async {
     await super.close();
-    _profileSub?.cancel();
+    await _profileSub?.cancel();
   }
 
   @override
@@ -109,7 +109,7 @@ class SingleProfileBloc
       _playerSub = coordinationBloc.databaseUpdateModel
           .getPlayers()
           .listen((Iterable<Player> players) {
-        if (players.length > 0) {
+        if (players.isNotEmpty) {
           add(_SingleProfileNewPlayers(players: players));
         }
       });
@@ -130,10 +130,10 @@ class SingleProfileBloc
 
     if (event is SingleProfileUpdate) {
       try {
-        FusedUserProfile profile = event.profile;
+        var profile = event.profile;
         if (event.image != null) {
-          coordinationBloc.databaseUpdateModel
-              .updatePlayerImage(playerBloc.state.me.uid, await event.image);
+          await coordinationBloc.databaseUpdateModel
+              .updatePlayerImage(playerBloc.state.me.uid, event.image);
           //profile = profile.rebuild((b) b..)
         }
         await coordinationBloc.authenticationBloc.userAuth
@@ -163,8 +163,7 @@ class SingleProfileBloc
       return SingleProfileUninitialized();
     }
     try {
-      SingleProfileBlocStateType type =
-          SingleProfileBlocStateType.valueOf(json['type']);
+      var type = SingleProfileBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleProfileBlocStateType.Uninitialized:
           return SingleProfileUninitialized();

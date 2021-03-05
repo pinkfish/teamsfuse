@@ -54,7 +54,7 @@ abstract class PlayerSummaryData
 
   PlayerSummaryData._();
 
-  factory PlayerSummaryData([updates(PlayerSummaryDataBuilder b)]) =
+  factory PlayerSummaryData([Function(PlayerSummaryDataBuilder b) updates]) =
       _$PlayerSummaryData;
 
   static Serializer<PlayerSummaryData> get serializer =>
@@ -75,7 +75,7 @@ abstract class MadeAttempt implements Built<MadeAttempt, MadeAttemptBuilder> {
 
   MadeAttempt._();
 
-  factory MadeAttempt([updates(MadeAttemptBuilder b)]) = _$MadeAttempt;
+  factory MadeAttempt([Function(MadeAttemptBuilder b) updates]) = _$MadeAttempt;
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(MadeAttempt.serializer, this);

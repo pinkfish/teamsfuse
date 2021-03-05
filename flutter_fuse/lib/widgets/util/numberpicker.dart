@@ -154,11 +154,11 @@ class NumberPickerState extends State<NumberPicker> {
       return _integerListView(themeData);
     } else {
       return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           _integerListView(themeData),
           _decimalListView(themeData),
         ],
-        mainAxisAlignment: MainAxisAlignment.center,
       );
     }
   }
@@ -175,6 +175,7 @@ class NumberPickerState extends State<NumberPicker> {
     var itemCount = widget.maxValue - widget.minValue + 3;
 
     return NotificationListener<Notification>(
+      onNotification: _onIntegerNotification,
       child: Container(
         height: widget._listViewHeight,
         width: widget.listViewWidth,
@@ -202,7 +203,6 @@ class NumberPickerState extends State<NumberPicker> {
           },
         ),
       ),
-      onNotification: _onIntegerNotification,
     );
   }
 
@@ -216,6 +216,7 @@ class NumberPickerState extends State<NumberPicker> {
         : (pow(10, widget.decimalPlaces) + 2).toInt();
 
     return NotificationListener<Notification>(
+      onNotification: _onDecimalNotification,
       child: Container(
         height: widget._listViewHeight,
         width: widget.listViewWidth,
@@ -246,7 +247,6 @@ class NumberPickerState extends State<NumberPicker> {
           },
         ),
       ),
-      onNotification: _onDecimalNotification,
     );
   }
 

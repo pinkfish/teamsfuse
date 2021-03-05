@@ -93,9 +93,10 @@ abstract class PlayerLoaded
   static void _initializeBuilder(PlayerLoadedBuilder b) {
     PlayerState.initializeStateBuilder(b);
 
-    b..type = PlayerBlocStateType.Loaded;
+    b.type = PlayerBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(PlayerLoaded.serializer, this);
   }
@@ -128,9 +129,10 @@ abstract class PlayerUninitialized
   static void _initializeBuilder(PlayerUninitializedBuilder b) {
     PlayerState.initializeStateBuilder(b);
 
-    b..type = PlayerBlocStateType.Uninitialized;
+    b.type = PlayerBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(PlayerUninitialized.serializer, this);
   }

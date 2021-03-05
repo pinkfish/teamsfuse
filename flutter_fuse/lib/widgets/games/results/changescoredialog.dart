@@ -22,17 +22,17 @@ Future<GameResultDetailsBuilder> changeScoreDialog(
           content: _ChangeScore(details, detailsState),
           actions: <Widget>[
             FlatButton(
-              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(detailsState.currentState.save());
               },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
             ),
             FlatButton(
-              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(null);
               },
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
             ),
           ],
         );

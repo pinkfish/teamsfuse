@@ -44,15 +44,16 @@ abstract class LeagueOrTournamentTeam
   /// The win record of this team indexed by the divison.
   BuiltMap<String, WinRecord> get record;
 
-  static const String TEAMUID = "teamUid";
-  static const String TEAMSEASONUID = "teamSeasonUid";
-  static const String LEAGUEORTOURNMENTDIVISONUID = "leagueDivisonUid";
-  static const String LEAGUEORTOURNMENTSEASONUID = "seasonUid";
-  static const String LEAGUEORTOURNMENTUID = "leagueUid";
-  static const String WINRECORD = "record";
+  static const String TEAMUID = 'teamUid';
+  static const String TEAMSEASONUID = 'teamSeasonUid';
+  static const String LEAGUEORTOURNMENTDIVISONUID = 'leagueDivisonUid';
+  static const String LEAGUEORTOURNMENTSEASONUID = 'seasonUid';
+  static const String LEAGUEORTOURNMENTUID = 'leagueUid';
+  static const String WINRECORD = 'record';
 
   LeagueOrTournamentTeam._();
-  factory LeagueOrTournamentTeam([updates(LeagueOrTournamentTeamBuilder b)]) =
+  factory LeagueOrTournamentTeam(
+          [Function(LeagueOrTournamentTeamBuilder b) updates]) =
       _$LeagueOrTournamentTeam;
 
   Map<String, dynamic> toMap() {

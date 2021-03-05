@@ -253,14 +253,14 @@ class SingleTeamBloc
 
   void _loadOpponents() async {
     if (_opponentSub != null) {
-      _opponentSub.cancel();
+      await _opponentSub.cancel();
       _opponentSub = null;
     }
     if (_opponentSub == null) {
       _opponentSub =
           db.getTeamOpponents(teamUid).listen((Iterable<Opponent> ops) {
-        MapBuilder<String, Opponent> opponents = MapBuilder<String, Opponent>();
-        for (Opponent op in ops) {
+        var opponents = MapBuilder<String, Opponent>();
+        for (var op in ops) {
           opponents[op.uid] = op;
         }
         add(_SingleTeamLoadedOpponents(opponents: opponents.build()));
@@ -276,14 +276,14 @@ class SingleTeamBloc
   @override
   Future<void> close() async {
     await super.close();
-    _teamSub?.cancel();
-    _inviteAdminSub?.cancel();
-    _seasonSub?.cancel();
-    _clubSub?.cancel();
+    await _teamSub?.cancel();
+    await _inviteAdminSub?.cancel();
+    await _seasonSub?.cancel();
+    await _clubSub?.cancel();
     _clubSub = null;
-    _opponentSub?.cancel();
+    await _opponentSub?.cancel();
     _opponentSub = null;
-    _seasonStateSub?.cancel();
+    await _seasonStateSub?.cancel();
     _seasonStateSub = null;
   }
 
@@ -312,7 +312,7 @@ class SingleTeamBloc
   @override
   Stream<SingleTeamState> mapEventToState(SingleTeamEvent event) async* {
     if (event is _SingleTeamNewTeam) {
-      Club theClub = null;
+      Club theClub;
 
       /// See if we need to load the club.
       if (event.newTeam.clubUid != null) {
@@ -348,7 +348,7 @@ class SingleTeamBloc
       } else {
         try {
           if (event.image != null) {
-            await db.updateTeamImage(teamUid, await event.image);
+            await db.updateTeamImage(teamUid, event.image);
           }
           await db.updateFirestoreTeam(event.team.build());
           yield (SingleTeamSaveDone.fromState(state)..savedUid = event.team.uid)
@@ -371,7 +371,7 @@ class SingleTeamBloc
             .build();
       } else {
         try {
-          await db.updateTeamImage(teamUid, await event.image);
+          await db.updateTeamImage(teamUid, event.image);
           yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid)
               .build();
           yield SingleTeamLoaded.fromState(state).build();
@@ -436,7 +436,7 @@ class SingleTeamBloc
 
     if (event is SingleTeamAddOpponent) {
       try {
-        Opponent op = await db.addFirestoreOpponent(
+        var op = await db.addFirestoreOpponent(
             event.opponent.rebuild((b) => b..teamUid = teamUid));
         yield (SingleTeamSaveDone.fromState(state)..savedUid = op.uid).build();
         yield SingleTeamLoaded.fromState(state).build();
@@ -506,7 +506,7 @@ class SingleTeamBloc
     if (event is SingleTeamUpdateClub) {
       yield SingleTeamSaving.fromState(state).build();
       try {
-        Team myTeam = state.team.rebuild((b) => b..clubUid = event.clubUid);
+        var myTeam = state.team.rebuild((b) => b..clubUid = event.clubUid);
         await db.updateFirestoreTeam(myTeam);
         yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid).build();
         yield (SingleTeamLoaded.fromState(state)..team = myTeam.toBuilder())
@@ -523,7 +523,7 @@ class SingleTeamBloc
     if (event is SingleTeamArchive) {
       yield SingleTeamSaving.fromState(state).build();
       try {
-        Team myTeam = state.team.rebuild(
+        var myTeam = state.team.rebuild(
             (b) => b..archivedData[state.team.userUid] = event.archive);
         await db.updateFirestoreTeam(myTeam);
         yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid).build();
@@ -549,8 +549,7 @@ class SingleTeamBloc
     }
 
     try {
-      SingleTeamBlocStateType type =
-          SingleTeamBlocStateType.valueOf(json['type']);
+      var type = SingleTeamBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleTeamBlocStateType.Uninitialized:
           return SingleTeamUninitialized();

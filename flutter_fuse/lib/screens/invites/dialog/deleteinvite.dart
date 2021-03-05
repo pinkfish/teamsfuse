@@ -26,17 +26,17 @@ void showDeleteInvite(BuildContext context, SingleInviteBloc bloc) async {
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
             ),
             FlatButton(
-              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
             ),
           ],
         );

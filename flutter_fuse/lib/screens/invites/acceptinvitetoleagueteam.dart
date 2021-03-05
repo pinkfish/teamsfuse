@@ -91,13 +91,13 @@ class _AcceptInviteToLeagueTeamScreenState
             ),
             actions: <Widget>[
               FlatButton(
-                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () => Navigator.pop(context, true),
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
               ),
               FlatButton(
+                onPressed: () => Navigator.pop(context, false),
                 child:
                     Text(MaterialLocalizations.of(context).cancelButtonLabel),
-                onPressed: () => Navigator.pop(context, false),
               )
             ],
           );
@@ -234,9 +234,9 @@ class _AcceptInviteToLeagueTeamScreenState
                               children: <Widget>[
                                 RaisedButton(
                                   onPressed: _savePressed,
-                                  child: Text(messages.addTeamButton),
                                   color: theme.accentColor,
                                   textColor: Colors.white,
+                                  child: Text(messages.addTeamButton),
                                 ),
                                 FlatButton(
                                   onPressed: () => Navigator.pushNamed(context,

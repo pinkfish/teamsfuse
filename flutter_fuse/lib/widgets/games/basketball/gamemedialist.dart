@@ -32,7 +32,7 @@ class GameMediaList extends StatelessWidget {
         } else if (state is SingleGameDeleted) {
           stuff = Text(Messages.of(context).unknown);
         } else {
-          if (state.loadedMedia && state.media.length > 0) {
+          if (state.loadedMedia && state.media.isNotEmpty) {
             //stuff = GameVideoPlayer(game: state.game, video: state.media[0]);
             stuff = ListView(
               children: state.media

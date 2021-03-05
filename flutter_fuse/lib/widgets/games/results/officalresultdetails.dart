@@ -222,17 +222,17 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                   Messages.of(context).finalOfficalScoreBody(_results.build())),
               actions: <Widget>[
                 TextButton(
-                  child: Text(MaterialLocalizations.of(context).okButtonLabel),
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
+                  child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 ),
                 TextButton(
-                  child:
-                      Text(MaterialLocalizations.of(context).cancelButtonLabel),
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
+                  child:
+                      Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 )
               ],
             );
@@ -495,15 +495,15 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     FlatButton(
-                      child: Text(Messages.of(context).saveButtonText),
                       onPressed: () => _updateGame(bloc),
                       color: Theme.of(context).accentColor,
                       textColor: Colors.white,
+                      child: Text(Messages.of(context).saveButtonText),
                     ),
                     FlatButton(
+                      onPressed: () => Navigator.pop(context, false),
                       child: Text(
                           MaterialLocalizations.of(context).cancelButtonLabel),
-                      onPressed: () => Navigator.pop(context, false),
                     )
                   ],
                 ),

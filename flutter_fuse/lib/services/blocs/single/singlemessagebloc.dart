@@ -94,8 +94,8 @@ class SingleMessageBloc
   @override
   Future<void> close() async {
     await super.close();
-    _messageSub?.cancel();
-    _bodyState?.cancel();
+    await _messageSub?.cancel();
+    await _bodyState?.cancel();
   }
 
   @override
@@ -118,7 +118,7 @@ class SingleMessageBloc
     }
 
     if (event is SingleMessageRead) {
-      String userUid = db.currentUser.uid;
+      var userUid = db.currentUser.uid;
       if (state.message.recipients.containsKey(userUid)) {
         if (state.message.recipients[userUid].state ==
                 MessageReadState.Unread &&
@@ -138,7 +138,7 @@ class SingleMessageBloc
     }
 
     if (event is SingleMessageArchive) {
-      String userUid = db.currentUser.uid;
+      var userUid = db.currentUser.uid;
       if (state.message.recipients.containsKey(userUid)) {
         if (state.message.recipients[userUid].state !=
             MessageReadState.Archived) {
@@ -157,7 +157,7 @@ class SingleMessageBloc
     }
 
     if (event is SingleMessageDelete) {
-      String userUid = db.currentUser.uid;
+      var userUid = db.currentUser.uid;
       if (state.message.recipients.containsKey(userUid)) {
         yield SingleMessageSaving.fromState(state).build();
         try {
@@ -182,8 +182,7 @@ class SingleMessageBloc
     }
 
     try {
-      SingleMessageBlocStateType type =
-          SingleMessageBlocStateType.valueOf(json['type']);
+      var type = SingleMessageBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleMessageBlocStateType.Uninitialized:
           return SingleMessageUninitialized();

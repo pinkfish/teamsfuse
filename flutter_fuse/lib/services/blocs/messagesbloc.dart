@@ -88,7 +88,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
   Future<void> close() async {
     await super.close();
     _cleanupStuff();
-    _coordState?.cancel();
+    await _coordState?.cancel();
     _coordState = null;
   }
 
@@ -108,7 +108,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
 
   void _onUnreadMessagesUpdated(Iterable<MessageRecipient> data) async {
     // Fill in all the messages.
-    for (MessageRecipient recipient in data) {
+    for (var recipient in data) {
       coordinationBloc.loadingTrace?.incrementCounter('message');
     }
 
@@ -136,7 +136,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
           .getMessages(false)
           .listen((Iterable<MessageRecipient> messages) {
         coordinationBloc.loadingTrace?.incrementCounter('message');
-        this._onReadMessagesUpdated(messages);
+        _onReadMessagesUpdated(messages);
       });
       _readMessageSnapshot
           .onError((e, stack) => crashes.recordException(e, stack));
@@ -173,13 +173,13 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
       return MessagesUninitialized();
     }
 
-    MessagesBlocStateType type = MessagesBlocStateType.valueOf(json['type']);
+    var type = MessagesBlocStateType.valueOf(json['type']);
     switch (type) {
       case MessagesBlocStateType.Uninitialized:
         return MessagesUninitialized();
       case MessagesBlocStateType.Loaded:
         try {
-          TraceProxy messagesTrace =
+          var messagesTrace =
               coordinationBloc.analytics.newTrace('messagesTrace');
           messagesTrace.start();
           var loaded = MessagesLoaded.fromMap(json);

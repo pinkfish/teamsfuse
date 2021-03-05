@@ -150,9 +150,8 @@ class _GameShotDialogState extends State<GameShotDialog> {
 
     assert(cancelColor != null);
 
-    final ThemeData themeData = Theme.of(context);
-    final MaterialLocalizations localizations =
-        MaterialLocalizations.of(context);
+    final themeData = Theme.of(context);
+    final localizations = MaterialLocalizations.of(context);
 
     return Container(
       margin: const EdgeInsets.only(top: 16.0),

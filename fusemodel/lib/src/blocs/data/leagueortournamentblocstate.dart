@@ -85,9 +85,10 @@ abstract class LeagueOrTournamentLoaded
   static void _initializeBuilder(LeagueOrTournamentLoadedBuilder b) {
     LeagueOrTournamentState.initializeStateBuilder(b);
 
-    b..type = LeagueOrTournamentBlocStateType.Loaded;
+    b.type = LeagueOrTournamentBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(LeagueOrTournamentLoaded.serializer, this);
   }
@@ -124,9 +125,10 @@ abstract class LeagueOrTournamentUninitialized
   static void _initializeBuilder(LeagueOrTournamentUninitializedBuilder b) {
     LeagueOrTournamentState.initializeStateBuilder(b);
 
-    b..type = LeagueOrTournamentBlocStateType.Uninitialized;
+    b.type = LeagueOrTournamentBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         LeagueOrTournamentUninitialized.serializer, this);

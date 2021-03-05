@@ -31,7 +31,7 @@ class DurationRangeTickProviderImpl extends DurationRangeTickProvider {
     int minDifference;
     int closestIncrement;
 
-    for (int increment in timeStepper.allowedTickIncrements) {
+    for (var increment in timeStepper.allowedTickIncrements) {
       final difference =
           (stepSize - (timeStepper.typicalStepSizeMs * increment)).abs();
       if (minDifference == null || minDifference > difference) {
@@ -74,7 +74,7 @@ class DurationRangeTickProviderImpl extends DurationRangeTickProvider {
       allowedTickIncrements = timeStepper.allowedTickIncrements;
     }
 
-    for (int i = 0; i < allowedTickIncrements.length; i++) {
+    for (var i = 0; i < allowedTickIncrements.length; i++) {
       // Create tick values with a specified increment.
       final tickIncrement = allowedTickIncrements[i];
       tickValues.clear();

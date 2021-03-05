@@ -76,7 +76,7 @@ class LeagueOrTournamentBloc
   Future<void> close() async {
     await super.close();
     _cleanupStuff();
-    _coordSub?.cancel();
+    await _coordSub?.cancel();
   }
 
   void _cleanupStuff() {
@@ -93,9 +93,9 @@ class LeagueOrTournamentBloc
   }
 
   void _onLeagueOrTournamentsUpdated(Iterable<LeagueOrTournament> leagues) {
-    Map<String, LeagueOrTournament> leagueOrTournsments = {};
-    Set<String> toRemove = Set.from(state.leagueOrTournaments.keys);
-    for (LeagueOrTournament league in leagues) {
+    var leagueOrTournsments = <String, LeagueOrTournament>{};
+    var toRemove = Set<String>.from(state.leagueOrTournaments.keys);
+    for (var league in leagues) {
       leagueOrTournsments[league.uid] = league;
       toRemove.remove(league.uid);
     }
@@ -110,7 +110,7 @@ class LeagueOrTournamentBloc
       _leagueOrTournamentSnapshot = coordinationBloc.databaseUpdateModel
           .getMainLeagueOrTournaments()
           .listen((Iterable<LeagueOrTournament> leagues) =>
-              this._onLeagueOrTournamentsUpdated(leagues));
+              _onLeagueOrTournamentsUpdated(leagues));
     }
 
     // New data from above.  Mark ourselves as done.
@@ -135,14 +135,13 @@ class LeagueOrTournamentBloc
     if (json == null || !json.containsKey('type')) {
       return LeagueOrTournamentUninitialized();
     }
-    LeagueOrTournamentBlocStateType type =
-        LeagueOrTournamentBlocStateType.valueOf(json['type']);
+    var type = LeagueOrTournamentBlocStateType.valueOf(json['type']);
     switch (type) {
       case LeagueOrTournamentBlocStateType.Uninitialized:
         return LeagueOrTournamentUninitialized();
       case LeagueOrTournamentBlocStateType.Loaded:
         try {
-          TraceProxy leagueTrace =
+          var leagueTrace =
               coordinationBloc.analytics.newTrace('leagueOrTournamentData');
           leagueTrace.start();
           var loaded = LeagueOrTournamentLoaded.fromMap(json);

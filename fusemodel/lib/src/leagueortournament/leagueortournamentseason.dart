@@ -35,7 +35,7 @@ abstract class LeagueOrTournamentSeason
 
   LeagueOrTournamentSeason._();
   factory LeagueOrTournamentSeason(
-          [updates(LeagueOrTournamentSeasonBuilder b)]) =
+          [Function(LeagueOrTournamentSeasonBuilder b) updates]) =
       _$LeagueOrTournamentSeason;
 
   Map<String, dynamic> toMap() {
@@ -51,6 +51,6 @@ abstract class LeagueOrTournamentSeason
   static Serializer<LeagueOrTournamentSeason> get serializer =>
       _$leagueOrTournamentSeasonSerializer;
 
-  static const String MEMBERS = "members";
-  static const String LEAGUEORTOURNMENTUID = "leagueUid";
+  static const String MEMBERS = 'members';
+  static const String LEAGUEORTOURNMENTUID = 'leagueUid';
 }

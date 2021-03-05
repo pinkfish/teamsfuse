@@ -6,7 +6,7 @@ part of firestore_wrapper;
 /// The data can be extracted with the data property or by using subscript
 /// syntax to access a specific field.
 abstract class DocumentSnapshotWrapper {
-  DocumentSnapshotWrapper({this.documentID, this.data, this.exists})
+  DocumentSnapshotWrapper({this.documentID, this.data, @required this.exists})
       : assert(exists != null);
 
   /// The reference that produced this snapshot

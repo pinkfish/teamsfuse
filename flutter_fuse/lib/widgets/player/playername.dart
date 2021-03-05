@@ -64,7 +64,7 @@ class PlayerName extends StatelessWidget {
             }
             state = CrossFadeState.showSecond;
           } else {
-            widgetTwo = Text("");
+            widgetTwo = Text('');
           }
 
           widgetOne = Text(

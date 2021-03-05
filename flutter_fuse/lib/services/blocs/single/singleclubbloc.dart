@@ -224,7 +224,7 @@ class SingleClubBloc
 
   StreamSubscription<BuiltList<Team>> _teamSub;
   StreamSubscription<BuiltList<Coach>> _coachSub;
-  Map<num, StreamSubscription<BuiltList<NewsItem>>> _newsSub = {};
+  final Map<num, StreamSubscription<BuiltList<NewsItem>>> _newsSub = {};
 
   ///
   /// Creates a new club bloc to load all the things about the club.
@@ -252,8 +252,8 @@ class SingleClubBloc
   @override
   Future<void> close() async {
     await super.close();
-    _clubSub?.cancel();
-    _inviteSub?.cancel();
+    await _clubSub?.cancel();
+    await _inviteSub?.cancel();
   }
 
   @override
@@ -275,7 +275,7 @@ class SingleClubBloc
       try {
         var club = event.club;
         if (event.image != null) {
-          var clubUri = await db.updateClubImage(state.club, await event.image);
+          var clubUri = await db.updateClubImage(state.club, event.image);
           club = club.rebuild((b) => b..photoUrl = clubUri.toString());
         }
         await db.updateClub(club, includeMembers: event.includeMembers);
@@ -292,7 +292,7 @@ class SingleClubBloc
     if (event is SingleClubUpdateImage) {
       yield SingleClubSaving.fromState(state).build();
       try {
-        var clubUri = await db.updateClubImage(state.club, await event.image);
+        var clubUri = await db.updateClubImage(state.club, event.image);
 
         yield SingleClubSaveDone.fromState(state).build();
         yield (SingleClubLoaded.fromState(state)

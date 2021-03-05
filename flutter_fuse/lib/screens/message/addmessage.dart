@@ -95,7 +95,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
           }
         }
       }
-      if (_recipients.length > 0) {
+      if (_recipients.isNotEmpty) {
         addMessageBloc.add(AddMessageEventCommit(
             teamUid: _teamUid,
             recipients: _recipients,
@@ -175,8 +175,9 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
                   items: _possiblePlayers.map((str) {
                     var playerBloc = BlocProvider.of<PlayerBloc>(context);
                     return DropdownMenuItem<String>(
-                        child: Text(playerBloc.state.players[str].name),
-                        value: str);
+                      value: str,
+                      child: Text(playerBloc.state.players[str].name),
+                    );
                   }).toList(),
                   onChanged: (str) {
                     _sendAs = str;
@@ -237,6 +238,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
         // Add in the message box itself :)
         ret.add(
           EnsureVisibleWhenFocused(
+            focusNode: _focusNodeSubject,
             child: TextFormField(
               decoration: InputDecoration(
                 icon: const Icon(Icons.subject),
@@ -246,7 +248,6 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
               initialValue: _subject,
               onSaved: (val) => _subject = val,
             ),
-            focusNode: _focusNodeSubject,
           ),
         );
         ret.add(

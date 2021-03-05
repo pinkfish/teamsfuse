@@ -23,13 +23,13 @@ abstract class Opponent implements Built<Opponent, OpponentBuilder> {
   BuiltMap<String, WinRecord> get record;
 
   Opponent._();
-  factory Opponent([updates(OpponentBuilder b)]) = _$Opponent;
+  factory Opponent([Function(OpponentBuilder b) updates]) = _$Opponent;
 
   static const String _SEASONS = 'seasons';
   static const String _LEAGUETEAMUID = 'leagueTeamUid';
 
   /// Defaults for the state.  Always default to no games loaded.
-  static void _initializeBuilder(OpponentBuilder b) => b..name = "none";
+  static void _initializeBuilder(OpponentBuilder b) => b..name = 'none';
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(Opponent.serializer, this);

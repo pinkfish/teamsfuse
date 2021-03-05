@@ -112,9 +112,10 @@ abstract class SingleTeamLoaded
   static void _initializeBuilder(SingleTeamLoadedBuilder b) {
     SingleTeamState.initializeStateBuilder(b);
 
-    b..type = SingleTeamBlocStateType.Loaded;
+    b.type = SingleTeamBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleTeamLoaded.serializer, this);
   }
@@ -149,9 +150,10 @@ abstract class SingleTeamUninitialized
   static void _initializeBuilder(SingleTeamUninitializedBuilder b) {
     SingleTeamState.initializeStateBuilder(b);
 
-    b..type = SingleTeamBlocStateType.Uninitialized;
+    b.type = SingleTeamBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleTeamUninitialized.serializer, this);
   }
@@ -186,9 +188,10 @@ abstract class SingleTeamDeleted
   static void _initializeBuilder(SingleTeamDeletedBuilder b) {
     SingleTeamState.initializeStateBuilder(b);
 
-    b..type = SingleTeamBlocStateType.Deleted;
+    b.type = SingleTeamBlocStateType.Deleted;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleTeamDeleted.serializer, this);
   }
@@ -225,9 +228,10 @@ abstract class SingleTeamSaveFailed
   static void _initializeBuilder(SingleTeamSaveFailedBuilder b) {
     SingleTeamState.initializeStateBuilder(b);
 
-    b..type = SingleTeamBlocStateType.SaveFailed;
+    b.type = SingleTeamBlocStateType.SaveFailed;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleTeamSaveFailed.serializer, this);
   }
@@ -261,9 +265,10 @@ abstract class SingleTeamSaving
   static void _initializeBuilder(SingleTeamSavingBuilder b) {
     SingleTeamState.initializeStateBuilder(b);
 
-    b..type = SingleTeamBlocStateType.Saving;
+    b.type = SingleTeamBlocStateType.Saving;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleTeamSaving.serializer, this);
   }
@@ -299,9 +304,10 @@ abstract class SingleTeamSaveDone
   static void _initializeBuilder(SingleTeamSaveDoneBuilder b) {
     SingleTeamState.initializeStateBuilder(b);
 
-    b..type = SingleTeamBlocStateType.SaveDone;
+    b.type = SingleTeamBlocStateType.SaveDone;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleTeamSaveDone.serializer, this);
   }

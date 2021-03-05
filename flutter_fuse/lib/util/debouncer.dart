@@ -52,9 +52,6 @@ class Debouncer<Val> {
     if (atBegin && _timeoutId == null) {
       _exec();
     }
-    if (_timeoutId == null) {
-      // schedule a new call after delay time
-      _timeoutId = Timer(_delay, atBegin ? _clear : _exec);
-    }
+    _timeoutId ??= Timer(_delay, atBegin ? _clear : _exec);
   }
 }

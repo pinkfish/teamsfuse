@@ -107,9 +107,9 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
               bottom: 0.0,
               child: FloatingActionButton(
                 onPressed: _openNavigation,
-                child: const Icon(Icons.directions),
                 backgroundColor: Colors.orange,
                 heroTag: widget.game.uid,
+                child: const Icon(Icons.directions),
               ),
             ),
           ],
@@ -358,8 +358,8 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
           body.add(ButtonBar(
             children: <Widget>[
               FlatButton(
-                child: Text(Messages.of(context).editbuttontext),
                 onPressed: _editResult,
+                child: Text(Messages.of(context).editbuttontext),
               ),
             ],
           ));

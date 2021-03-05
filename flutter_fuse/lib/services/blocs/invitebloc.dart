@@ -90,7 +90,7 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
   @override
   Future<void> close() async {
     await _coordSub?.cancel();
-    _inviteChangeSub?.cancel();
+    await _inviteChangeSub?.cancel();
     _inviteChangeSub = null;
     return super.close();
   }
@@ -104,7 +104,7 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
   }
 
   void _onInviteUpdated(Iterable<Invite> invites) {
-    MapBuilder<String, Invite> newInvites = MapBuilder<String, Invite>();
+    var newInvites = MapBuilder<String, Invite>();
 
     add(_InviteEventNewDataLoaded(invites: newInvites.build()));
   }
@@ -115,7 +115,7 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
       _inviteChangeSub =
           databaseUpdateModel.getInvites().listen((Iterable<Invite> invites) {
         coordinationBloc.loadingTrace?.incrementCounter('invite');
-        this._onInviteUpdated(invites);
+        _onInviteUpdated(invites);
       });
       print(
           'End firebase invites ${coordinationBloc.start.difference(clock.now())}');
@@ -132,12 +132,12 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
     // Unload everything.
     if (event is _InviteEventLogout) {
       yield InviteUninitialized();
-      _inviteChangeSub?.cancel();
+      await _inviteChangeSub?.cancel();
       _inviteChangeSub = null;
     }
 
     if (event is InviteEventDeleteInvite) {
-      coordinationBloc.databaseUpdateModel
+      await coordinationBloc.databaseUpdateModel
           .firestoreInviteDelete(event.inviteUid);
     }
   }
@@ -148,13 +148,13 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
       return InviteUninitialized();
     }
 
-    InviteBlocStateType type = InviteBlocStateType.valueOf(json['type']);
+    var type = InviteBlocStateType.valueOf(json['type']);
     switch (type) {
       case InviteBlocStateType.Uninitialized:
         return InviteUninitialized();
       case InviteBlocStateType.Loaded:
         try {
-          TraceProxy invitesTrace = crashes.newTrace('invitesData');
+          var invitesTrace = crashes.newTrace('invitesData');
           invitesTrace.start();
           var loaded = InviteLoaded.fromMap(json);
           invitesTrace.stop();

@@ -22,7 +22,7 @@ class Transaction extends wfs.TransactionWrapper {
   @override
   Future<void> delete(wfs.DocumentReferenceWrapper ref) async {
     if (ref is MyDocumentReference) {
-      return await _transaction.delete(ref._doc);
+      return _transaction.delete(ref._doc);
     }
     throw ArgumentError('${ref.runtimeType} Not a DocumentReference');
   }
@@ -31,7 +31,7 @@ class Transaction extends wfs.TransactionWrapper {
   Future<void> update(
       wfs.DocumentReferenceWrapper ref, Map<String, dynamic> data) async {
     if (ref is MyDocumentReference) {
-      return await _transaction.update(ref._doc, data);
+      return _transaction.update(ref._doc, data);
     }
     throw ArgumentError('${ref.runtimeType} Not a DocumentReference');
   }
@@ -40,7 +40,7 @@ class Transaction extends wfs.TransactionWrapper {
   Future<void> set(
       wfs.DocumentReferenceWrapper ref, Map<String, dynamic> data) async {
     if (ref is MyDocumentReference) {
-      return await _transaction.set(ref._doc, data);
+      return _transaction.set(ref._doc, data);
     }
     throw ArgumentError('${ref.runtimeType} Not a DocumentReference');
   }

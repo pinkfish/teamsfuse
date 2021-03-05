@@ -57,7 +57,7 @@ abstract class GameOfficialResults
       BuiltMap(scoresInternal
           .map((k, v) => MapEntry(GamePeriod.fromIndex(k), v))
           .rebuild((b) {
-        if (scoresInternal.containsKey("Final")) {
+        if (scoresInternal.containsKey('Final')) {
           b[GamePeriod.regulation1] = b[GamePeriod.finalPeriod];
         }
         return b;
@@ -67,8 +67,8 @@ abstract class GameOfficialResults
   static const String AWAYTEAMUID = 'awayTeamUid';
 
   GameOfficialResults._();
-  factory GameOfficialResults([updates(GameOfficialResultsBuilder b)]) =
-      _$GameOfficialResults;
+  factory GameOfficialResults(
+      [Function(GameOfficialResultsBuilder b) updates]) = _$GameOfficialResults;
 
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(GameOfficialResultsBuilder b) =>

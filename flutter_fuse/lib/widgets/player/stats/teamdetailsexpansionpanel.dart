@@ -33,8 +33,8 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
   Map<String, SingleTeamBloc> teamBlocs = {};
   Map<String, SingleSeasonBloc> seasonBlocs = {};
   Map<String, Set<String>> teamSeason = {};
-  Set<String> expandedPanels = Set();
-  Set<String> loadedStuff = Set();
+  Set<String> expandedPanels = {};
+  Set<String> loadedStuff = {};
   List<Game> sortedGames;
   int sortColumnIndex = 1;
   bool sortAscending = false;
@@ -53,16 +53,14 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
     });
     sortedGames.forEach((Game g) {
       if (!teamSeason.containsKey(g.teamUid)) {
-        teamSeason[g.teamUid] = Set();
+        teamSeason[g.teamUid] = <String>{};
         teamBlocs[g.teamUid] = SingleTeamBloc(
           db: RepositoryProvider.of<DatabaseUpdateModel>(context),
           teamUid: g.teamUid,
           crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
         );
       }
-      if (graphSeasonUid == null) {
-        graphSeasonUid = g.seasonUid;
-      }
+      graphSeasonUid ??= g.seasonUid;
       teamSeason[g.teamUid].add(g.seasonUid);
       if (!seasonBlocs.containsKey(g.seasonUid)) {
         seasonBlocs[g.seasonUid] = SingleSeasonBloc(
@@ -104,7 +102,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> teams = teamSeason.keys.toList();
+    var teams = teamSeason.keys.toList();
     if (widget.showGraphs) {
       return BlocBuilder(
         cubit: seasonBlocs[graphSeasonUid],
@@ -206,10 +204,10 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
   }
 
   Widget _getDataTableByTeam(Team team) {
-    List<DataRow> rows = [];
+    var rows = <DataRow>[];
     if (team.currentSeason != null &&
         seasonBlocs.containsKey(team.currentSeason)) {
-      Season s = seasonBlocs[team.currentSeason].state.season;
+      var s = seasonBlocs[team.currentSeason].state.season;
 
       rows.add(_seasonDataRow(s));
       rows.addAll(sortedGames
@@ -217,9 +215,9 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
           .map(_gameDataRow));
     }
 
-    for (String seasonUid in teamSeason[team.uid]) {
+    for (var seasonUid in teamSeason[team.uid]) {
       if (seasonUid == team.currentSeason) continue;
-      Season s = seasonBlocs[seasonUid].state.season;
+      var s = seasonBlocs[seasonUid].state.season;
       rows.add(_seasonDataRow(s));
       rows.addAll(sortedGames
           .where((Game g) => g.seasonUid == seasonUid)
@@ -227,7 +225,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
     }
 
     // Show the games.
-    TextStyle headerStyle = Theme.of(context).textTheme.subtitle1;
+    var headerStyle = Theme.of(context).textTheme.subtitle1;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: DataTable(
@@ -239,7 +237,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
             label: Container(
               width: 60,
               child: Text(
-                "",
+                '',
                 overflow: TextOverflow.fade,
                 softWrap: true,
               ),
@@ -549,7 +547,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
   }
 
   DataRow _seasonDataRow(Season s) {
-    TextStyle style = Theme.of(context)
+    var style = Theme.of(context)
         .textTheme
         .bodyText2
         .copyWith(color: Theme.of(context).accentColor);

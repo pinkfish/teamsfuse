@@ -28,7 +28,7 @@ enum HomeAwayOverlay {
 class LeagueTeamImage extends StatelessWidget {
   /// Constructor.
   LeagueTeamImage(
-      {this.leagueOrTeamUid,
+      {@required this.leagueOrTeamUid,
       Key key,
       this.width,
       this.height,

@@ -43,14 +43,14 @@ class _PlayerListState extends State<SeasonPlayerList> {
       scrollDirection: Axis.vertical,
       child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
-        TextStyle minDataStyle = Theme.of(context).textTheme.subtitle1.copyWith(
+        var minDataStyle = Theme.of(context).textTheme.subtitle1.copyWith(
             fontSize: Theme.of(context).textTheme.subtitle1.fontSize * 1.25);
 
-        double width = constraints.maxWidth / 8;
-        double scale = widget.orientation == Orientation.portrait ? 1.0 : 1.2;
-        List<String> sortedList = widget.season.playersData.keys.toList();
+        var width = constraints.maxWidth / 8;
+        var scale = widget.orientation == Orientation.portrait ? 1.0 : 1.2;
+        var sortedList = widget.season.playersData.keys.toList();
         if (widget.season != null) {
-          List<String> seasonList = widget.season.playersData.keys.toList();
+          var seasonList = widget.season.playersData.keys.toList();
           // Only track things not in the current list and not ignored.
           seasonList.removeWhere((e) =>
               !widget.season.playersData[e].isPublic || sortedList.contains(e));
@@ -68,7 +68,7 @@ class _PlayerListState extends State<SeasonPlayerList> {
                   SizedBox(
                     width: width * 2,
                     child: Text(
-                      "",
+                      '',
                       style: minDataStyle.copyWith(fontWeight: FontWeight.bold),
                       textScaleFactor: scale,
                     ),
@@ -76,6 +76,8 @@ class _PlayerListState extends State<SeasonPlayerList> {
                   SizedBox(
                     width: width,
                     child: FlatButton(
+                      onPressed: () =>
+                          setState(() => _sortBy = SortPlayerBy.Points),
                       child: Text(
                         'Pts',
                         overflow: TextOverflow.fade,
@@ -88,13 +90,13 @@ class _PlayerListState extends State<SeasonPlayerList> {
                         ),
                         textScaleFactor: scale,
                       ),
-                      onPressed: () =>
-                          setState(() => _sortBy = SortPlayerBy.Points),
                     ),
                   ),
                   SizedBox(
                     width: width,
                     child: FlatButton(
+                      onPressed: () =>
+                          setState(() => _sortBy = SortPlayerBy.MadePerentage),
                       child: Text(
                         'Pct',
                         overflow: TextOverflow.fade,
@@ -107,13 +109,13 @@ class _PlayerListState extends State<SeasonPlayerList> {
                         ),
                         textScaleFactor: scale,
                       ),
-                      onPressed: () =>
-                          setState(() => _sortBy = SortPlayerBy.MadePerentage),
                     ),
                   ),
                   SizedBox(
                     width: width,
                     child: FlatButton(
+                      onPressed: () =>
+                          setState(() => _sortBy = SortPlayerBy.Fouls),
                       child: Text(
                         'Fouls',
                         overflow: TextOverflow.fade,
@@ -126,13 +128,13 @@ class _PlayerListState extends State<SeasonPlayerList> {
                         ),
                         textScaleFactor: scale,
                       ),
-                      onPressed: () =>
-                          setState(() => _sortBy = SortPlayerBy.Fouls),
                     ),
                   ),
                   SizedBox(
                     width: width,
                     child: FlatButton(
+                      onPressed: () =>
+                          setState(() => _sortBy = SortPlayerBy.Turnovers),
                       child: Text(
                         'T/O',
                         overflow: TextOverflow.fade,
@@ -145,13 +147,13 @@ class _PlayerListState extends State<SeasonPlayerList> {
                         ),
                         textScaleFactor: scale,
                       ),
-                      onPressed: () =>
-                          setState(() => _sortBy = SortPlayerBy.Turnovers),
                     ),
                   ),
                   SizedBox(
                     width: width,
                     child: FlatButton(
+                      onPressed: () =>
+                          setState(() => _sortBy = SortPlayerBy.Steals),
                       child: Text(
                         'Steals',
                         softWrap: false,
@@ -164,13 +166,13 @@ class _PlayerListState extends State<SeasonPlayerList> {
                         ),
                         textScaleFactor: scale,
                       ),
-                      onPressed: () =>
-                          setState(() => _sortBy = SortPlayerBy.Steals),
                     ),
                   ),
                   SizedBox(
                     width: width,
                     child: FlatButton(
+                      onPressed: () =>
+                          setState(() => _sortBy = SortPlayerBy.Blocks),
                       child: Text(
                         'Blk',
                         softWrap: false,
@@ -183,8 +185,6 @@ class _PlayerListState extends State<SeasonPlayerList> {
                         ),
                         textScaleFactor: scale,
                       ),
-                      onPressed: () =>
-                          setState(() => _sortBy = SortPlayerBy.Blocks),
                     ),
                   ),
                 ],
@@ -244,8 +244,8 @@ class _PlayerListState extends State<SeasonPlayerList> {
       SeasonPlayer seasonPlayer,
       BoxConstraints constraints,
       Orientation orientation) {
-    double width = constraints.maxWidth / 8;
-    double scale = orientation == Orientation.portrait ? 1.0 : 1.5;
+    var width = constraints.maxWidth / 8;
+    var scale = orientation == Orientation.portrait ? 1.0 : 1.5;
     return GestureDetector(
       onTap: widget.onTap != null
           ? () => widget.onTap(widget.season.playersData[uid])

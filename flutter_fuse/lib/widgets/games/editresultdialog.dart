@@ -23,7 +23,7 @@ class EditResultDialog extends StatelessWidget {
   Widget _buildGame(
       BuildContext context, Game game, Team team, Opponent opponent) {
     var theme = Theme.of(context);
-    var resultStr = "";
+    var resultStr = '';
 
     if (game.result.inProgress == GameInProgress.Final) {
       switch (game.result.result) {

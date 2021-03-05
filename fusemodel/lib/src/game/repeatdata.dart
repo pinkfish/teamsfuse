@@ -36,13 +36,14 @@ class RepeatPeriod extends EnumClass {
 abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
   RepeatData._();
 
-  factory RepeatData([updates(RepeatDataBuilder b)]) => _$RepeatData((b) => b
-    ..period = RepeatPeriod.None
-    ..endRepeat = clock.now()
-    ..dayRepeats =
-        ListBuilder([false, false, false, false, false, false, false])
-    ..repeatUntil = false
-    ..repeatInterval = 1);
+  factory RepeatData([Function(RepeatDataBuilder b) updates]) =>
+      _$RepeatData((b) => b
+        ..period = RepeatPeriod.None
+        ..endRepeat = clock.now()
+        ..dayRepeats =
+            ListBuilder([false, false, false, false, false, false, false])
+        ..repeatUntil = false
+        ..repeatInterval = 1);
 
   RepeatPeriod get period;
   num get repeatInterval;
@@ -53,19 +54,19 @@ abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
   //// List of date times that are based around the start point
   //// given the current repeat stuff.
   List<TZDateTime> repeatTimes(final TZDateTime start) {
-    List<TZDateTime> newDates = <TZDateTime>[];
+    var newDates = <TZDateTime>[];
     // Normalize to 0.
-    TZDateTime startOfWeek = start.subtract(Duration(days: start.weekday));
+    var startOfWeek = start.subtract(Duration(days: start.weekday));
     if (period != RepeatPeriod.None) {
       if (repeatUntil || period == RepeatPeriod.Monthly) {
-        print("Interval $repeatInterval");
-        for (int i = 0; i < repeatInterval; i++) {
+        print('Interval $repeatInterval');
+        for (var i = 0; i < repeatInterval; i++) {
           if (period == RepeatPeriod.Monthly) {
             newDates.add(TZDateTime(start.location, start.year, start.month + i,
                 start.day, start.hour, start.minute));
           } else {
-            TZDateTime newWeek = startOfWeek.add(Duration(days: i * 7));
-            for (int dayNum = 0; dayNum < dayRepeats.length; dayNum++) {
+            var newWeek = startOfWeek.add(Duration(days: i * 7));
+            for (var dayNum = 0; dayNum < dayRepeats.length; dayNum++) {
               if (dayRepeats[dayNum]) {
                 newDates.add(newWeek.add(Duration(days: dayNum)));
               }
@@ -73,18 +74,18 @@ abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
           }
         }
       } else {
-        int i = 0;
-        int curSpins = 0;
-        TZDateTime end = TZDateTime(
+        var i = 0;
+        var curSpins = 0;
+        var end = TZDateTime(
                 start.location, endRepeat.year, endRepeat.month, endRepeat.day)
             .add(Duration(days: 1));
         while (
             startOfWeek.millisecondsSinceEpoch < end.millisecondsSinceEpoch &&
                 curSpins < 100) {
-          TZDateTime newWeek = startOfWeek.add(Duration(days: i * 7));
-          for (int dayNum = 0; dayNum < dayRepeats.length; dayNum++) {
+          var newWeek = startOfWeek.add(Duration(days: i * 7));
+          for (var dayNum = 0; dayNum < dayRepeats.length; dayNum++) {
             if (dayRepeats[dayNum]) {
-              TZDateTime newTime = newWeek.add(Duration(days: dayNum));
+              var newTime = newWeek.add(Duration(days: dayNum));
               if (newTime.millisecondsSinceEpoch < end.millisecondsSinceEpoch) {
                 newDates.add(newTime);
               }

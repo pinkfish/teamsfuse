@@ -61,18 +61,18 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
       BuildContext context) {
     var ret = <DropdownMenuItem<RepeatPeriod>>[];
     ret.add(DropdownMenuItem<RepeatPeriod>(
-      child: Text(Messages.of(context).noneperiod),
       value: RepeatPeriod.None,
+      child: Text(Messages.of(context).noneperiod),
     ));
 
     ret.add(DropdownMenuItem<RepeatPeriod>(
-      child: Text(Messages.of(context).weeklyperiod),
       value: RepeatPeriod.Weekly,
+      child: Text(Messages.of(context).weeklyperiod),
     ));
 
     ret.add(DropdownMenuItem<RepeatPeriod>(
-      child: Text(Messages.of(context).monthlyperiod),
       value: RepeatPeriod.Monthly,
+      child: Text(Messages.of(context).monthlyperiod),
     ));
 
     return ret;
@@ -105,16 +105,16 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
               value: _updatedRepeat.repeatUntil,
               items: <DropdownMenuItem<bool>>[
                 DropdownMenuItem<bool>(
+                  value: true,
                   child: Text(
                     messages.repeat,
                   ),
-                  value: true,
                 ),
                 DropdownMenuItem<bool>(
+                  value: false,
                   child: Text(
                     messages.until,
                   ),
-                  value: false,
                 ),
               ],
               onChanged: (val) => _updatedRepeat =

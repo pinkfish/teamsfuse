@@ -69,9 +69,10 @@ abstract class SingleSharedGameLoaded
   static void _initializeBuilder(SingleSharedGameLoadedBuilder b) {
     SingleSharedGameState.initializeStateBuilder(b);
 
-    b..type = SingleSharedGameBlocStateType.Loaded;
+    b.type = SingleSharedGameBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleSharedGameLoaded.serializer, this);
   }
@@ -108,9 +109,10 @@ abstract class SingleSharedGameUninitialized
   static void _initializeBuilder(SingleSharedGameUninitializedBuilder b) {
     SingleSharedGameState.initializeStateBuilder(b);
 
-    b..type = SingleSharedGameBlocStateType.Uninitialized;
+    b.type = SingleSharedGameBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleSharedGameUninitialized.serializer, this);
@@ -146,9 +148,10 @@ abstract class SingleSharedGameDeleted
   static void _initializeBuilder(SingleSharedGameDeletedBuilder b) {
     SingleSharedGameState.initializeStateBuilder(b);
 
-    b..type = SingleSharedGameBlocStateType.Deleted;
+    b.type = SingleSharedGameBlocStateType.Deleted;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleSharedGameDeleted.serializer, this);
   }
@@ -187,9 +190,10 @@ abstract class SingleSharedGameSaveFailed
   static void _initializeBuilder(SingleSharedGameSaveFailedBuilder b) {
     SingleSharedGameState.initializeStateBuilder(b);
 
-    b..type = SingleSharedGameBlocStateType.SaveFailed;
+    b.type = SingleSharedGameBlocStateType.SaveFailed;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleSharedGameSaveFailed.serializer, this);
@@ -225,9 +229,10 @@ abstract class SingleSharedGameSaving
   static void _initializeBuilder(SingleSharedGameSavingBuilder b) {
     SingleSharedGameState.initializeStateBuilder(b);
 
-    b..type = SingleSharedGameBlocStateType.Saving;
+    b.type = SingleSharedGameBlocStateType.Saving;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleSharedGameSaving.serializer, this);
   }
@@ -263,9 +268,10 @@ abstract class SingleSharedGameSaveDone
   static void _initializeBuilder(SingleSharedGameSaveDoneBuilder b) {
     SingleSharedGameState.initializeStateBuilder(b);
 
-    b..type = SingleSharedGameBlocStateType.SaveDone;
+    b.type = SingleSharedGameBlocStateType.SaveDone;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleSharedGameSaveDone.serializer, this);
   }

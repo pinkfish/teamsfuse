@@ -28,6 +28,7 @@ class SingleTeamSeasonPlayerProvider
                 _createBloc(context, playerUid, seasonUid),
             builder: builder);
 
+  @override
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleTeamSeasonPlayerBloc && bloc.playerUid == keyUid);
   }

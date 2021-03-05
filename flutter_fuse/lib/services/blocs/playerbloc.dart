@@ -96,14 +96,14 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
   }
 
   void _onPlayerUpdated(Iterable<Player> data) {
-    Set<String> toDeletePlayers = Set<String>();
-    bool foundMe = false;
-    MapBuilder<String, Player> players = state.players.toBuilder();
+    var toDeletePlayers = <String>{};
+    var foundMe = false;
+    var players = state.players.toBuilder();
     Player me;
 
     toDeletePlayers.addAll(state.players.keys);
-    for (Player player in data) {
-      String uid = coordinationBloc.state.uid;
+    for (var player in data) {
+      var uid = coordinationBloc.state.uid;
       if (player.users[uid].relationship == Relationship.Me) {
         if (foundMe) {
           if (player.users.length <= 1) {
@@ -121,10 +121,10 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
       players.remove(id);
     });
     if (!foundMe && !_createdMePlayer) {
-      PlayerUserInternal playerUser = PlayerUserInternal((b) => b
+      var playerUser = PlayerUserInternal((b) => b
         ..added = true
         ..relationship = Relationship.Me);
-      PlayerBuilder player = PlayerBuilder()
+      var player = PlayerBuilder()
         ..uid = ''
         ..playerType = PlayerType.player;
       player.usersData[coordinationBloc.authenticationBloc.currentUser.uid] =
@@ -154,14 +154,14 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
       _playerSnapshot = coordinationBloc.databaseUpdateModel
           .getPlayers()
           .listen((Iterable<Player> players) {
-        this._onPlayerUpdated(players);
+        _onPlayerUpdated(players);
       });
     }
 
     // Unload everything.
     if (event is _PlayerLoggedOut) {
       yield PlayerUninitialized();
-      _playerSnapshot?.cancel();
+      await _playerSnapshot?.cancel();
       _playerSnapshot = null;
     }
 
@@ -177,7 +177,7 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
     }
 
     if (event is _PlayerLoadedExtra) {
-      MapBuilder<String, Player> extras = state.extraPlayers.toBuilder();
+      var extras = state.extraPlayers.toBuilder();
       extras[event.playerUid] = event.player;
       yield (PlayerLoaded.fromState(state)..extraPlayers = extras).build();
     }
@@ -189,14 +189,13 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
       return PlayerUninitialized();
     }
 
-    PlayerBlocStateType type = PlayerBlocStateType.valueOf(json['type']);
+    var type = PlayerBlocStateType.valueOf(json['type']);
     switch (type) {
       case PlayerBlocStateType.Uninitialized:
         return PlayerUninitialized();
       case PlayerBlocStateType.Loaded:
         try {
-          TraceProxy playerTrace =
-              coordinationBloc.analytics.newTrace('playerData');
+          var playerTrace = coordinationBloc.analytics.newTrace('playerData');
           playerTrace.start();
           var loaded = PlayerLoaded.fromMap(json);
           playerTrace.stop();

@@ -45,15 +45,15 @@ abstract class NewsItem implements Built<NewsItem, NewsItemBuilder> {
   NewsItem._();
 
   /// Factory class to create the news items
-  factory NewsItem([updates(NewsItemBuilder b)]) = _$NewsItem;
+  factory NewsItem([Function(NewsItemBuilder b) updates]) = _$NewsItem;
 
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(NewsItemBuilder b) => b
-    ..body = ""
+    ..body = ''
     ..timeCreated = Timestamp.now();
 
   /// The id to use for how to serialize the the news item.
-  static const String timeCreatedId = "timeCreated";
+  static const String timeCreatedId = 'timeCreated';
 
   /// Serialize the news item
   Map<String, dynamic> toMap({bool includeMembers}) =>

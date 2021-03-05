@@ -21,7 +21,7 @@ abstract class WinRecord implements Built<WinRecord, WinRecordBuilder> {
   WinRecord._();
 
   /// Factory to create the win record.
-  factory WinRecord([updates(WinRecordBuilder b)]) = _$WinRecord;
+  factory WinRecord([Function(WinRecordBuilder b) updates]) = _$WinRecord;
 
   /// Makes a nice map of the class.
   Map<String, dynamic> toMap() {

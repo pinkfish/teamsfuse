@@ -47,18 +47,18 @@ class ProfileScreen extends StatelessWidget {
             ),
             actions: <Widget>[
               FlatButton(
-                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   // Do the delete.
                   Navigator.of(context).pop(true);
                 },
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
               ),
               FlatButton(
-                child:
-                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
               ),
             ],
           );
@@ -216,7 +216,7 @@ class ProfileScreen extends StatelessWidget {
                   playerBloc.add(SinglePlayerLoadSeasons());
                 }
                 if (playerState.seasonsLoaded) {
-                  var teams = Set<String>();
+                  var teams = <String>{};
                   for (Season season in playerState.seasons) {
                     if (!teams.contains(season.teamUid)) {
                       teams.add(season.teamUid);

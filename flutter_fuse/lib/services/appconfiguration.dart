@@ -23,7 +23,7 @@ class AppConfiguration {
   /// Loads the configuration.
   Future<void> load() async {
     var opt = Firebase.app().options;
-    _completer.future.then((done) => _loaded = done);
+    await _completer.future.then((done) => _loaded = done);
     //_config = await RemoteConfig.instance;
     //await _config.fetch();
     //await _config.activateFetched();

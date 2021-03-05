@@ -61,18 +61,18 @@ class RelationshipFormFieldState extends FormFieldState<Relationship> {
   List<DropdownMenuItem<Relationship>> _buildItems(BuildContext context) {
     var ret = <DropdownMenuItem<Relationship>>[];
     ret.add(DropdownMenuItem<Relationship>(
-      child: Text(Messages.of(context).relationships(Relationship.Friend)),
       value: Relationship.Friend,
+      child: Text(Messages.of(context).relationships(Relationship.Friend)),
     ));
 
     ret.add(DropdownMenuItem<Relationship>(
-      child: Text(Messages.of(context).relationships(Relationship.Parent)),
       value: Relationship.Parent,
+      child: Text(Messages.of(context).relationships(Relationship.Parent)),
     ));
 
     ret.add(DropdownMenuItem<Relationship>(
-      child: Text(Messages.of(context).relationships(Relationship.Guardian)),
       value: Relationship.Guardian,
+      child: Text(Messages.of(context).relationships(Relationship.Guardian)),
     ));
 
     return ret;

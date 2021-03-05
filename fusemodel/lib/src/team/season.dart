@@ -39,7 +39,7 @@ abstract class Season implements Built<Season, SeasonBuilder> {
   bool get isPublic;
 
   Season._();
-  factory Season([updates(SeasonBuilder b)]) = _$Season;
+  factory Season([Function(SeasonBuilder b) updates]) = _$Season;
 
   static void _initializeBuilder(SeasonBuilder b) => b..isPublic = false;
 
@@ -60,10 +60,10 @@ abstract class Season implements Built<Season, SeasonBuilder> {
 
   static Serializer<Season> get serializer => _$seasonSerializer;
 
-  static const String TEAMUID = "teamUid";
-  static const String PLAYERS = "players";
+  static const String TEAMUID = 'teamUid';
+  static const String PLAYERS = 'players';
   // Used for indexing the invisible user field that has permissions.
-  static const String USER = "users";
+  static const String USER = 'users';
 
   @memoized
   BuiltList<SeasonPlayer> get players => BuiltList.from(playersData.values);

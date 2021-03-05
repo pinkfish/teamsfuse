@@ -68,7 +68,7 @@ class TeamEditFormState extends State<TeamEditForm> {
   final FocusNode _focusNodeArriveBefore = FocusNode();
   Uint8List _imageFile;
   bool _changedImage = false;
-  String _seasonName = "";
+  String _seasonName = '';
   TeamBuilder _builder;
 
   /// Saves all the details to the builder.
@@ -257,7 +257,7 @@ class TeamEditFormState extends State<TeamEditForm> {
               labelText: Messages.of(context).leaguehint,
             ),
             focusNode: _focusNodeNotes,
-            initialValue: _builder.league == null ? '' : _builder.league,
+            initialValue: _builder.league ?? '',
             keyboardType: TextInputType.text,
             obscureText: false,
             onSaved: (value) {

@@ -74,7 +74,7 @@ class TeamTile extends StatelessWidget {
                   title: BlocBuilder(
                     cubit: seasonBloc,
                     builder: (context, seasonState) {
-                      var seasonName = "";
+                      var seasonName = '';
                       if (seasonState is SingleSeasonLoaded) {
                         seasonName = seasonState.season.name;
                       }
@@ -98,7 +98,7 @@ class TeamTile extends StatelessWidget {
                             TextSpan(
                               text: teamState.isAdmin()
                                   ? '\n${Messages.of(context).administrator}'
-                                  : "",
+                                  : '',
                               style: Theme.of(context)
                                   .textTheme
                                   .subtitle1
@@ -122,7 +122,7 @@ class TeamTile extends StatelessWidget {
                         return Text(seasonState.season.record != null
                             ? Messages.of(context)
                                 .winRecord(seasonState.season.record)
-                            : "");
+                            : '');
                       }
                       return Text(Messages.of(context).loading);
                     },

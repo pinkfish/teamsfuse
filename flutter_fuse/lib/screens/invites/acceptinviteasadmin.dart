@@ -120,9 +120,9 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
                             SizedBox(width: 5.0),
                             RaisedButton(
                               onPressed: _savePressed,
-                              child: Text(messages.addAdminButton),
                               color: theme.accentColor,
                               textColor: Colors.white,
+                              child: Text(messages.addAdminButton),
                             ),
                             TextButton(
                               onPressed: () =>

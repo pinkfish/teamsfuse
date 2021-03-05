@@ -5,10 +5,10 @@ import '../../../services/localutilities.dart';
 import '../../player/playertilebasketball.dart';
 
 /// Callback for when a player is selected.
-typedef void PlayerSelectFunction(String uid, bool selected);
+typedef PlayerSelectFunction = void Function(String uid, bool selected);
 
 /// Check to see if this player is selected.
-typedef bool PlayerIsSelected(String uid);
+typedef PlayerIsSelected = bool Function(String uid);
 
 ///
 /// Shows the players as a nice grid to be able to select from to setup who
@@ -34,9 +34,9 @@ class PlayerMultiselect extends StatelessWidget {
   final Map<String, Player> additionalPlayers;
 
   List<Widget> _populateList(BuildContext context, Orientation o) {
-    Set<String> players = game.players.keys.toSet();
-    List<String> seasonPlayers =
-        season != null ? season.playersData.keys.toList() : [];
+    var players = game.players.keys.toSet();
+    var seasonPlayers =
+        season != null ? season.playersData.keys.toList() : <String>[];
     seasonPlayers
         .removeWhere((element) => (game.ignoreFromSeason.contains(element)));
     players.addAll(game.opponents.keys);
@@ -46,8 +46,8 @@ class PlayerMultiselect extends StatelessWidget {
     }
     var ordered = players.toList();
     ordered.sort((String a, String b) {
-      GamePlayerSummary asum = game.players[a] ?? game.opponents[a];
-      GamePlayerSummary bsum = game.players[b] ?? game.opponents[b];
+      var asum = game.players[a] ?? game.opponents[a];
+      var bsum = game.players[b] ?? game.opponents[b];
       if (asum == null || bsum == null) {
         return 0;
       }

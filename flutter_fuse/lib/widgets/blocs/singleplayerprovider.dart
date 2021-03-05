@@ -22,6 +22,7 @@ class SinglePlayerProvider extends SingleBlocProvider<SinglePlayerBloc> {
             builder: builder,
             prefix: 'player');
 
+  @override
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SinglePlayerBloc && bloc.playerUid == keyUid);
   }

@@ -72,9 +72,10 @@ abstract class SingleProfileLoaded
   static void _initializeBuilder(SingleProfileLoadedBuilder b) {
     SingleProfileState.initializeStateBuilder(b);
 
-    b..type = SingleProfileBlocStateType.Loaded;
+    b.type = SingleProfileBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleProfileLoaded.serializer, this);
   }
@@ -109,9 +110,10 @@ abstract class SingleProfileUninitialized
   static void _initializeBuilder(SingleProfileUninitializedBuilder b) {
     SingleProfileState.initializeStateBuilder(b);
 
-    b..type = SingleProfileBlocStateType.Uninitialized;
+    b.type = SingleProfileBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleProfileUninitialized.serializer, this);
@@ -147,11 +149,12 @@ abstract class SingleProfileDeleted
   static void _initializeBuilder(SingleProfileDeletedBuilder b) {
     SingleProfileState.initializeStateBuilder(b);
 
-    b..type = SingleProfileBlocStateType.Deleted;
-    b..loadedPlayers = false;
-    b..players = ListBuilder();
+    b.type = SingleProfileBlocStateType.Deleted;
+    b.loadedPlayers = false;
+    b.players = ListBuilder();
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleProfileDeleted.serializer, this);
   }
@@ -189,9 +192,10 @@ abstract class SingleProfileSaveFailed
   static void _initializeBuilder(SingleProfileSaveFailedBuilder b) {
     SingleProfileState.initializeStateBuilder(b);
 
-    b..type = SingleProfileBlocStateType.SaveFailed;
+    b.type = SingleProfileBlocStateType.SaveFailed;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleProfileSaveFailed.serializer, this);
   }
@@ -225,9 +229,10 @@ abstract class SingleProfileSaving
   static void _initializeBuilder(SingleProfileSavingBuilder b) {
     SingleProfileState.initializeStateBuilder(b);
 
-    b..type = SingleProfileBlocStateType.Saving;
+    b.type = SingleProfileBlocStateType.Saving;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleProfileSaving.serializer, this);
   }
@@ -261,9 +266,10 @@ abstract class SingleProfileSaveDone
   static void _initializeBuilder(SingleProfileSaveDoneBuilder b) {
     SingleProfileState.initializeStateBuilder(b);
 
-    b..type = SingleProfileBlocStateType.SaveDone;
+    b.type = SingleProfileBlocStateType.SaveDone;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleProfileSaveDone.serializer, this);
   }

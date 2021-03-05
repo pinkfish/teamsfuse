@@ -57,7 +57,9 @@ class LeagueOrTournamentTeamName extends StatelessWidget {
           }
 
           return AnimatedSwitcher(
-              child: inner, duration: Duration(milliseconds: 300));
+            duration: Duration(milliseconds: 300),
+            child: inner,
+          );
         },
       ),
     );

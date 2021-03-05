@@ -38,7 +38,7 @@ abstract class LeagueOrTournamentDivison
 
   LeagueOrTournamentDivison._();
   factory LeagueOrTournamentDivison(
-          [updates(LeagueOrTournamentDivisonBuilder b)]) =
+          [Function(LeagueOrTournamentDivisonBuilder b) updates]) =
       _$LeagueOrTournamentDivison;
 
   Map<String, dynamic> toMap() {
@@ -54,9 +54,9 @@ abstract class LeagueOrTournamentDivison
   static Serializer<LeagueOrTournamentDivison> get serializer =>
       _$leagueOrTournamentDivisonSerializer;
 
-  static const String MEMBERS = "members";
-  static const String LEAGUEORTOURNMENTSEASONUID = "seasonUid";
-  static const String LEAGUEORTOURNMENTUID = "leagueUid";
+  static const String MEMBERS = 'members';
+  static const String LEAGUEORTOURNMENTSEASONUID = 'seasonUid';
+  static const String LEAGUEORTOURNMENTUID = 'leagueUid';
 
   bool isUserAdmin(String myUid) {
     return adminsUids.contains(myUid);

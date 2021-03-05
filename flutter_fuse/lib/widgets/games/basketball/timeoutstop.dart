@@ -55,17 +55,13 @@ class TimeoutEnd extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                child: Text(
-                  Messages.of(context).endButton,
-                  textScaleFactor: 2.0,
-                ),
                 onPressed: () {
                   // ignore: close_sinks
                   var undoBloc = BlocProvider.of<GameEventUndoStack>(context);
                   undoBloc.addEvent(
                     GameEvent((b) => b
                       ..gameUid = game.uid
-                      ..playerUid = ""
+                      ..playerUid = ''
                       ..period = game.result.currentPeriod.toBuilder()
                       ..timestamp = clock.now().toUtc()
                       ..opponent = false
@@ -75,6 +71,10 @@ class TimeoutEnd extends StatelessWidget {
                     false,
                   );
                 },
+                child: Text(
+                  Messages.of(context).endButton,
+                  textScaleFactor: 2.0,
+                ),
               ),
             ],
           ),

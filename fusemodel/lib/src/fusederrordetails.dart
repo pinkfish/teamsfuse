@@ -1,9 +1,9 @@
 /// Signature for callbacks that filter an iterable.
-typedef Iterable<T> IterableFilter<T>(Iterable<T> input);
+typedef IterableFilter<T> = Iterable<T> Function(Iterable<T> input);
 
 /// Signature for [FlutterErrorDetails.informationCollector] callback
 /// and other callbacks that collect information into a string buffer.
-typedef void InformationCollector(StringBuffer information);
+typedef InformationCollector = void Function(StringBuffer information);
 
 /// Class for information provided to [FlutterExceptionHandler] callbacks.
 ///
@@ -21,11 +21,11 @@ class FusedErrorDetails {
   const FusedErrorDetails(
       {this.exception,
       this.stack,
-      this.library: 'Flutter framework',
+      this.library = 'Flutter framework',
       this.context,
       this.stackFilter,
       this.informationCollector,
-      this.silent: false});
+      this.silent = false});
 
   /// The exception. Often this will be an [AssertionError], maybe specifically
   /// a [FusedError]. However, this could be any value at all.
@@ -108,10 +108,10 @@ class FusedErrorDetails {
       // the assertion message up to before the code snippets, separated by a
       // newline, if we recognise that format is being used.
       final String message = exception.message;
-      final String fullMessage = exception.toString();
+      final fullMessage = exception.toString();
       if (message is String && message != fullMessage) {
         if (fullMessage.length > message.length) {
-          final int position = fullMessage.lastIndexOf(message);
+          final position = fullMessage.lastIndexOf(message);
           if (position == fullMessage.length - message.length &&
               position > 2 &&
               fullMessage.substring(position - 2, position) == ': ') {
@@ -135,7 +135,7 @@ class FusedErrorDetails {
 
   @override
   String toString() {
-    final StringBuffer buffer = StringBuffer();
+    final buffer = StringBuffer();
     if ((library != null && library != '') ||
         (context != null && context != '')) {
       if (library != null && library != '') {
@@ -227,10 +227,10 @@ class FusedError extends AssertionError {
   ///
   /// The default behavior for the [onError] handler is to call this function.
   static void dumpErrorToConsole(FusedErrorDetails details,
-      {bool forceReport: false}) {
+      {bool forceReport = false}) {
     assert(details != null);
     assert(details.exception != null);
-    bool reportError = details.silent != true; // could be null
+    var reportError = details.silent != true; // could be null
     assert(() {
       // In checked mode, we ignore the "silent" flag.
       reportError = true;
@@ -238,12 +238,12 @@ class FusedError extends AssertionError {
     }());
     if (!reportError && !forceReport) return;
     if (_errorCount == 0 || forceReport) {
-      final String header =
+      final header =
           '\u2550\u2550\u2561 EXCEPTION CAUGHT BY ${details.library} \u255E'
               .toUpperCase();
-      final String footer = '\u2550' * wrapWidth;
+      final footer = '\u2550' * wrapWidth;
       print('$header${"\u2550" * (footer.length - header.length)}');
-      final String verb =
+      final verb =
           'thrown${details.context != null ? " ${details.context}" : ""}';
       if (details.exception is NullThrownError) {
         print('The null value was $verb.');
@@ -264,10 +264,11 @@ class FusedError extends AssertionError {
         // Many exception classes put their type at the head of their message.
         // This is redundant with the way we display exceptions, so attempt to
         // strip out that header when we see it.
-        final String prefix = '${details.exception.runtimeType}: ';
-        String message = details.exceptionAsString();
-        if (message.startsWith(prefix))
+        final prefix = '${details.exception.runtimeType}: ';
+        var message = details.exceptionAsString();
+        if (message.startsWith(prefix)) {
           message = message.substring(prefix.length);
+        }
         print('The following $errorName was $verb:\n$message');
       }
       Iterable<String> stackLines = (details.stack != null)
@@ -275,20 +276,20 @@ class FusedError extends AssertionError {
           : null;
       if ((details.exception is AssertionError) &&
           (details.exception is! FusedError)) {
-        bool ourFault = true;
+        var ourFault = true;
         if (stackLines != null) {
-          final List<String> stackList = stackLines.take(2).toList();
+          final stackList = stackLines.take(2).toList();
           if (stackList.length >= 2) {
             // TODO(ianh): This has bitrotted and is no longer matching. https://github.com/flutter/flutter/issues/4021
-            final RegExp throwPattern =
+            final throwPattern =
                 RegExp(r'^#0 +_AssertionError._throwNew \(dart:.+\)$');
-            final RegExp assertPattern =
+            final assertPattern =
                 RegExp(r'^#1 +[^(]+ \((.+?):([0-9]+)(?::[0-9]+)?\)$');
             if (throwPattern.hasMatch(stackList[0])) {
               final Match assertMatch = assertPattern.firstMatch(stackList[1]);
               if (assertMatch != null) {
                 assert(assertMatch.groupCount == 2);
-                final RegExp ourLibraryPattern = RegExp(r'^package:flutter/');
+                final ourLibraryPattern = RegExp(r'^package:flutter/');
                 ourFault = ourLibraryPattern.hasMatch(assertMatch.group(1));
               }
             }
@@ -311,10 +312,12 @@ class FusedError extends AssertionError {
         } else {
           stackLines = defaultStackFilter(stackLines);
         }
-        for (String line in stackLines) print(line);
+        for (var line in stackLines) {
+          print(line);
+        }
       }
       if (details.informationCollector != null) {
-        final StringBuffer information = StringBuffer();
+        final information = StringBuffer();
         details.informationCollector(information);
         print('\n${information.toString().trimRight()}');
       }
@@ -338,22 +341,22 @@ class FusedError extends AssertionError {
   /// format but the frame numbers will not be consecutive (frames are elided)
   /// and the final line may be prose rather than a stack frame.
   static Iterable<String> defaultStackFilter(Iterable<String> frames) {
-    const List<String> filteredPackages = <String>[
+    const filteredPackages = <String>[
       'dart:async-patch',
       'dart:async',
       'package:stack_trace',
     ];
-    const List<String> filteredClasses = <String>[
+    const filteredClasses = <String>[
       '_AssertionError',
       '_FakeAsync',
       '_FrameCallbackEntry',
     ];
-    final RegExp stackParser =
+    final stackParser =
         RegExp(r'^#[0-9]+ +([^.]+).* \(([^/\\]*)[/\\].+:[0-9]+(?::[0-9]+)?\)$');
-    final RegExp packageParser = RegExp(r'^([^:]+):(.+)$');
-    final List<String> result = <String>[];
-    final List<String> skipped = <String>[];
-    for (String line in frames) {
+    final packageParser = RegExp(r'^([^:]+):(.+)$');
+    final result = <String>[];
+    final skipped = <String>[];
+    for (var line in frames) {
       final Match match = stackParser.firstMatch(line);
       if (match != null) {
         assert(match.groupCount == 2);
@@ -377,7 +380,7 @@ class FusedError extends AssertionError {
     if (skipped.length == 1) {
       result.add('(elided one frame from ${skipped.single})');
     } else if (skipped.length > 1) {
-      final List<String> where = Set<String>.from(skipped).toList()..sort();
+      final where = Set<String>.from(skipped).toList()..sort();
       if (where.length > 1) where[where.length - 1] = 'and ${where.last}';
       if (where.length > 2) {
         result

@@ -34,22 +34,22 @@ class DurationTickFormatter implements TickFormatter<Duration> {
   /// where these assumptions are not correct, please create a custom
   /// [TickFormatter].
   factory DurationTickFormatter({Map<int, DurationFormatter> overrides}) {
-    final Map<int, DurationFormatter> map = {
+    final map = <int, DurationFormatter>{
       SECOND: DurationFormatterImpl(
           tickFormat: 's',
           msPerTick: SECOND,
           msPerTransition: MINUTE,
-          transitionFormat: ""),
+          transitionFormat: ''),
       MINUTE: DurationFormatterImpl(
           tickFormat: 's',
           msPerTick: MINUTE,
           msPerTransition: HOUR,
-          transitionFormat: ""),
+          transitionFormat: ''),
       HOUR: DurationFormatterImpl(
           tickFormat: 's',
           msPerTick: HOUR,
           msPerTransition: DAY,
-          transitionFormat: ""),
+          transitionFormat: ''),
     };
 
     // Allow the user to override some of the defaults.
@@ -107,7 +107,7 @@ class DurationTickFormatter implements TickFormatter<Duration> {
     if (_timeFormatters.keys.first == ANY) {
       formatterFound = true;
     } else {
-      int minTimeBetweenTicks = stepSize.toInt();
+      var minTimeBetweenTicks = stepSize.toInt();
 
       // TODO: Skip the formatter if the formatter's step size is
       // smaller than the minimum step size of the data.

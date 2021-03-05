@@ -38,16 +38,16 @@ class ClubPicker extends StatelessWidget {
     var ret = <DropdownMenuItem<String>>[];
     ret.add(
       DropdownMenuItem<String>(
-        child: Text(Messages.of(context).noclub),
         value: noClub,
+        child: Text(Messages.of(context).noclub),
       ),
     );
     for (var club in state.clubs.values) {
       if (adminOnly && club.isAdmin()) {
         ret.add(
           DropdownMenuItem<String>(
-            child: Text(club.name),
             value: club.uid,
+            child: Text(club.name),
           ),
         );
       }

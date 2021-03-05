@@ -236,6 +236,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                 ),
                               ),
                               Container(
+                                margin:
+                                    EdgeInsets.only(top: 20.0, bottom: 20.0),
                                 child: RaisedButton(
                                     child: Text(
                                         Messages.of(context).createaccount),
@@ -243,8 +245,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                     textColor: Colors.white,
                                     key: Key('SUBMIT'),
                                     onPressed: _handleSubmitted),
-                                margin:
-                                    EdgeInsets.only(top: 20.0, bottom: 20.0),
                               ),
                             ],
                           ),
@@ -253,17 +253,17 @@ class _SignupScreenState extends State<SignupScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             FlatButton(
-                              child: Text(Messages.of(context).login),
                               textColor: Theme.of(context).accentColor,
                               key: Key('LOGIN'),
                               onPressed: () => _onPressed('/Login/Home'),
+                              child: Text(Messages.of(context).login),
                             ),
                             FlatButton(
-                              child: Text(Messages.of(context).forgotPassword),
                               textColor: Theme.of(context).accentColor,
                               key: Key('FORGOTPASSWORD'),
                               onPressed: () =>
                                   _onPressed('/Login/ForgotPassword'),
+                              child: Text(Messages.of(context).forgotPassword),
                             ),
                           ],
                         )

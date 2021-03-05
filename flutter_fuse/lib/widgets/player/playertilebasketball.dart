@@ -11,8 +11,8 @@ import '../blocs/singlegameprovider.dart';
 import '../blocs/singleplayerprovider.dart';
 import '../blocs/singleseasonprovider.dart';
 
-typedef void PlayerCallbackFunc(String playerUid);
-typedef Widget PlayerExtraFunc(String playerUid);
+typedef PlayerCallbackFunc = void Function(String playerUid);
+typedef PlayerExtraFunc = Widget Function(String playerUid);
 
 ///
 /// Shows the details on the player by giving the name and jersey number.
@@ -32,7 +32,7 @@ class PlayerTileBasketball extends StatelessWidget {
   final double scale;
 
   PlayerTileBasketball(
-      {this.playerUid,
+      {@required this.playerUid,
       this.gameUid,
       this.seasonUid,
       this.onTap,
@@ -81,7 +81,7 @@ class PlayerTileBasketball extends StatelessWidget {
 
   Widget _buildPlayer(BuildContext context, String jerseyNumber) {
     return SinglePlayerProvider(
-      playerUid: this.playerUid,
+      playerUid: playerUid,
       builder: (context, singlePlayerBloc) => AnimatedSwitcher(
         duration: Duration(milliseconds: 500),
         child: BlocBuilder(
@@ -104,7 +104,7 @@ class PlayerTileBasketball extends StatelessWidget {
                   leading: Stack(
                     children: <Widget>[
                       Icon(MdiIcons.tshirtCrewOutline),
-                      Text(""),
+                      Text(''),
                     ],
                   ),
                 ),
@@ -128,7 +128,7 @@ class PlayerTileBasketball extends StatelessWidget {
                   leading: Stack(
                     children: <Widget>[
                       Icon(MdiIcons.tshirtCrewOutline),
-                      Text(""),
+                      Text(''),
                     ],
                   ),
                 ),
@@ -153,7 +153,7 @@ class PlayerTileBasketball extends StatelessWidget {
                 leading: Stack(
                   children: <Widget>[
                     Icon(MdiIcons.tshirtCrewOutline),
-                    Text(""),
+                    Text(''),
                   ],
                 ),
               ),
@@ -179,6 +179,10 @@ class PlayerTileBasketball extends StatelessWidget {
               ConstrainedBox(
                 constraints: BoxConstraints.tightFor(height: 40.0, width: 40.0),
                 child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Theme.of(context).primaryColor),
+                  ),
                   child: Center(
                     child: Text(
                       jerseyNumber,
@@ -189,10 +193,6 @@ class PlayerTileBasketball extends StatelessWidget {
                           ),
                     ),
                   ),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Theme.of(context).primaryColor),
-                  ),
                 ),
               ),
               Text(
@@ -200,9 +200,7 @@ class PlayerTileBasketball extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline6,
                 overflow: TextOverflow.ellipsis,
               ),
-              (this.extra != null
-                  ? extra(loadedPlayer.uid)
-                  : SizedBox(width: 0)),
+              (extra != null ? extra(loadedPlayer.uid) : SizedBox(width: 0)),
             ],
           ),
         ),
@@ -232,6 +230,11 @@ class PlayerTileBasketball extends StatelessWidget {
                 height: min(40.0, box.maxHeight - 6),
                 width: min(40.0, box.maxHeight - 6)),
             child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                    color: contentColor ?? Theme.of(context).primaryColor),
+              ),
               child: Center(
                 child: Text(
                   jerseyNumber ?? 'U',
@@ -241,11 +244,6 @@ class PlayerTileBasketball extends StatelessWidget {
                         fontSize: min(20.0, box.maxHeight - 12),
                       ),
                 ),
-              ),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                    color: contentColor ?? Theme.of(context).primaryColor),
               ),
             ),
           ),

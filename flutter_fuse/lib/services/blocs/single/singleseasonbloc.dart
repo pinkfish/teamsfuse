@@ -92,9 +92,9 @@ class SingleSeasonBloc
   @override
   Future<void> close() async {
     await super.close();
-    _seasonSub?.cancel();
+    await _seasonSub?.cancel();
     _seasonSub = null;
-    _gameSub?.cancel();
+    await _gameSub?.cancel();
     _gameSub = null;
   }
 
@@ -165,8 +165,7 @@ class SingleSeasonBloc
     }
 
     try {
-      SingleSeasonBlocStateType type =
-          SingleSeasonBlocStateType.valueOf(json['type']);
+      var type = SingleSeasonBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleSeasonBlocStateType.Uninitialized:
           return SingleSeasonUninitialized();

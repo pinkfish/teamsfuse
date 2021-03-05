@@ -63,23 +63,23 @@ class _GenderFormFieldState extends FormFieldState<Gender> {
   List<DropdownMenuItem<Gender>> _buildItems(BuildContext context) {
     var ret = <DropdownMenuItem<Gender>>[];
     ret.add(DropdownMenuItem<Gender>(
-      child: Text(Messages.of(context).genderfemale),
       value: Gender.Female,
+      child: Text(Messages.of(context).genderfemale),
     ));
 
     ret.add(DropdownMenuItem<Gender>(
-      child: Text(Messages.of(context).gendermale),
       value: Gender.Male,
+      child: Text(Messages.of(context).gendermale),
     ));
 
     ret.add(DropdownMenuItem<Gender>(
-      child: Text(Messages.of(context).gendercoed),
       value: Gender.Coed,
+      child: Text(Messages.of(context).gendercoed),
     ));
 
     ret.add(DropdownMenuItem<Gender>(
-      child: Text(Messages.of(context).genderna),
       value: Gender.NA,
+      child: Text(Messages.of(context).genderna),
     ));
 
     return ret;

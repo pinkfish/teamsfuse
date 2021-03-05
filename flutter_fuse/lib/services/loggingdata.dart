@@ -83,15 +83,15 @@ class LoggingData extends LoggingDataBase {
 
   void start() async {
     if (kDebugMode) {
-      FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
     } else {
       for (var item in _extra.entries) {
-        FirebaseCrashlytics.instance.setCustomKey(item.key, item.value);
+        await FirebaseCrashlytics.instance.setCustomKey(item.key, item.value);
       }
       for (var tag in _tags.entries) {
-        FirebaseCrashlytics.instance.setCustomKey(tag.key, tag.value);
+        await FirebaseCrashlytics.instance.setCustomKey(tag.key, tag.value);
       }
-      FirebaseCrashlytics.instance
+      await FirebaseCrashlytics.instance
           .setCustomKey('release', _packageInfo.version);
     }
   }
@@ -122,9 +122,9 @@ class LoggingData extends LoggingDataBase {
   void logError(FusedErrorDetails details) async {
     // Don't capture on emulators.
     if (_realDevice && !_debugMode) {
-      FirebaseCrashlytics.instance.setCustomKey('lastpath', lastPath);
+      await FirebaseCrashlytics.instance.setCustomKey('lastpath', lastPath);
 
-      FirebaseCrashlytics.instance
+      await FirebaseCrashlytics.instance
           .recordError(details.exception, details.stack);
     }
   }

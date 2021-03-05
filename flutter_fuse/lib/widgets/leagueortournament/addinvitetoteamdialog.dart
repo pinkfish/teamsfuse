@@ -57,8 +57,8 @@ class AddInviteToTeamDialog extends Dialog {
         child: DefaultTextStyle(
           style: Theme.of(context).textTheme.headline6,
           child: Semantics(
-            child: Text(Messages.of(context).addSeason),
             namesRoute: true,
+            child: Text(Messages.of(context).addSeason),
           ),
         ),
       ),
@@ -100,11 +100,12 @@ class AddInviteToTeamDialog extends Dialog {
                       content: Text(Messages.of(context).invalidemail),
                       actions: <Widget>[
                         FlatButton(
-                            child: Text(MaterialLocalizations.of(context)
-                                .okButtonLabel),
-                            onPressed: () {
-                              Navigator.pop(context, true);
-                            })
+                          onPressed: () {
+                            Navigator.pop(context, true);
+                          },
+                          child: Text(
+                              MaterialLocalizations.of(context).okButtonLabel),
+                        ),
                       ],
                     ),
                   );

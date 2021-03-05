@@ -35,6 +35,7 @@ class CoordinationStateLoadingFirestore extends CoordinationState {
       @required BuiltSet<BlocsToLoad> toLoad})
       : super(loaded: loaded, uid: uid, toLoad: toLoad);
 
+  @override
   CoordinationState update(BuiltSet<BlocsToLoad> toLoad) {
     return CoordinationStateLoadingFirestore(
         uid: uid, loaded: loaded, toLoad: toLoad);
@@ -50,6 +51,7 @@ class CoordinationStateLoadingFirestore extends CoordinationState {
 /// We are now fully loaded.
 ///
 class CoordinationStateLoaded extends CoordinationState {
+  @override
   CoordinationState update(BuiltSet<BlocsToLoad> toLoad) {
     return CoordinationStateLoaded(uid: uid, toLoad: toLoad);
   }
@@ -66,6 +68,7 @@ class CoordinationStateLoggedOut extends CoordinationState {
   CoordinationStateLoggedOut(BuiltSet<BlocsToLoad> newToLoad)
       : super(loaded: BuiltSet(), uid: '', toLoad: newToLoad);
 
+  @override
   CoordinationState update(BuiltSet<BlocsToLoad> newToLoad) {
     return CoordinationStateLoggedOut(newToLoad);
   }
@@ -78,6 +81,7 @@ class CoordinationStateUninitialized extends CoordinationState {
   CoordinationStateUninitialized(BuiltSet<BlocsToLoad> newToLoad)
       : super(loaded: BuiltSet(), uid: '', toLoad: newToLoad);
 
+  @override
   CoordinationState update(BuiltSet<BlocsToLoad> newToLoad) {
     return CoordinationStateUninitialized(newToLoad);
   }
@@ -171,8 +175,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
     }
 
     if (event is CoordinationEventTrackLoading) {
-      BuiltSet<BlocsToLoad> toLoad =
-          state.toLoad.rebuild((b) => b..add(event.toLoad));
+      var toLoad = state.toLoad.rebuild((b) => b..add(event.toLoad));
       yield state.update(toLoad);
     }
 
@@ -180,8 +183,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
       // In the sql loading state.
       if (state is CoordinationStateLoadingFirestore) {
         if (!state.loaded.contains(state.loaded)) {
-          BuiltSet<BlocsToLoad> loaded =
-              state.loaded.rebuild((b) => b..add(event.loaded));
+          var loaded = state.loaded.rebuild((b) => b..add(event.loaded));
           var loadedLeft = Set.from(state.toLoad);
           loadedLeft.removeAll(loaded);
           if (loaded.containsAll(state.toLoad)) {

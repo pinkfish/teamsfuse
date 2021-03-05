@@ -51,7 +51,7 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
 
       try {
         // Create the season too.
-        List<SeasonPlayer> players = [];
+        var players = <SeasonPlayer>[];
         players.add(SeasonPlayer((b) => b
           ..playerUid = event.playerUid.trim()
           ..role = RoleInTeam.Player));
@@ -76,7 +76,7 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
             ),
           ],
         );
-        Season season = Season((b) => b
+        var season = Season((b) => b
           ..uid = ''
           ..teamUid = ''
           ..name = event.seasonName
@@ -84,12 +84,10 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
             ..loss = 0
             ..tie = 0
             ..win = 0)
-          ..playersData = MapBuilder(Map<String, SeasonPlayer>.fromIterable(
-              players,
-              key: (p) => p.playerUid.trim(),
-              value: (p) => p))
+          ..playersData =
+              MapBuilder({for (var p in players) p.playerUid.trim(): p})
           ..users = MapBuilder(entries));
-        TeamBuilder team = event.team;
+        var team = event.team;
         team.uid = '';
         team.adminsData = MapBuilder({
           coordinationBloc.authenticationBloc.currentUser.uid:
@@ -100,9 +98,11 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
         });
         team.users = MapBuilder(entries);
 
-        String uid = await coordinationBloc.databaseUpdateModel
-            .addFirestoreTeam(team.build(), null, season,
-                event.teamImage == null ? null : await event.teamImage);
+        var uid = await coordinationBloc.databaseUpdateModel.addFirestoreTeam(
+            team.build(),
+            null,
+            season,
+            event.teamImage == null ? null : event.teamImage);
 
         yield AddItemDone(uid: uid);
       } catch (e, stack) {

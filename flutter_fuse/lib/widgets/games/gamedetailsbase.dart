@@ -223,10 +223,10 @@ class GameDetailsBase extends StatelessWidget {
     if (dayArrive.minute == day.minute && dayArrive.hour == day.hour) {
       arriveAttimeStr =
           MaterialLocalizations.of(context).formatTimeOfDay(dayArrive) +
-              (tzShortName ?? "");
+              (tzShortName ?? '');
     } else {
       arriveAttimeStr = MaterialLocalizations.of(context).formatTimeOfDay(day) +
-          (tzShortName ?? "");
+          (tzShortName ?? '');
     }
     var opponent = teamState.opponents[game.opponentUid];
     var season = teamState.getSeason(game.seasonUid);
@@ -249,9 +249,9 @@ class GameDetailsBase extends StatelessWidget {
               child: FloatingActionButton(
                 onPressed: () =>
                     openNavigation != null ? openNavigation(game) : null,
-                child: const Icon(Icons.directions),
                 backgroundColor: Colors.orange,
                 heroTag: game.uid,
+                child: const Icon(Icons.directions),
               ),
             ),
           ],
@@ -329,8 +329,8 @@ class GameDetailsBase extends StatelessWidget {
             body.add(ButtonBar(
               children: <Widget>[
                 TextButton(
-                  child: Text(Messages.of(context).addResultButton),
                   onPressed: () => editResult(game),
+                  child: Text(Messages.of(context).addResultButton),
                 ),
               ],
             ));
@@ -356,9 +356,9 @@ class GameDetailsBase extends StatelessWidget {
               body.add(ButtonBar(
                 children: <Widget>[
                   FlatButton(
-                    child: Text(Messages.of(context).useofficialresultbutton),
                     onPressed: () =>
                         copyOfficalResult(game.sharedData, officalData),
+                    child: Text(Messages.of(context).useofficialresultbutton),
                   ),
                 ],
               ));
@@ -403,7 +403,7 @@ class GameDetailsBase extends StatelessWidget {
       body.add(
         ListTile(
           leading: const Icon(MdiIcons.tshirtCrew),
-          title: Text(game.uniform == null ? 'fluff' : game.uniform),
+          title: Text(game.uniform ?? 'fluff'),
         ),
       );
     }

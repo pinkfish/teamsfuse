@@ -19,7 +19,7 @@ class GameMapView extends StatefulWidget {
 }
 
 class _GameMapViewState extends State<GameMapView> {
-  Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller = Completer();
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class _GameMapViewState extends State<GameMapView> {
         ),
         zoom: 14.4746,
       ),
-      markers: Set<Marker>.of([
+      markers: <Marker>{
         Marker(
             markerId: MarkerId(widget.game.uid),
             infoWindow: InfoWindow(
@@ -40,7 +40,7 @@ class _GameMapViewState extends State<GameMapView> {
                 snippet: widget.game.place.address + widget.game.place.notes),
             position: LatLng(widget.game.place.latitude.toDouble(),
                 widget.game.place.longitude.toDouble())),
-      ]),
+      },
       myLocationButtonEnabled: false,
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);

@@ -84,7 +84,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
   Future<void> close() async {
     await super.close();
     _cleanupSnaps();
-    _coordSub?.cancel();
+    await _coordSub?.cancel();
   }
 
   @override
@@ -92,11 +92,10 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
     // Start the firestore loading.
     if (event is _SeasonFirestoreStart) {
       // Do the admin Season loading thing.
-      TraceProxy adminTrace =
-          coordinationBloc.analytics.newTrace('adminSeasons');
+      var adminTrace = coordinationBloc.analytics.newTrace('adminSeasons');
       Stream<Iterable<Season>> initialState =
           coordinationBloc.databaseUpdateModel.getSeasons();
-      Completer<Iterable<Season>> seasonData = Completer();
+      var seasonData = Completer<Iterable<Season>>();
       _seasonSub = initialState.listen((Iterable<Season> data) {
         if (!seasonData.isCompleted) {
           seasonData.complete(data);
@@ -106,8 +105,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
           adminTrace.stop();
         }
         add(_SeasonUpdate(
-            newSeasons: BuiltMap.from(
-                Map.fromIterable(data, key: (t) => t.uid, value: (t) => t))));
+            newSeasons: BuiltMap.from({for (var t in data) t.uid: t})));
       });
     }
 
@@ -134,14 +132,13 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
       return SeasonUninitialized();
     }
 
-    SeasonBlocStateType type = SeasonBlocStateType.valueOf(json['type']);
+    var type = SeasonBlocStateType.valueOf(json['type']);
     switch (type) {
       case SeasonBlocStateType.Uninitialized:
         return SeasonUninitialized();
       case SeasonBlocStateType.Loaded:
         // Starting, nothing loaded yet.
-        TraceProxy seasonsTrace =
-            coordinationBloc.analytics.newTrace('SeasonData');
+        var seasonsTrace = coordinationBloc.analytics.newTrace('SeasonData');
         seasonsTrace.start();
         try {
           var state = SeasonLoaded.fromMap(json);

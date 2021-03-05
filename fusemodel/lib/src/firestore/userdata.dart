@@ -15,10 +15,10 @@ abstract class UserData implements Built<UserData, UserDataBuilder> {
   @nullable
   FusedUserProfile get profile;
   UserData._();
-  factory UserData([updates(UserDataBuilder b)]) = _$UserData;
+  factory UserData([Function(UserDataBuilder b) updates]) = _$UserData;
 
   @override
   String toString() {
-    return "UserData [$email $password $uid $profile]";
+    return 'UserData [$email $password $uid $profile]';
   }
 }

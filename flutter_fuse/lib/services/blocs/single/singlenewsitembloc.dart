@@ -95,7 +95,7 @@ class SingleNewsItemBloc
   @override
   Future<void> close() async {
     await super.close();
-    _newsItemSub?.cancel();
+    await _newsItemSub?.cancel();
   }
 
   @override

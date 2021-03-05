@@ -109,7 +109,7 @@ class SqlData {
 
     var data = await _database
         .query(tableId, where: '$_indexColumn = ?', whereArgs: <String>[key]);
-    if (data == null || data.length == 0) {
+    if (data == null || data.isEmpty) {
       return null;
     }
 

@@ -89,17 +89,17 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child:
-                      Text(MaterialLocalizations.of(context).cancelButtonLabel),
                   onPressed: () {
                     Navigator.of(context).pop(false);
                   },
+                  child:
+                      Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 ),
                 TextButton(
-                  child: Text(MaterialLocalizations.of(context).okButtonLabel),
                   onPressed: () {
                     Navigator.of(context).pop(true);
                   },
+                  child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 ),
               ],
             );

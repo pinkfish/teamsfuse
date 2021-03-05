@@ -29,7 +29,7 @@ class AuthenticationUninitialized extends AuthenticationState {
   AuthenticationUninitialized() : super(user: null);
 
   @override
-  String toString() => "AuthenticationState::AuthenticatonUninitialized";
+  String toString() => 'AuthenticationState::AuthenticatonUninitialized';
 }
 
 /// The auth state is loading.
@@ -37,7 +37,7 @@ class AuthenticationLoading extends AuthenticationState {
   AuthenticationLoading() : super(user: null);
 
   @override
-  String toString() => "AuthenticationState::AuthenticationLoading";
+  String toString() => 'AuthenticationState::AuthenticationLoading';
 }
 
 /// The auth operation is done.
@@ -45,7 +45,7 @@ class AuthenticationDone extends AuthenticationState {
   AuthenticationDone() : super(user: null);
 
   @override
-  String toString() => "AuthenticationState::AuthenticationDone";
+  String toString() => 'AuthenticationState::AuthenticationDone';
 }
 
 ///
@@ -55,7 +55,7 @@ class AuthenticationLoggedIn extends AuthenticationState {
   AuthenticationLoggedIn({@required UserData user}) : super(user: user);
 
   @override
-  String toString() => "AuthenticationState::AuthenticatonLoggedIn";
+  String toString() => 'AuthenticationState::AuthenticatonLoggedIn';
 }
 
 ///
@@ -66,7 +66,7 @@ class AuthenticationLoggedInUnverified extends AuthenticationState {
       : super(user: user);
 
   @override
-  String toString() => "AuthenticationState::AuthenticationLoggedInUnverified";
+  String toString() => 'AuthenticationState::AuthenticationLoggedInUnverified';
 }
 
 ///
@@ -76,7 +76,7 @@ class AuthenticationLoggedOut extends AuthenticationState {
   AuthenticationLoggedOut() : super(user: null);
 
   @override
-  String toString() => "AuthenticationState::AuthenticatonUninitialized";
+  String toString() => 'AuthenticationState::AuthenticatonUninitialized';
 }
 
 ///
@@ -110,7 +110,7 @@ abstract class AuthenticationEvent extends Equatable {
 ///
 class AuthenticationAppStarted extends AuthenticationEvent {
   @override
-  String toString() => "AppStarted";
+  String toString() => 'AppStarted';
 
   @override
   List<Object> get props => [];
@@ -122,7 +122,7 @@ class _AuthenticationLogIn extends AuthenticationEvent {
   _AuthenticationLogIn({@required this.user});
 
   @override
-  String toString() => "LoggedIn";
+  String toString() => 'LoggedIn';
 
   @override
   List<Object> get props => [user];
@@ -133,7 +133,7 @@ class _AuthenticationLogIn extends AuthenticationEvent {
 ///
 class AuthenticationLogOut extends AuthenticationEvent {
   @override
-  String toString() => "LoggedOut";
+  String toString() => 'LoggedOut';
 
   @override
   List<Object> get props => [];
@@ -230,14 +230,14 @@ class AuthenticationBloc
 
   AuthenticationBloc(this.userAuth, @required this.analyticsSubsystem)
       : super(AuthenticationUninitialized()) {
-    print("Made with $userAuth $analyticsSubsystem");
+    print('Made with $userAuth $analyticsSubsystem');
     _listener = userAuth.onAuthChanged().listen(_authChanged);
   }
 
   @override
   Future<void> close() async {
     await super.close();
-    _listener?.cancel();
+    await _listener?.cancel();
   }
 
   UserData get currentUser {
@@ -253,9 +253,9 @@ class AuthenticationBloc
     } else if (user.isEmailVerified) {
       analyticsSubsystem.setUserId(user.uid);
       if (analyticsSubsystem.debugMode) {
-        analyticsSubsystem.setUserProperty(name: "developer", value: "true");
+        analyticsSubsystem.setUserProperty(name: 'developer', value: 'true');
       } else {
-        analyticsSubsystem.setUserProperty(name: "developer", value: "false");
+        analyticsSubsystem.setUserProperty(name: 'developer', value: 'false');
       }
 
       if (currentUser != null) {
@@ -274,14 +274,14 @@ class AuthenticationBloc
   Stream<AuthenticationState> mapEventToState(
       AuthenticationEvent event) async* {
     if (event is AuthenticationAppStarted) {
-      UserData data = await userAuth.currentUser();
+      var data = await userAuth.currentUser();
       if (data == null) {
         yield AuthenticationLoggedOut();
       } else {
         try {
           yield _updateWithUser(data);
         } catch (e, stacktrace) {
-          print("Error loading $e $stacktrace");
+          print('Error loading $e $stacktrace');
           yield AuthenticationFailed(error: e);
           yield AuthenticationLoggedOut();
           analyticsSubsystem.recordException(e, stacktrace);
@@ -290,7 +290,7 @@ class AuthenticationBloc
     }
 
     if (event is _AuthenticationLogIn) {
-      _AuthenticationLogIn loggedInEvent = event;
+      var loggedInEvent = event;
       yield _updateWithUser(loggedInEvent.user);
     }
 
@@ -306,18 +306,18 @@ class AuthenticationBloc
 
     if (event is AuthenticationNotificationToken) {
       // Ignore the errors here.
-      userAuth.setNotificationToken(event.notificationToken);
+      await userAuth.setNotificationToken(event.notificationToken);
     }
 
     if (event is AuthenticationResendEmail) {
-      userAuth.sendEmailVerification();
+      await userAuth.sendEmailVerification();
     }
 
     if (event is AuthenticationLoginAttempt) {
       yield AuthenticationLoading();
-      AuthenticationLoginAttempt attempt = event;
-      UserData data = UserData((b) => b
-        ..uid = "unknown"
+      var attempt = event;
+      var data = UserData((b) => b
+        ..uid = 'unknown'
         ..isEmailVerified = false
         ..email = attempt.email
         ..password = attempt.password);
@@ -342,7 +342,7 @@ class AuthenticationBloc
     if (event is AuthenticationForgotPasswordSend) {
       yield AuthenticationLoading();
 
-      AuthenticationForgotPasswordSend forgot = event;
+      var forgot = event;
       try {
         await userAuth.sendPasswordResetEmail(forgot.email);
         yield AuthenticationDone();
@@ -353,18 +353,18 @@ class AuthenticationBloc
     }
     if (event is AuthenticationSignupUser) {
       yield AuthenticationLoading();
-      AuthenticationSignupUser signup = event;
-      UserData user = UserData((b) => b
+      var signup = event;
+      var user = UserData((b) => b
         ..email = signup.email
         ..password = signup.password);
-      FusedUserProfile profile = FusedUserProfile((b) => b
+      var profile = FusedUserProfile((b) => b
         ..displayName = signup.displayName
         ..phoneNumber = signup.phoneNumber
         ..email = signup.email
         ..emailOnUpdates = true
         ..emailUpcomingGame = true
         ..notifyOnlyForGames = true);
-      UserData data = await userAuth.createUser(user, profile);
+      var data = await userAuth.createUser(user, profile);
       if (data == null) {
         yield AuthenticationFailed(userData: user);
         yield AuthenticationLoggedOut();

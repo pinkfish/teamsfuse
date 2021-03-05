@@ -27,6 +27,7 @@ class SingleClubCoachProvider extends SingleBlocProvider<SingleClubCoachBloc> {
             builder: builder,
             prefix: 'club');
 
+  @override
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleClubBloc && bloc.clubUid == keyUid);
   }

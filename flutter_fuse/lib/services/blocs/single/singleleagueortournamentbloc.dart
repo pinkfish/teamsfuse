@@ -155,7 +155,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
   Future<void> close() async {
     await super.close();
     _cleanupStuff();
-    _leagueSub?.cancel();
+    await _leagueSub?.cancel();
     _leagueSub = null;
   }
 
@@ -171,7 +171,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       Uint8List imageFile) async* {
     yield SingleLeagueOrTournamentSaving.fromState(state).build();
     try {
-      await db.updateLeagueImage(state.league, await imageFile);
+      await db.updateLeagueImage(state.league, imageFile);
       yield SingleLeagueOrTournamentSaveDone.fromState(state).build();
       yield SingleLeagueOrTournamentLoaded.fromState(state).build();
     } catch (e, stack) {
@@ -207,7 +207,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
   Stream<SingleLeagueOrTournamentState> _inviteMember(String email) async* {
     yield SingleLeagueOrTournamentSaving.fromState(state).build();
     try {
-      InviteToLeagueAsAdmin inviteToClub = InviteToLeagueAsAdmin((b) => b
+      var inviteToClub = InviteToLeagueAsAdmin((b) => b
         ..sentByUid = db.currentUser.uid
         ..email = email
         ..leagueUid = state.league.uid
@@ -232,8 +232,8 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       String teamUid, String email) async* {
     yield SingleLeagueOrTournamentSaving.fromState(state).build();
     try {
-      LeagueOrTournamentTeam team = await db.getLeagueTeamData(teamUid).first;
-      LeagueOrTournamentSeason season =
+      var team = await db.getLeagueTeamData(teamUid).first;
+      var season =
           await db.getLeagueSeasonData(team.leagueOrTournamentSeasonUid).single;
 
       await db.inviteUserToLeagueTeam(
@@ -277,7 +277,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
   Stream<SingleLeagueOrTournamentState> _addSeason(String seasonName) async* {
     yield SingleLeagueOrTournamentSaving.fromState(state).build();
     try {
-      LeagueOrTournamentSeason season = LeagueOrTournamentSeason((b) => b
+      var season = LeagueOrTournamentSeason((b) => b
         ..uid = null
         ..name = seasonName
         ..leagueOrTournmentUid = state.league.uid);
@@ -322,7 +322,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
 
     if (event is _SingleLeagueOrTournamentEventSeasons) {
       var newSeasons = MapBuilder<String, LeagueOrTournamentSeason>();
-      for (LeagueOrTournamentSeason season in event.seasons) {
+      for (var season in event.seasons) {
         newSeasons[season.uid] = season;
       }
       yield (SingleLeagueOrTournamentLoaded.fromState(state)
@@ -368,8 +368,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
     }
 
     try {
-      SingleLeagueOrTournamentBlocStateType type =
-          SingleLeagueOrTournamentBlocStateType.valueOf(json['type']);
+      var type = SingleLeagueOrTournamentBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleLeagueOrTournamentBlocStateType.Uninitialized:
           return SingleLeagueOrTournamentUninitialized();

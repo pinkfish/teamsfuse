@@ -105,19 +105,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ButtonBar(
                             children: <Widget>[
                               FlatButton(
-                                child: Text(MaterialLocalizations.of(context)
-                                    .okButtonLabel),
                                 onPressed: () => _onSave(
                                     singleProfileBloc, singleProfileState),
                                 textColor: Colors.white,
                                 color: Theme.of(context).primaryColor,
+                                child: Text(MaterialLocalizations.of(context)
+                                    .okButtonLabel),
                               ),
                               FlatButton(
-                                child: Text(MaterialLocalizations.of(context)
-                                    .cancelButtonLabel),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
+                                child: Text(MaterialLocalizations.of(context)
+                                    .cancelButtonLabel),
                               ),
                             ],
                           )

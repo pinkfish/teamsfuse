@@ -24,7 +24,7 @@ class LeagueImage extends StatelessWidget {
       this.repeat = ImageRepeat.noRepeat,
       this.matchTextDirection = false})
       : assert(leagueOrTournament != null || leagueOrTournamentUid != null),
-        this._leagueOrTournamentUid =
+        _leagueOrTournamentUid =
             leagueOrTournamentUid ?? leagueOrTournament.uid,
         super(
           key: key,
@@ -62,7 +62,7 @@ class LeagueImage extends StatelessWidget {
 
   Widget _buildInner(LeagueOrTournament league) {
     return CachedNetworkImage(
-      imageUrl: league.photoUrl ?? "",
+      imageUrl: league.photoUrl ?? '',
       imageBuilder: (context, imageProvider) => FadeInImage(
         image: imageProvider,
         height: height,

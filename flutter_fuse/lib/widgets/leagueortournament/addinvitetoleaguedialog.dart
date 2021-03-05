@@ -47,8 +47,8 @@ class AddInviteToLeagueDialog extends Dialog {
         child: DefaultTextStyle(
           style: Theme.of(context).textTheme.headline6,
           child: Semantics(
-            child: Text(Messages.of(context).addAdmin),
             namesRoute: true,
+            child: Text(Messages.of(context).addAdmin),
           ),
         ),
       ),
@@ -86,9 +86,9 @@ class AddInviteToLeagueDialog extends Dialog {
                       content: Text(Messages.of(context).invalidemail),
                       actions: <Widget>[
                         FlatButton(
+                          onPressed: () => Navigator.pop(context, true),
                           child: Text(
                               MaterialLocalizations.of(context).okButtonLabel),
-                          onPressed: () => Navigator.pop(context, true),
                         )
                       ],
                     ),

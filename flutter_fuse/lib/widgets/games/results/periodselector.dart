@@ -41,7 +41,7 @@ class PeriodTypeSelector extends StatelessWidget {
   List<Widget> _buildNextPeriods() {
     // We use the current period as a guide to work out where we go next.
     if (currentPeriod == null) {
-      return <Widget>[Text("")];
+      return <Widget>[Text('')];
     }
     var ret = <Widget>[];
     ret.add(
@@ -257,19 +257,19 @@ class PeriodSelector extends StatelessWidget {
       BuildContext context) {
     var ret = <DropdownMenuItem<GamePeriodType>>[
       DropdownMenuItem<GamePeriodType>(
-        child: Text('Regulation'),
         value: GamePeriodType.Regulation,
+        child: Text('Regulation'),
       ),
       DropdownMenuItem<GamePeriodType>(
-        child: Text('Overtime'),
         value: GamePeriodType.Overtime,
+        child: Text('Overtime'),
       ),
     ];
     if (team.sport == Sport.Soccer) {
       ret.add(
         DropdownMenuItem<GamePeriodType>(
-          child: Text('Penalty'),
           value: GamePeriodType.Penalty,
+          child: Text('Penalty'),
         ),
       );
     }
@@ -278,18 +278,18 @@ class PeriodSelector extends StatelessWidget {
 
   DropdownMenuItem<int> _makePeriodButton(String text, int period) {
     return DropdownMenuItem<int>(
-      child: Text(text, overflow: TextOverflow.clip),
       value: period,
+      child: Text(text, overflow: TextOverflow.clip),
     );
   }
 
   DropdownMenuItem<int> _makeBreakButton(String text, int period) {
     return DropdownMenuItem<int>(
+      value: period + 1000,
       child: Text(
         text,
         overflow: TextOverflow.clip,
       ),
-      value: period + 1000,
     );
   }
 

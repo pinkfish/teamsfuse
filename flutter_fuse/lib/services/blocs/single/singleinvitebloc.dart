@@ -121,7 +121,7 @@ class SingleInviteBloc
 
   @override
   Future<void> close() async {
-    _inviteListen?.cancel();
+    await _inviteListen?.cancel();
     await super.close();
   }
 
@@ -186,15 +186,14 @@ class SingleInviteBloc
       }
       crashes.logInviteAccepted('inviteToPlayer', invite.playerUid);
       // Add ourselves to the player.
-      bool exists = await db.playerExists(invite.playerUid);
+      var exists = await db.playerExists(invite.playerUid);
       if (!exists) {
         return (SingleInviteSaveFailed.fromState(state)
               ..error = ArgumentError('Already added to player'))
             .build();
       }
       // Yay!  We have a player.
-      PlayerUser playerUser =
-          PlayerUser(db.currentUser.uid, event.relationship);
+      var playerUser = PlayerUser(db.currentUser.uid, event.relationship);
       await db.addUserToPlayer(invite.playerUid, playerUser);
 
       // This should cause the data to update
@@ -214,7 +213,7 @@ class SingleInviteBloc
       // Invite to league team
       //
       if (event.teamUid == SingleInviteBloc.createNew) {
-        TeamBuilder team = TeamBuilder();
+        var team = TeamBuilder();
         team.name = invite.leagueTeamName;
         team.adminsData[db.currentUser.uid] = BuiltMap.of({
           'admin': true,
@@ -223,7 +222,7 @@ class SingleInviteBloc
         var pregen = db.precreateTeamUid();
         var pregenSeason = db.precreateUidSeason();
         team.uid = pregen.documentID;
-        Season season = Season((b) => b
+        var season = Season((b) => b
           ..uid = pregenSeason.documentID
           ..name = invite.leagueSeasonName
           ..teamUid = team.uid
@@ -234,8 +233,7 @@ class SingleInviteBloc
               ..role = RoleInTeam.NonPlayer)
           }));
         team.currentSeason = pregenSeason.documentID;
-        LeagueOrTournamentTeam leagueTeam =
-            await db.getLeagueTeamData(invite.leagueTeamUid).first;
+        var leagueTeam = await db.getLeagueTeamData(invite.leagueTeamUid).first;
         if (leagueTeam.teamSeasonUid != null) {
           // Someone beat them to it!
           // TODO: Say someone beat them to it.
@@ -249,14 +247,14 @@ class SingleInviteBloc
       } else if (event.seasonUid == SingleInviteBloc.createNew) {
         var pregenSeason = db.precreateUidSeason();
 
-        Season season = Season((b) => b
+        var season = Season((b) => b
           ..uid = pregenSeason.documentID
           ..name = invite.leagueSeasonName
           ..teamUid = event.teamUid);
         await db.addFirestoreSeason(season, pregenSeason);
         crashes.logInviteAccepted('leagueSeason', season.uid);
       } else {
-        Season season = seasonBloc.state.seasons[event.seasonUid];
+        var season = seasonBloc.state.seasons[event.seasonUid];
         await db.connectLeagueTeamToSeason(invite.leagueTeamUid, season);
         crashes.logInviteAccepted('leagueSeasonTeam', invite.leagueTeamUid);
       }
@@ -407,8 +405,7 @@ class SingleInviteBloc
     }
 
     try {
-      SingleInviteBlocStateType type =
-          SingleInviteBlocStateType.valueOf(json['type']);
+      var type = SingleInviteBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleInviteBlocStateType.Uninitialized:
           return SingleInviteUninitialized();

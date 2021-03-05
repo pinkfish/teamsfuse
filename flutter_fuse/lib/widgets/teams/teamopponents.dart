@@ -51,17 +51,17 @@ class _TeamOpponentsState extends State<TeamOpponents> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
             ),
             TextButton(
-              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
             ),
           ],
         );
@@ -286,9 +286,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
             return LoadingWidget();
           }
 
-          if (_seasonUid == null) {
-            _seasonUid = singleTeamState.team.currentSeason;
-          }
+          _seasonUid ??= singleTeamState.team.currentSeason;
 
           if (!singleTeamState.loadedSeasons) {
             teamBloc.add(SingleTeamLoadSeasons());

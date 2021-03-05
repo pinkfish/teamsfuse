@@ -140,25 +140,27 @@ class SeasonFormFieldState extends FormFieldState<String> {
     var ret = <DropdownMenuItem<String>>[];
     if (state is SingleTeamUninitialized || !state.loadedSeasons) {
       ret.add(DropdownMenuItem<String>(
-        child: Text(Messages.of(context).loading),
         value: widget.initialValue,
+        child: Text(Messages.of(context).loading),
       ));
     }
     if (_widget.includeNone) {
       ret.add(DropdownMenuItem<String>(
-        child: Text(Messages.of(context).noseasons),
         value: SeasonFormField.none,
+        child: Text(Messages.of(context).noseasons),
       ));
     }
     if (_widget.includeNew) {
       ret.add(DropdownMenuItem<String>(
-        child: Text(Messages.of(context).addSeason),
         value: SeasonFormField.createNew,
+        child: Text(Messages.of(context).addSeason),
       ));
     }
     for (var season in state.fullSeason) {
       ret.add(DropdownMenuItem<String>(
-          child: Text(season.name), value: season.uid));
+        value: season.uid,
+        child: Text(season.name),
+      ));
     }
     if (ret.where((element) => element.value == value).isEmpty) {
       setValue(ret[0].value);

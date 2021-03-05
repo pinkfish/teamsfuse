@@ -10,7 +10,7 @@ abstract class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
     extends StatefulWidget {
   /// Constructor for the single bloc provider.
   SingleBlocProvider(
-      {this.builder, this.keyUid, this.creator, this.prefix = ""});
+      {this.builder, this.keyUid, this.creator, this.prefix = ''});
 
   /// the function to create the provider.
   final T Function(BuildContext context, String uid) creator;
@@ -58,7 +58,7 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
   }
 
   void _updateSingleBloc() {
-    var totalKey = (widget.prefix ?? "") + widget.keyUid;
+    var totalKey = (widget.prefix ?? '') + widget.keyUid;
     if (!blocs.containsKey(totalKey) || blocs[totalKey] == null) {
       try {
         _singleBloc = BlocProvider.of<T>(context);
@@ -82,7 +82,7 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
   @override
   void dispose() {
     super.dispose();
-    var totalKey = (widget.prefix ?? "") + widget.keyUid;
+    var totalKey = (widget.prefix ?? '') + widget.keyUid;
     if (blocs.containsKey(totalKey)) {
       /*
       blocs[totalKey].ref--;

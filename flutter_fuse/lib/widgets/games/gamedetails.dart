@@ -126,13 +126,13 @@ class _GameDetailsState extends State<GameDetails> {
                 ])),
             actions: <Widget>[
               TextButton(
-                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () => Navigator.pop(context, true),
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
               ),
               TextButton(
+                onPressed: () => Navigator.pop(context, false),
                 child:
                     Text(MaterialLocalizations.of(context).cancelButtonLabel),
-                onPressed: () => Navigator.pop(context, false),
               ),
             ],
           );

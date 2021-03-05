@@ -12,7 +12,7 @@ abstract class GameScore implements Built<GameScore, GameScoreBuilder> {
   GameScore._();
 
   /// Factory to make the score.
-  factory GameScore([updates(GameScoreBuilder b)]) = _$GameScore;
+  factory GameScore([Function(GameScoreBuilder b) updates]) = _$GameScore;
 
   /// Points for the game.
   num get ptsFor;
@@ -47,6 +47,6 @@ abstract class GameScore implements Built<GameScore, GameScoreBuilder> {
 
   @override
   String toString() {
-    return "GameScore[ ptsFor: $ptsFor, ptsAgainst: $ptsAgainst, intermediate $intermediate]";
+    return 'GameScore[ ptsFor: $ptsFor, ptsAgainst: $ptsAgainst, intermediate $intermediate]';
   }
 }

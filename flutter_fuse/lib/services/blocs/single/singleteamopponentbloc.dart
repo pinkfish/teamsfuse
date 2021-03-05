@@ -95,9 +95,9 @@ class SingleOpponentBloc
   @override
   Future<void> close() async {
     await super.close();
-    _opponentSub?.cancel();
+    await _opponentSub?.cancel();
     _opponentSub = null;
-    _gameSub?.cancel();
+    await _gameSub?.cancel();
     _gameSub = null;
   }
 
@@ -151,12 +151,10 @@ class SingleOpponentBloc
     }
 
     if (event is SingleOpponentLoadGames) {
-      if (_gameSub == null) {
-        _gameSub =
-            db.getOpponentGames(state.opponent).listen((Iterable<Game> g) {
-          add(_SingleTeamOpponentGamesLoaded(games: g));
-        });
-      }
+      _gameSub ??=
+          db.getOpponentGames(state.opponent).listen((Iterable<Game> g) {
+        add(_SingleTeamOpponentGamesLoaded(games: g));
+      });
     }
 
     if (event is _SingleTeamOpponentGamesLoaded) {
@@ -177,8 +175,7 @@ class SingleOpponentBloc
     }
 
     try {
-      SingleOpponentBlocStateType type =
-          SingleOpponentBlocStateType.valueOf(json['type']);
+      var type = SingleOpponentBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleOpponentBlocStateType.Uninitialized:
           return SingleOpponentUninitialized();

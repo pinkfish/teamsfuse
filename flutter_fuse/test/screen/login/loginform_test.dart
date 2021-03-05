@@ -26,7 +26,7 @@ class MockUserAuth extends Mock implements UserAuthImpl {}
 void main() {
   testWidgets('forgot button', (tester) async {
     var loginForm = _LoginFormTest();
-    await loginForm.setup(tester);
+    loginForm.setup(tester);
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
@@ -37,20 +37,20 @@ void main() {
 
     // Verify the router is pushed.
     verify(loginForm.mockObserver
-        .didPush(argThat(HasRouteName("/Login/ForgotPassword")), any));
+        .didPush(argThat(HasRouteName('/Login/ForgotPassword')), any));
 
     loginForm.dispose();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('signup button', (tester) async {
     var loginForm = _LoginFormTest();
-    await loginForm.setup(tester);
+    loginForm.setup(tester);
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
 
-    if (Platform.environment["GOLDEN"] != null) {
-      print("Golden!");
+    if (Platform.environment['GOLDEN'] != null) {
+      print('Golden!');
       await expectLater(find.byType(LoginScreen),
           matchesGoldenFile('../../golden/login_form.png'));
     }
@@ -61,14 +61,14 @@ void main() {
 
     // Verify the router is pushed.
     verify(loginForm.mockObserver
-        .didPush(argThat(HasRouteName("/Login/SignUp")), any));
+        .didPush(argThat(HasRouteName('/Login/SignUp')), any));
 
     loginForm.dispose();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('login failed', (tester) async {
     var loginForm = _LoginFormTest();
-    await loginForm.setup(tester);
+    loginForm.setup(tester);
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
@@ -76,8 +76,8 @@ void main() {
     expect(loginForm.userNameBox, findsOneWidget);
     expect(loginForm.passwordBox, findsOneWidget);
 
-    await tester.enterText(loginForm.userNameBox, "frog@frog.com");
-    await tester.enterText(loginForm.passwordBox, "womble");
+    await tester.enterText(loginForm.userNameBox, 'frog@frog.com');
+    await tester.enterText(loginForm.passwordBox, 'womble');
 
     // Click on the forgot button.
     await tester.tap(loginForm.submitButton);
@@ -105,7 +105,7 @@ void main() {
 
   testWidgets('login success', (tester) async {
     var loginForm = _LoginFormTest();
-    await loginForm.setup(tester);
+    loginForm.setup(tester);
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
@@ -113,8 +113,8 @@ void main() {
     expect(loginForm.userNameBox, findsOneWidget);
     expect(loginForm.passwordBox, findsOneWidget);
 
-    await tester.enterText(loginForm.userNameBox, "frog@frog.com");
-    await tester.enterText(loginForm.passwordBox, "womble");
+    await tester.enterText(loginForm.userNameBox, 'frog@frog.com');
+    await tester.enterText(loginForm.passwordBox, 'womble');
 
     // Click on the forgot button.
     await tester.tap(loginForm.submitButton);
@@ -135,7 +135,7 @@ void main() {
     await tester.pump();
 
     // Verify the router is pushed.
-    verify(loginForm.mockObserver.didPush(argThat(HasRouteName("/Home")), any));
+    verify(loginForm.mockObserver.didPush(argThat(HasRouteName('/Home')), any));
 
     loginForm.dispose();
   }, variant: TeamsFuseTestVariant());
@@ -148,22 +148,22 @@ class _LoginFormTest {
   final mockUserAuth = MockUserAuth();
   final userController = StreamController<UserData>();
   AuthenticationBloc authBloc;
-  final forgotButton = find.byKey(Key("FORGOTPASSWORD"));
-  final createAccountButton = find.byKey(Key("CREATEACCOUNT"));
-  final submitButton = find.byKey(Key("SUBMIT"));
-  final addTeamButton = find.byKey(Key("ADD_TEAM"));
-  final userNameBox = find.byKey(Key("EMAIL"));
-  final passwordBox = find.byKey(Key("PASSWORD"));
+  final forgotButton = find.byKey(Key('FORGOTPASSWORD'));
+  final createAccountButton = find.byKey(Key('CREATEACCOUNT'));
+  final submitButton = find.byKey(Key('SUBMIT'));
+  final addTeamButton = find.byKey(Key('ADD_TEAM'));
+  final userNameBox = find.byKey(Key('EMAIL'));
+  final passwordBox = find.byKey(Key('PASSWORD'));
   Widget testWidget;
   final screen = LoginScreen();
 
   void setup(WidgetTester tester) async {
-    loadFonts();
+    await loadFonts();
 
     when(mockUserAuth.onAuthChanged()).thenAnswer((_) => userController.stream);
     authBloc = AuthenticationBloc(mockUserAuth, mockAnalytics);
 
-    AsyncHydratedStorage.storageDirectory = Directory("fail");
+    AsyncHydratedStorage.storageDirectory = Directory('fail');
 
     // Build our app and trigger a frame.
 

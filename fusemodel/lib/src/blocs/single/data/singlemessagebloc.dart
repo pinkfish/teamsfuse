@@ -79,9 +79,10 @@ abstract class SingleMessageLoaded
   static void _initializeBuilder(SingleMessageLoadedBuilder b) {
     SingleMessageState.initializeStateBuilder(b);
 
-    b..type = SingleMessageBlocStateType.Loaded;
+    b.type = SingleMessageBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleMessageLoaded.serializer, this);
   }
@@ -116,9 +117,10 @@ abstract class SingleMessageUninitialized
   static void _initializeBuilder(SingleMessageUninitializedBuilder b) {
     SingleMessageState.initializeStateBuilder(b);
 
-    b..type = SingleMessageBlocStateType.Uninitialized;
+    b.type = SingleMessageBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleMessageUninitialized.serializer, this);
@@ -154,9 +156,10 @@ abstract class SingleMessageDeleted
   static void _initializeBuilder(SingleMessageDeletedBuilder b) {
     SingleMessageState.initializeStateBuilder(b);
 
-    b..type = SingleMessageBlocStateType.Deleted;
+    b.type = SingleMessageBlocStateType.Deleted;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleMessageDeleted.serializer, this);
   }
@@ -194,9 +197,10 @@ abstract class SingleMessageSaveFailed
   static void _initializeBuilder(SingleMessageSaveFailedBuilder b) {
     SingleMessageState.initializeStateBuilder(b);
 
-    b..type = SingleMessageBlocStateType.SaveFailed;
+    b.type = SingleMessageBlocStateType.SaveFailed;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleMessageSaveFailed.serializer, this);
   }
@@ -230,9 +234,10 @@ abstract class SingleMessageSaving
   static void _initializeBuilder(SingleMessageSavingBuilder b) {
     SingleMessageState.initializeStateBuilder(b);
 
-    b..type = SingleMessageBlocStateType.Saving;
+    b.type = SingleMessageBlocStateType.Saving;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleMessageSaving.serializer, this);
   }
@@ -266,9 +271,10 @@ abstract class SingleMessageSaveDone
   static void _initializeBuilder(SingleMessageSaveDoneBuilder b) {
     SingleMessageState.initializeStateBuilder(b);
 
-    b..type = SingleMessageBlocStateType.SaveDone;
+    b.type = SingleMessageBlocStateType.SaveDone;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleMessageSaveDone.serializer, this);
   }

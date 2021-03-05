@@ -69,9 +69,10 @@ abstract class SingleInviteLoaded
   static void _initializeBuilder(SingleInviteLoadedBuilder b) {
     SingleInviteState.initializeStateBuilder(b);
 
-    b..type = SingleInviteBlocStateType.Loaded;
+    b.type = SingleInviteBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleInviteLoaded.serializer, this);
   }
@@ -105,9 +106,10 @@ abstract class SingleInviteUninitialized
   static void _initializeBuilder(SingleInviteUninitializedBuilder b) {
     SingleInviteState.initializeStateBuilder(b);
 
-    b..type = SingleInviteBlocStateType.Uninitialized;
+    b.type = SingleInviteBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleInviteUninitialized.serializer, this);
@@ -143,9 +145,10 @@ abstract class SingleInviteDeleted
   static void _initializeBuilder(SingleInviteDeletedBuilder b) {
     SingleInviteState.initializeStateBuilder(b);
 
-    b..type = SingleInviteBlocStateType.Deleted;
+    b.type = SingleInviteBlocStateType.Deleted;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleInviteDeleted.serializer, this);
   }
@@ -182,9 +185,10 @@ abstract class SingleInviteSaveFailed
   static void _initializeBuilder(SingleInviteSaveFailedBuilder b) {
     SingleInviteState.initializeStateBuilder(b);
 
-    b..type = SingleInviteBlocStateType.SaveFailed;
+    b.type = SingleInviteBlocStateType.SaveFailed;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleInviteSaveFailed.serializer, this);
   }
@@ -218,9 +222,10 @@ abstract class SingleInviteSaving
   static void _initializeBuilder(SingleInviteSavingBuilder b) {
     SingleInviteState.initializeStateBuilder(b);
 
-    b..type = SingleInviteBlocStateType.Saving;
+    b.type = SingleInviteBlocStateType.Saving;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleInviteSaving.serializer, this);
   }
@@ -253,9 +258,10 @@ abstract class SingleInviteSaveDone
   static void _initializeBuilder(SingleInviteSaveDoneBuilder b) {
     SingleInviteState.initializeStateBuilder(b);
 
-    b..type = SingleInviteBlocStateType.SaveDone;
+    b.type = SingleInviteBlocStateType.SaveDone;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleInviteSaveDone.serializer, this);
   }

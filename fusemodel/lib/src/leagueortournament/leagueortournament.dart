@@ -60,7 +60,7 @@ abstract class LeagueOrTournament
       BuiltSet.of(membersData.keys.where((uid) => !membersData[uid].admin));
 
   LeagueOrTournament._();
-  factory LeagueOrTournament([updates(LeagueOrTournamentBuilder b)]) =
+  factory LeagueOrTournament([Function(LeagueOrTournamentBuilder b) updates]) =
       _$LeagueOrTournament;
 
   static void _initializeBuilder(LeagueOrTournamentBuilder b) => b
@@ -87,12 +87,12 @@ abstract class LeagueOrTournament
   static Serializer<LeagueOrTournament> get serializer =>
       _$leagueOrTournamentSerializer;
 
-  static const String TYPE = "type";
-  static const String LONGDESCRIPTION = "description";
-  static const String MEMBERS = "members";
-  static const String ADMIN = "admin";
-  static const String SPORT = "sport";
-  static const String GENDER = "gender";
+  static const String TYPE = 'type';
+  static const String LONGDESCRIPTION = 'description';
+  static const String MEMBERS = 'members';
+  static const String ADMIN = 'admin';
+  static const String SPORT = 'sport';
+  static const String GENDER = 'gender';
 
   bool isUserMember(String myUid) {
     return adminsUids.contains(myUid) || members.contains(myUid);

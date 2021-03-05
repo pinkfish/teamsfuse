@@ -26,7 +26,7 @@ abstract class QueryWrapper {
 
   /// Creates and returns a new [Query] that's additionally sorted by the specified
   /// [field].
-  QueryWrapper orderBy(String field, {bool descending: false});
+  QueryWrapper orderBy(String field, {bool descending = false});
 
   /// The point in which in the query should start at.
   QueryWrapper startAt(dynamic arg);

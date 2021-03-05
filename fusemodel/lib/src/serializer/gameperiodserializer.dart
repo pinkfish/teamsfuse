@@ -25,5 +25,5 @@ class GamePeriodSerializer implements PrimitiveSerializer<GamePeriod> {
   Iterable<Type> get types => [GamePeriod];
 
   @override
-  String get wireName => "GamePeriod";
+  String get wireName => 'GamePeriod';
 }

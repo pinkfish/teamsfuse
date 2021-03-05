@@ -28,7 +28,7 @@ void main() {
     expect(find.byIcon(MdiIcons.genderMale), findsOneWidget);
   });
   testWidgets('Gender icon female', (tester) async {
-    loadFonts();
+    await loadFonts();
     // Build our app and trigger a frame.
     await tester.pumpWidget(
       await makeTestableWidget(
@@ -77,7 +77,7 @@ void main() {
   });
 
   testGoldens('Gender icon golden', (tester) async {
-    if (Platform.environment["GOLDEN"] != null) {
+    if (Platform.environment['GOLDEN'] != null) {
       // Build our app and trigger a frame.
 
       var builder = GoldenBuilder.grid(columns: 2, widthToHeightRatio: 2.0)

@@ -88,6 +88,7 @@ class InProgressGamePicker extends StatelessWidget {
     var itemCount = GameInProgress.values.length + 2;
 
     return NotificationListener<Notification>(
+      onNotification: _onScrollNotification,
       child: Container(
         height: _listViewHeight,
         width: listViewWidth,
@@ -115,7 +116,6 @@ class InProgressGamePicker extends StatelessWidget {
           },
         ),
       ),
-      onNotification: _onScrollNotification,
     );
   }
 

@@ -41,7 +41,7 @@ class _TeamSeasonStatsData extends State<TeamSeasonStats> {
       ShowGameData eventType,
       Color color,
       bool opponent) {
-    List<charts.Series<_CumulativeScore, DateTime>> ret = [];
+    var ret = <charts.Series<_CumulativeScore, DateTime>>[];
 
     ret.add(
       charts.Series<_CumulativeScore, DateTime>(
@@ -51,7 +51,7 @@ class _TeamSeasonStatsData extends State<TeamSeasonStats> {
         domainFn: (_CumulativeScore e, _) => e.timestamp,
         measureFn: (_CumulativeScore e, _) => e.score,
         data: games.map((e) {
-          int val = 0;
+          var val = 0;
           if (opponent) {
             for (var uid in e.opponents.keys) {
               var data = e.opponents[uid];
@@ -119,7 +119,7 @@ class _TeamSeasonStatsData extends State<TeamSeasonStats> {
   }
 
   List<charts.Series<_CumulativeScore, DateTime>> _getSeries() {
-    List<Game> sortedGames = widget.state.games.toList();
+    var sortedGames = widget.state.games.toList();
     sortedGames
         .sort((g1, g2) => g1.sharedData.time.compareTo(g2.sharedData.time));
     switch (widget.gameData) {

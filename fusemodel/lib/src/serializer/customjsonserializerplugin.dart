@@ -53,10 +53,12 @@ class CustomEnumJsonPlugin extends StandardJsonPlugin {
       BuiltSet<Type>([BuiltListMultimap, BuiltSetMultimap]);
 
   /// The field used to specify the value type if needed. Defaults to `$`.
+  @override
   final String discriminator;
 
   // The key used when there is just a single value, for example if serializing
   // an `int`.
+  @override
   final String valueKey;
 
   @override
@@ -94,7 +96,7 @@ class CustomEnumJsonPlugin extends StandardJsonPlugin {
   Object beforeDeserialize(Object object, FullType specifiedType) {
     if (specifiedType.root == BuiltMap && specifiedType.parameters.isNotEmpty) {
       if (_customEnumTypes.contains(specifiedType.parameters.first.root)) {
-        if (object is Map && object.length == 0) {
+        if (object is Map && object.isEmpty) {
           object = _addEnumEncoding(object as Map<String, Object>);
         }
       }

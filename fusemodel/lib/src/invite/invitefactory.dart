@@ -13,24 +13,24 @@ import 'invitetoteam.dart';
 class InviteFactory {
   static Invite makeInviteFromJSON(String uid, Map<String, dynamic> data) {
     assert(uid != null);
-    InviteType type = InviteType.primitiveSerializer
+    var type = InviteType.primitiveSerializer
         .deserialize(dataSerializers, data[Invite.typeField]);
 
     switch (type) {
       case InviteType.Player:
-        InviteToPlayer ret = InviteToPlayer.fromMap(data);
+        var ret = InviteToPlayer.fromMap(data);
         return ret;
       case InviteType.Admin:
-        InviteAsAdmin ret = InviteAsAdmin.fromMap(data);
+        var ret = InviteAsAdmin.fromMap(data);
         return ret;
       case InviteType.Club:
-        InviteToClub ret = InviteToClub.fromMap(data);
+        var ret = InviteToClub.fromMap(data);
         return ret;
       case InviteType.LeagueAdmin:
-        InviteToLeagueAsAdmin ret = InviteToLeagueAsAdmin.fromMap(data);
+        var ret = InviteToLeagueAsAdmin.fromMap(data);
         return ret;
       case InviteType.LeagueTeam:
-        InviteToLeagueTeam ret = InviteToLeagueTeam.fromMap(data);
+        var ret = InviteToLeagueTeam.fromMap(data);
         return ret;
       default:
         throw FormatException();

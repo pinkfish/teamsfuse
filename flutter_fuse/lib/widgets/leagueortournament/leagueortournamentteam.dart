@@ -107,7 +107,7 @@ class _LeagueOrTournamentTeamDetailsState
                                   g.officialResult.awayTeamLeagueUid ==
                                       widget.leagueOrTournamentTeamUid)
                               .toList();
-                          if (sortedGames.length == 0) {
+                          if (sortedGames.isEmpty) {
                             return Text(Messages.of(context).nogames);
                           }
 

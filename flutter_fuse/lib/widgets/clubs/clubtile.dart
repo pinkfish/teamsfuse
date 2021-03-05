@@ -16,6 +16,7 @@ class ClubTile extends StatelessWidget {
   /// Creates the club tile with fun stuff in it.
   ClubTile({@required this.clubUid}) : assert(clubUid != null);
 
+  @override
   Widget build(BuildContext context) {
     return SingleClubProvider(
       clubUid: clubUid,

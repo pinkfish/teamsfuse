@@ -17,20 +17,20 @@ void main() {
         .build();
 
     var gameSharedData = (GameSharedDataBuilder()
-          ..leagueUid = "none"
-          ..uid = "myUid"
-          ..name = "WOmble world"
+          ..leagueUid = 'none'
+          ..uid = 'myUid'
+          ..name = 'WOmble world'
           ..time = DateTime.fromMillisecondsSinceEpoch(12354).toUtc()
           ..endTime = DateTime.fromMillisecondsSinceEpoch(12345).toUtc()
-          ..timezone = "PDT"
+          ..timezone = 'PDT'
           ..type = EventType.Event
-          ..place.name = "frog"
+          ..place.name = 'frog'
           ..place.latitude = 12
           ..place.longitude = 10
-          ..place.address = "unknown"
-          ..place.placeId = "frog"
+          ..place.address = 'unknown'
+          ..place.placeId = 'frog'
           ..place.unknown = false
-          ..place.notes = ""
+          ..place.notes = ''
           ..officialResult.result = OfficialResult.AwayTeamWon
           ..officialResult.scoresInternal[GamePeriod.finalPeriod.toIndex()] =
               resultPerPeriod)

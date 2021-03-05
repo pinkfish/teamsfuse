@@ -63,7 +63,7 @@ class OpponentName extends StatelessWidget {
             }
             state = CrossFadeState.showSecond;
           } else {
-            widgetTwo = Text("");
+            widgetTwo = Text('');
           }
 
           widgetOne = Text(

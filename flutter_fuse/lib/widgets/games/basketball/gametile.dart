@@ -14,7 +14,7 @@ class GameTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle style = Theme.of(context).textTheme.subtitle1;
+    var style = Theme.of(context).textTheme.subtitle1;
     switch (game.result.result) {
       case GameResult.Win:
         style = style.copyWith(
@@ -66,7 +66,7 @@ class GameTile extends StatelessWidget {
                 ),
             textScaleFactor: 1.2,
           ),
-          onTap: this.onTap,
+          onTap: onTap,
           trailing: Hero(
             tag: 'game' + game.uid,
             child: Column(

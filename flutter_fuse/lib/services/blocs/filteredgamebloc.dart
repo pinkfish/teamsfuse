@@ -115,7 +115,7 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
   final TeamBloc teamBloc;
   final SeasonBloc seasonBloc;
 
-  Map<String, BuiltList<Game>> _newerGamesByTeam = {};
+  final Map<String, BuiltList<Game>> _newerGamesByTeam = {};
 
   StreamSubscription<GameState> _gameSub;
 
@@ -137,7 +137,7 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
   Future<void> close() async {
     await super.close();
     _cleanup();
-    _gameSub.cancel();
+    await _gameSub.cancel();
     _gameSub = null;
   }
 
@@ -153,11 +153,11 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
       for (var g in teamGames) {
         var t = teamBloc.state.getTeam(g.teamUid);
         if (t != null) {
-          SeasonState seasonState = seasonBloc.state;
+          var seasonState = seasonBloc.state;
           // See if we have the eason.
           if (seasonState.seasons.containsKey(g.seasonUid)) {
             // We do.  Yay.
-            Season season = seasonState.seasons[g.seasonUid];
+            var season = seasonState.seasons[g.seasonUid];
             if (details.isIncluded(g, season)) {
               result[g.uid] = g;
             }
@@ -169,11 +169,11 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
       for (var g in gameList) {
         var t = teamBloc.state.getTeam(g.teamUid);
         if (t != null) {
-          SeasonState seasonState = seasonBloc.state;
+          var seasonState = seasonBloc.state;
           // See if we have the season.
           if (seasonState.seasons.containsKey(g.seasonUid)) {
             // We do.  Yay.
-            Season season = seasonState.seasons[g.seasonUid];
+            var season = seasonState.seasons[g.seasonUid];
             if (details.isIncluded(g, season)) {
               result[g.uid] = g;
             }

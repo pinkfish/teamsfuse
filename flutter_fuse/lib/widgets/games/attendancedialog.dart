@@ -31,39 +31,39 @@ class _AttendanceDialogState extends State<AttendanceDialog> {
       title: Text(Messages.of(context).attendanceselect),
       children: <Widget>[
         SimpleDialogOption(
+          onPressed: () {
+            Navigator.pop(context, Attendance.Yes);
+          },
           child: ListTile(
             leading: Icon(Icons.check, color: theme.accentColor),
             title: Text(Messages.of(context).attendanceyes),
             dense: true,
             selected: widget.current == Attendance.Yes,
           ),
-          onPressed: () {
-            Navigator.pop(context, Attendance.Yes);
-          },
         ),
         Divider(),
         SimpleDialogOption(
+          onPressed: () {
+            Navigator.pop(context, Attendance.No);
+          },
           child: ListTile(
             leading: Icon(Icons.clear, color: theme.errorColor),
             title: Text(Messages.of(context).attendanceno),
             dense: true,
             selected: widget.current == Attendance.No,
           ),
-          onPressed: () {
-            Navigator.pop(context, Attendance.No);
-          },
         ),
         Divider(),
         SimpleDialogOption(
+          onPressed: () {
+            Navigator.pop(context, Attendance.Maybe);
+          },
           child: ListTile(
             leading: Icon(Icons.help, color: theme.disabledColor),
             title: Text(Messages.of(context).attendncemaybe),
             dense: true,
             selected: widget.current == Attendance.Maybe,
           ),
-          onPressed: () {
-            Navigator.pop(context, Attendance.Maybe);
-          },
         )
       ],
     );

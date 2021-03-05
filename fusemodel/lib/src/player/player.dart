@@ -22,7 +22,7 @@ abstract class PlayerUserInternal
   Relationship get relationship;
 
   PlayerUserInternal._();
-  factory PlayerUserInternal([updates(PlayerUserInternalBuilder b)]) =
+  factory PlayerUserInternal([Function(PlayerUserInternalBuilder b) updates]) =
       _$PlayerUserInternal;
 
   Map<String, dynamic> toMap() {
@@ -93,15 +93,15 @@ abstract class Player implements Built<Player, PlayerBuilder> {
 
   /// The users in a nice useful format merged from the internal data.
   @memoized
-  BuiltMap<String, PlayerUser> get users =>
-      BuiltMap.of(Map.fromIterable(usersData.entries,
-          key: (d) => d.key,
-          value: (d) => PlayerUser(d.key, d.value.relationship)));
+  BuiltMap<String, PlayerUser> get users => BuiltMap.of({
+        for (var d in usersData.entries)
+          d.key: PlayerUser(d.key, d.value.relationship)
+      });
 
   Player._();
 
   /// Factory to create the player.
-  factory Player([updates(PlayerBuilder b)]) = _$Player;
+  factory Player([Function(PlayerBuilder b) updates]) = _$Player;
 
   static void _initializeBuilder(PlayerBuilder b) => b
     ..isPublic = false
@@ -111,7 +111,7 @@ abstract class Player implements Built<Player, PlayerBuilder> {
   static const String usersField = 'users';
 
   /// Serialize the player.
-  Map<String, dynamic> toMap({bool includeUsers: false}) {
+  Map<String, dynamic> toMap({bool includeUsers = false}) {
     Map<String, dynamic> ret =
         dataSerializers.serializeWith(Player.serializer, this);
     if (includeUsers) {

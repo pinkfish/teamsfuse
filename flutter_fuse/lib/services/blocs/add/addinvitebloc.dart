@@ -24,7 +24,7 @@ class InviteEventAddUserToPlayer extends AddInviteEvent {
       @required this.playerName});
 
   @override
-  List<Object> get props => [this.playerName, this.email, this.playerName];
+  List<Object> get props => [playerName, email, playerName];
 }
 
 ///
@@ -47,8 +47,7 @@ class InvitePlayersToTeam extends AddInviteEvent {
       @required this.jerseyNumber});
 
   @override
-  List<Object> get props =>
-      [this.invite, this.seasonUid, seasonName, teamUid, teamName];
+  List<Object> get props => [invite, seasonUid, seasonName, teamUid, teamName];
 }
 
 ///
@@ -64,7 +63,7 @@ class InviteEventAddAsAdmin extends AddInviteEvent {
 
   @override
   // TODO: implement props
-  List<Object> get props => [this.teamName, this.email, this.teamUid];
+  List<Object> get props => [teamName, email, teamUid];
 }
 
 ///
@@ -83,12 +82,11 @@ class AddInviteBloc extends Bloc<AddInviteEvent, AddItemState> {
     if (event is InviteEventAddUserToPlayer) {
       yield AddItemSaving();
       try {
-        String uid = await coordinationBloc.databaseUpdateModel
-            .inviteUserToPlayer(
-                myUid: coordinationBloc.authenticationBloc.currentUser.uid,
-                playerUid: event.playerUid,
-                playerName: event.playerName,
-                email: event.email);
+        var uid = await coordinationBloc.databaseUpdateModel.inviteUserToPlayer(
+            myUid: coordinationBloc.authenticationBloc.currentUser.uid,
+            playerUid: event.playerUid,
+            playerName: event.playerName,
+            email: event.email);
         yield AddItemDone(uid: uid);
       } catch (e, stack) {
         coordinationBloc.analytics.recordException(e, stack);
@@ -120,12 +118,11 @@ class AddInviteBloc extends Bloc<AddInviteEvent, AddItemState> {
     if (event is InviteEventAddAsAdmin) {
       yield AddItemSaving();
       try {
-        String uid = await coordinationBloc.databaseUpdateModel
-            .inviteAdminToTeam(
-                myUid: coordinationBloc.authenticationBloc.currentUser.uid,
-                teamUid: event.teamUid,
-                teamName: event.teamName,
-                email: event.email);
+        var uid = await coordinationBloc.databaseUpdateModel.inviteAdminToTeam(
+            myUid: coordinationBloc.authenticationBloc.currentUser.uid,
+            teamUid: event.teamUid,
+            teamName: event.teamName,
+            email: event.email);
         yield AddItemDone(uid: uid);
       } catch (e, stack) {
         coordinationBloc.analytics.recordException(e, stack);

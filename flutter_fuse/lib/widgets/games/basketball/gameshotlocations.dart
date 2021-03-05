@@ -132,8 +132,8 @@ class _GameShotLocationsState extends State<GameShotLocations>
   }
 
   static int _sortFunc(Game game, String a, String b) {
-    GamePlayerSummary asum = game.players[a] ?? game.opponents[a];
-    GamePlayerSummary bsum = game.players[b] ?? game.opponents[b];
+    var asum = game.players[a] ?? game.opponents[a];
+    var bsum = game.players[b] ?? game.opponents[b];
     return (bsum.fullData.one.attempts +
             bsum.fullData.two.attempts +
             bsum.fullData.three.attempts) -
@@ -177,6 +177,7 @@ class _GameShotLocationsState extends State<GameShotLocations>
     });
   }
 
+  @override
   void initState() {
     super.initState();
     _events = _playerEvents(_selectedPlayer);
@@ -211,9 +212,9 @@ class _ImageBasketballStuff extends CustomPainter {
     ..style = PaintingStyle.stroke;
 
   void _drawCross(Canvas canvas, Offset pos, Paint painter, double fraction) {
-    double x = pos.dx;
-    double y = pos.dy;
-    double extra = 5 * fraction;
+    var x = pos.dx;
+    var y = pos.dy;
+    var extra = 5 * fraction;
     canvas.drawLine(
         Offset(x - extra, y + extra), Offset(x + extra, y - extra), painter);
     canvas.drawLine(
@@ -244,10 +245,10 @@ class _ImageBasketballStuff extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (GameEvent e in events) {
+    for (var e in events) {
       _drawEvent(size, canvas, e, fraction);
     }
-    for (GameEvent e in oldEvents) {
+    for (var e in oldEvents) {
       _drawEvent(size, canvas, e, 1 - fraction);
     }
   }

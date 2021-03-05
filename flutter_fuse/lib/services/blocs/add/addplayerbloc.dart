@@ -41,13 +41,13 @@ class AddPlayerBloc extends Bloc<AddPlayerEvent, AddItemState> {
       yield AddItemSaving();
 
       try {
-        Player updatedPlayer = Player((b) => b
+        var updatedPlayer = Player((b) => b
           ..name = event.playerName
           ..usersData[coordinationBloc.authenticationBloc.currentUser.uid] =
               PlayerUserInternal((b) => b
                 ..relationship = event.relationship
                 ..added = true));
-        String uid = await coordinationBloc.databaseUpdateModel
+        var uid = await coordinationBloc.databaseUpdateModel
             .addFirestorePlayer(updatedPlayer);
         yield AddItemDone(uid: uid);
       } catch (e, stack) {

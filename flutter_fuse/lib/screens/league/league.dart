@@ -30,7 +30,7 @@ class LeagueScreen extends StatelessWidget {
       _addSeason(context, bloc);
     }
     if (action == 'admin') {
-      AddInviteToLeagueDialog.showAddLeagueOrTournamentInviteDialog(
+      await AddInviteToLeagueDialog.showAddLeagueOrTournamentInviteDialog(
           context, bloc);
     }
     if (action == 'image') {
@@ -42,7 +42,7 @@ class LeagueScreen extends StatelessWidget {
       }
     }
     if (action == 'edit') {
-      Navigator.pushNamed(context, '/League/Edit/$leagueUid');
+      await Navigator.pushNamed(context, '/League/Edit/$leagueUid');
     }
   }
 
@@ -75,12 +75,12 @@ class LeagueScreen extends StatelessWidget {
                           child: Text(Messages.of(context).addSeason),
                         ),
                         PopupMenuItem<String>(
-                          child: Text(Messages.of(context).addAdmin),
                           value: 'admin',
+                          child: Text(Messages.of(context).addAdmin),
                         ),
                         PopupMenuItem<String>(
-                          child: Text(Messages.of(context).editimagebutton),
                           value: 'image',
+                          child: Text(Messages.of(context).editimagebutton),
                         ),
                         PopupMenuItem<String>(
                           value: 'edit',

@@ -7,7 +7,8 @@ import '../../../services/messages.dart';
 ///
 /// Callback whenm the media is ready to save.
 ///
-typedef void MediaEditCallback(Uri url, String description, DateTime start);
+typedef MediaEditCallback = void Function(
+    Uri url, String description, DateTime start);
 
 ///
 /// Class top handle editing the media, does a callback whemn the
@@ -52,6 +53,7 @@ class _MediaEditState extends State<MediaEdit> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TextFormField(
+            autovalidateMode: AutovalidateMode.disabled,
             decoration: InputDecoration(
               icon: Icon(Icons.local_library),
               hintText: Messages.of(context).urlTitle,
@@ -60,14 +62,13 @@ class _MediaEditState extends State<MediaEdit> {
             onSaved: (String str) {
               _url = Uri.parse(str);
             },
-            initialValue: widget.media?.url ?? "",
-            autovalidate: false,
+            initialValue: widget.media?.url ?? '',
             validator: (String str) {
               try {
                 if (str == null || str == '') {
                   return Messages.of(context).emptyText;
                 }
-                Uri url = Uri.parse(str);
+                var url = Uri.parse(str);
 
                 if (url == null) {
                   return Messages.of(context).invalidUrl;
@@ -79,6 +80,7 @@ class _MediaEditState extends State<MediaEdit> {
             },
           ),
           TextFormField(
+            autovalidateMode: AutovalidateMode.disabled,
             decoration: InputDecoration(
               icon: Icon(MdiIcons.text),
               hintText: Messages.of(context).description,
@@ -87,18 +89,17 @@ class _MediaEditState extends State<MediaEdit> {
             onSaved: (String str) {
               _description = str;
             },
-            initialValue: widget.media?.description ?? "",
-            autovalidate: false,
+            initialValue: widget.media?.description ?? '',
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ButtonBar(
               children: [
                 FlatButton(
+                  onPressed: () => Navigator.pop(context),
                   child: Text(
                       MaterialLocalizations.of(context).cancelButtonLabel,
                       style: Theme.of(context).textTheme.button),
-                  onPressed: () => Navigator.pop(context),
                 ),
                 FlatButton.icon(
                   icon: Icon(Icons.delete),

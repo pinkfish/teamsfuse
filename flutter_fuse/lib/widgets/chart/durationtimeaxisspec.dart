@@ -50,6 +50,7 @@ class DurationAxisSpec extends AxisSpec<Duration> {
     }
   }
 
+  @override
   Axis<Duration> createAxis() {
     assert(false, 'Call createDurationAxis() to create a DurationAxis.');
     return null;
@@ -66,7 +67,7 @@ class DurationAxisSpec extends AxisSpec<Duration> {
 
   @override
   int get hashCode {
-    int hashcode = super.hashCode;
+    var hashcode = super.hashCode;
     hashcode = (hashcode * 37) + viewport.hashCode;
     return hashcode;
   }
@@ -184,7 +185,7 @@ class BasicDurationTickFormatterSpec implements DurationTickFormatterSpec {
 
   @override
   int get hashCode {
-    int hash = formatter.hashCode;
+    var hash = formatter.hashCode;
     hash = (hash * 37);
     return hash;
   }
@@ -212,7 +213,7 @@ class AutoDurationTickFormatterSpec implements DurationTickFormatterSpec {
 
   @override
   DurationTickFormatter createTickFormatter(ChartContext context) {
-    final Map<int, DurationFormatter> map = {};
+    final map = <int, DurationFormatter>{};
 
     return DurationTickFormatter(overrides: map);
   }
@@ -227,7 +228,7 @@ class AutoDurationTickFormatterSpec implements DurationTickFormatterSpec {
 
   @override
   int get hashCode {
-    int hashcode = minute?.hashCode ?? 0;
+    var hashcode = minute?.hashCode ?? 0;
     hashcode = (hashcode * 37) + hour?.hashCode ?? 0;
     hashcode = (hashcode * 37) + day?.hashCode ?? 0;
     return hashcode;

@@ -270,9 +270,8 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     }
 
     if (event is _SingleLeagueOrTournamentEventTeamGames) {
-      MapBuilder<String, GameSharedData> newGames =
-          MapBuilder<String, GameSharedData>();
-      for (GameSharedData game in event.games) {
+      var newGames = MapBuilder<String, GameSharedData>();
+      for (var game in event.games) {
         newGames[game.uid] = game;
       }
       yield (SingleLeagueOrTournamentTeamLoaded.fromState(state)
@@ -328,7 +327,7 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     }
 
     try {
-      SingleLeagueOrTournamentTeamBlocStateType type =
+      var type =
           SingleLeagueOrTournamentTeamBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleLeagueOrTournamentTeamBlocStateType.Uninitialized:

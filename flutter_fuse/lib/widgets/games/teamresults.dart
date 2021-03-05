@@ -104,7 +104,7 @@ class TeamResultsByOpponent extends StatelessWidget {
                 }
               }
 
-              if (newData.length == 0) {
+              if (newData.isEmpty) {
                 newData.add(Text(Messages.of(context).nogames));
               }
               return Column(
@@ -221,7 +221,7 @@ class TeamResultsBySeason extends StatelessWidget {
                 }
               }
 
-              if (newData.length == 0) {
+              if (newData.isEmpty) {
                 newData.add(Text(Messages.of(context).nogames));
               }
               return Column(

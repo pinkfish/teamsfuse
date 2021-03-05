@@ -127,7 +127,7 @@ class GameStatsScreen extends StatelessWidget {
       false,
     );
     // Update the game to add in the subs.
-    MapBuilder<String, PlayerSummaryWithOpponent> data = MapBuilder();
+    var data = MapBuilder<String, PlayerSummaryWithOpponent>();
     if (bloc.state.game.players.containsKey(playerData.item1)) {
       var summary = bloc.state.game.players[playerData.item1]
           .rebuild((b) => b..currentlyPlaying = true);
@@ -158,7 +158,7 @@ class GameStatsScreen extends StatelessWidget {
     // Select the player.
     GamePlayerExtraButtons extra;
     GameFoulType foulType;
-    StreamController<bool> updateDialogStream = StreamController<bool>();
+    var updateDialogStream = StreamController<bool>();
     if (type == GameEventType.Foul) {
       foulType = GameFoulType.Personal;
       extra = (c) => [
@@ -179,7 +179,7 @@ class GameStatsScreen extends StatelessWidget {
             ),
           ];
     }
-    String playerUid = await showDialog<String>(
+    var playerUid = await showDialog<String>(
         context: context,
         builder: (BuildContext context) {
           return GamePlayerDialog(
@@ -188,7 +188,7 @@ class GameStatsScreen extends StatelessWidget {
             extraButtons: extra,
           );
         });
-    updateDialogStream.close();
+    await updateDialogStream.close();
     if (playerUid == null) {
       return;
     }
@@ -217,14 +217,14 @@ class GameStatsScreen extends StatelessWidget {
     } else {
       buttonSize = constraints.maxHeight / 4;
     }
-    List<Widget> firstWidgets = <Widget>[
+    var firstWidgets = <Widget>[
       Hero(
         tag: '1plus',
         child: RoundButton(
-          child: Text('1'),
           size: buttonSize,
           borderColor: Colors.green,
           onPressed: () => _doAddPoints(context, 1, true, singleGameBloc),
+          child: Text('1'),
         ),
       ),
       CustomPaint(
@@ -240,32 +240,32 @@ class GameStatsScreen extends StatelessWidget {
         ),
       ),
     ];
-    List<Widget> secondidgets = <Widget>[
+    var secondidgets = <Widget>[
       RoundButton(
         borderColor: Colors.green,
         size: buttonSize,
-        child: Text('2'),
         onPressed: () => _doAddPoints(context, 2, true, singleGameBloc),
+        child: Text('2'),
       ),
       CustomPaint(
         painter: _LineThrough(),
         child: RoundButton(
           borderColor: Colors.red,
           size: buttonSize,
+          onPressed: () => _doAddPoints(context, 2, false, singleGameBloc),
           child: Text(
             '2',
             style: Theme.of(context).textTheme.button,
           ),
-          onPressed: () => _doAddPoints(context, 2, false, singleGameBloc),
         ),
       ),
     ];
-    List<Widget> thirdWidgets = <Widget>[
+    var thirdWidgets = <Widget>[
       RoundButton(
         borderColor: Colors.green,
         size: buttonSize,
-        child: Text('3'),
         onPressed: () => _doAddPoints(context, 3, true, singleGameBloc),
+        child: Text('3'),
       ),
       CustomPaint(
         painter: _LineThrough(),
@@ -281,12 +281,12 @@ class GameStatsScreen extends StatelessWidget {
       ),
     ];
     var undoBloc = BlocProvider.of<GameEventUndoStack>(context);
-    List<Widget> fourWidgets = <Widget>[
+    var fourWidgets = <Widget>[
       RoundButton(
         borderColor: Colors.blue,
         size: buttonSize * 3 / 4,
-        child: Icon(Icons.undo),
         onPressed: undoBloc.canUndo ? () => undoBloc.undo() : null,
+        child: Icon(Icons.undo),
       ),
       RoundButton(
         borderColor: Colors.blue,
@@ -347,49 +347,49 @@ class GameStatsScreen extends StatelessWidget {
     } else {
       buttonSize = boxConstraints.maxHeight / 4;
     }
-    List<Widget> firstWidgets = <Widget>[
+    var firstWidgets = <Widget>[
       RoundButton(
         borderColor: Colors.red,
         size: buttonSize,
-        child: Text(Messages.of(context).offensiveReboundButton),
         onPressed: () => _doBasicEvent(
             context, GameEventType.OffsensiveRebound, singleGameBloc),
+        child: Text(Messages.of(context).offensiveReboundButton),
       ),
       RoundButton(
         borderColor: Colors.red,
         size: buttonSize,
+        onPressed: () => _doBasicEvent(
+            context, GameEventType.DefensiveRebound, singleGameBloc),
         child: Text(
           Messages.of(context).defensiveReboundButton,
         ),
-        onPressed: () => _doBasicEvent(
-            context, GameEventType.DefensiveRebound, singleGameBloc),
       ),
     ];
-    List<Widget> secondWidgets = <Widget>[
+    var secondWidgets = <Widget>[
       RoundButton(
         borderColor: Colors.red,
         size: buttonSize,
-        child: Text(Messages.of(context).turnoverButton),
         onPressed: () =>
             _doBasicEvent(context, GameEventType.Turnover, singleGameBloc),
+        child: Text(Messages.of(context).turnoverButton),
       ),
       RoundButton(
         borderColor: Colors.red,
         size: buttonSize,
+        onPressed: () =>
+            _doBasicEvent(context, GameEventType.Steal, singleGameBloc),
         child: Text(
           Messages.of(context).stealButton,
         ),
-        onPressed: () =>
-            _doBasicEvent(context, GameEventType.Steal, singleGameBloc),
       ),
     ];
-    List<Widget> thirdWidgets = <Widget>[
+    var thirdWidgets = <Widget>[
       RoundButton(
         borderColor: Colors.red,
         size: buttonSize,
-        child: Text(Messages.of(context).blockButton),
         onPressed: () =>
             _doBasicEvent(context, GameEventType.Block, singleGameBloc),
+        child: Text(Messages.of(context).blockButton),
       ),
 /*      RoundButton(
         borderColor: Colors.red,
@@ -448,13 +448,19 @@ class GameStatsScreen extends StatelessWidget {
           if (state is SingleGameDeleted) {
             return DeletedWidget();
           }
-          double padding = 10.0;
+          var padding = 10.0;
           if (boxConstraints.maxWidth < 336 &&
               orientation == Orientation.portrait) {
             padding = 10 - (336 - boxConstraints.maxWidth) / 3;
           }
           var buttons = <Widget>[
             FlatButton(
+              onPressed: () =>
+                  _doSubEvent(context, GameEventType.Sub, singleGameBloc),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
+                side: BorderSide(color: Colors.blue),
+              ),
               child: Padding(
                 padding: EdgeInsets.only(
                     top: 10.0, bottom: 10.0, left: padding, right: padding),
@@ -464,14 +470,14 @@ class GameStatsScreen extends StatelessWidget {
                   textScaleFactor: 1.5,
                 ),
               ),
+            ),
+            FlatButton(
               onPressed: () =>
-                  _doSubEvent(context, GameEventType.Sub, singleGameBloc),
+                  _doBasicEvent(context, GameEventType.Foul, singleGameBloc),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0),
                 side: BorderSide(color: Colors.blue),
               ),
-            ),
-            FlatButton(
               child: Padding(
                 padding: EdgeInsets.only(
                     top: 10.0, bottom: 10.0, left: padding, right: padding),
@@ -481,18 +487,17 @@ class GameStatsScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.button,
                 ),
               ),
-              onPressed: () =>
-                  _doBasicEvent(context, GameEventType.Foul, singleGameBloc),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
-                side: BorderSide(color: Colors.blue),
-              ),
             ),
           ];
           if (orientation == Orientation.portrait) {
             buttons.insert(
               0,
               FlatButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  side: BorderSide(color: Colors.blue),
+                ),
+                onPressed: () => _selectPeriod(context, singleGameBloc),
                 child: Padding(
                   padding: EdgeInsets.only(
                       top: 10.0, bottom: 10.0, left: padding, right: padding),
@@ -502,11 +507,6 @@ class GameStatsScreen extends StatelessWidget {
                     textScaleFactor: 1.5,
                   ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  side: BorderSide(color: Colors.blue),
-                ),
-                onPressed: () => _selectPeriod(context, singleGameBloc),
               ),
             );
           }
@@ -557,7 +557,7 @@ class GameStatsScreen extends StatelessWidget {
                               print('undoBloc $undoBloc');
                               if (undoBloc.isGameEmpty) {
                                 // Fill in with all these stats.
-                                for (GameEvent ev in state.gameEvents) {
+                                for (var ev in state.gameEvents) {
                                   undoBloc.addEvent(ev, true);
                                 }
                               }
@@ -597,7 +597,7 @@ class GameStatsScreen extends StatelessWidget {
                             }
 
                             if ((state.loadedEvents &&
-                                    (state.gameEvents.length == 0 ||
+                                    (state.gameEvents.isEmpty ||
                                         state.gameEvents.last.type ==
                                             GameEventType.PeriodEnd)) ||
                                 state.game?.result.currentPeriod ==
@@ -619,9 +619,7 @@ class GameStatsScreen extends StatelessWidget {
                                           .season.playersData[playerUid];
                                       if (!state.game.players
                                           .containsKey(playerUid)) {
-                                        if (builder == null) {
-                                          builder = state.game.toBuilder();
-                                        }
+                                        builder ??= state.game.toBuilder();
                                         builder.players[playerUid] =
                                             GamePlayerSummary((b) => b
                                               ..jerseyNumber = data.jerseyNumber
@@ -631,9 +629,7 @@ class GameStatsScreen extends StatelessWidget {
                                         if (state.game.players[playerUid]
                                                 .jerseyNumber !=
                                             data.jerseyNumber) {
-                                          if (builder == null) {
-                                            builder = state.game.toBuilder();
-                                          }
+                                          builder ??= state.game.toBuilder();
                                           builder.players[playerUid] = builder
                                               .players[playerUid]
                                               .rebuild((b) => b
@@ -657,7 +653,7 @@ class GameStatsScreen extends StatelessWidget {
                               );
                             }
                             if (state.loadedEvents &&
-                                (state.gameEvents.length == 0 ||
+                                (state.gameEvents.isEmpty ||
                                     state.gameEvents.last.type ==
                                         GameEventType.TimeoutStart)) {
                               return TimeoutEnd(
@@ -771,7 +767,7 @@ class GameStatsScreen extends StatelessWidget {
 
     // Update the game to stop the clock.
     if (singleGameBloc.state.game.runningFrom != null) {
-      int newSeconds = singleGameBloc.state.game.gameTime.inSeconds +
+      var newSeconds = singleGameBloc.state.game.gameTime.inSeconds +
           clock
               .now()
               .difference(singleGameBloc.state.game.runningFrom)
@@ -878,6 +874,12 @@ class _GameStateSection extends StatelessWidget {
                                     .buttonTheme
                                     .colorScheme
                                     .background,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  side: BorderSide(color: Colors.blue),
+                                ),
+                                onPressed: () =>
+                                    selectCallback(context, singleGameBloc),
                                 child: Padding(
                                   padding: EdgeInsets.all(10.0),
                                   child: Text(
@@ -886,12 +888,6 @@ class _GameStateSection extends StatelessWidget {
                                     textScaleFactor: 1.5,
                                   ),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                  side: BorderSide(color: Colors.blue),
-                                ),
-                                onPressed: () =>
-                                    selectCallback(context, singleGameBloc),
                               ),
                               IconButton(
                                 icon: Icon(
@@ -1013,14 +1009,14 @@ class _GameStateSection extends StatelessWidget {
   void _updateRunning(
       BuildContext context, Game g, SingleGameBloc singleGameBloc) {
     if (g.runningFrom != null) {
-      int newSeconds = g.gameTime.inSeconds +
+      var newSeconds = g.gameTime.inSeconds +
           clock.now().difference(g.runningFrom).inSeconds;
-      Game newGame = g.rebuild((b) => b
+      var newGame = g.rebuild((b) => b
         ..gameTime = Duration(seconds: newSeconds)
         ..runningFrom = null);
       singleGameBloc.add(SingleGameUpdate(game: newGame));
     } else {
-      Game newGame = g.rebuild((b) => b..runningFrom = clock.now().toUtc());
+      var newGame = g.rebuild((b) => b..runningFrom = clock.now().toUtc());
       singleGameBloc.add(SingleGameUpdate(game: newGame));
     }
   }

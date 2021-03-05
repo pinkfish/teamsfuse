@@ -98,9 +98,9 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
                           children: <Widget>[
                             RaisedButton(
                               onPressed: _savePressed,
-                              child: Text(messages.addInvite),
                               color: theme.accentColor,
                               textColor: Colors.white,
+                              child: Text(messages.addInvite),
                             ),
                             FlatButton(
                               onPressed: () =>

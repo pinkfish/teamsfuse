@@ -19,7 +19,7 @@ class MessageSendBox extends StatelessWidget {
 
   void _sendMessage(BuildContext context, String mess) {
     mess = mess.trim();
-    if (mess.length > 0) {
+    if (mess.isNotEmpty) {
       var playerBloc = BlocProvider.of<PlayerBloc>(context);
 
       game.add(SingleGameAddGameLog(

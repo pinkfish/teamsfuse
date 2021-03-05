@@ -106,8 +106,7 @@ class MessageList extends StatelessWidget {
     return BlocBuilder(
       cubit: BlocProvider.of<MessagesBloc>(context),
       builder: (context, MessagesBlocState state) {
-        if (state.unreadMessages.length == 0 &&
-            state.recentMessages.length == 0) {
+        if (state.unreadMessages.isEmpty && state.recentMessages.isEmpty) {
           return Center(
             child: Text(Messages.of(context).nomessages),
           );

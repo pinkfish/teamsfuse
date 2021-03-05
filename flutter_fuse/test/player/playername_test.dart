@@ -23,7 +23,7 @@ void main() {
     var mockAnalytics = MockAnalyticsSubsystem();
 
     // Nothing in the queue, so uninitialized
-    when(mockDb.getPlayerDetails("123")).thenAnswer((p) => gameData.stream);
+    when(mockDb.getPlayerDetails('123')).thenAnswer((p) => gameData.stream);
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(
@@ -37,14 +37,14 @@ void main() {
               create: (c) => mockAnalytics,
             ),
           ],
-          child: PlayerName(playerUid: "123"),
+          child: PlayerName(playerUid: '123'),
         ),
       ),
     );
 
     await tester.pumpAndSettle();
 
-    expect(find.text("Loading..."), findsOneWidget);
+    expect(find.text('Loading...'), findsOneWidget);
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('name set', (tester) async {
@@ -52,11 +52,11 @@ void main() {
     var mockDb = MockDatabaseUpdateModel();
     var mockAnalytics = MockAnalyticsSubsystem();
 
-    AsyncHydratedStorage.storageDirectory = Directory("fail");
+    AsyncHydratedStorage.storageDirectory = Directory('fail');
 
     // Stub the state stream
     //singlePlayerBloc.emit(SinglePlayerUninitialized());
-    when(mockDb.getPlayerDetails("123")).thenAnswer((p) => gameData.stream);
+    when(mockDb.getPlayerDetails('123')).thenAnswer((p) => gameData.stream);
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(
@@ -72,23 +72,23 @@ void main() {
           ],
           child: RepaintBoundary(
             child: PlayerName(
-              playerUid: "123",
+              playerUid: '123',
               style: TextStyle(
-                  fontFamily: "Roboto", fontSize: 12.0, color: Colors.black),
+                  fontFamily: 'Roboto', fontSize: 12.0, color: Colors.black),
             ),
           ),
         ),
       ),
     );
     gameData.add(Player((b) => b
-      ..name = "Frog"
-      ..uid = "123"));
+      ..name = 'Frog'
+      ..uid = '123'));
 
     await tester.pumpAndSettle();
 
-    await expectLater(find.text("Frog (Invited)"), findsOneWidget);
+    await expectLater(find.text('Frog (Invited)'), findsOneWidget);
 
-    if (Platform.environment["GOLDEN"] != null) {
+    if (Platform.environment['GOLDEN'] != null) {
       await expectLater(find.byType(PlayerName),
           matchesGoldenFile('../golden/player_name_set.png'));
     }
@@ -100,7 +100,7 @@ void main() {
     var mockAnalytics = MockAnalyticsSubsystem();
 
     // Stub the state stream
-    when(mockDb.getPlayerDetails("123")).thenAnswer((p) => gameData.stream);
+    when(mockDb.getPlayerDetails('123')).thenAnswer((p) => gameData.stream);
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(
@@ -116,31 +116,31 @@ void main() {
           ],
           child: RepaintBoundary(
             child: PlayerName(
-              playerUid: "123",
+              playerUid: '123',
               style: TextStyle(
-                  fontFamily: "Roboto", fontSize: 12.0, color: Colors.white),
+                  fontFamily: 'Roboto', fontSize: 12.0, color: Colors.white),
             ),
           ),
         ),
       ),
     );
     gameData.add(Player((b) => b
-      ..name = "Frog"
-      ..uid = "123"
-      ..usersData["1232"] = PlayerUserInternal((b) => b
+      ..name = 'Frog'
+      ..uid = '123'
+      ..usersData['1232'] = PlayerUserInternal((b) => b
         ..added = true
         ..relationship = Relationship.Parent)));
 
     await tester.pumpAndSettle();
 
-    await expectLater(find.text("Frog"), findsOneWidget);
+    await expectLater(find.text('Frog'), findsOneWidget);
 
     gameData.add(Player((b) => b
-      ..name = "Bluey"
-      ..uid = "123"));
+      ..name = 'Bluey'
+      ..uid = '123'));
 
     await tester.pumpAndSettle();
 
-    await expectLater(find.text("Bluey (Invited)"), findsOneWidget);
+    await expectLater(find.text('Bluey (Invited)'), findsOneWidget);
   }, variant: TeamsFuseTestVariant());
 }

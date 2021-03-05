@@ -55,16 +55,16 @@ class _TeamScreenState extends State<TeamScreen> {
     // Causes the app to rebuild with the _selectedChoice.
     setState(() {});
     if (choice == 'settings') {
-      Navigator.pushNamed(context, 'TeamSettings/${widget.teamUid}');
+      await Navigator.pushNamed(context, 'TeamSettings/${widget.teamUid}');
     }
     if (choice == 'club') {
-      Navigator.pushNamed(context, 'TeamClub/${widget.teamUid}');
+      await Navigator.pushNamed(context, 'TeamClub/${widget.teamUid}');
     }
     if (choice == 'archive') {
       singleTeamBloc
           .add(SingleTeamArchive(archive: !singleTeamBloc.state.team.archived));
     } else if (choice == 'edit') {
-      Navigator.pushNamed(context, 'EditTeam/${widget.teamUid}');
+      await Navigator.pushNamed(context, 'EditTeam/${widget.teamUid}');
     }
   }
 

@@ -181,7 +181,10 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
               return AnimatedSwitcher(
                 duration: Duration(milliseconds: 500),
                 transitionBuilder: (Widget child, Animation<double> animation) {
-                  return ScaleTransition(child: child, scale: animation);
+                  return ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  );
                 },
                 child: FloatingActionButton.extended(
                   onPressed: _currentIndex == 0
@@ -216,10 +219,10 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
             ),
           ],
         ),

@@ -87,17 +87,13 @@ class _StartPeriodState extends State<StartPeriod> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                child: Text(
-                  Messages.of(context).startButton,
-                  textScaleFactor: 2.0,
-                ),
                 onPressed: () {
                   // ignore: close_sinks
                   var undoBloc = BlocProvider.of<GameEventUndoStack>(context);
                   undoBloc.addEvent(
                     GameEvent((b) => b
                       ..gameUid = widget.game.uid
-                      ..playerUid = ""
+                      ..playerUid = ''
                       ..period = period.toBuilder()
                       ..timestamp = clock.now().toUtc()
                       ..opponent = false
@@ -141,6 +137,10 @@ class _StartPeriodState extends State<StartPeriod> {
                     );
                   }
                 },
+                child: Text(
+                  Messages.of(context).startButton,
+                  textScaleFactor: 2.0,
+                ),
               ),
             ],
           ),

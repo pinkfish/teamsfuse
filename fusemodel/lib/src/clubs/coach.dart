@@ -29,10 +29,10 @@ abstract class Coach implements Built<Coach, CoachBuilder> {
   Coach._();
 
   /// Factory to amke an exciting new coach
-  factory Coach([updates(CoachBuilder b)]) = _$Coach;
+  factory Coach([Function(CoachBuilder b) updates]) = _$Coach;
 
   /// Defaults for the state.  Always default to no games loaded.
-  static void _initializeBuilder(CoachBuilder b) => b..about = "";
+  static void _initializeBuilder(CoachBuilder b) => b..about = '';
 
   /// Serialize the coach.
   Map<String, dynamic> toMap({bool includeMembers}) =>

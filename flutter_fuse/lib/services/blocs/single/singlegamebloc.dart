@@ -155,7 +155,8 @@ class SingleGameAddOpponentPlayer extends SingleGameEvent {
   final String jerseyNumber;
 
   /// Create the guest player.
-  SingleGameAddOpponentPlayer({this.opponentPlayerName, this.jerseyNumber})
+  SingleGameAddOpponentPlayer(
+      {this.opponentPlayerName, @required this.jerseyNumber})
       : assert(jerseyNumber != null);
 
   List<Object> get props => [opponentPlayerName, jerseyNumber];
@@ -261,11 +262,11 @@ class SingleGameBloc
   @override
   Future<void> close() async {
     await super.close();
-    _gameSub?.cancel();
-    _gameLogSub?.cancel();
-    _mediaInfoSub?.cancel();
-    _gameEventSub?.cancel();
-    _opPlayers?.cancel();
+    await _gameSub?.cancel();
+    await _gameLogSub?.cancel();
+    await _mediaInfoSub?.cancel();
+    await _gameEventSub?.cancel();
+    await _opPlayers?.cancel();
   }
 
   @override
@@ -290,7 +291,7 @@ class SingleGameBloc
 
     if (event is SingleGameLoadEvents) {
       if (state is SingleGameLoaded) {
-        _lock.synchronized(() {
+        await _lock.synchronized(() {
           if (_gameEventSub == null) {
             _gameEventSub = db
                 .getGameEvents(gameUid: gameUid)
@@ -308,7 +309,7 @@ class SingleGameBloc
 
     if (event is SingleGameLoadOpponentPlayers) {
       if (state is SingleGameLoaded) {
-        _lock.synchronized(() {
+        await _lock.synchronized(() {
           if (_opPlayers == null) {
             _opPlayers = db
                 .getPlayersForOpponent(
@@ -347,7 +348,7 @@ class SingleGameBloc
 
     if (event is SingleGameLoadMedia) {
       if (state is SingleGameLoaded) {
-        _lock.synchronized(() {
+        await _lock.synchronized(() {
           if (_mediaInfoSub == null) {
             _mediaInfoSub = db.getMediaForGame(gameUid: gameUid).listen(
                 (BuiltList<MediaInfo> ev) =>
@@ -391,8 +392,8 @@ class SingleGameBloc
     // Load a single game.
     if (event is SingleGameLoadPlayers) {
       // Load all the player details for this season.
-      _lock.synchronized(() {
-        for (String playerUid in state.game.players.keys) {
+      await _lock.synchronized(() {
+        for (var playerUid in state.game.players.keys) {
           if (!_players.containsKey(playerUid)) {
             _players[playerUid] =
                 db.getPlayerDetails(playerUid).listen(_onPlayerUpdated);
@@ -425,7 +426,7 @@ class SingleGameBloc
       yield SingleGameSaving.fromState(state).build();
       try {
         await db.addFirestoreGameLog(state.game, event.log);
-        ListBuilder<GameLog> logs = state.gameLog.toBuilder();
+        var logs = state.gameLog.toBuilder();
         logs.add(event.log);
         yield SingleGameSaveDone.fromState(state).build();
         yield (SingleGameLoaded.fromState(state)..gameLog = logs).build();
@@ -444,7 +445,7 @@ class SingleGameBloc
       try {
         await db.updateFirestoreGameAttendence(
             state.game, event.playerUid, event.attendance);
-        GameBuilder builder = state.game.toBuilder();
+        var builder = state.game.toBuilder();
         builder.attendance[event.playerUid] = event.attendance;
         yield SingleGameSaveDone.fromState(state).build();
         yield (SingleGameLoaded.fromState(state)..game = builder).build();
@@ -501,7 +502,7 @@ class SingleGameBloc
     }
 
     if (event is SingleGameLoadGameLog) {
-      _gameLogSub?.cancel();
+      await _gameLogSub?.cancel();
       _gameLogSub =
           db.readGameLogs(state.game).listen((Iterable<GameLog> logs) {
         add(_SingleGameNewLogs(logs: logs));
@@ -512,8 +513,7 @@ class SingleGameBloc
     if (event is SingleGameUpdatePlayer) {
       yield SingleGameSaving.fromState(state).build();
       try {
-        for (MapEntry<String, PlayerSummaryWithOpponent> entry
-            in event.summary.entries) {
+        for (var entry in event.summary.entries) {
           if (entry.value.opponent) {
             await db.updateGameOpponentData(
                 gameUid: gameUid,
@@ -608,28 +608,28 @@ class SingleGameBloc
     if (evList.length == state.gameEvents.length && state.loadedEvents) {
       return;
     }
-    Map<String, GamePlayerSummaryBuilder> players = state.game.players
+    var players = state.game.players
         .toMap()
         .map((var e, var v) => MapEntry(e, GamePlayerSummaryBuilder()));
-    Map<String, GamePlayerSummaryBuilder> opponents = state.game.opponents
+    var opponents = state.game.opponents
         .toMap()
         .map((var e, var v) => MapEntry(e, GamePlayerSummaryBuilder()));
     var result = state.game.result.toBuilder();
-    GamePlayerSummaryBuilder playerSummary = GamePlayerSummaryBuilder();
-    GamePlayerSummaryBuilder opponentSummary = GamePlayerSummaryBuilder();
+    var playerSummary = GamePlayerSummaryBuilder();
+    var opponentSummary = GamePlayerSummaryBuilder();
 
     var sortedList = evList.toList();
     sortedList
         .sort((GameEvent a, GameEvent b) => a.timestamp.compareTo(b.timestamp));
-    GamePeriod currentPeriod = GamePeriod.notStarted;
-    int ptsAgainst = 0;
-    int ptsFor = 0;
+    var currentPeriod = GamePeriod.notStarted;
+    var ptsAgainst = 0;
+    var ptsFor = 0;
 
     // Check the summary and update if needed.
-    for (GameEvent ev in sortedList) {
+    for (var ev in sortedList) {
       PlayerSummaryDataBuilder sum;
       PlayerSummaryDataBuilder playerSum;
-      GamePeriod oldPeriod = currentPeriod;
+      var oldPeriod = currentPeriod;
       var getPlayerSum = (String playerUid) {
         if (ev.opponent) {
           return opponents[playerUid]
@@ -842,8 +842,7 @@ class SingleGameBloc
       return SingleGameUninitialized();
     }
     try {
-      SingleGameBlocStateType type =
-          SingleGameBlocStateType.valueOf(json['type']);
+      var type = SingleGameBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleGameBlocStateType.Uninitialized:
           return SingleGameUninitialized();

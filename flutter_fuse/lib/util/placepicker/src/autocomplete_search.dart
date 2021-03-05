@@ -27,7 +27,7 @@ class AutoCompleteSearch extends StatefulWidget {
       this.contentPadding = EdgeInsets.zero,
       this.debounceMilliseconds,
       this.onSearchFailed,
-      this.searchBarController,
+      @required this.searchBarController,
       this.autocompleteOffset,
       this.autocompleteRadius,
       this.autocompleteLanguage,
@@ -142,19 +142,19 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
     return Selector<SearchProvider, String>(
       selector: (_, provider) => provider.searchTerm,
       builder: (_, data, __) {
-        if (data.length > 0) {
+        if (data.isNotEmpty) {
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: GestureDetector(
+              onTap: () {
+                clearText();
+              },
               child: Icon(
                 Icons.clear,
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white
                     : Colors.black,
               ),
-              onTap: () {
-                clearText();
-              },
             ),
           );
         } else {
@@ -168,7 +168,7 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
     if (!mounted) return;
     this.provider.searchTerm = controller.text;
 
-    PlaceProvider provider = PlaceProvider.of(context, listen: false);
+    var provider = PlaceProvider.of(context, listen: false);
 
     if (controller.text.isEmpty) {
       provider.debounceTimer?.cancel();
@@ -198,14 +198,14 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
   }
 
   void _onFocusChanged() {
-    PlaceProvider provider = PlaceProvider.of(context, listen: false);
+    var provider = PlaceProvider.of(context, listen: false);
     provider.isSearchBarFocused = focus.hasFocus;
     provider.debounceTimer?.cancel();
     provider.placeSearchingState = SearchingState.Idle;
   }
 
   void _searchPlace(String searchTerm) {
-    this.provider.prevSearchTerm = searchTerm;
+    provider.prevSearchTerm = searchTerm;
 
     if (context == null) {
       return;
@@ -213,7 +213,7 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
 
     _clearOverlay();
 
-    if (searchTerm.length < 1) {
+    if (searchTerm.isEmpty) {
       return;
     }
 
@@ -290,11 +290,10 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
   }
 
   _performAutoCompleteSearch(String searchTerm) async {
-    PlaceProvider provider = PlaceProvider.of(context, listen: false);
+    var provider = PlaceProvider.of(context, listen: false);
 
     if (searchTerm.isNotEmpty) {
-      final PlacesAutocompleteResponse response =
-          await provider.places.autocomplete(
+      final response = await provider.places.autocomplete(
         searchTerm,
         sessionToken: widget.sessionToken,
         location: provider.currentPosition == null
@@ -323,7 +322,7 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
   }
 
   clearText() {
-    provider.searchTerm = "";
+    provider.searchTerm = '';
     controller.clear();
   }
 

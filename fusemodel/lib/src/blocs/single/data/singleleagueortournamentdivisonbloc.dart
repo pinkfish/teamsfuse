@@ -93,9 +93,10 @@ abstract class SingleLeagueOrTournamentDivisonLoaded
       SingleLeagueOrTournamentDivisonLoadedBuilder b) {
     SingleLeagueOrTournamentDivisonState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentDivisonBlocStateType.Loaded;
+    b.type = SingleLeagueOrTournamentDivisonBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentDivisonLoaded.serializer, this);
@@ -135,9 +136,10 @@ abstract class SingleLeagueOrTournamentDivisonUninitialized
       SingleLeagueOrTournamentDivisonUninitializedBuilder b) {
     SingleLeagueOrTournamentDivisonState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentDivisonBlocStateType.Uninitialized;
+    b.type = SingleLeagueOrTournamentDivisonBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentDivisonUninitialized.serializer, this);
@@ -178,9 +180,10 @@ abstract class SingleLeagueOrTournamentDivisonDeleted
       SingleLeagueOrTournamentDivisonDeletedBuilder b) {
     SingleLeagueOrTournamentDivisonState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentDivisonBlocStateType.Deleted;
+    b.type = SingleLeagueOrTournamentDivisonBlocStateType.Deleted;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentDivisonDeleted.serializer, this);
@@ -223,9 +226,10 @@ abstract class SingleLeagueOrTournamentDivisonSaveFailed
       SingleLeagueOrTournamentDivisonSaveFailedBuilder b) {
     SingleLeagueOrTournamentDivisonState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentDivisonBlocStateType.SaveFailed;
+    b.type = SingleLeagueOrTournamentDivisonBlocStateType.SaveFailed;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentDivisonSaveFailed.serializer, this);
@@ -265,9 +269,10 @@ abstract class SingleLeagueOrTournamentDivisonSaving
       SingleLeagueOrTournamentDivisonSavingBuilder b) {
     SingleLeagueOrTournamentDivisonState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentDivisonBlocStateType.Saving;
+    b.type = SingleLeagueOrTournamentDivisonBlocStateType.Saving;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentDivisonSaving.serializer, this);
@@ -307,9 +312,10 @@ abstract class SingleLeagueOrTournamentDivisonSaveDone
       SingleLeagueOrTournamentDivisonSaveDoneBuilder b) {
     SingleLeagueOrTournamentDivisonState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentDivisonBlocStateType.SaveDone;
+    b.type = SingleLeagueOrTournamentDivisonBlocStateType.SaveDone;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentDivisonSaveDone.serializer, this);

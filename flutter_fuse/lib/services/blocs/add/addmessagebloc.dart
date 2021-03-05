@@ -45,7 +45,7 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
     // Create a new Player.
     if (event is AddMessageEventCommit) {
       if (event.teamUid == null ||
-          event.recipients.length == 0 ||
+          event.recipients.isEmpty ||
           event.body == null ||
           event.subject == null) {
         yield AddItemInvalidArguments(error: ArgumentError('Invalid args'));
@@ -53,12 +53,12 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
         yield AddItemSaving();
 
         try {
-          MessageBuilder builder = MessageBuilder()
+          var builder = MessageBuilder()
             ..teamUid = event.teamUid
             ..subject = event.subject
             ..timeSent = Timestamp.now().toUtc()
             ..fromUid = coordinationBloc.authenticationBloc.currentUser.uid;
-          for (String str in event.recipients) {
+          for (var str in event.recipients) {
             // Get all the users for the player.
             var player = await coordinationBloc.databaseUpdateModel
                 .getPlayerDetails(str.trim())

@@ -70,13 +70,14 @@ abstract class GameSharedData
   String get leagueDivisionUid;
 
   GameSharedData._();
-  factory GameSharedData([updates(GameSharedDataBuilder b)]) = _$GameSharedData;
+  factory GameSharedData([Function(GameSharedDataBuilder b) updates]) =
+      _$GameSharedData;
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(GameSharedData.serializer, this);
   }
 
   /// Defaults for the state.  Always default to no games loaded.
-  static void _initializeBuilder(GameSharedDataBuilder b) => b..name = "";
+  static void _initializeBuilder(GameSharedDataBuilder b) => b..name = '';
 
   static GameSharedData fromMap(Map<String, dynamic> jsonData) {
     return dataSerializers.deserializeWith(GameSharedData.serializer, jsonData);
@@ -86,7 +87,7 @@ abstract class GameSharedData
       _$gameSharedDataSerializer;
 
   Location get location {
-    return getLocation(this.timezone);
+    return getLocation(timezone);
   }
 
   TZDateTime get tzTime => TZDateTime.from(time, location);

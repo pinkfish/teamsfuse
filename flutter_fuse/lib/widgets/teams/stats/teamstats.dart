@@ -45,9 +45,7 @@ class _TeamStatsWidgetState extends State<TeamStatsWidget> {
           if (state is SingleTeamDeleted) {
             return DeletedWidget();
           }
-          if (_currentSeasonUid == null) {
-            _currentSeasonUid = state.team.currentSeason;
-          }
+          _currentSeasonUid ??= state.team.currentSeason;
           return BlocProvider(
             create: (BuildContext context) => SingleSeasonBloc(
                 db: RepositoryProvider.of<DatabaseUpdateModel>(context),

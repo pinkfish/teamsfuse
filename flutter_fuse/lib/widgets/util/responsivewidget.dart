@@ -50,6 +50,8 @@ class ResponsiveWidget extends StatelessWidget {
       inner = smallScreen(context);
     }
     return AnimatedSwitcher(
-        child: inner, duration: Duration(milliseconds: 500));
+      duration: Duration(milliseconds: 500),
+      child: inner,
+    );
   }
 }

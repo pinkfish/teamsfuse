@@ -73,12 +73,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   },
                 ),
                 Container(
+                  margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                   child: RaisedButton(
                       child: Text(Messages.of(context).forgotPassword),
                       color: Theme.of(context).primaryColor,
                       key: Key('SUBMIT'),
                       onPressed: _handleSubmitted),
-                  margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                 ),
               ],
             ),
@@ -87,20 +87,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               FlatButton(
-                child: Text(Messages.of(context).createaccount),
                 textColor: Theme.of(context).accentColor,
                 key: Key('CREATEACCOUNT'),
                 onPressed: () {
                   onPressed('/Login/SignUp');
                 },
+                child: Text(Messages.of(context).createaccount),
               ),
               FlatButton(
-                child: Text(Messages.of(context).login),
                 textColor: Theme.of(context).accentColor,
                 key: Key('LOGIN'),
                 onPressed: () {
                   onPressed('/Login/Home');
                 },
+                child: Text(Messages.of(context).login),
               ),
             ],
           ),
@@ -120,21 +120,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               FlatButton(
-                child: Text(Messages.of(context).createaccount),
                 textColor: Theme.of(context).accentColor,
                 key: Key('CREATEACCOUNT'),
                 onPressed: () {
                   onPressed('/Login/SignUp');
                 },
+                child: Text(Messages.of(context).createaccount),
               ),
               FlatButton(
-                  child: Text(Messages.of(context).login),
-                  textColor: Theme.of(context).accentColor,
-                  key: Key('LOGIN'),
-                  onPressed: () {
-                    // Go back to the initial state.
-                    onPressed('/Login/Home');
-                  }),
+                textColor: Theme.of(context).accentColor,
+                key: Key('LOGIN'),
+                onPressed: () {
+                  // Go back to the initial state.
+                  onPressed('/Login/Home');
+                },
+                child: Text(
+                  Messages.of(context).login,
+                ),
+              ),
             ],
           )
         ],

@@ -61,8 +61,8 @@ void main() {
 
     test('emits [uninitialized, authenticated] for real data', () {
       var userData = UserData((b) => b
-        ..email = "frog@frog.com"
-        ..uid = "ububng"
+        ..email = 'frog@frog.com'
+        ..uid = 'ububng'
         ..isEmailVerified = true);
       final expectedResponse = [AuthenticationLoggedIn(user: userData)];
 

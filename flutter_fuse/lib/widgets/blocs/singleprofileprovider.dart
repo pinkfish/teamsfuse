@@ -21,6 +21,7 @@ class SingleProfileProvider extends SingleBlocProvider<SingleProfileBloc> {
             builder: builder,
             prefix: 'profile');
 
+  @override
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleProfileBloc && bloc.profileUid == keyUid);
   }

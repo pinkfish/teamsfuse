@@ -6,8 +6,9 @@ import 'package:fusemodel/fusemodel.dart';
 
 import '../../../services/localutilities.dart';
 
-typedef void SelectPlayerCallback(BuildContext context, String playerUid);
-typedef bool FilterPlayerCallback(String playerUid);
+typedef SelectPlayerCallback = void Function(
+    BuildContext context, String playerUid);
+typedef FilterPlayerCallback = bool Function(String playerUid);
 
 ///
 /// List showing all the players on the team to be selectable in a dialog.
@@ -20,11 +21,11 @@ class DialogPlayerList extends StatelessWidget {
   final double scale;
 
   List<Widget> _populateList(BuildContext context, Orientation o) {
-    List<String> players = game.players.keys.toList();
+    var players = game.players.keys.toList();
     players.addAll(game.opponents.keys);
     players.sort((String a, String b) {
-      GamePlayerSummary asum = game.players[a] ?? game.opponents[a];
-      GamePlayerSummary bsum = game.players[b] ?? game.opponents[b];
+      var asum = game.players[a] ?? game.opponents[a];
+      var bsum = game.players[b] ?? game.opponents[b];
       if (asum.currentlyPlaying) {
         return -1;
       }

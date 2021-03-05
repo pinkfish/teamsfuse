@@ -98,7 +98,7 @@ class _MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
   }
 
   void _saveDialog() {
-    if (_updatedAttendance.length == 0) {
+    if (_updatedAttendance.isEmpty) {
       // nothing.
       Navigator.pop(context);
       return;

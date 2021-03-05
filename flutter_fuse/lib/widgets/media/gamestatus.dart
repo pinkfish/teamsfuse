@@ -18,11 +18,11 @@ class GameStatus {
   }
 
   bool updateState({Duration position, SingleGameState state}) {
-    Duration nextEvent = Duration.zero;
-    int ptsFor = 0;
-    int ptsAgainst = 0;
-    int foulsFor = 0;
-    int foulsAgainst = 0;
+    var nextEvent = Duration.zero;
+    var ptsFor = 0;
+    var ptsAgainst = 0;
+    var foulsFor = 0;
+    var foulsAgainst = 0;
 
     // Recalulate the score/fouls.
     for (var ev in state.gameEvents) {
@@ -65,7 +65,7 @@ class GameStatus {
     if (nextEvent != this.nextEvent ||
         ptsFor != this.ptsFor ||
         ptsAgainst != this.ptsAgainst ||
-        period != this.period ||
+        period != period ||
         foulsFor != this.foulsFor ||
         foulsAgainst != this.foulsAgainst) {
       this.nextEvent = nextEvent;

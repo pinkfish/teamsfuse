@@ -54,7 +54,7 @@ abstract class MessageRecipient
   }
 
   MessageRecipient._();
-  factory MessageRecipient([updates(MessageRecipientBuilder b)]) =
+  factory MessageRecipient([Function(MessageRecipientBuilder b) updates]) =
       _$MessageRecipient;
 
   static const String stateId = 'state';
@@ -96,7 +96,7 @@ abstract class Message implements Built<Message, MessageBuilder> {
   BuiltMap<String, MessageRecipient> get recipients;
 
   Message._();
-  factory Message([updates(MessageBuilder b)]) = _$Message;
+  factory Message([Function(MessageBuilder b) updates]) = _$Message;
 
   @memoized
   TZDateTime get tzTimeSent {

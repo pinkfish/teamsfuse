@@ -4,7 +4,7 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../../services/messages.dart';
 import 'dialogplayerlist.dart';
 
-typedef List<Widget> GamePlayerExtraButtons(BuildContext context);
+typedef GamePlayerExtraButtons = List<Widget> Function(BuildContext context);
 
 ///
 /// Shows the players as a nice grid to be able to select from.
@@ -57,11 +57,11 @@ class GamePlayerDialog extends StatelessWidget {
           children: [
             ...extraButtons != null ? extraButtons(context) : [],
             FlatButton(
+              onPressed: () => Navigator.pop(context, null),
               child: Text(
                 MaterialLocalizations.of(context).cancelButtonLabel,
                 textScaleFactor: 1.5,
               ),
-              onPressed: () => Navigator.pop(context, null),
             ),
           ],
         ),

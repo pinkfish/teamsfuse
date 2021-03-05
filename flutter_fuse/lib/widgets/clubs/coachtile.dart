@@ -24,6 +24,7 @@ class CoachTile extends StatelessWidget {
       {@required this.clubUid, @required this.coachUid, this.isAdmin = false})
       : assert(clubUid != null && coachUid != null);
 
+  @override
   Widget build(BuildContext context) {
     return SingleClubCoachProvider(
       coachUid: coachUid,

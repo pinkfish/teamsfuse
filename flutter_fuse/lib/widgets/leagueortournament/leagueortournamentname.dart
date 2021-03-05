@@ -35,7 +35,7 @@ class LeagueOrTournamentName extends StatelessWidget {
           Widget inner;
           if (state is SingleLeagueOrTournamentDivisonDeleted) {
             inner = Text(
-              "",
+              '',
               style: style,
               textAlign: textAlign,
               overflow: TextOverflow.ellipsis,
@@ -49,8 +49,8 @@ class LeagueOrTournamentName extends StatelessWidget {
             );
           }
           return AnimatedSwitcher(
-            child: inner,
             duration: Duration(milliseconds: 300),
+            child: inner,
           );
         },
       ),
@@ -81,8 +81,8 @@ class LeagueOrTournamentName extends StatelessWidget {
             );
           }
           return AnimatedSwitcher(
-            child: inner,
             duration: Duration(milliseconds: 300),
+            child: inner,
           );
         },
       ),

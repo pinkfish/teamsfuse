@@ -9,7 +9,8 @@ class QuerySnapshotWrapper {
   /// is the first snapshot, all documents will be in the list as Added changes.
   final List<DocumentChangeWrapper> documentChanges;
 
-  QuerySnapshotWrapper({this.documents, this.documentChanges})
+  QuerySnapshotWrapper(
+      {@required this.documents, @required this.documentChanges})
       : assert(documentChanges != null),
         assert(documents != null);
 }

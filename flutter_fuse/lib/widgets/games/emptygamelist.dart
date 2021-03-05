@@ -21,7 +21,7 @@ class EmptyGameList extends StatelessWidget {
     var screenSize = MediaQuery.of(context).size;
     ElevatedButton button;
     var teams = BlocProvider.of<TeamBloc>(context);
-    if (teams.state.allTeamUids.length == 0) {
+    if (teams.state.allTeamUids.isEmpty) {
       button = ElevatedButton(
         onPressed: () => _addTeam(context),
         child: Text(Messages.of(context).addTeamButton),

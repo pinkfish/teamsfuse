@@ -57,7 +57,7 @@ class GameEventWidget extends StatelessWidget {
                         format.format(gameEvent.timestamp),
                         textScaleFactor: 1.2,
                       )
-                    : Text(""),
+                    : Text(''),
               ),
               Text(
                 Messages.of(context).getGameEventType(gameEvent),
@@ -70,7 +70,7 @@ class GameEventWidget extends StatelessWidget {
               Text(
                 showPeriod
                     ? Messages.of(context).getPeriodName(gameEvent.period)
-                    : "",
+                    : '',
                 softWrap: true,
                 overflow: TextOverflow.fade,
                 textScaleFactor: 1.2,
@@ -101,7 +101,7 @@ class GameEventWidget extends StatelessWidget {
   }
 
   Color _getColor(BuildContext context) {
-    Color c = Theme.of(context).cardColor;
+    var c = Theme.of(context).cardColor;
 
     switch (gameEvent.type) {
       case GameEventType.Made:
@@ -116,7 +116,6 @@ class GameEventWidget extends StatelessWidget {
       case GameEventType.OffsensiveRebound:
         return c.withBlue(50);
       case GameEventType.PeriodEnd:
-      case GameEventType.PeriodStart:
       case GameEventType.PeriodStart:
       case GameEventType.Sub:
       case GameEventType.TimeoutStart:

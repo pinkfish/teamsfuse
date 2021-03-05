@@ -22,7 +22,7 @@ class ClubNewsCard extends StatelessWidget {
   final bool isAdmin;
 
   /// Creates a nice card to display the news item.
-  ClubNewsCard({this.clubUid, this.newsItemUid, this.isAdmin = false})
+  ClubNewsCard({@required this.clubUid, this.newsItemUid, this.isAdmin = false})
       : assert(clubUid != null && newsItemUid != null);
 
   void _deleteItem(BuildContext context, SingleNewsItemBloc newsItem) async {
@@ -40,11 +40,11 @@ class ClubNewsCard extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete and then pop
                 Navigator.pop(context, true);
               },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
             ),
           ],
         );
@@ -55,6 +55,7 @@ class ClubNewsCard extends StatelessWidget {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return SingleNewsItemProvider(
       clubUid: clubUid,

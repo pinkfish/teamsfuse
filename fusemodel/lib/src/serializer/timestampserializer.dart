@@ -17,6 +17,7 @@ class Timestamp extends DateTime {
       : super.fromMicrosecondsSinceEpoch(t.microsecondsSinceEpoch, isUtc: true);
 
   /// Make sure toUtc() still converts to a timestamp.
+  @override
   Timestamp toUtc() {
     return Timestamp.fromDateTime(super.toUtc());
   }
@@ -36,40 +37,40 @@ class TimestampSerializer implements PrimitiveSerializer<Timestamp> {
   @override
   Object serialize(Serializers serializers, Timestamp dateTime,
       {FullType specifiedType = FullType.unspecified}) {
-    print("Serializer $dateTime");
+    print('Serializer $dateTime');
     if (!dateTime.isUtc) {
       throw ArgumentError.value(
           dateTime, 'dateTime', 'Must be in utc for serialization.');
     }
 
-    int seconds = dateTime.millisecondsSinceEpoch ~/ 1000;
-    int nanoseconds = (dateTime.microsecondsSinceEpoch % 1000000) * 1000;
-    return "Timestamp(seconds=$seconds, nanonseconds=$nanoseconds)";
+    var seconds = dateTime.millisecondsSinceEpoch ~/ 1000;
+    var nanoseconds = (dateTime.microsecondsSinceEpoch % 1000000) * 1000;
+    return 'Timestamp(seconds=$seconds, nanonseconds=$nanoseconds)';
   }
 
   @override
   Timestamp deserialize(Serializers serializers, Object serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    print("Deserialize $serialized");
-    String bit = serialized.toString();
-    bit = bit.replaceAll("Timestamp(", "");
-    bit = bit.replaceAll(")", "");
-    var parts = bit.split(",");
-    int totalTs = 0;
-    print("Decode $parts");
+    print('Deserialize $serialized');
+    var bit = serialized.toString();
+    bit = bit.replaceAll('Timestamp(', '');
+    bit = bit.replaceAll(')', '');
+    var parts = bit.split(',');
+    var totalTs = 0;
+    print('Decode $parts');
     for (var p in parts) {
       p = p.trim();
-      print("$p");
-      var num = int.parse(p.split("=")[1]);
-      if (p.startsWith("seconds")) {
+      print('$p');
+      var num = int.parse(p.split('=')[1]);
+      if (p.startsWith('seconds')) {
         totalTs += num * 1000000;
       }
-      if (p.startsWith("nanoseconds")) {
+      if (p.startsWith('nanoseconds')) {
         totalTs += num ~/ 1000;
       }
     }
 
-    Timestamp ret = Timestamp.fromMicrosecondsSinceEpoch(totalTs);
+    var ret = Timestamp.fromMicrosecondsSinceEpoch(totalTs);
     return ret;
   }
 }

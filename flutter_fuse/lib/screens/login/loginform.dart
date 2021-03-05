@@ -104,6 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   Container(
+                    margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                     child: RaisedButton(
                       child: Text(Messages.of(context).login),
                       color: Theme.of(context).primaryColor,
@@ -111,22 +112,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _handleSubmitted,
                       key: Key('SUBMIT'),
                     ),
-                    margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       FlatButton(
-                        child: Text(Messages.of(context).createaccount),
                         textColor: Theme.of(context).accentColor,
                         key: Key('CREATEACCOUNT'),
                         onPressed: () => _onPressed('/Login/SignUp'),
+                        child: Text(Messages.of(context).createaccount),
                       ),
                       FlatButton(
-                        child: Text(Messages.of(context).forgotPassword),
                         textColor: Theme.of(context).accentColor,
                         key: Key('FORGOTPASSWORD'),
                         onPressed: () => _onPressed('/Login/ForgotPassword'),
+                        child: Text(Messages.of(context).forgotPassword),
                       ),
                     ],
                   )

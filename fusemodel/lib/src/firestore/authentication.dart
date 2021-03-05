@@ -20,12 +20,12 @@ class UserAuthImpl {
         .listen((FirebaseUserWrapper input) async {
       print('onAuthStateChanged $input');
       if (_profileUpdates != null) {
-        _profileUpdates.cancel();
+        await _profileUpdates.cancel();
         _profileUpdates = null;
       }
       if (_currentUser != null) {
         // Delete the old token.
-        deleteNotificationToken();
+        await deleteNotificationToken();
       }
       if (input == null || !input.loggedIn) {
         _currentUser = null;
@@ -37,10 +37,9 @@ class UserAuthImpl {
         _controller.add(_currentUser);
         // Update the notification token.
         if (_token != null) {
-          setNotificationToken(_token);
+          await setNotificationToken(_token);
         }
-        DocumentReferenceWrapper ref =
-            wrapper.collection(USER_DATA_COLLECTION).document(input.uid);
+        var ref = wrapper.collection(USER_DATA_COLLECTION).document(input.uid);
         _profileUpdates = ref.snapshots().listen(_onProfileUpdates);
       }
       print('end onAuthStateChanged $input');
@@ -58,23 +57,22 @@ class UserAuthImpl {
         .createUserWithEmailAndPassword(
             email: userData.email, password: userData.password)
         .then((FirebaseUserWrapper user) {
-      UserData newData = UserData((b) => b
+      var newData = UserData((b) => b
         ..profile = profile.toBuilder()
         ..email = userData.email
         ..isEmailVerified = false);
       user.sendEmailVerification();
-      DocumentReferenceWrapper ref =
-          wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
+      var ref = wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
       return ref.setData(profile.toMap()).then((void data) async {
         // With update uid.
         // Create a 'me' user.
-        PlayerBuilder player = PlayerBuilder();
+        var player = PlayerBuilder();
         player.name = userData.profile.displayName;
-        PlayerUserInternalBuilder playerUser = PlayerUserInternalBuilder();
+        var playerUser = PlayerUserInternalBuilder();
         playerUser.relationship = Relationship.Me;
         playerUser.added = true;
         player.usersData[user.uid] = playerUser.build();
-        wrapper
+        await wrapper
             .collection(PLAYERS_COLLECTION)
             .add(player.build().toMap(includeUsers: true));
         await signIn(userData);
@@ -86,15 +84,15 @@ class UserAuthImpl {
   // To verify new User
   Future<UserData> signIn(UserData userData) async {
     print('Signin $userData');
-    FirebaseUserWrapper user = await wrapper.auth.signInWithEmailAndPassword(
+    var user = await wrapper.auth.signInWithEmailAndPassword(
         email: userData.email, password: userData.password);
-    print("Got the sign in $user, now returning current user");
+    print('Got the sign in $user, now returning current user');
     if (user != null && user.loggedIn) {
       print('In here');
       return currentUser();
     }
     print('Throwing exception');
-    throw ArgumentError("Invalud login");
+    throw ArgumentError('Invalud login');
   }
 
   // To reset the password.
@@ -115,7 +113,7 @@ class UserAuthImpl {
   Future<void> reloadUser() async {
     await _currentFirebaseUser.reload();
     // Force an update once it is reloaded.
-    _userDataFromFirestore(_currentFirebaseUser, false);
+    await _userDataFromFirestore(_currentFirebaseUser, false);
   }
 
   // Sign the user out.
@@ -127,21 +125,18 @@ class UserAuthImpl {
   }
 
   Stream<UserData> onAuthChanged() {
-    if (_stream == null) {
-      _stream = _controller.stream.asBroadcastStream();
-    }
+    _stream ??= _controller.stream.asBroadcastStream();
     return _stream;
   }
 
   Future<UserData> currentUser() async {
     if (_currentUser == null) {
-      FirebaseUserWrapper fbUser = await wrapper.auth.currentUser();
+      var fbUser = await wrapper.auth.currentUser();
       if (fbUser != null && fbUser.loggedIn) {
         _currentFirebaseUser = fbUser;
-        UserData user = await _userDataFromFirestore(fbUser, false);
+        var user = await _userDataFromFirestore(fbUser, false);
         if (_profileUpdates == null) {
-          DocumentReferenceWrapper ref =
-              wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
+          var ref = wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
           _profileUpdates = ref.snapshots().listen(_onProfileUpdates);
         }
         return user;
@@ -155,19 +150,17 @@ class UserAuthImpl {
   }
 
   Future<void> updateProfile(String uid, FusedUserProfile profile) async {
-    DocumentReferenceWrapper ref =
-        wrapper.collection(USER_DATA_COLLECTION).document(uid);
+    var ref = wrapper.collection(USER_DATA_COLLECTION).document(uid);
     await ref.updateData(profile.toMap());
   }
 
   Stream<FusedUserProfile> getProfileStream(String userId) async* {
-    print("Looking for $userId");
-    DocumentReferenceWrapper ref =
-        wrapper.collection(USER_DATA_COLLECTION).document(userId);
-    DocumentSnapshotWrapper snap = await ref.get();
-    print("Found $userId ${snap.data}");
+    print('Looking for $userId');
+    var ref = wrapper.collection(USER_DATA_COLLECTION).document(userId);
+    var snap = await ref.get();
+    print('Found $userId ${snap.data}');
     if (snap.exists) {
-      FusedUserProfile profile = FusedUserProfile.fromMap(snap.data);
+      var profile = FusedUserProfile.fromMap(snap.data);
       yield profile;
       await for (DocumentSnapshotWrapper snap in ref.snapshots()) {
         yield FusedUserProfile.fromMap(snap.data);
@@ -178,8 +171,7 @@ class UserAuthImpl {
 
   void _onProfileUpdates(DocumentSnapshotWrapper doc) {
     if (doc.exists) {
-      FusedUserProfileBuilder profile =
-          FusedUserProfile.fromMap(doc.data).toBuilder();
+      var profile = FusedUserProfile.fromMap(doc.data).toBuilder();
       profile.uid = doc.documentID;
       _currentUser = _currentUser.rebuild((b) => b..profile = profile);
       _controller.add(_currentUser);
@@ -193,35 +185,33 @@ class UserAuthImpl {
     // it exists.
     FusedUserProfileBuilder userProfile;
     userProfile = FusedUserProfileBuilder();
-    userProfile.displayName = input.email.split("@")[0];
+    userProfile.displayName = input.email.split('@')[0];
     userProfile.email = input.email;
-    userProfile.phoneNumber = "";
+    userProfile.phoneNumber = '';
     userProfile.emailOnUpdates = true;
     userProfile.emailUpcomingGame = true;
     userProfile.notifyOnlyForGames = false;
     userProfile.uid = input.uid;
 
-    UserData user = UserData((b) => b
+    var user = UserData((b) => b
       ..email = input.email
       ..uid = input.uid
       ..isEmailVerified = input.isEmailVerified
       ..profile = userProfile);
     _currentFirebaseUser = input;
     if (forceProfile) {
-      Future<DocumentSnapshotWrapper> ref =
+      var ref =
           wrapper.collection(USER_DATA_COLLECTION).document(input.uid).get();
       if (forceProfile) {
-        DocumentSnapshotWrapper doc = await ref;
-        FusedUserProfileBuilder profile =
-            FusedUserProfile.fromMap(doc.data).toBuilder();
+        var doc = await ref;
+        var profile = FusedUserProfile.fromMap(doc.data).toBuilder();
         profile.uid = user.uid;
         user = user.rebuild((b) => b..profile = profile);
       } else {
         // Update when ready.
-        ref.then((DocumentSnapshotWrapper doc) {
+        await ref.then((DocumentSnapshotWrapper doc) {
           print('Loaded from firestore');
-          FusedUserProfileBuilder profile =
-              FusedUserProfile.fromMap(doc.data).toBuilder();
+          var profile = FusedUserProfile.fromMap(doc.data).toBuilder();
           profile.uid = user.uid;
           user = user.rebuild((b) => b..profile = profile);
         });
@@ -234,11 +224,11 @@ class UserAuthImpl {
   // User profile
   Future<void> setNotificationToken(String token) async {
     if (_currentUser != null) {
-      Map<String, bool> data = <String, bool>{};
-      String key = "${FusedUserProfile.TOKENS}.$token";
+      var data = <String, bool>{};
+      var key = '${FusedUserProfile.TOKENS}.$token';
       if (!data.containsKey(key) || !data[key]) {
         data[key] = true;
-        wrapper
+        await wrapper
             .collection(USER_DATA_COLLECTION)
             .document(_currentUser.uid)
             .updateData(data);
@@ -256,11 +246,11 @@ class UserAuthImpl {
   // User profile
   Future<void> deleteNotificationToken() async {
     if (_currentUser != null) {
-      Map<String, bool> data = <String, bool>{};
-      String key = "${FusedUserProfile.TOKENS}.$_token";
+      var data = <String, bool>{};
+      var key = '${FusedUserProfile.TOKENS}.$_token';
       if (data.containsKey(key) && data[key]) {
         data[key] = false;
-        wrapper
+        await wrapper
             .collection(USER_DATA_COLLECTION)
             .document(_currentUser.uid)
             .updateData(data);

@@ -75,9 +75,10 @@ abstract class SingleSeasonLoaded
   static void _initializeBuilder(SingleSeasonLoadedBuilder b) {
     SingleSeasonState.initializeStateBuilder(b);
 
-    b..type = SingleSeasonBlocStateType.Loaded;
+    b.type = SingleSeasonBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleSeasonLoaded.serializer, this);
   }
@@ -111,9 +112,10 @@ abstract class SingleSeasonUninitialized
   static void _initializeBuilder(SingleSeasonUninitializedBuilder b) {
     SingleSeasonState.initializeStateBuilder(b);
 
-    b..type = SingleSeasonBlocStateType.Uninitialized;
+    b.type = SingleSeasonBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleSeasonUninitialized.serializer, this);
@@ -149,9 +151,10 @@ abstract class SingleSeasonDeleted
   static void _initializeBuilder(SingleSeasonDeletedBuilder b) {
     SingleSeasonState.initializeStateBuilder(b);
 
-    b..type = SingleSeasonBlocStateType.Deleted;
+    b.type = SingleSeasonBlocStateType.Deleted;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleSeasonDeleted.serializer, this);
   }
@@ -188,9 +191,10 @@ abstract class SingleSeasonSaveFailed
   static void _initializeBuilder(SingleSeasonSaveFailedBuilder b) {
     SingleSeasonState.initializeStateBuilder(b);
 
-    b..type = SingleSeasonBlocStateType.SaveFailed;
+    b.type = SingleSeasonBlocStateType.SaveFailed;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleSeasonSaveFailed.serializer, this);
   }
@@ -224,9 +228,10 @@ abstract class SingleSeasonSaving
   static void _initializeBuilder(SingleSeasonSavingBuilder b) {
     SingleSeasonState.initializeStateBuilder(b);
 
-    b..type = SingleSeasonBlocStateType.Saving;
+    b.type = SingleSeasonBlocStateType.Saving;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleSeasonSaving.serializer, this);
   }
@@ -259,9 +264,10 @@ abstract class SingleSeasonSaveDone
   static void _initializeBuilder(SingleSeasonSaveDoneBuilder b) {
     SingleSeasonState.initializeStateBuilder(b);
 
-    b..type = SingleSeasonBlocStateType.SaveDone;
+    b.type = SingleSeasonBlocStateType.SaveDone;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleSeasonSaveDone.serializer, this);
   }

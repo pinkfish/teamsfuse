@@ -72,9 +72,10 @@ abstract class SingleClubCoachLoaded
   static void _initializeBuilder(SingleClubCoachLoadedBuilder b) {
     SingleClubCoachState.initializeStateBuilder(b);
 
-    b..type = SingleClubCoachBlocStateType.Loaded;
+    b.type = SingleClubCoachBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleClubCoachLoaded.serializer, this);
   }
@@ -111,9 +112,10 @@ abstract class SingleClubCoachUninitialized
   static void _initializeBuilder(SingleClubCoachUninitializedBuilder b) {
     SingleClubCoachState.initializeStateBuilder(b);
 
-    b..type = SingleClubCoachBlocStateType.Uninitialized;
+    b.type = SingleClubCoachBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleClubCoachUninitialized.serializer, this);
@@ -149,9 +151,10 @@ abstract class SingleClubCoachDeleted
   static void _initializeBuilder(SingleClubCoachDeletedBuilder b) {
     SingleClubCoachState.initializeStateBuilder(b);
 
-    b..type = SingleClubCoachBlocStateType.Deleted;
+    b.type = SingleClubCoachBlocStateType.Deleted;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleClubCoachDeleted.serializer, this);
   }
@@ -191,9 +194,10 @@ abstract class SingleClubCoachSaveFailed
   static void _initializeBuilder(SingleClubCoachSaveFailedBuilder b) {
     SingleClubCoachState.initializeStateBuilder(b);
 
-    b..type = SingleClubCoachBlocStateType.SaveFailed;
+    b.type = SingleClubCoachBlocStateType.SaveFailed;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleClubCoachSaveFailed.serializer, this);
@@ -229,9 +233,10 @@ abstract class SingleClubCoachSaving
   static void _initializeBuilder(SingleClubCoachSavingBuilder b) {
     SingleClubCoachState.initializeStateBuilder(b);
 
-    b..type = SingleClubCoachBlocStateType.Saving;
+    b.type = SingleClubCoachBlocStateType.Saving;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleClubCoachSaving.serializer, this);
   }
@@ -266,9 +271,10 @@ abstract class SingleClubCoachSaveDone
   static void _initializeBuilder(SingleClubCoachSaveDoneBuilder b) {
     SingleClubCoachState.initializeStateBuilder(b);
 
-    b..type = SingleClubCoachBlocStateType.SaveDone;
+    b.type = SingleClubCoachBlocStateType.SaveDone;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleClubCoachSaveDone.serializer, this);
   }

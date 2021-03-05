@@ -37,23 +37,23 @@ class TeamDetails extends StatelessWidget {
             ? ButtonBar(
                 children: [
                   TextButton(
-                    child: Text(Messages.of(context).addPlayerButton),
                     onPressed: () => Navigator.pushNamed(
                         context, '/AddPlayer/${team.uid}/${season.uid}'),
+                    child: Text(Messages.of(context).addPlayerButton),
                   ),
                   TextButton(
-                    child: Text(Messages.of(context).addGameButton),
                     onPressed: () => Navigator.pushNamed(
                         context, '/Game/Add/${team.uid}/${season.uid}'),
+                    child: Text(Messages.of(context).addGameButton),
                   ),
                   TextButton(
-                    child: Text(Messages.of(context).addTrainingButton),
                     onPressed: () =>
                         Navigator.pushNamed(context, '/AddTraining'),
+                    child: Text(Messages.of(context).addTrainingButton),
                   ),
                   TextButton(
-                    child: Text(Messages.of(context).addEventButton),
                     onPressed: () => Navigator.pushNamed(context, '/AddEvent'),
+                    child: Text(Messages.of(context).addEventButton),
                   ),
                 ],
               )

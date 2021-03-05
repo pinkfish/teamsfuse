@@ -69,9 +69,10 @@ abstract class ClubLoaded
   static void _initializeBuilder(ClubLoadedBuilder b) {
     ClubState.initializeStateBuilder(b);
 
-    b..type = ClubBlocStateType.Loaded;
+    b.type = ClubBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(ClubLoaded.serializer, this);
   }
@@ -100,9 +101,10 @@ abstract class ClubUninitialized
   static void _initializeBuilder(ClubUninitializedBuilder b) {
     ClubState.initializeStateBuilder(b);
 
-    b..type = ClubBlocStateType.Uninitialized;
+    b.type = ClubBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(ClubUninitialized.serializer, this);
   }

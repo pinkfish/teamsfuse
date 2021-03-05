@@ -46,6 +46,7 @@ class AddItemInvalidArguments extends AddItemState {
 
   AddItemInvalidArguments({@required this.error}) : super();
 
+  @override
   String toString() {
     return 'AddItemInvalidArguments{}';
   }

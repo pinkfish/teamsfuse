@@ -26,6 +26,7 @@ class SingleMessageProvider extends SingleBlocProvider<SingleMessageBloc> {
             builder: builder,
             prefix: 'message');
 
+  @override
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleMessageBloc && bloc.messageUid == keyUid);
   }

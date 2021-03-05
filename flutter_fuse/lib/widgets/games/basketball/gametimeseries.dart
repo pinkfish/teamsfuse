@@ -41,8 +41,8 @@ class _GameTimeseriesData extends State<GameTimeseries> {
   charts.Series<_CumulativeScore, Duration> _getEventSeries(
       GameEventType eventType, Color color, bool opponent,
       {bool assist = false}) {
-    int total = 0;
-    bool first = false;
+    var total = 0;
+    var first = false;
     return charts.Series<_CumulativeScore, Duration>(
       id: _nameOfSeries(eventType, opponent),
       colorFn: (_, __) =>
@@ -68,8 +68,8 @@ class _GameTimeseriesData extends State<GameTimeseries> {
   }
 
   charts.Series<_CumulativeScore, Duration> _getPointSeries() {
-    int total = 0;
-    bool first = false;
+    var total = 0;
+    var first = false;
     return charts.Series<_CumulativeScore, Duration>(
       id: 'Score',
       colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
@@ -90,8 +90,8 @@ class _GameTimeseriesData extends State<GameTimeseries> {
   }
 
   charts.Series<_CumulativeScore, Duration> _getOpponentPointSeries() {
-    int total = 0;
-    bool first = false;
+    var total = 0;
+    var first = false;
 
     return charts.Series<_CumulativeScore, Duration>(
       id: 'Opponent',
@@ -186,6 +186,7 @@ class _GameTimeseriesData extends State<GameTimeseries> {
               onChanged: (_GameTimeseriesType t) => setState(() => type = t),
               items: [
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.All,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -193,9 +194,9 @@ class _GameTimeseriesData extends State<GameTimeseries> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.All,
                 ),
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.Points,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -203,9 +204,9 @@ class _GameTimeseriesData extends State<GameTimeseries> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.Points,
                 ),
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.Blocks,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -213,9 +214,9 @@ class _GameTimeseriesData extends State<GameTimeseries> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.Blocks,
                 ),
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.Fouls,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -223,9 +224,9 @@ class _GameTimeseriesData extends State<GameTimeseries> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.Fouls,
                 ),
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.Turnovers,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -233,9 +234,9 @@ class _GameTimeseriesData extends State<GameTimeseries> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.Turnovers,
                 ),
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.Assists,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -243,7 +244,6 @@ class _GameTimeseriesData extends State<GameTimeseries> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.Assists,
                 ),
               ],
             ),
@@ -268,15 +268,15 @@ class _GameTimeseriesData extends State<GameTimeseries> {
   String _nameOfSeries(GameEventType type, bool opponent) {
     switch (type) {
       case GameEventType.Foul:
-        return Messages.of(context).fouls + (opponent ? ' (op)' : "");
+        return Messages.of(context).fouls + (opponent ? ' (op)' : '');
       case GameEventType.Turnover:
-        return Messages.of(context).turnovers + (opponent ? ' (op)' : "");
+        return Messages.of(context).turnovers + (opponent ? ' (op)' : '');
       case GameEventType.Steal:
-        return Messages.of(context).steals + (opponent ? ' (op)' : "");
+        return Messages.of(context).steals + (opponent ? ' (op)' : '');
       case GameEventType.Block:
-        return Messages.of(context).blocks + (opponent ? ' (op)' : "");
+        return Messages.of(context).blocks + (opponent ? ' (op)' : '');
       default:
-        return Messages.of(context).unknown + (opponent ? ' (op)' : "");
+        return Messages.of(context).unknown + (opponent ? ' (op)' : '');
     }
   }
 
@@ -299,7 +299,7 @@ class _GameTimeseriesData extends State<GameTimeseries> {
       ),
     ];
 
-    if (periods.length > 0) {
+    if (periods.isNotEmpty) {
       behaviours.add(charts.RangeAnnotation(periods
           .map(
             (p) => charts.LineAnnotationSegment(

@@ -22,11 +22,11 @@ class PeriodDropdown extends StatelessWidget {
       items: GamePeriod.values
           .map(
             (GamePeriod p) => DropdownMenuItem(
+              value: p,
               child: Text(
                 Messages.of(context).getPeriodName(p),
                 textScaleFactor: 1.5,
               ),
-              value: p,
             ),
           )
           .toList(),

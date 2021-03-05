@@ -42,17 +42,17 @@ class _TeamSettingsState extends State<TeamSettings> {
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
             ),
             FlatButton(
-              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
             ),
           ],
         );
@@ -82,17 +82,17 @@ class _TeamSettingsState extends State<TeamSettings> {
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
             ),
             FlatButton(
-              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
             ),
           ],
         );
@@ -158,8 +158,8 @@ class _TeamSettingsState extends State<TeamSettings> {
     ret.add(
       FlatButton(
         onPressed: _addAdmin,
-        child: Text('ADD ADMIN'),
         textColor: Theme.of(context).accentColor,
+        child: Text('ADD ADMIN'),
       ),
     );
 

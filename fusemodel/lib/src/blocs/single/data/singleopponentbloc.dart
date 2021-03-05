@@ -75,9 +75,10 @@ abstract class SingleOpponentLoaded
   static void _initializeBuilder(SingleOpponentLoadedBuilder b) {
     SingleOpponentState.initializeStateBuilder(b);
 
-    b..type = SingleOpponentBlocStateType.Loaded;
+    b.type = SingleOpponentBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleOpponentLoaded.serializer, this);
   }
@@ -113,9 +114,10 @@ abstract class SingleOpponentUninitialized
   static void _initializeBuilder(SingleOpponentUninitializedBuilder b) {
     SingleOpponentState.initializeStateBuilder(b);
 
-    b..type = SingleOpponentBlocStateType.Uninitialized;
+    b.type = SingleOpponentBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleOpponentUninitialized.serializer, this);
@@ -151,9 +153,10 @@ abstract class SingleOpponentDeleted
   static void _initializeBuilder(SingleOpponentDeletedBuilder b) {
     SingleOpponentState.initializeStateBuilder(b);
 
-    b..type = SingleOpponentBlocStateType.Deleted;
+    b.type = SingleOpponentBlocStateType.Deleted;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleOpponentDeleted.serializer, this);
   }
@@ -191,9 +194,10 @@ abstract class SingleOpponentSaveFailed
   static void _initializeBuilder(SingleOpponentSaveFailedBuilder b) {
     SingleOpponentState.initializeStateBuilder(b);
 
-    b..type = SingleOpponentBlocStateType.SaveFailed;
+    b.type = SingleOpponentBlocStateType.SaveFailed;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleOpponentSaveFailed.serializer, this);
   }
@@ -227,9 +231,10 @@ abstract class SingleOpponentSaving
   static void _initializeBuilder(SingleOpponentSavingBuilder b) {
     SingleOpponentState.initializeStateBuilder(b);
 
-    b..type = SingleOpponentBlocStateType.Saving;
+    b.type = SingleOpponentBlocStateType.Saving;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleOpponentSaving.serializer, this);
   }
@@ -264,9 +269,10 @@ abstract class SingleOpponentSaveDone
   static void _initializeBuilder(SingleOpponentSaveDoneBuilder b) {
     SingleOpponentState.initializeStateBuilder(b);
 
-    b..type = SingleOpponentBlocStateType.SaveDone;
+    b.type = SingleOpponentBlocStateType.SaveDone;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleOpponentSaveDone.serializer, this);
   }

@@ -347,7 +347,7 @@ class _PlacePickerState extends State<PlacePicker> {
     // Prevents searching again by camera movement.
     provider.isAutoCompleteSearching = true;
 
-    await _moveTo(provider.selectedPlace.geometry.location.lat,
+    _moveTo(provider.selectedPlace.geometry.location.lat,
         provider.selectedPlace.geometry.location.lng);
 
     provider.isAutoCompleteSearching = true;
@@ -355,7 +355,7 @@ class _PlacePickerState extends State<PlacePicker> {
   }
 
   void _moveTo(double latitude, double longitude) async {
-    GoogleMapController controller = provider.mapController;
+    var controller = provider.mapController;
     if (controller == null) {
       return;
     }

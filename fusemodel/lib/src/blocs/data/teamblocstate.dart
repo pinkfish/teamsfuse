@@ -44,7 +44,7 @@ abstract class TeamState with TeamStateUpdates {
   @memoized
   @override
   Set<String> get allTeamUids {
-    Set<String> set = Set.from(adminTeams.keys);
+    var set = Set<String>.from(adminTeams.keys);
     clubTeams.forEach(
         (String clubUid, BuiltMap<String, Team> data) => set.addAll(data.keys));
     set.addAll(clubTeams.keys);
@@ -84,7 +84,7 @@ abstract class TeamStateUpdates {
     if (adminTeams.containsKey(uid)) {
       return adminTeams[uid];
     }
-    for (BuiltMap<String, Team> ts in clubTeams.values) {
+    for (var ts in clubTeams.values) {
       if (ts.containsKey(uid)) {
         return ts[uid];
       }
@@ -100,7 +100,7 @@ abstract class TeamStateUpdates {
   /// Gets the public details for the team.
   ///
   Team getPublicTeam(String uid) {
-    Team t = getTeam(uid);
+    var t = getTeam(uid);
     if (t == null && publicTeams.containsKey(uid)) {
       return publicTeams[uid];
     }
@@ -108,7 +108,7 @@ abstract class TeamStateUpdates {
   }
 
   Set<String> get allTeamUids {
-    Set<String> set = Set.from(adminTeams.keys);
+    var set = Set<String>.from(adminTeams.keys);
     clubTeams.forEach(
         (String clubUid, BuiltMap<String, Team> data) => set.addAll(data.keys));
     set.addAll(publicTeams.keys);
@@ -134,9 +134,10 @@ abstract class TeamLoaded
   static void _initializeBuilder(TeamLoadedBuilder b) {
     TeamState.initializeStateBuilder(b);
 
-    b..type = TeamBlocStateType.Loaded;
+    b.type = TeamBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(TeamLoaded.serializer, this);
   }
@@ -166,9 +167,10 @@ abstract class TeamUninitialized
   static void _initializeBuilder(TeamUninitializedBuilder b) {
     TeamState.initializeStateBuilder(b);
 
-    b..type = TeamBlocStateType.Uninitialized;
+    b.type = TeamBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(TeamUninitialized.serializer, this);
   }

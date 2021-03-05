@@ -35,15 +35,15 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
   num get periodNumber;
 
   GamePeriod._();
-  factory GamePeriod([updates(GamePeriodBuilder b)]) = _$GamePeriod;
+  factory GamePeriod([Function(GamePeriodBuilder b) updates]) = _$GamePeriod;
 
-  static const String _BREAK = "--";
+  static const String _BREAK = '--';
 
   String toIndex() {
     if (periodNumber > 0) {
-      return "$type--$periodNumber";
+      return '$type--$periodNumber';
     }
-    return "$type";
+    return '$type';
   }
 
   static GamePeriod fromIndex(String str) {
@@ -53,13 +53,13 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
       return null;
     }
 
-    List<String> bits = str.split(_BREAK);
+    var bits = str.split(_BREAK);
     if (bits.length == 2) {
-      if (bits[0] == "FinalRegulation") {
-        bits[0] = "Final";
+      if (bits[0] == 'FinalRegulation') {
+        bits[0] = 'Final';
       }
-      if (bits[0] == "Numbered") {
-        bits[0] = "Regulation";
+      if (bits[0] == 'Numbered') {
+        bits[0] = 'Regulation';
       }
       type = GamePeriodType.values
           .firstWhere((GamePeriodType val) => val.toString() == bits[0]);
@@ -70,15 +70,15 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
     } else {
       // Old style.
       switch (str) {
-        case "Final":
+        case 'Final':
           type = GamePeriodType.Final;
           periodNumber = 0;
           break;
-        case "Overtime":
+        case 'Overtime':
           type = GamePeriodType.Overtime;
           periodNumber = 0;
           break;
-        case "Penalty":
+        case 'Penalty':
           type = GamePeriodType.Penalty;
           periodNumber = 0;
           break;
@@ -93,7 +93,8 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
     }
   }
 
-  String toString() => "GamePeriod [$type $periodNumber]";
+  @override
+  String toString() => 'GamePeriod [$type $periodNumber]';
 
   static GamePeriod notStarted = GamePeriod((b) => b
     ..type = GamePeriodType.NotStarted
@@ -169,7 +170,8 @@ abstract class GamePeriodTime
   bool get timeCountUp;
 
   GamePeriodTime._();
-  factory GamePeriodTime([updates(GamePeriodTimeBuilder b)]) = _$GamePeriodTime;
+  factory GamePeriodTime([Function(GamePeriodTimeBuilder b) updates]) =
+      _$GamePeriodTime;
 
   DateTime get currentPeriodStart => currentPeriodStartInternal != null &&
           currentPeriodStartInternal != 0
@@ -219,7 +221,8 @@ abstract class GamePeriodTime
   Duration get defaultPeriodDuration =>
       Duration(milliseconds: currentPeriodStartInternal ?? 0);
 
+  @override
   String toString() {
-    return "GamePeriodTime {start: $currentPeriodStart offset: $currentOffset  countUp: $timeCountUp defaultDuration: $defaultPeriodDuration}";
+    return 'GamePeriodTime {start: $currentPeriodStart offset: $currentOffset  countUp: $timeCountUp defaultDuration: $defaultPeriodDuration}';
   }
 }

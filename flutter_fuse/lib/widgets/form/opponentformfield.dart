@@ -85,18 +85,19 @@ class OpponentFormFieldState extends FormFieldState<String> {
       BuildContext context, SingleTeamState state) {
     var ret = <DropdownMenuItem<String>>[];
     ret.add(DropdownMenuItem<String>(
+      value: OpponentFormField.none,
       child: Text(
         Messages.of(context).opponentselect,
         overflow: TextOverflow.clip,
       ),
-      value: OpponentFormField.none,
     ));
 
     ret.add(
       DropdownMenuItem<String>(
-          child: Text(Messages.of(context).addOpponent,
-              overflow: TextOverflow.clip),
-          value: OpponentFormField.add),
+        value: OpponentFormField.add,
+        child:
+            Text(Messages.of(context).addOpponent, overflow: TextOverflow.clip),
+      ),
     );
 
     var uids = state.opponents.keys.toSet().toList();
@@ -106,8 +107,12 @@ class OpponentFormFieldState extends FormFieldState<String> {
       var opponent = state.opponents[opponentUid];
       if (opponent.name != null) {
         ret.add(DropdownMenuItem<String>(
-            child: Text(opponent.name, overflow: TextOverflow.clip),
-            value: opponent.uid));
+          value: opponent.uid,
+          child: Text(
+            opponent.name,
+            overflow: TextOverflow.clip,
+          ),
+        ));
       }
     }
 

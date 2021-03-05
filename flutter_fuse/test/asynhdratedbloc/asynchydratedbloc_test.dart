@@ -30,13 +30,13 @@ void main() {
     when(mockAsyncStorage.write('TestAsyncHydratedBloc}', {'data': 'rabbit'}))
         .thenAnswer((realInvocation) => fluff.future);
 
-    var asyncStuff = TestAsyncHydratedBloc("frogbucket", mockAsyncStorage);
-    expectLater(
+    var asyncStuff = TestAsyncHydratedBloc('frogbucket', mockAsyncStorage);
+    await expectLater(
       asyncStuff,
-      emitsInOrder(["red", "rabbit"]),
+      emitsInOrder(['red', 'rabbit']),
     );
 
-    completer.complete({'data': "red"});
+    completer.complete({'data': 'red'});
     fluff.complete(null);
     asyncStuff.add(TestEvent.Rabbit);
   });
@@ -52,15 +52,15 @@ void main() {
     when(mockAsyncStorage.write('TestAsyncHydratedBloc}', {'data': 'rabbit'}))
         .thenAnswer((realInvocation) => fluff.future);
 
-    var asyncStuff = TestAsyncHydratedBloc("frogbucket", mockAsyncStorage);
+    var asyncStuff = TestAsyncHydratedBloc('frogbucket', mockAsyncStorage);
     asyncStuff.add(TestEvent.Frog);
-    expectLater(
+    await expectLater(
       asyncStuff,
-      emitsInOrder(["yellow", "rabbit"]),
+      emitsInOrder(['yellow', 'rabbit']),
     );
     await asyncStuff.first;
 
-    completer.complete({'data': "red"});
+    completer.complete({'data': 'red'});
     fluff.complete(null);
     asyncStuff.add(TestEvent.Rabbit);
   });
@@ -73,7 +73,7 @@ enum TestEvent { Frog, Rabbit }
 ///
 class TestAsyncHydratedBloc extends AsyncHydratedBloc<TestEvent, String> {
   TestAsyncHydratedBloc(String boxName, AsyncStorage asyncStorage)
-      : super("", boxName, asyncStorage: asyncStorage);
+      : super('', boxName, asyncStorage: asyncStorage);
 
   @override
   String fromJson(Map<String, dynamic> json) {
@@ -83,10 +83,10 @@ class TestAsyncHydratedBloc extends AsyncHydratedBloc<TestEvent, String> {
   @override
   Stream<String> mapEventToState(TestEvent event) async* {
     if (event == TestEvent.Frog) {
-      yield "yellow";
+      yield 'yellow';
     }
     if (event == TestEvent.Rabbit) {
-      yield "rabbit";
+      yield 'rabbit';
     }
   }
 

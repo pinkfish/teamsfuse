@@ -29,7 +29,7 @@ class TeamImage extends StatelessWidget {
       this.alignment = Alignment.center,
       this.repeat = ImageRepeat.noRepeat,
       this.matchTextDirection = false})
-      : this.teamUid = teamUid ?? team.uid,
+      : teamUid = teamUid ?? team.uid,
         super(
           key: key,
         ) {

@@ -22,6 +22,7 @@ class FirebaseStorageImage extends StatelessWidget {
   FirebaseStorageImage(
       {@required this.storageId, this.placeholder, this.errorWidget});
 
+  @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
         duration: Duration(milliseconds: 500),

@@ -45,7 +45,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Add or update this record into the database.
     var ref = _wrapper.collection(GAMES_COLLECTION);
     var refShared = _wrapper.collection(GAMES_SHARED_COLLECTION);
-    _analytics.logEvent(name: "updateGame");
+    _analytics.logEvent(name: 'updateGame');
     if (game.uid == null || game.uid == '') {
       var ref = _wrapper.collection(GAMES_COLLECTION).document();
       var refShared = _wrapper.collection(GAMES_SHARED_COLLECTION).document();
@@ -57,13 +57,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
               game.teamUid;
         }
         gameBuilder.sharedData.uid = refShared.documentID;
-        tx.set(refShared, game.sharedData.toMap());
+        await tx.set(refShared, game.sharedData.toMap());
         gameBuilder.sharedDataUid = refShared.documentID;
         gameBuilder.uid = ref.documentID;
         print(
-            "Writing game ${gameBuilder.sharedDataUid} ${gameBuilder.teamUid}");
+            'Writing game ${gameBuilder.sharedDataUid} ${gameBuilder.teamUid}');
         // Add the game.
-        tx.set(ref, gameBuilder.build().toMap());
+        await tx.set(ref, gameBuilder.build().toMap());
         return gameBuilder.build().toMap();
       });
       return gameBuilder.build();
@@ -73,13 +73,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           var sharedDoc = await refShared.add(game.sharedData.toMap());
           game = game.rebuild((b) => b..sharedDataUid = sharedDoc.documentID);
         } else {
-          refShared
+          await refShared
               .document(game.sharedDataUid)
               .updateData(game.sharedData.toMap());
         }
       }
       // Update the game.
-      ref.document(game.uid).updateData(game.toMap());
+      await ref.document(game.uid).updateData(game.toMap());
       return game;
     }
   }
@@ -101,18 +101,18 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         gameBuilder.sharedData.officialResult.homeTeamLeagueUid = game.teamUid;
       }
       var s = game.sharedData.rebuild((b) => b..uid = mainShared.documentID);
-      tx.set(mainShared, s.toMap());
+      await tx.set(mainShared, s.toMap());
       gameBuilder.sharedDataUid = mainShared.documentID;
       // Add the game.
-      tx.set(mainRef, gameBuilder.build().toMap());
+      await tx.set(mainRef, gameBuilder.build().toMap());
       for (var i = 0; i < dates.length; i++) {
         var time = dates.elementAt(i);
         if (game.sharedData.time != time.microsecondsSinceEpoch) {
-          tx.set(refShared[i], game.sharedData.toMap());
+          await tx.set(refShared[i], game.sharedData.toMap());
           gameBuilder.sharedDataUid = refShared[i].documentID;
           // Add the game.
-          tx.set(ref[i], gameBuilder.build().toMap());
-          _analytics.logEvent(name: "addTrainingEvent");
+          await tx.set(ref[i], gameBuilder.build().toMap());
+          _analytics.logEvent(name: 'addTrainingEvent');
         }
       }
       return s.toMap();
@@ -124,7 +124,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<String> updateFirestoreSharedGame(GameSharedData game) async {
     // Add or update this record into the database.
     var refShared = _wrapper.collection(GAMES_SHARED_COLLECTION);
-    _analytics.logEvent(name: "updateSharedGame");
+    _analytics.logEvent(name: 'updateSharedGame');
     if (game.uid == null || game.uid == '') {
       // Add the shared stuff, then the game.
       var sharedDoc = await refShared.add(game.toMap());
@@ -142,7 +142,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<void> deleteFirestoreGame(Game game) async {
     // delete from the database.
     var ref = _wrapper.collection(GAMES_COLLECTION).document(game.uid);
-    _analytics.logEvent(name: "deleteGame");
+    _analytics.logEvent(name: 'deleteGame');
     return ref.delete();
   }
 
@@ -152,8 +152,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(GAMES_COLLECTION).document(game.uid);
 
     var data = <String, dynamic>{};
-    data["${Game.ATTENDANCE}.$playerUid"] = attend.toString();
-    _analytics.logEvent(name: "updateGameAttendance");
+    data['${Game.ATTENDANCE}.$playerUid'] = attend.toString();
+    _analytics.logEvent(name: 'updateGameAttendance');
 
     return ref.updateData(data).then((a) => print('Done stuff'));
   }
@@ -165,10 +165,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     var data = <String, dynamic>{};
     data[Game.RESULT] = result.toMap();
-    _analytics.logEvent(name: "updateGameResult");
+    _analytics.logEvent(name: 'updateGameResult');
     return ref.updateData(data);
   }
 
+  @override
   Future<void> updateFirestoreOfficalGameResult(
       String sharedGameUid, GameOfficialResults result) {
     var ref =
@@ -176,7 +177,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     var data = <String, dynamic>{};
     data[GameSharedData.OFFICIALRESULT] = result.toMap();
-    _analytics.logEvent(name: "updateOfficalGameResult");
+    _analytics.logEvent(name: 'updateOfficalGameResult');
 
     return ref.updateData(data);
   }
@@ -184,7 +185,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   // Invite firestore updates
   @override
   Future<void> firestoreInviteDelete(String inviteUid) {
-    _analytics.logEvent(name: "inviteDelete");
+    _analytics.logEvent(name: 'inviteDelete');
     return _wrapper.collection(INVITE_COLLECTION).document(inviteUid).delete();
   }
 
@@ -194,7 +195,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       MessageRecipient rec, MessageReadState state) {
     var doc =
         _wrapper.collection(MESSAGE_RECIPIENTS_COLLECTION).document(rec.uid);
-    _analytics.logEvent(name: "updateMessageRecipientState");
+    _analytics.logEvent(name: 'updateMessageRecipientState');
 
     return doc.updateData({MessageRecipient.stateId: state.toString()});
   }
@@ -235,7 +236,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return ref.setData(log.toMap()).then((v) {
       return ref.documentID;
     }).catchError((e) {
-      print("Got error $e");
+      print('Got error $e');
       return null;
     });
   }
@@ -243,14 +244,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<Message> addMessage(Message mess, String body) async {
     // Add or update this record into the database.
-    var ref = _wrapper.collection("Messages");
-    _analytics.logEvent(name: "updateMessage");
+    var ref = _wrapper.collection('Messages');
+    _analytics.logEvent(name: 'updateMessage');
     var newDoc = ref.document();
     mess = mess.rebuild((b) => b
       ..timeSent = Timestamp.now().toUtc()
       ..fromUid = currentUser.uid
       ..uid = newDoc.documentID);
-    print("utc...?");
+    print('utc...?');
     var bodyRef = _wrapper
         .collection(MESSAGES_COLLECTION)
         .document(newDoc.documentID)
@@ -269,7 +270,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
       // Add in the recipients collection.
       var recipients = mess.recipients.toBuilder();
-      var sentTo = Set<String>();
+      var sentTo = <String>{};
       for (var str in mess.recipients.keys) {
         if (!sentTo.contains(mess.recipients[str].userId)) {
           var docRef =
@@ -301,7 +302,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(MESSAGES_COLLECTION)
         .document(messageUid);
     var snap = await ref.get();
-    print("Message body $messageUid");
+    print('Message body $messageUid');
     if (snap.exists) {
       print(snap.data);
       yield snap.data[Message.bodyId] as String;
@@ -319,8 +320,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<Message> getMessage(String messageId) async* {
-    var ref =
-        await _wrapper.collection(MESSAGES_COLLECTION).document(messageId);
+    var ref = _wrapper.collection(MESSAGES_COLLECTION).document(messageId);
     var snap = await ref.get();
     if (snap.exists) {
       yield Message.fromMap(snap.data);
@@ -346,7 +346,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(OPPONENT_COLLECTION);
     // Update the game.
     await ref.document(opponent.uid).updateData(opponent.toMap());
-    _analytics.logEvent(name: "updateOpponent");
+    _analytics.logEvent(name: 'updateOpponent');
     return opponent.uid;
   }
 
@@ -361,7 +361,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     opponent = opponent.rebuild((b) => b..uid = docRef.documentID);
     // Add the game.
     await docRef.setData(opponent.toMap());
-    _analytics.logEvent(name: "addOpponent");
+    _analytics.logEvent(name: 'addOpponent');
 
     return opponent;
   }
@@ -369,7 +369,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<void> deleteFirestoreOpponent(Opponent opponent) async {
     // Add or update this record into the database.
-    _analytics.logEvent(name: "deleteOpponent");
+    _analytics.logEvent(name: 'deleteOpponent');
     return _wrapper
         .collection(TEAMS_COLLECTION)
         .document(opponent.teamUid)
@@ -449,7 +449,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     // Update the game.
     await ref.updateData(team.toMap());
-    _analytics.logEvent(name: "updateTeam");
+    _analytics.logEvent(name: 'updateTeam');
     return team.uid;
   }
 
@@ -457,9 +457,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen,
       Season season, Uint8List imageFile) async {
     // Add or update this record into the database.
-    if (pregen == null) {
-      pregen = _wrapper.collection(TEAMS_COLLECTION).document();
-    }
+    pregen ??= _wrapper.collection(TEAMS_COLLECTION).document();
     var pregenSeason = _wrapper.collection(SEASONS_COLLECTION).document();
     var admins = team.adminsData.toBuilder();
 
@@ -487,9 +485,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       return {};
     });
     if (imageFile != null && imageFile.isNotEmpty) {
-      updateTeamImage(pregen.documentID, imageFile);
+      await updateTeamImage(pregen.documentID, imageFile);
     }
-    _analytics.logEvent(name: "addTeam");
+    _analytics.logEvent(name: 'addTeam');
 
     return pregen.documentID;
   }
@@ -508,7 +506,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<Uri> updateTeamImage(String teamUid, Uint8List imgFile) async {
-    var ref = _wrapper.storageRef().child("team_$teamUid.img");
+    var ref = _wrapper.storageRef().child('team_$teamUid.img');
     var task = ref.putFile(imgFile);
     var snapshot = await task.future;
     var photoUrl = snapshot.downloadUrl;
@@ -516,25 +514,25 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(TEAMS_COLLECTION)
         .document(teamUid)
         .updateData({PHOTOURL: photoUrl.toString()});
-    _analytics.logEvent(name: "updateTeamImage");
+    _analytics.logEvent(name: 'updateTeamImage');
     return photoUrl;
   }
 
   @override
   Future<void> deleteAdmin(Team team, String uid) {
     var ref = _wrapper.collection(TEAMS_COLLECTION).document(team.uid);
-    _analytics.logEvent(name: "deleteAdmin");
-    return ref.updateData(<String, dynamic>{"${Team.ADMINS}.$uid": false});
+    _analytics.logEvent(name: 'deleteAdmin');
+    return ref.updateData(<String, dynamic>{'${Team.ADMINS}.$uid': false});
   }
 
   @override
   Future<String> addAdmin(String teamUid, String uid) async {
     var ref = _wrapper.collection(TEAMS_COLLECTION).document(teamUid);
     await ref.updateData(<String, dynamic>{
-      "${Team.ADMINS}.$uid.added": true,
-      "${Team.ADMINS}.$uid.admin": true,
+      '${Team.ADMINS}.$uid.added': true,
+      '${Team.ADMINS}.$uid.admin': true,
     });
-    _analytics.logEvent(name: "addAdmin");
+    _analytics.logEvent(name: 'addAdmin');
     return ref.documentID;
   }
 
@@ -584,7 +582,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(TEAMS_COLLECTION).document(teamUid);
     var snap = await ref.get();
     if (snap.exists) {
-      var team = Team.fromMap(userData?.uid ?? "", snap.data)
+      var team = Team.fromMap(userData?.uid ?? '', snap.data)
         ..rebuild((b) => b..publicOnly = true);
       yield team;
     } else {
@@ -592,7 +590,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
     await for (var doc in ref.snapshots()) {
       if (doc != null && doc.exists) {
-        yield Team.fromMap(userData?.uid ?? "", snap.data)
+        yield Team.fromMap(userData?.uid ?? '', snap.data)
           ..rebuild((b) => b..publicOnly = true);
         ;
       } else {
@@ -603,18 +601,18 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<Team> getTeamDetails({@required String teamUid}) async* {
-    print("Building $teamUid");
+    print('Building $teamUid');
     var referenceWrapper =
         _wrapper.collection(TEAMS_COLLECTION).document(teamUid);
     var snap = await referenceWrapper.get();
     if (snap != null && snap.exists) {
-      yield Team.fromMap(userData?.uid ?? "", snap.data);
+      yield Team.fromMap(userData?.uid ?? '', snap.data);
     } else {
       yield Team((b) => b..uid = teamUid);
     }
     await for (var doc in referenceWrapper.snapshots()) {
       if (doc != null && doc.exists) {
-        yield Team.fromMap(userData?.uid ?? "", doc.data);
+        yield Team.fromMap(userData?.uid ?? '', doc.data);
       } else {
         yield Team((b) => b..uid = teamUid);
       }
@@ -624,13 +622,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   ///
   /// Returns the basic set of games for this specific team.
   ///
+  @override
   Stream<BuiltList<Game>> getBasicGames(
       {DateTime start, DateTime end, String teamUid, String seasonUid}) async* {
     var gameQuery = _wrapper
         .collection(GAMES_COLLECTION)
         .where(Game.TEAMUID, isEqualTo: teamUid);
     if (start != null) {
-      print("Start ${start.microsecondsSinceEpoch}");
+      print('Start ${start.microsecondsSinceEpoch}');
       gameQuery = gameQuery
           .where(ARRIVALTIME, isGreaterThan: start.microsecondsSinceEpoch)
           .where(ARRIVALTIME, isLessThan: end.microsecondsSinceEpoch);
@@ -640,7 +639,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
     var queryGameSnap = await gameQuery.getDocuments();
 
-    var data = Set<Game>();
+    var data = <Game>{};
     for (var snap in queryGameSnap.documents) {
       var sharedGameUid = snap.data[Game.SHAREDDATAUID];
       if (sharedGameUid == null || sharedGameUid.isEmpty) {
@@ -655,7 +654,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     // Merge the streams.
     await for (queryGameSnap in gameQuery.snapshots()) {
-      var data = Set<Game>();
+      var data = <Game>{};
       for (var snap in queryGameSnap.documents) {
         String sharedGameUid;
         sharedGameUid = snap.data[Game.SHAREDDATAUID] as String;
@@ -710,7 +709,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     await ref
         .document(player.uid)
         .updateData(player.toMap(includeUsers: includeUsers));
-    _analytics.logEvent(name: "updatePlayer");
+    _analytics.logEvent(name: 'updatePlayer');
   }
 
   // Player stuff
@@ -719,13 +718,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Add or update this record into the database.
     var ref = _wrapper.collection(PLAYERS_COLLECTION);
     var docRef = ref.document();
-    var eventName = "addPlayer";
+    var eventName = 'addPlayer';
     switch (player.playerType) {
       case PlayerType.player:
         if (player.opponentUid != null ||
             player.gameUid != null ||
             player.teamUid != null) {
-          throw FormatException("opponentuid or gameUid not null");
+          throw FormatException('opponentuid or gameUid not null');
         }
         break;
       case PlayerType.opponent:
@@ -735,9 +734,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             player.teamUid.isEmpty ||
             player.gameUid != null ||
             player.gameUid.isNotEmpty) {
-          throw FormatException("opponentuid or teamUid are null");
+          throw FormatException('opponentuid or teamUid are null');
         }
-        eventName = "addGameOpponent";
+        eventName = 'addGameOpponent';
         break;
       case PlayerType.guest:
         if (player.opponentUid != null ||
@@ -745,9 +744,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             player.gameUid.isEmpty ||
             player.teamUid != null ||
             player.teamUid.isNotEmpty) {
-          throw FormatException("opponentuid is null or gameUid not null");
+          throw FormatException('opponentuid is null or gameUid not null');
         }
-        eventName = "addGuestOpponent";
+        eventName = 'addGuestOpponent';
         break;
     }
     // Add the game.
@@ -759,7 +758,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<Uri> updatePlayerImage(String playerUid, Uint8List imgFile) async {
-    var ref = _wrapper.storageRef().child("player_$playerUid.img");
+    var ref = _wrapper.storageRef().child('player_$playerUid.img');
     var task = ref.putFile(imgFile);
     var snapshot = (await task.future);
     var photoUrl = snapshot.downloadUrl.toString();
@@ -769,7 +768,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(PLAYERS_COLLECTION)
         .document(playerUid)
         .updateData(data);
-    _analytics.logEvent(name: "updatePlayerImage");
+    _analytics.logEvent(name: 'updatePlayerImage');
     return snapshot.downloadUrl;
   }
 
@@ -777,8 +776,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<Iterable<Season>> getPlayerSeasons(String playerUid) async* {
     var ref = _wrapper
         .collection(SEASONS_COLLECTION)
-        .where("${Season.PLAYERS}.$playerUid.$ADDED", isEqualTo: true)
-        .where("${Season.USER}.${userData.uid}.$ADDED", isEqualTo: true);
+        .where('${Season.PLAYERS}.$playerUid.$ADDED', isEqualTo: true)
+        .where('${Season.USER}.${userData.uid}.$ADDED', isEqualTo: true);
     var wrap = await ref.getDocuments();
     yield wrap.documents.map((snap) => Season.fromMap(snap.data));
     await for (var doc in ref.snapshots()) {
@@ -796,9 +795,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..added = true
         ..relationship = player.relationship);
       var data = <String, dynamic>{};
-      data["${Player.usersField}.${player.userUid}"] = playerInternal.toMap();
-      doc.reference.updateData(data);
-      _analytics.logEvent(name: "addUserToPlayer");
+      data['${Player.usersField}.${player.userUid}'] = playerInternal.toMap();
+      await doc.reference.updateData(data);
+      _analytics.logEvent(name: 'addUserToPlayer');
       return true;
     }
     return false;
@@ -808,13 +807,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<String> createPlayer(Player player) async {
     var ref = _wrapper.collection(PLAYERS_COLLECTION);
     var doc = await ref.add(player.toMap(includeUsers: true));
-    _analytics.logEvent(name: "createPlayer");
+    _analytics.logEvent(name: 'createPlayer');
     return doc.documentID;
   }
 
   @override
   Future<void> deletePlayer(String playerUid) {
-    _analytics.logEvent(name: "deletePlayer");
+    _analytics.logEvent(name: 'deletePlayer');
     return _wrapper
         .collection(PLAYERS_COLLECTION)
         .document(playerUid)
@@ -837,7 +836,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(InviteToPlayer.playerUidField, isEqualTo: playerUid)
         .getDocuments();
     if (snapshot.documents.isEmpty) {
-      var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
+      var docRef = _wrapper.collection(INVITE_COLLECTION).document();
 
       var invite = InviteToPlayer((b) => b
         ..uid = docRef.documentID
@@ -849,7 +848,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       await docRef.setData(invite.toMap());
       return docRef.documentID;
     }
-    _analytics.logEvent(name: "inviteUserToPlayer");
+    _analytics.logEvent(name: 'inviteUserToPlayer');
     return snapshot.documents[0].documentID;
   }
 
@@ -867,7 +866,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(InviteAsAdmin.TEAMUID, isEqualTo: teamUid)
         .getDocuments();
     if (snapshot.documents.isEmpty) {
-      var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
+      var docRef = _wrapper.collection(INVITE_COLLECTION).document();
 
       var invite = InviteAsAdmin((b) => b
         ..uid = docRef.documentID
@@ -879,7 +878,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       await docRef.setData(invite.toMap());
       return docRef.documentID;
     }
-    _analytics.logEvent(name: "inviteAdminToTeam");
+    _analytics.logEvent(name: 'inviteAdminToTeam');
     return snapshot.documents[0].documentID;
   }
 
@@ -901,9 +900,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<void> removeUserFromPlayer(Player player, String userId) {
     var doc = _wrapper.collection(PLAYERS_COLLECTION).document(player.uid);
-    _analytics.logEvent(name: "removeUserFromPlayer");
+    _analytics.logEvent(name: 'removeUserFromPlayer');
     return doc.updateData(<String, dynamic>{
-      "${Player.usersField}.$userId": _wrapper.fieldValueDelete()
+      '${Player.usersField}.$userId': _wrapper.fieldValueDelete()
     });
   }
 
@@ -917,9 +916,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     await ref
         .document(season.uid)
         .updateData(season.toMap(includePlayers: includePlayers));
-    _analytics.logEvent(name: "updateFirestoreSeason");
+    _analytics.logEvent(name: 'updateFirestoreSeason');
   }
 
+  @override
   Future<Season> addFirestoreSeason(
       Season season, DocumentReferenceWrapper pregenDoc) async {
     var ref = pregenDoc ?? _wrapper.collection(SEASONS_COLLECTION).document();
@@ -937,7 +937,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     print(season.toMap(includePlayers: true));
     await ref.setData(season.toMap(includePlayers: true));
 
-    _analytics.logEvent(name: "addFirestoreSeason");
+    _analytics.logEvent(name: 'addFirestoreSeason');
     return season;
   }
 
@@ -951,9 +951,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String seasonUid, String playerUid) async {
     var doc = _wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
     var data = <String, dynamic>{};
-    data["${Season.PLAYERS}.$playerUid"] = null;
+    data['${Season.PLAYERS}.$playerUid'] = null;
     await doc.updateData(data);
-    _analytics.logEvent(name: "removePlayerFromSeason");
+    _analytics.logEvent(name: 'removePlayerFromSeason');
 
     // Check and see if this player also has no other users associated with it.
     var playerDoc =
@@ -963,7 +963,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       // No users so it has not been added.
       if (player.users.isEmpty) {
         // Delete the player.
-        playerDoc.reference.delete();
+        await playerDoc.reference.delete();
       }
     }
   }
@@ -973,13 +973,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String seasonUid, SeasonPlayer player, RoleInTeam role) async {
     var data = <String, dynamic>{};
 
-    data["${Season.PLAYERS}.${player.playerUid}.${SeasonPlayer.ROLE}"] =
+    data['${Season.PLAYERS}.${player.playerUid}.${SeasonPlayer.ROLE}'] =
         role.toString();
-    _wrapper
+    await _wrapper
         .collection(SEASONS_COLLECTION)
         .document(seasonUid)
         .updateData(data);
-    _analytics.logEvent(name: "updateRoleInTeamForSeason");
+    _analytics.logEvent(name: 'updateRoleInTeamForSeason');
   }
 
   @override
@@ -991,7 +991,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<Player> getPlayerDetails(String uid) async* {
-    final doc = await _wrapper.collection(PLAYERS_COLLECTION).document(uid);
+    final doc = _wrapper.collection(PLAYERS_COLLECTION).document(uid);
     final initial = await doc.get();
     if (initial.exists) {
       yield Player.fromMap(initial.data);
@@ -1016,7 +1016,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String teamName,
       InviteTeamData data,
       DocumentSnapshotWrapper document) async {
-    _analytics.logEvent(name: "inviteUserToSeason");
+    _analytics.logEvent(name: 'inviteUserToSeason');
     if (document != null) {
       var invite =
           InviteFactory.makeInviteFromJSON(document.documentID, document.data)
@@ -1028,12 +1028,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..sentByUid = userData.uid
         ..teamName = teamName
         ..seasonName = seasonName);
-      print("old invite season");
+      print('old invite season');
 
       await t.update(document.reference, updatedInvite.toMap());
       return document.documentID;
     } else {
-      var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
+      var docRef = _wrapper.collection(INVITE_COLLECTION).document();
       var invite = InviteToPlayer((b) => b
         ..playerUid = playerUid
         ..uid = docRef.documentID
@@ -1043,7 +1043,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..teamName = teamName
         ..seasonName = seasonName);
 
-      print("new invite season");
+      print('new invite season');
 
       await t.set(docRef, invite.toMap());
       return docRef.documentID;
@@ -1079,16 +1079,16 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           ..name = invite.playerName
           ..uid = playerDoc.documentID
           ..isPublic = false);
-        print("Create player");
+        print('Create player');
         await t.set(playerDoc, basicPlayer.toMap());
         playerUid = playerDoc.documentID;
         // Add the player to the season.
-        print("Update season");
+        print('Update season');
         await t.update(seasonDoc, {
-          "${Season.PLAYERS}.$playerUid": SeasonPlayer((b) => b
+          '${Season.PLAYERS}.$playerUid': SeasonPlayer((b) => b
             ..playerUid = playerUid
             ..added = true
-            ..jerseyNumber = jerseyNumber ?? ""
+            ..jerseyNumber = jerseyNumber ?? ''
             ..role = invite.role).toMap(),
         });
       }
@@ -1112,8 +1112,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<Game>> getSeasonGames(Season season) async* {
     var query = _wrapper
         .collection(GAMES_COLLECTION)
-        .where("teamUid", isEqualTo: season.teamUid)
-        .where("seasonUid", isEqualTo: season.uid);
+        .where('teamUid', isEqualTo: season.teamUid)
+        .where('seasonUid', isEqualTo: season.uid);
     var data = await query.getDocuments();
     var stuff = data.documents.map((d) => Game.fromMap(d.data));
     print(stuff);
@@ -1147,7 +1147,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<Season>> getSeasons() async* {
     var query = _wrapper
         .collection(SEASONS_COLLECTION)
-        .where("${Season.USER}.${userData.uid}.$ADDED", isEqualTo: true);
+        .where('${Season.USER}.${userData.uid}.$ADDED', isEqualTo: true);
     var snap = await query.getDocuments();
     yield BuiltList(snap.documents.map((d) => Season.fromMap(d.data)));
 
@@ -1161,25 +1161,26 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String seasonUid, SeasonPlayer seasonPlayer) async {
     var doc = _wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
     var data = <String, dynamic>{};
-    data["${Season.PLAYERS}.${seasonPlayer.playerUid}"] = seasonPlayer.toMap();
-    doc.updateData(data);
-    _analytics.logEvent(name: "addPlayerToSeason");
+    data['${Season.PLAYERS}.${seasonPlayer.playerUid}'] = seasonPlayer.toMap();
+    await doc.updateData(data);
+    _analytics.logEvent(name: 'addPlayerToSeason');
     return;
   }
 
   Future<Team> _loadTeamFromClub(
       DocumentSnapshotWrapper snap, Club club) async {
-    return Team.fromMap(userData?.uid ?? "", snap.data);
+    return Team.fromMap(userData?.uid ?? '', snap.data);
   }
 
   // Loads the seasons for the team.  This is only used for
   // admin teams and club teams.
+  @override
   Stream<BuiltList<Season>> getSeasonsForTeam(String teamUid) async* {
     // Find the seasons for the team.
     var query = _wrapper
         .collection(SEASONS_COLLECTION)
         .where(Season.TEAMUID, isEqualTo: teamUid)
-        .where("${Season.USER}.${userData.uid}.$ADDED", isEqualTo: true);
+        .where('${Season.USER}.${userData.uid}.$ADDED', isEqualTo: true);
     var snap = await query.getDocuments();
     yield BuiltList(snap.documents.map((d) => Season.fromMap(d.data)));
     await for (var snap in query.snapshots()) {
@@ -1198,7 +1199,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     } else {
       // Only get teams we can see.
       query =
-          query.where("${Team.USER}.${userData.uid}.$ADDED", isEqualTo: true);
+          query.where('${Team.USER}.${userData.uid}.$ADDED', isEqualTo: true);
     }
     var wrap = await query.getDocuments();
     var teams = <Team>[];
@@ -1220,12 +1221,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> addUserToClub(String clubUid, String newUserUid, bool admin) {
-    _analytics.logEvent(name: "addUserToClub");
+    _analytics.logEvent(name: 'addUserToClub');
     return _wrapper
         .collection(CLUB_COLLECTION)
         .document(clubUid)
         .updateData(<String, dynamic>{
-      "${Club.MEMBERS}.$newUserUid": <String, dynamic>{
+      '${Club.MEMBERS}.$newUserUid': <String, dynamic>{
         ADDED: true,
         Club.ADMIN: admin
       }
@@ -1235,7 +1236,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<String> inviteUserToClub(
       {String clubName, String clubUid, String email, bool admin}) async {
-    var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
+    var docRef = _wrapper.collection(INVITE_COLLECTION).document();
     var invite = InviteToClub((b) => b
       ..uid = docRef.documentID
       ..sentByUid = userData.uid
@@ -1244,7 +1245,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       ..clubName = clubName
       ..email = email);
     await docRef.setData(invite.toMap());
-    _analytics.logEvent(name: "inviteUserToClub");
+    _analytics.logEvent(name: 'inviteUserToClub');
     return docRef.documentID;
   }
 
@@ -1256,7 +1257,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     } else {
       await ref.updateData(data);
     }
-    _analytics.logEvent(name: "addClub");
+    _analytics.logEvent(name: 'addClub');
     return ref.documentID;
   }
 
@@ -1268,13 +1269,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(club.uid)
         .updateData(data);
 
-    _analytics.logEvent(name: "updateClub");
+    _analytics.logEvent(name: 'updateClub');
     return club.uid;
   }
 
   @override
   Future<Uri> updateClubImage(Club club, Uint8List imgFile) async {
-    var ref = _wrapper.storageRef().child("club_${club.uid}.img");
+    var ref = _wrapper.storageRef().child('club_${club.uid}.img');
     var task = ref.putFile(imgFile);
     var snapshot = (await task.future);
     var photoUrl = snapshot.downloadUrl.toString();
@@ -1283,20 +1284,20 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(club.uid)
         .updateData({PHOTOURL: photoUrl});
 
-    _analytics.logEvent(name: "updateClubImage");
+    _analytics.logEvent(name: 'updateClubImage');
     return snapshot.downloadUrl;
   }
 
   @override
   Future<void> deleteClubMember(Club club, String memberUid) {
-    _analytics.logEvent(name: "deleteClubMember");
+    _analytics.logEvent(name: 'deleteClubMember');
     return _wrapper.collection(CLUB_COLLECTION).document(club.uid).updateData(
-        <String, dynamic>{"${Club.MEMBERS}.$memberUid.$ADDED": false});
+        <String, dynamic>{'${Club.MEMBERS}.$memberUid.$ADDED': false});
   }
 
   @override
   Stream<Club> getClubData({String clubUid}) async* {
-    print("Loading Club $clubUid");
+    print('Loading Club $clubUid');
     var ref = _wrapper.collection(CLUB_COLLECTION).document(clubUid);
     var snap = await ref.get();
     if (snap.exists) {
@@ -1315,14 +1316,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<BuiltList<Coach>> getClubCoaches(String clubUid) async* {
-    print("Getting coaches");
+    print('Getting coaches');
     var query = _wrapper
         .collection(CLUB_COLLECTION)
         .document(clubUid)
         .collection(COACH_COLLECTION);
     var wrap = await query.getDocuments();
 
-    print("Got docs");
+    print('Got docs');
     var coaches = ListBuilder<Coach>();
     for (var snap in wrap.documents) {
       coaches.add(Coach.fromMap(snap.data));
@@ -1341,7 +1342,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<Coach> addClubCoach(Coach coach, Uint8List imageData) async {
     var imageRef =
-        _wrapper.storageRef().child("coach_${coach.clubUid}_${coach.uid}.img");
+        _wrapper.storageRef().child('coach_${coach.clubUid}_${coach.uid}.img');
     if (imageData != null) {
       var task = imageRef.putFile(imageData);
       await task.future;
@@ -1360,7 +1361,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     } on Exception catch (_) {
       // Delete the image if the create failed.
       if (imageData != null) {
-        imageRef.delete();
+        await imageRef.delete();
       }
       rethrow;
     }
@@ -1372,7 +1373,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (imageData != null) {
       var imageRef = _wrapper
           .storageRef()
-          .child("coach_${coach.clubUid}_${coach.uid}.img");
+          .child('coach_${coach.clubUid}_${coach.uid}.img');
       var task = imageRef.putFile(imageData);
       await task.future;
       String downloadUrl = await imageRef.getDownloadURL();
@@ -1422,7 +1423,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Stream<BuiltList<NewsItem>> getClubNews(String clubUid,
       {DateTime start, int limit}) async* {
-    print("getClubNews $clubUid $start $limit");
+    print('getClubNews $clubUid $start $limit');
     var query = _wrapper
         .collection(CLUB_COLLECTION)
         .document(clubUid)
@@ -1434,7 +1435,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
     var wrap = await query.getDocuments();
 
-    print("Got docs ${wrap.documents.length}");
+    print('Got docs ${wrap.documents.length}');
     var newses = ListBuilder<NewsItem>();
     for (var snap in wrap.documents) {
       newses.add(NewsItem.fromMap(snap.data));
@@ -1526,13 +1527,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .get();
     for (var doc in wrap.documents) {
       if (!doc.data.containsKey('divisonUid')) {
-        doc.reference.updateData({'divisonUid': leagueDivisonUid});
+        await doc.reference.updateData({'divisonUid': leagueDivisonUid});
       }
       if (!doc.data.containsKey('seasonUid') || doc.data['seasonUid'] == null) {
-        doc.reference.updateData({'seasonUid': divison.data['seasonUid']});
+        await doc.reference
+            .updateData({'seasonUid': divison.data['seasonUid']});
       }
       if (!doc.data.containsKey('leagueUid')) {
-        doc.reference.updateData({'leagueUid': divison.data['leagueUid']});
+        await doc.reference
+            .updateData({'leagueUid': divison.data['leagueUid']});
       }
     }
     yield BuiltList(wrap.documents
@@ -1564,10 +1567,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<GameSharedData>> getLeagueGamesForTeam(
       String leagueTeamUid) async* {
     var queryHome = _wrapper.collection(GAMES_SHARED_COLLECTION).where(
-        "${GameSharedData.OFFICIALRESULT}.${GameOfficialResults.HOMETEAMUID}",
+        '${GameSharedData.OFFICIALRESULT}.${GameOfficialResults.HOMETEAMUID}',
         isEqualTo: leagueTeamUid);
     var queryAway = _wrapper.collection(GAMES_SHARED_COLLECTION).where(
-        "${GameSharedData.OFFICIALRESULT}.${GameOfficialResults.AWAYTEAMUID}",
+        '${GameSharedData.OFFICIALRESULT}.${GameOfficialResults.AWAYTEAMUID}',
         isEqualTo: leagueTeamUid);
 
     // Snapshot and the main query.
@@ -1583,8 +1586,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     yield BuiltList(games.values);
 
     var str = StreamGroup<QuerySnapshotWrapper>();
-    str.add(queryHome.snapshots());
-    str.add(queryAway.snapshots());
+    await str.add(queryHome.snapshots());
+    await str.add(queryAway.snapshots());
 
     await for (var snap in str.stream) {
       for (var change in snap.documentChanges) {
@@ -1598,17 +1601,17 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
       yield BuiltList(games.values);
     }
-    str.close();
+    await str.close();
   }
 
   @override
   Future<void> addUserToLeague(String leagueUid, bool admin) {
-    _analytics.logEvent(name: "addUserToLeague");
+    _analytics.logEvent(name: 'addUserToLeague');
     return _wrapper
         .collection(LEAGUE_COLLECTON)
         .document(leagueUid)
         .updateData(<String, dynamic>{
-      "${LeagueOrTournament.MEMBERS}.${userData.uid}": <String, dynamic>{
+      '${LeagueOrTournament.MEMBERS}.${userData.uid}': <String, dynamic>{
         ADDED: true,
         LeagueOrTournament.ADMIN: admin
       }
@@ -1617,12 +1620,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> addUserToLeagueSeason(String leagueUid, bool admin) {
-    _analytics.logEvent(name: "addUserToLeagueSeason");
+    _analytics.logEvent(name: 'addUserToLeagueSeason');
     return _wrapper
         .collection(LEAGUE_SEASON_COLLECTION)
         .document(leagueUid)
         .updateData(<String, dynamic>{
-      "${LeagueOrTournamentSeason.MEMBERS}.${userData.uid}":
+      '${LeagueOrTournamentSeason.MEMBERS}.${userData.uid}':
           AddedOrAdmin((b) => b
             ..added = true
             ..admin = admin).toMap()
@@ -1631,12 +1634,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> addUserToLeagueDivison(String leagueUid, bool admin) {
-    _analytics.logEvent(name: "addUserToLeagueDivison");
+    _analytics.logEvent(name: 'addUserToLeagueDivison');
     return _wrapper
         .collection(LEAGUE_COLLECTON)
         .document(leagueUid)
         .updateData(<String, dynamic>{
-      "${LeagueOrTournamentDivison.MEMBERS}.${userData.uid}":
+      '${LeagueOrTournamentDivison.MEMBERS}.${userData.uid}':
           AddedOrAdmin((b) => b
             ..added = true
             ..admin = admin)
@@ -1645,18 +1648,20 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<String> inviteUserToLeague(InviteToLeagueAsAdmin invite) async {
-    var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
+    var docRef = _wrapper.collection(INVITE_COLLECTION).document();
 
-    docRef.setData(invite.rebuild((b) => b..uid = docRef.documentID).toMap());
-    _analytics.logEvent(name: "inviteUserToLeague");
+    await docRef
+        .setData(invite.rebuild((b) => b..uid = docRef.documentID).toMap());
+    _analytics.logEvent(name: 'inviteUserToLeague');
     return docRef.documentID;
   }
 
+  @override
   Future<String> inviteUserToLeagueTeam(
       {String leagueSeasonUid,
       LeagueOrTournamentTeam leagueTeam,
       String email}) async {
-    var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
+    var docRef = _wrapper.collection(INVITE_COLLECTION).document();
     var season = await getLeagueSeasonData(leagueSeasonUid).single;
     var str = getLeagueData(leagueUid: season.leagueOrTournmentUid);
     var leagueOrTournament = await str.single;
@@ -1673,7 +1678,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       ..leagueTeamUid = leagueTeam.uid);
     // Write it out to firestore.  Yay.
     await docRef.setData(teamInvite.toMap());
-    _analytics.logEvent(name: "inviteUserToLeagueTeam");
+    _analytics.logEvent(name: 'inviteUserToLeagueTeam');
     return docRef.documentID;
   }
 
@@ -1708,7 +1713,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .document(league.uid)
           .updateData(data);
     }
-    _analytics.logEvent(name: "updateLeague");
+    _analytics.logEvent(name: 'updateLeague');
 
     return league.uid;
   }
@@ -1716,7 +1721,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<Uri> updateLeagueImage(
       LeagueOrTournament league, Uint8List imgFile) async {
-    var ref = _wrapper.storageRef().child("league_${league.uid}.jpg");
+    var ref = _wrapper.storageRef().child('league_${league.uid}.jpg');
     var task = ref.putFile(imgFile);
     var snapshot = (await task.future);
     var photoUrl = snapshot.downloadUrl.toString();
@@ -1725,18 +1730,18 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(LEAGUE_COLLECTON)
         .document(league.uid)
         .updateData({PHOTOURL: photoUrl});
-    _analytics.logEvent(name: "updateLeagueImage");
+    _analytics.logEvent(name: 'updateLeagueImage');
     return snapshot.downloadUrl;
   }
 
   @override
   Future<void> deleteLeagueMember(LeagueOrTournament league, String memberUid) {
-    _analytics.logEvent(name: "deleteLeagueMember");
+    _analytics.logEvent(name: 'deleteLeagueMember');
     return _wrapper
         .collection(LEAGUE_COLLECTON)
         .document(league.uid)
         .updateData(<String, dynamic>{
-      "${LeagueOrTournament.MEMBERS}.$memberUid.$ADDED": false
+      '${LeagueOrTournament.MEMBERS}.$memberUid.$ADDED': false
     });
   }
 
@@ -1779,7 +1784,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var query = _wrapper.collection(LEAGUE_DIVISION_COLLECTION).where(
         LeagueOrTournamentDivison.LEAGUEORTOURNMENTSEASONUID,
         isEqualTo: leagueSeasonUid);
-    print("Divisons $leagueSeasonUid");
+    print('Divisons $leagueSeasonUid');
     var wrap = await query.getDocuments();
     yield BuiltList(wrap.documents
         .map((snap) => LeagueOrTournamentDivison.fromMap(snap.data)));
@@ -1854,7 +1859,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(LEAGUE_DIVISION_COLLECTION)
         .document(division.uid)
         .updateData(division.toMap());
-    _analytics.logEvent(name: "updateLeagueDivison");
+    _analytics.logEvent(name: 'updateLeagueDivison');
     return division.uid;
   }
 
@@ -1870,7 +1875,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(LEAGUE_SEASON_COLLECTION)
         .document(season.uid)
         .updateData(season.toMap());
-    _analytics.logEvent(name: "updateLeagueSeason");
+    _analytics.logEvent(name: 'updateLeagueSeason');
     return season.uid;
   }
 
@@ -1893,9 +1898,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       LeagueOrTournamentTeam team, String divison, WinRecord record) async {
     var doc = _wrapper.collection(LEAGUE_TEAM_COLLECTION).document(team.uid);
     var data = <String, dynamic>{};
-    data["${LeagueOrTournamentTeam.WINRECORD}.$divison"] = record.toMap();
-    doc.updateData(data);
-    _analytics.logEvent(name: "updateLeagueTeam");
+    data['${LeagueOrTournamentTeam.WINRECORD}.$divison'] = record.toMap();
+    await doc.updateData(data);
+    _analytics.logEvent(name: 'updateLeagueTeam');
   }
 
   @override
@@ -1908,6 +1913,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
+  @override
   Future<bool> connectLeagueTeamToSeason(
       String leagueTeamUid, Season season) async {
     var doc = await _wrapper
@@ -1938,8 +1944,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<Club>> getMainClubs() async* {
     var query = _wrapper
         .collection(CLUB_COLLECTION)
-        .where("${Club.MEMBERS}.${userData.uid}.$ADDED", isEqualTo: true);
-    print("Get main clubs ${Club.MEMBERS}.${userData.uid}.$ADDED");
+        .where('${Club.MEMBERS}.${userData.uid}.$ADDED', isEqualTo: true);
+    print('Get main clubs ${Club.MEMBERS}.${userData.uid}.$ADDED');
     var wrap = await query.getDocuments();
     yield BuiltList(
         wrap.documents.map((snap) => Club.fromMap(userData.uid, snap.data)));
@@ -1952,7 +1958,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Stream<BuiltList<LeagueOrTournament>> getMainLeagueOrTournaments() async* {
     var query = _wrapper.collection(LEAGUE_COLLECTON).where(
-        "${LeagueOrTournament.MEMBERS}.${userData.uid}.$ADDED",
+        '${LeagueOrTournament.MEMBERS}.${userData.uid}.$ADDED',
         isEqualTo: true);
     var wrap = await query.getDocuments();
     yield BuiltList(wrap.documents
@@ -1967,7 +1973,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<Player>> getPlayers() async* {
     var query = _wrapper
         .collection(PLAYERS_COLLECTION)
-        .where("${Player.usersField}.${userData.uid}.$ADDED", isEqualTo: true);
+        .where('${Player.usersField}.${userData.uid}.$ADDED', isEqualTo: true);
     var wrap = await query.getDocuments();
     yield BuiltList(wrap.documents.map((snap) => Player.fromMap(snap.data)));
     await for (var wrap in query.snapshots()) {
@@ -2044,7 +2050,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<Team>> getTeamAdmins() async* {
     var teamCollection = _wrapper
         .collection(TEAMS_COLLECTION)
-        .where("${Team.ADMINS}.${userData.uid}.$ADDED", isEqualTo: true);
+        .where('${Team.ADMINS}.${userData.uid}.$ADDED', isEqualTo: true);
 
     var wrap = await teamCollection.getDocuments();
     yield BuiltList(
@@ -2059,7 +2065,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<Iterable<Team>> getTeams() async* {
     var teamCollection = _wrapper
         .collection(TEAMS_COLLECTION)
-        .where("${Team.USER}.${userData.uid}.$ADDED", isEqualTo: true);
+        .where('${Team.USER}.${userData.uid}.$ADDED', isEqualTo: true);
 
     var wrap = await teamCollection.getDocuments();
     yield wrap.documents.map((snap) => Team.fromMap(userData.uid, snap.data));
@@ -2099,12 +2105,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<void> setGameEvent({GameEvent event}) async {
     if (event.uid == null || event.uid.isEmpty) {
-      throw ArgumentError("uid must not be empty");
+      throw ArgumentError('uid must not be empty');
     }
-    print("Saving game event $event");
-    _analytics.logEvent(name: "AddGameEvent", parameters: {
-      "type": event.type.toString(),
-      "points": event.points.toString()
+    print('Saving game event $event');
+    _analytics.logEvent(name: 'AddGameEvent', parameters: {
+      'type': event.type.toString(),
+      'points': event.points.toString()
     });
     return _wrapper
         .collection(GAMES_COLLECTION)
@@ -2116,8 +2122,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> deleteGameEvent({String gameUid, String gameEventUid}) {
-    print("Deleting event $gameEventUid");
-    _analytics.logEvent(name: "DeleteGameEvent");
+    print('Deleting event $gameEventUid');
+    _analytics.logEvent(name: 'DeleteGameEvent');
     return _wrapper
         .collection(GAMES_COLLECTION)
         .document(gameUid)
@@ -2132,7 +2138,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(GAMES_COLLECTION)
         .document(gameUid)
         .collection(GAME_EVENT_COLLECTION)
-        .orderBy("timestamp");
+        .orderBy('timestamp');
     var snap = await q.getDocuments();
     yield BuiltList.of(snap.documents.map((snap) =>
         GameEvent.fromMap(_addUid(snap.documentID, snap.data))
@@ -2145,7 +2151,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   Map<String, dynamic> _addUid(String uid, Map<String, dynamic> data) {
-    data.putIfAbsent("uid", () => uid);
+    data.putIfAbsent('uid', () => uid);
     return data;
   }
 
@@ -2154,14 +2160,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(MEDIA_COLLECTION).document();
     var p = media.rebuild((b) => b..uid = ref.documentID);
     var data = p.toMap();
-    data["uploadTime"] = _wrapper.fieldValueServerTimestamp;
+    data['uploadTime'] = _wrapper.fieldValueServerTimestamp;
     await ref.setData(data);
-    _analytics.logEvent(name: "AddMedia");
+    _analytics.logEvent(name: 'AddMedia');
     return ref.documentID;
   }
 
+  @override
   Future<void> deleteMedia({String mediaInfoUid}) {
-    _analytics.logEvent(name: "DeleteMedia");
+    _analytics.logEvent(name: 'DeleteMedia');
     return _wrapper
         .collection(MEDIA_COLLECTION)
         .document(mediaInfoUid)
@@ -2172,7 +2179,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<MediaInfo>> getMediaForGame({String gameUid}) async* {
     var q = _wrapper
         .collection(MEDIA_COLLECTION)
-        .where("gameUid", isEqualTo: gameUid);
+        .where('gameUid', isEqualTo: gameUid);
     var snap = await q.getDocuments();
     yield BuiltList.of(snap.documents
         .map((snap) => MediaInfo.fromMap(_addUid(snap.documentID, snap.data))));
@@ -2200,6 +2207,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
+  @override
   Future<void> updateMediaInfoThumbnail(
       {MediaInfo mediaInfo, String thumbnailUrl}) async {
     var ref = _wrapper.collection(MEDIA_COLLECTION).document(mediaInfo.uid);
@@ -2213,9 +2221,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       GamePlayerSummary summary,
       bool opponent}) {
     var ref = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
-    _analytics.logEvent(name: "UpdateGamePlayer");
+    _analytics.logEvent(name: 'UpdateGamePlayer');
     return ref.updateData({
-      "${Game.playersField}.$playerUid": summary.toMap(),
+      '${Game.playersField}.$playerUid': summary.toMap(),
     });
   }
 
@@ -2223,9 +2231,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<void> updateGameOpponentData(
       {String gameUid, String opponentUid, GamePlayerSummary summary}) {
     var ref = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
-    _analytics.logEvent(name: "UpdateGameOpponent");
+    _analytics.logEvent(name: 'UpdateGameOpponent');
     return ref.updateData({
-      "${Game.opponentField}.$opponentUid": summary.toMap(),
+      '${Game.opponentField}.$opponentUid': summary.toMap(),
     });
   }
 
@@ -2248,7 +2256,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       if (opponentName == null) {
         var op = await t.get(opDoc);
         if (!op.exists) {
-          throw FormatException("No opponent $opponentUid");
+          throw FormatException('No opponent $opponentUid');
         }
         opponentName = Opponent.fromMap(op.data).name;
       }
@@ -2259,11 +2267,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..uid = playerDoc.documentID
         ..playerType = PlayerType.opponent
         ..teamUid = teamUid);
-      print("Bing ${play.toMap()}");
+      print('Bing ${play.toMap()}');
       await t.set(playerDoc, play.toMap());
-      print("Updaing game ${gameDoc.documentID}");
+      print('Updaing game ${gameDoc.documentID}');
       await t.update(gameDoc, {
-        "${Game.opponentField}.${playerDoc.documentID}":
+        '${Game.opponentField}.${playerDoc.documentID}':
             GamePlayerSummary((b) => b
               ..playing = true
               ..jerseyNumber = jerseyNumber
@@ -2289,7 +2297,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..uid = playerDoc.documentID);
       await t.set(playerDoc, play.toMap());
       await t.update(gameDoc, {
-        "${Game.opponentField}.${playerDoc.documentID}":
+        '${Game.opponentField}.${playerDoc.documentID}':
             GamePlayerSummary((b) => b
               ..playing = true
               ..jerseyNumber = jerseyNumber
@@ -2299,6 +2307,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   /// Gets the opponent players for the team/opponent.
+  @override
   Stream<BuiltList<Player>> getPlayersForOpponent(
       {String teamUid, opponentUid}) async* {
     var query = _wrapper

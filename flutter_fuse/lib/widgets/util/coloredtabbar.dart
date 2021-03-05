@@ -8,6 +8,7 @@ class ColoredTabBar extends Container implements PreferredSizeWidget {
   ColoredTabBar({this.color, this.tabBar});
 
   /// The color for the background.
+  @override
   final Color color;
 
   /// The tab bar to display.

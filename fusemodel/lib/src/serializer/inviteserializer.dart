@@ -17,7 +17,7 @@ class InviteSerializer implements StructuredSerializer<Invite> {
       final dynamic value = iterator.current;
       if (key == Invite.typeField) {
         // Deserialize the invite type.
-        InviteType type = InviteType.values
+        var type = InviteType.values
             .firstWhere((InviteType ty) => ty.toString() == value);
         switch (type) {
           case InviteType.Admin:
@@ -59,5 +59,5 @@ class InviteSerializer implements StructuredSerializer<Invite> {
   Iterable<Type> get types => [Invite];
 
   @override
-  String get wireName => "Invite";
+  String get wireName => 'Invite';
 }

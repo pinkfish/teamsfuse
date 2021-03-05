@@ -88,7 +88,7 @@ class ProfileBloc extends HydratedBloc<ProfileEvent, ProfileBlocState> {
     // Unload everything.
     if (event is _ProfileLoggedOut) {
       yield ProfileBlocUninitialized();
-      _profileSub?.cancel();
+      await _profileSub?.cancel();
       _profileSub = null;
     }
   }
@@ -98,7 +98,7 @@ class ProfileBloc extends HydratedBloc<ProfileEvent, ProfileBlocState> {
     if (json == null || !json.containsKey('type')) {
       return ProfileBlocUninitialized();
     }
-    ProfileBlocStateType type = ProfileBlocStateType.valueOf(json['type']);
+    var type = ProfileBlocStateType.valueOf(json['type']);
     switch (type) {
       case ProfileBlocStateType.Uninitialized:
         return ProfileBlocUninitialized();

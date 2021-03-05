@@ -24,7 +24,7 @@ class PlayerSimpleList extends StatelessWidget {
   Widget build(BuildContext context) {
     var fullList = game.players.keys.toList();
     if (season != null) {
-      List<String> seasonList = season.playersData.keys.toList();
+      var seasonList = season.playersData.keys.toList();
       // Only track things not in the current list and not ignored.
       seasonList.removeWhere(
           (e) => game.ignoreFromSeason.contains(e) || fullList.contains(e));

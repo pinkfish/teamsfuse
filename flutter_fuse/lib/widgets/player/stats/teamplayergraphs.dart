@@ -60,6 +60,7 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
               onChanged: (_GameTimeseriesType t) => setState(() => type = t),
               items: [
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.All,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -67,9 +68,9 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.All,
                 ),
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.Points,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -77,9 +78,9 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.Points,
                 ),
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.Blocks,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -87,9 +88,9 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.Blocks,
                 ),
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.OffensiveRebounds,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -97,9 +98,9 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.OffensiveRebounds,
                 ),
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.Fouls,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -107,9 +108,9 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.Fouls,
                 ),
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.Turnovers,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -117,9 +118,9 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.Turnovers,
                 ),
                 DropdownMenuItem(
+                  value: _GameTimeseriesType.Assists,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10.0),
                     child: Text(
@@ -127,7 +128,6 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
                       textScaleFactor: 1.2,
                     ),
                   ),
-                  value: _GameTimeseriesType.Assists,
                 ),
               ],
             ),
@@ -260,8 +260,8 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
       domainFn: (_CumulativeScore e, _) => e.name,
       measureFn: (_CumulativeScore e, _) => e.count,
       data: state.games.map((e) {
-        int total = 0;
-        String name = "";
+        var total = 0;
+        var name = '';
         switch (eventType) {
           case _GameTimeseriesType.All:
             break;

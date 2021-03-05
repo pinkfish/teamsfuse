@@ -90,9 +90,10 @@ abstract class SingleLeagueOrTournamentTeamLoaded
   static void _initializeBuilder(SingleLeagueOrTournamentTeamLoadedBuilder b) {
     SingleLeagueOrTournamentTeamState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentTeamBlocStateType.Loaded;
+    b.type = SingleLeagueOrTournamentTeamBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentTeamLoaded.serializer, this);
@@ -132,9 +133,10 @@ abstract class SingleLeagueOrTournamentTeamUninitialized
       SingleLeagueOrTournamentTeamUninitializedBuilder b) {
     SingleLeagueOrTournamentTeamState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentTeamBlocStateType.Uninitialized;
+    b.type = SingleLeagueOrTournamentTeamBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentTeamUninitialized.serializer, this);
@@ -173,9 +175,10 @@ abstract class SingleLeagueOrTournamentTeamDeleted
   static void _initializeBuilder(SingleLeagueOrTournamentTeamDeletedBuilder b) {
     SingleLeagueOrTournamentTeamState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentTeamBlocStateType.Deleted;
+    b.type = SingleLeagueOrTournamentTeamBlocStateType.Deleted;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentTeamDeleted.serializer, this);
@@ -218,9 +221,10 @@ abstract class SingleLeagueOrTournamentTeamSaveFailed
       SingleLeagueOrTournamentTeamSaveFailedBuilder b) {
     SingleLeagueOrTournamentTeamState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentTeamBlocStateType.SaveFailed;
+    b.type = SingleLeagueOrTournamentTeamBlocStateType.SaveFailed;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentTeamSaveFailed.serializer, this);
@@ -259,9 +263,10 @@ abstract class SingleLeagueOrTournamentTeamSaving
   static void _initializeBuilder(SingleLeagueOrTournamentTeamSavingBuilder b) {
     SingleLeagueOrTournamentTeamState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentTeamBlocStateType.Saving;
+    b.type = SingleLeagueOrTournamentTeamBlocStateType.Saving;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentTeamSaving.serializer, this);
@@ -301,9 +306,10 @@ abstract class SingleLeagueOrTournamentTeamSaveDone
       SingleLeagueOrTournamentTeamSaveDoneBuilder b) {
     SingleLeagueOrTournamentTeamState.initializeStateBuilder(b);
 
-    b..type = SingleLeagueOrTournamentTeamBlocStateType.SaveDone;
+    b.type = SingleLeagueOrTournamentTeamBlocStateType.SaveDone;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleLeagueOrTournamentTeamSaveDone.serializer, this);

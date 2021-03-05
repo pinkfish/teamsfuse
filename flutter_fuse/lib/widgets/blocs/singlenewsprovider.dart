@@ -27,6 +27,7 @@ class SingleNewsItemProvider extends SingleBlocProvider<SingleNewsItemBloc> {
             builder: builder,
             prefix: 'club');
 
+  @override
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleClubBloc && bloc.clubUid == keyUid);
   }

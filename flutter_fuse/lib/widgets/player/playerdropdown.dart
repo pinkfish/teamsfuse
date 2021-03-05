@@ -69,7 +69,7 @@ class PlayerDropDown extends StatelessWidget {
               onChanged: onChanged,
             );
           }
-          List<DropdownMenuItem<String>> items = [];
+          var items = <DropdownMenuItem<String>>[];
           if (includeNone) {
             items.add(DropdownMenuItem(
               value: noneValue,

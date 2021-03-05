@@ -64,9 +64,10 @@ abstract class InviteLoaded
   static void _initializeBuilder(InviteLoadedBuilder b) {
     InviteState.initializeStateBuilder(b);
 
-    b..type = InviteBlocStateType.Loaded;
+    b.type = InviteBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(InviteLoaded.serializer, this);
   }
@@ -98,9 +99,10 @@ abstract class InviteUninitialized
   static void _initializeBuilder(InviteUninitializedBuilder b) {
     InviteState.initializeStateBuilder(b);
 
-    b..type = InviteBlocStateType.Uninitialized;
+    b.type = InviteBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(InviteUninitialized.serializer, this);
   }

@@ -61,8 +61,8 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
 
   Widget _showTeamPicker() {
     var messages = Messages.of(context);
-    var pickerText = "";
-    if (widget.details.teamUids.length == 0) {
+    var pickerText = '';
+    if (widget.details.teamUids.isEmpty) {
       pickerText = messages.allteams;
     } else {
       var teamBloc = BlocProvider.of<TeamBloc>(context);
@@ -71,13 +71,13 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
           .join((', '));
     }
     return InkWell(
+      onTap: _openTeamListWithCheckbox,
       child: Row(
         children: <Widget>[
           Text(pickerText),
           const Icon(Icons.arrow_drop_down, color: Colors.black54),
         ],
       ),
-      onTap: _openTeamListWithCheckbox,
     );
   }
 
@@ -120,8 +120,8 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
 
   Widget _showPlayerPicker() {
     var messages = Messages.of(context);
-    var pickerText = "";
-    if (widget.details.playerUids.length == 0) {
+    var pickerText = '';
+    if (widget.details.playerUids.isEmpty) {
       pickerText = messages.everyone;
     } else {
       var playerBloc = BlocProvider.of<PlayerBloc>(context);
@@ -131,13 +131,13 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
           .join((', '));
     }
     return InkWell(
+      onTap: _openPlayerListWithCheckbox,
       child: Row(
         children: <Widget>[
           Text(pickerText),
           const Icon(Icons.arrow_drop_down, color: Colors.black54),
         ],
       ),
-      onTap: _openPlayerListWithCheckbox,
     );
   }
 
@@ -173,24 +173,24 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
                 value: widget.details.result,
                 items: <DropdownMenuItem<GameResult>>[
                   DropdownMenuItem<GameResult>(
-                    child: Text(messages.noresult),
                     value: null,
+                    child: Text(messages.noresult),
                   ),
                   DropdownMenuItem<GameResult>(
-                    child: Text(messages.win),
                     value: GameResult.Win,
+                    child: Text(messages.win),
                   ),
                   DropdownMenuItem<GameResult>(
-                    child: Text(messages.loss),
                     value: GameResult.Loss,
+                    child: Text(messages.loss),
                   ),
                   DropdownMenuItem<GameResult>(
-                    child: Text(messages.tie),
                     value: GameResult.Tie,
+                    child: Text(messages.tie),
                   ),
                   DropdownMenuItem<GameResult>(
-                    child: Text(messages.notFinished),
                     value: GameResult.Unknown,
+                    child: Text(messages.notFinished),
                   ),
                 ],
                 onChanged: (res) {
@@ -206,20 +206,20 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
                 value: widget.details.eventType,
                 items: <DropdownMenuItem<EventType>>[
                   DropdownMenuItem<EventType>(
-                    child: Text(messages.noevent),
                     value: null,
+                    child: Text(messages.noevent),
                   ),
                   DropdownMenuItem<EventType>(
-                    child: Text(messages.gametype),
                     value: EventType.Game,
+                    child: Text(messages.gametype),
                   ),
                   DropdownMenuItem<EventType>(
-                    child: Text(messages.trainingtype),
                     value: EventType.Practice,
+                    child: Text(messages.trainingtype),
                   ),
                   DropdownMenuItem<EventType>(
-                    child: Text(messages.eventtype),
                     value: EventType.Event,
+                    child: Text(messages.eventtype),
                   ),
                 ],
                 onChanged: (ev) {

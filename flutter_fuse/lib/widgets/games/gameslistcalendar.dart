@@ -65,9 +65,7 @@ class GameListCalendarState {
 
   /// Gets the stream of updates for this system.
   Stream<UpdateReason> get stream {
-    if (_myStream == null) {
-      _myStream = _controller.stream.asBroadcastStream();
-    }
+    _myStream ??= _controller.stream.asBroadcastStream();
     return _myStream;
   }
 
@@ -93,7 +91,7 @@ class GameListCalendarState {
   void _setGames(FilteredGameState res) {
     var games = res.games.values.toList();
 
-    if (games.length > 0 || _listToShow == null) {
+    if (games.isNotEmpty || _listToShow == null) {
       games.sort((a, b) => a.sharedData.time.compareTo(b.sharedData.time));
 
       _listToShow = games;

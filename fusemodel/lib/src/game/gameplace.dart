@@ -20,13 +20,13 @@ abstract class GamePlace implements Built<GamePlace, GamePlaceBuilder> {
   bool get unknown;
 
   GamePlace._();
-  factory GamePlace([updates(GamePlaceBuilder b)]) = _$GamePlace;
+  factory GamePlace([Function(GamePlaceBuilder b) updates]) = _$GamePlace;
 
   static void _initializeBuilder(GamePlaceBuilder b) => b
-    ..name = ""
-    ..placeId = ""
-    ..address = ""
-    ..notes = ""
+    ..name = ''
+    ..placeId = ''
+    ..address = ''
+    ..notes = ''
     ..unknown = true
     ..latitude = 0
     ..longitude = 0;

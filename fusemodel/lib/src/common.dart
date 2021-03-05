@@ -35,7 +35,7 @@ num getNum(dynamic data, {num defaultValue = 0}) {
     return defaultValue;
   }
   if (data is String) {
-    num val = num.tryParse(data);
+    var val = num.tryParse(data);
     if (val == null) {
       return defaultValue;
     }
@@ -53,26 +53,26 @@ const String PHOTOURL = 'photourl';
 
 // Collection definitions for firestore.
 /// Messages collection in firestore.
-const String CLUB_COLLECTION = "Clubs";
-const String COACH_COLLECTION = "Coaches";
-const String GAMES_COLLECTION = "Games";
-const String GAMES_SHARED_COLLECTION = "GamesShared";
-const String GAME_EVENT_COLLECTION = "GameEvents";
-const String GAME_LOG_COLLECTION = "Logs";
-const String INVITE_COLLECTION = "Invites";
-const String LEAGUE_COLLECTON = "League";
-const String LEAGUE_DIVISION_COLLECTION = "LeagueDivision";
-const String LEAGUE_SEASON_COLLECTION = "LeagueSeason";
-const String LEAGUE_TEAM_COLLECTION = "LeagueTeam";
-const String MEDIA_COLLECTION = "Media";
-const String MESSAGES_COLLECTION = "Messages";
-const String MESSAGE_RECIPIENTS_COLLECTION = "MessageRecipients";
-const String NEWS_COLLECTION = "News";
-const String OPPONENT_COLLECTION = "Opponents";
-const String PLAYERS_COLLECTION = "Players";
-const String SEASONS_COLLECTION = "Seasons";
-const String TEAMS_COLLECTION = "Teams";
-const String USER_DATA_COLLECTION = "UserData";
+const String CLUB_COLLECTION = 'Clubs';
+const String COACH_COLLECTION = 'Coaches';
+const String GAMES_COLLECTION = 'Games';
+const String GAMES_SHARED_COLLECTION = 'GamesShared';
+const String GAME_EVENT_COLLECTION = 'GameEvents';
+const String GAME_LOG_COLLECTION = 'Logs';
+const String INVITE_COLLECTION = 'Invites';
+const String LEAGUE_COLLECTON = 'League';
+const String LEAGUE_DIVISION_COLLECTION = 'LeagueDivision';
+const String LEAGUE_SEASON_COLLECTION = 'LeagueSeason';
+const String LEAGUE_TEAM_COLLECTION = 'LeagueTeam';
+const String MEDIA_COLLECTION = 'Media';
+const String MESSAGES_COLLECTION = 'Messages';
+const String MESSAGE_RECIPIENTS_COLLECTION = 'MessageRecipients';
+const String NEWS_COLLECTION = 'News';
+const String OPPONENT_COLLECTION = 'Opponents';
+const String PLAYERS_COLLECTION = 'Players';
+const String SEASONS_COLLECTION = 'Seasons';
+const String TEAMS_COLLECTION = 'Teams';
+const String USER_DATA_COLLECTION = 'UserData';
 
 /// The reason for the update.
 enum UpdateReason { Delete, Update }
@@ -109,36 +109,36 @@ class _EmailStuff {
 }
 
 Map<String, _EmailStuff> _emailProviders = {
-  "gmail.com": _EmailStuff(plus: true, dot: true),
-  "googlemail.com": _EmailStuff(plus: true, dot: true, alias: "gmail.com"),
-  "hotmail.com": _EmailStuff(plus: true, dot: false),
-  "live.com": _EmailStuff(plus: true, dot: true),
-  "outlook.com": _EmailStuff(plus: true, dot: false),
+  'gmail.com': _EmailStuff(plus: true, dot: true),
+  'googlemail.com': _EmailStuff(plus: true, dot: true, alias: 'gmail.com'),
+  'hotmail.com': _EmailStuff(plus: true, dot: false),
+  'live.com': _EmailStuff(plus: true, dot: true),
+  'outlook.com': _EmailStuff(plus: true, dot: false),
 };
 
 ///
 /// Normalizes the input email address to make it consistent and comparable.
 ///
 String normalizeEmail(String eMail) {
-  const String PLUS_ONLY = r"\+.*$";
-  const String DOT_ONLY = r"\.";
-  String email = eMail.toLowerCase();
-  List<String> emailParts = email.split("@");
+  const PLUS_ONLY = r'\+.*$';
+  const DOT_ONLY = r'\.';
+  var email = eMail.toLowerCase();
+  var emailParts = email.split('@');
 
   if (emailParts.length != 2) {
     return email;
   }
 
-  String username = emailParts[0];
-  String domain = emailParts[1];
+  var username = emailParts[0];
+  var domain = emailParts[1];
 
   if (_emailProviders.containsKey(domain)) {
     print('Frogm 2 ' + _emailProviders[domain].toString());
     if (_emailProviders[domain].dot) {
-      username = username.replaceAll(DOT_ONLY, "");
+      username = username.replaceAll(DOT_ONLY, '');
     }
     if (_emailProviders[domain].plus) {
-      username = username.replaceFirst(PLUS_ONLY, "");
+      username = username.replaceFirst(PLUS_ONLY, '');
     }
     if (_emailProviders[domain].alias != null) {
       domain = _emailProviders[domain].alias;

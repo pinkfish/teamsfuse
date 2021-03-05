@@ -63,7 +63,7 @@ abstract class GameEvent implements Built<GameEvent, GameEventBuilder> {
   GameEvent._();
 
   /// Factor to create the event.
-  factory GameEvent([updates(GameEventBuilder b)]) = _$GameEvent;
+  factory GameEvent([Function(GameEventBuilder b) updates]) = _$GameEvent;
 
   /// Nice mapping for the event.
   Map<String, dynamic> toMap() {
@@ -93,7 +93,7 @@ abstract class GameEventLocation
   GameEventLocation._();
 
   /// Factory to make the the location.
-  factory GameEventLocation([updates(GameEventLocationBuilder b)]) =
+  factory GameEventLocation([Function(GameEventLocationBuilder b) updates]) =
       _$GameEventLocation;
 
   /// Serialize the map.

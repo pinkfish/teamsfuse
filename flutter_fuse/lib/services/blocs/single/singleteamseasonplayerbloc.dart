@@ -69,7 +69,7 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
       if (season != null) {
         // Only send this if the season is not the same.
         if (season.players.any((SeasonPlayer p) => p.playerUid == playerUid)) {
-          SeasonPlayer player = season.players
+          var player = season.players
               .firstWhere((SeasonPlayer p) => p.playerUid == playerUid);
           if (player != state.seasonPlayer) {
             add(_SingleTeamNewTeamSeasonPlayer(newPlayer: player));
@@ -86,7 +86,7 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
   @override
   Future<void> close() async {
     await super.close();
-    _seasonSub?.cancel();
+    await _seasonSub?.cancel();
     _seasonSub = null;
   }
 
@@ -108,7 +108,7 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
       // Do its thing and it should remove ourselves whern it saves.
       yield SingleTeamSeasonPlayerSaving.fromState(state).build();
       try {
-        db.removePlayerFromSeason(seasonUid, playerUid);
+        await db.removePlayerFromSeason(seasonUid, playerUid);
       } catch (e, stack) {
         yield (SingleTeamSeasonPlayerSaveFailed.fromState(state)
               ..error = RemoteError(e.message, stack.toString()))
@@ -143,8 +143,7 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
       return SingleTeamSeasonPlayerUninitialized();
     }
 
-    SingleTeamSeasonPlayerBlocStateType type =
-        SingleTeamSeasonPlayerBlocStateType.valueOf(json['type']);
+    var type = SingleTeamSeasonPlayerBlocStateType.valueOf(json['type']);
     try {
       switch (type) {
         case SingleTeamSeasonPlayerBlocStateType.Uninitialized:

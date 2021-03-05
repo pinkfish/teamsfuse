@@ -25,6 +25,7 @@ class SingleGameProvider extends SingleBlocProvider<SingleGameBloc> {
             prefix: 'game');
 
   /// is the bloc equal to this one.
+  @override
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleGameBloc && bloc.gameUid == keyUid);
   }

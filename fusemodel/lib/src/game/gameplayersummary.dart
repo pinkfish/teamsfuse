@@ -29,11 +29,11 @@ abstract class GamePlayerSummary
   static void _initializeBuilder(GamePlayerSummaryBuilder b) => b
     ..currentlyPlaying = false
     ..playing = true
-    ..jerseyNumber = "";
+    ..jerseyNumber = '';
 
   GamePlayerSummary._();
 
-  factory GamePlayerSummary([updates(GamePlayerSummaryBuilder b)]) =
+  factory GamePlayerSummary([Function(GamePlayerSummaryBuilder b) updates]) =
       _$GamePlayerSummary;
 
   /// Seriallize the summary.
@@ -54,7 +54,7 @@ abstract class GamePlayerSummary
   /// Pull the summary togather from all the periods.
   @memoized
   PlayerSummaryData get fullData {
-    PlayerSummaryDataBuilder b = PlayerSummaryDataBuilder();
+    var b = PlayerSummaryDataBuilder();
     for (var s in perPeriod.values) {
       b.steals += s.steals;
       b.turnovers += s.turnovers;

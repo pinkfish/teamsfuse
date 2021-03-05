@@ -39,7 +39,7 @@ class _PlayerDataTableState extends State<PlayerDataTable> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> sortedList = widget.game.players.keys.toList();
+    var sortedList = widget.game.players.keys.toList();
     if (_sortBy == SortPlayerBy.Name) {
       if (_ascending) {
         sortedList.sort((String u1, String u2) => widget.game.players[u1].name
@@ -52,7 +52,7 @@ class _PlayerDataTableState extends State<PlayerDataTable> {
       sortedList.sort((String u1, String u2) => _sortFunction(
           widget.game.game.players[u1], widget.game.game.players[u2]));
     }
-    double scale = widget.orientation == Orientation.portrait ? 1.0 : 1.5;
+    var scale = widget.orientation == Orientation.portrait ? 1.0 : 1.5;
     var style = Theme.of(context)
         .textTheme
         .headline6
@@ -68,37 +68,37 @@ class _PlayerDataTableState extends State<PlayerDataTable> {
             value: _period,
             items: [
               DropdownMenuItem(
-                child: Text(Messages.of(context).allPeriods),
                 value: GamePeriod.finalPeriod,
-              ),
-              DropdownMenuItem(
                 child: Text(Messages.of(context).allPeriods),
-                value: GamePeriod.notStarted,
               ),
               DropdownMenuItem(
+                value: GamePeriod.notStarted,
+                child: Text(Messages.of(context).allPeriods),
+              ),
+              DropdownMenuItem(
+                value: GamePeriod.regulation1,
                 child: Text(
                     Messages.of(context).getPeriodName(GamePeriod.regulation1)),
-                value: GamePeriod.regulation1,
               ),
               DropdownMenuItem(
+                value: GamePeriod.regulation2,
                 child: Text(
                     Messages.of(context).getPeriodName(GamePeriod.regulation2)),
-                value: GamePeriod.regulation2,
               ),
               DropdownMenuItem(
+                value: GamePeriod.regulation3,
                 child: Text(
                     Messages.of(context).getPeriodName(GamePeriod.regulation3)),
-                value: GamePeriod.regulation3,
               ),
               DropdownMenuItem(
+                value: GamePeriod.regulation4,
                 child: Text(
                     Messages.of(context).getPeriodName(GamePeriod.regulation4)),
-                value: GamePeriod.regulation4,
               ),
               DropdownMenuItem(
+                value: GamePeriod.overtime1,
                 child: Text(
                     Messages.of(context).getPeriodName(GamePeriod.overtime1)),
-                value: GamePeriod.overtime1,
               ),
             ],
             onChanged: (GamePeriod p) => setState(() => _period = p),
@@ -283,7 +283,7 @@ class _PlayerDataTableState extends State<PlayerDataTable> {
 
   Iterable<DataRow> _playerSummary(
       String uid, GamePlayerSummary s, Orientation orientation) {
-    double scale = orientation == Orientation.portrait ? 1.0 : 1.5;
+    var scale = orientation == Orientation.portrait ? 1.0 : 1.5;
     PlayerSummaryData data;
     if (_period == GamePeriod.finalPeriod || _period == GamePeriod.notStarted) {
       data = s.fullData;
@@ -291,7 +291,7 @@ class _PlayerDataTableState extends State<PlayerDataTable> {
       data = s.perPeriod[_period] ?? PlayerSummaryData();
     }
     if (_period == GamePeriod.notStarted) {
-      double smallScale = orientation == Orientation.portrait ? 0.8 : 1;
+      var smallScale = orientation == Orientation.portrait ? 0.8 : 1;
       // Show everything!
       return [
         _playerSummaryRow(uid, scale, data, GamePeriod.finalPeriod),

@@ -62,13 +62,13 @@ class _ClubTeamPickerState extends State<ClubTeamPicker> {
 
   List<DropdownMenuItem<Team>> _buildItems(SingleClubState state) {
     var ret = <DropdownMenuItem<Team>>[];
-    if (state.teams.length != 0) {
+    if (state.teams.isNotEmpty) {
       var sorted = state.teams.toList();
       sorted.sort();
       for (var teamDrop in sorted) {
         ret.add(DropdownMenuItem<Team>(
-          child: Text(teamDrop.name),
           value: teamDrop,
+          child: Text(teamDrop.name),
         ));
       }
     }

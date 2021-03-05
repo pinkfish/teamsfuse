@@ -52,7 +52,7 @@ abstract class Broadcast implements Built<Broadcast, BroadcastBuilder> {
   String get longitude;
 
   Broadcast._();
-  factory Broadcast([updates(BroadcastBuilder b)]) = _$Broadcast;
+  factory Broadcast([Function(BroadcastBuilder b) updates]) = _$Broadcast;
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(Broadcast.serializer, this);

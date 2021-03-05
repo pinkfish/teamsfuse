@@ -122,12 +122,8 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
       ),
       ListTile(
         leading: Icon(Icons.place),
-        title: Text(myGame.sharedData.place.name != null
-            ? myGame.sharedData.place.name
-            : ''),
-        subtitle: Text(myGame.sharedData.place.address != null
-            ? myGame.sharedData.place.address
-            : ''),
+        title: Text(myGame.sharedData.place.name ?? ''),
+        subtitle: Text(myGame.sharedData.place.address ?? ''),
       ),
     ];
 

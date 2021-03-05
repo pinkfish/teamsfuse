@@ -31,7 +31,10 @@ class _TeamPlayersState extends State<TeamPlayers> {
     var seasons = teamState.fullSeason.toList();
     seasons.sort((s1, s2) => s1.name.compareTo(s2.name));
     for (var s in seasons) {
-      ret.add(DropdownMenuItem<String>(child: Text(s.name), value: s.uid));
+      ret.add(DropdownMenuItem<String>(
+        value: s.uid,
+        child: Text(s.name),
+      ));
     }
 
     return ret;
@@ -42,11 +45,11 @@ class _TeamPlayersState extends State<TeamPlayers> {
       return Text(Messages.of(context).loading);
     }
     return ExpansionTile(
+      title: Text(
+          Messages.of(context).pendingInvites(state.invitesAsAdmin.length)),
       children: [
         SizedBox(height: 0),
       ],
-      title: Text(
-          Messages.of(context).pendingInvites(state.invitesAsAdmin.length)),
     );
   }
 
@@ -63,9 +66,7 @@ class _TeamPlayersState extends State<TeamPlayers> {
               teamState is SingleTeamUninitialized) {
             return CircularProgressIndicator();
           } else {
-            if (_seasonUid == null) {
-              _seasonUid = teamState.team.currentSeason;
-            }
+            _seasonUid ??= teamState.team.currentSeason;
             if (!teamState.loadedInvites) {
               bloc.add(SingleTeamLoadInvites());
             }

@@ -4,9 +4,10 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../../services/localutilities.dart';
 import '../../player/playertilebasketball.dart';
 
-typedef void SelectPlayerCallback(BuildContext context, String playerUid);
-typedef bool FilterPlayerCallback(String playerUid);
-typedef int SortPlayerCallback(Game game, String p1, String p2);
+typedef SelectPlayerCallback = void Function(
+    BuildContext context, String playerUid);
+typedef FilterPlayerCallback = bool Function(String playerUid);
+typedef SortPlayerCallback = int Function(Game game, String p1, String p2);
 
 ///
 /// List showing all the players on the team to be selectable in a dialog.
@@ -22,7 +23,7 @@ class GamePlayerList extends StatelessWidget {
   final SortPlayerCallback sort;
 
   List<Widget> _populateList(BuildContext context, Orientation o) {
-    List<String> players = game.players.keys.toList();
+    var players = game.players.keys.toList();
     players.addAll(game.opponents.keys);
     players.sort((String p1, String p2) => sort(game, p1, p2));
     return players
@@ -35,7 +36,7 @@ class GamePlayerList extends StatelessWidget {
             child: PlayerTileBasketball(
               extra: extra,
               gameUid: game.uid,
-              compactDisplay: this.compactDisplay,
+              compactDisplay: compactDisplay,
               playerUid: playerUid,
               editButton: false,
               color: selectedPlayer == playerUid
@@ -64,8 +65,8 @@ class GamePlayerList extends StatelessWidget {
       this.compactDisplay = false});
 
   static int _sortFunc(Game game, String a, String b) {
-    GamePlayerSummary asum = game.players[a] ?? game.opponents[a];
-    GamePlayerSummary bsum = game.players[b] ?? game.opponents[b];
+    var asum = game.players[a] ?? game.opponents[a];
+    var bsum = game.players[b] ?? game.opponents[b];
     if (asum.currentlyPlaying) {
       return -1;
     }

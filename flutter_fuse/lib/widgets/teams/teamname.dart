@@ -12,7 +12,7 @@ import '../../services/messages.dart';
 class TeamName extends StatelessWidget {
   /// Constructor the team image display.  Must specify a team or teamUid or
   /// teamImage
-  TeamName({this.teamUid, this.style, Key key})
+  TeamName({@required this.teamUid, this.style, Key key})
       : super(
           key: key,
         ) {

@@ -46,23 +46,24 @@ class _GameVideoPlayer extends State<GameVideoPlayer> {
   void _updateUrl(Uri newUrl) async {
     if (newUrl != _currentUrl) {
       _currentUrl = newUrl;
-      String downloadUrl = newUrl.toString();
+      var downloadUrl = newUrl.toString();
       if (newUrl.scheme == 'gs') {
-        var ref = await FirebaseStorage.instance.refFromURL(newUrl.toString());
+        var ref = FirebaseStorage.instance.refFromURL(newUrl.toString());
         downloadUrl = await ref.getDownloadURL();
       }
-      _controller?.dispose();
-      _controller = VideoPlayerController.network(downloadUrl)
-        ..initialize().then((_) {
-          // If the start point is set, go to there.
-          if (widget.start != null) {
-            seekTo(widget.start);
-          }
-          _lastStart = widget.start;
-          setState(() {});
-        }).catchError((e) {
-          print('Error $e');
-        });
+      await _controller?.dispose();
+      _controller = VideoPlayerController.network(downloadUrl);
+      try {
+        await _controller.initialize();
+        // If the start point is set, go to there.
+        if (widget.start != null) {
+          seekTo(widget.start);
+        }
+        _lastStart = widget.start;
+        setState(() {});
+      } catch (e) {
+        print('Error $e');
+      }
     }
   }
 
@@ -84,7 +85,7 @@ class _GameVideoPlayer extends State<GameVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    Uri newUrl = widget.video.url;
+    var newUrl = widget.video.url;
     _updateUrl(newUrl);
 
     // Seek if the time point changes.

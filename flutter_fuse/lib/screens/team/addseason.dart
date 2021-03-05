@@ -88,7 +88,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
               labelText: Messages.of(context).newseasonhint,
             ),
             validator: (s) {
-              String ret = _validations.validateDisplayName(context, s);
+              var ret = _validations.validateDisplayName(context, s);
             },
             initialValue: '',
             keyboardType: TextInputType.text,
@@ -124,7 +124,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
                       _seasonSelect = singleTeamBloc.state.getSeason(seasonUid);
                     },
                     validator: (s) {
-                      String ret = _importPlayers && s == SeasonFormField.none
+                      var ret = _importPlayers && s == SeasonFormField.none
                           ? Messages.of(context).seasonrequired
                           : null;
                     },
@@ -159,9 +159,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
           cubit: singleTeamBloc,
           listener: (context, state) {
             if (state is SingleTeamLoaded) {
-              if (_seasonSelect == null) {
-                _seasonSelect = state.getSeason(state.team.currentSeason);
-              }
+              _seasonSelect ??= state.getSeason(state.team.currentSeason);
             }
             if (state is SingleTeamDeleted) {
               Navigator.pop(context);

@@ -116,7 +116,7 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
   Future<void> close() async {
     await super.close();
     _cleanupStuff();
-    _coordSub?.cancel();
+    await _coordSub?.cancel();
   }
 
   void _cleanupStuff() {
@@ -182,7 +182,7 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
 
     if (event is _SingleLeagueOrTournamentEventSeasonDivisons) {
       var newDivisons = MapBuilder<String, LeagueOrTournamentDivison>();
-      for (LeagueOrTournamentDivison season in event.divisons) {
+      for (var season in event.divisons) {
         newDivisons[season.uid] = season;
       }
       yield (SingleLeagueOrTournamentSeasonLoaded.fromState(state)
@@ -202,11 +202,11 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
     }
 
     if (event is SingleLeagueOrTournamentSeasonAddDivision) {
-      LeagueOrTournamentDivison divison = LeagueOrTournamentDivison((b) => b
+      var divison = LeagueOrTournamentDivison((b) => b
         ..name = event.name
         ..leagueOrTournmentSeasonUid = leagueSeasonUid
         ..leagueOrTournamentUid = state.season.leagueOrTournmentUid);
-      db.updateLeagueDivison(divison).then((void a) => null,
+      await db.updateLeagueDivison(divison).then((void a) => null,
           onError: (Error error) => add(
               _SingleLeagueOrTournamentEventSeasonSaveFailed(error: error)));
     }
@@ -222,7 +222,7 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
     }
 
     try {
-      SingleLeagueOrTournamentSeasonBlocStateType type =
+      var type =
           SingleLeagueOrTournamentSeasonBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleLeagueOrTournamentSeasonBlocStateType.Uninitialized:

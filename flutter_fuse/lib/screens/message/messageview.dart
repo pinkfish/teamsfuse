@@ -111,13 +111,13 @@ class _ShowMessageScreenState extends State<ShowMessageScreen> {
         children: <Widget>[
           FlatButton(
             onPressed: () => _archiveMessage(context),
-            child: Text(messages.archivemessage),
             textColor: Theme.of(context).accentColor,
+            child: Text(messages.archivemessage),
           ),
           FlatButton(
             onPressed: () => _deleteMessage(context),
-            child: Text(messages.deletemessage),
             textColor: Theme.of(context).accentColor,
+            child: Text(messages.deletemessage),
           ),
         ],
       ),
@@ -133,8 +133,7 @@ class _ShowMessageScreenState extends State<ShowMessageScreen> {
       Container(
         alignment: Alignment.topLeft,
         margin: EdgeInsets.only(left: 15.0),
-        child: Text(
-            state.body == null ? Messages.of(context).loading : state.body),
+        child: Text(state.body ?? Messages.of(context).loading),
       ),
     );
 

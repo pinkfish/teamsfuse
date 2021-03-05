@@ -36,15 +36,13 @@ class _GameDurationState extends State<GameDuration> {
       );
     }
     if (widget.game.runningFrom != null) {
-      if (_timer == null) {
-        _timer = Timer.periodic(Duration(seconds: 1), (t) => setState(() {}));
-      }
+      _timer ??= Timer.periodic(Duration(seconds: 1), (t) => setState(() {}));
     } else if (_timer != null) {
       _timer.cancel();
       _timer = null;
     }
 
-    int diff = 0;
+    var diff = 0;
     if (widget.game.runningFrom != null) {
       diff += clock.now().difference(widget.game.runningFrom).inSeconds;
     }

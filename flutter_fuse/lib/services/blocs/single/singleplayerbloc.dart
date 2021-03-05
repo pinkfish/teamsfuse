@@ -166,8 +166,8 @@ class SinglePlayerBloc
   @override
   Future<void> close() async {
     await super.close();
-    _playerSub?.cancel();
-    _inviteSub?.cancel();
+    await _playerSub?.cancel();
+    await _inviteSub?.cancel();
   }
 
   @override
@@ -190,8 +190,7 @@ class SinglePlayerBloc
 
       try {
         if (event.image != null) {
-          var url =
-              await db.updatePlayerImage(event.player.uid, await event.image);
+          var url = await db.updatePlayerImage(event.player.uid, event.image);
           event.player.photoUrl = url.toString();
         }
         await db.updateFirestorePlayer(event.player.build(), false);
@@ -274,8 +273,7 @@ class SinglePlayerBloc
     }
 
     try {
-      SinglePlayerBlocStateType type =
-          SinglePlayerBlocStateType.valueOf(json['type']);
+      var type = SinglePlayerBlocStateType.valueOf(json['type']);
       switch (type) {
         case SinglePlayerBlocStateType.Uninitialized:
           return SinglePlayerUninitialized();

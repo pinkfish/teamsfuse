@@ -71,11 +71,11 @@ class _GamePlayerSubsitutionDialogState
               ButtonBar(
                 children: [
                   FlatButton(
+                    onPressed: () => Navigator.pop(context, null),
                     child: Text(
                       MaterialLocalizations.of(context).cancelButtonLabel,
                       textScaleFactor: 1.5,
                     ),
-                    onPressed: () => Navigator.pop(context, null),
                   ),
                 ],
               ),

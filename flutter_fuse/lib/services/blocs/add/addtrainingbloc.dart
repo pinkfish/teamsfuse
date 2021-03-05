@@ -40,7 +40,7 @@ class AddTrainingBloc extends Bloc<AddTrainingEvent, AddItemState> {
       yield AddItemSaving();
 
       try {
-        Game updatedGame = event.newGame;
+        var updatedGame = event.newGame;
         await coordinationBloc.databaseUpdateModel
             .addTrainingEvents(updatedGame, event.repeatTimes);
 

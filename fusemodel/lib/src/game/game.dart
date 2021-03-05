@@ -133,7 +133,7 @@ abstract class Game implements Built<Game, GameBuilder> {
 
   /// The current time of the game, used when making events.
   Duration get currentGameTime {
-    int diff = 0;
+    var diff = 0;
     if (runningFrom != null) {
       diff += clock.now().difference(runningFrom).inSeconds;
     }
@@ -142,7 +142,7 @@ abstract class Game implements Built<Game, GameBuilder> {
   }
 
   Game._();
-  factory Game([updates(GameBuilder b)]) = _$Game;
+  factory Game([Function(GameBuilder b) updates]) = _$Game;
 
   bool get homegame => sharedData.officialResult.homeTeamLeagueUid == teamUid;
 
@@ -158,13 +158,13 @@ abstract class Game implements Built<Game, GameBuilder> {
   static const String SHAREDDATAUID = 'sharedDataUid';
   static const String LEAGUEOPPONENTUID = 'leagueOpponentUid';
   static const String GAMESHAREDDATA = 'sharedData';
-  static const String opponentField = "opponents";
-  static const String playersField = "players";
+  static const String opponentField = 'opponents';
+  static const String playersField = 'players';
 
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(GameBuilder b) => b
     ..trackAttendance = true
-    ..opponentUid = ""
+    ..opponentUid = ''
     ..result.currentPeriod = GamePeriod.notStarted.toBuilder()
     ..gameTime = Duration()
     ..playerSummary = GamePlayerSummaryBuilder()

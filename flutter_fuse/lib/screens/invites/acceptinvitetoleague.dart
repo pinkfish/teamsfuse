@@ -89,9 +89,9 @@ class _AcceptInviteToLeagueScreenState
                       children: <Widget>[
                         RaisedButton(
                           onPressed: _savePressed,
-                          child: Text(messages.joinleague),
                           color: theme.accentColor,
                           textColor: Colors.white,
+                          child: Text(messages.joinleague),
                         ),
                         FlatButton(
                           onPressed: () => Navigator.pushNamed(context,

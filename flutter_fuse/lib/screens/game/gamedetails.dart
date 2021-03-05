@@ -42,7 +42,7 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
       // Show a dialog and then delete it!
       var deleted = await deleteGameDialog(context, gameBloc);
       if (deleted) {
-        await Navigator.pop(context);
+        Navigator.pop(context);
       }
     } else if (choice == 'edit') {
       await Navigator.pushNamed(context, 'EditGame/${widget.gameUid}');
@@ -185,8 +185,8 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                     items: navItems,
                   ),
                   body: AnimatedSwitcher(
-                    child: body,
                     duration: Duration(milliseconds: 500),
+                    child: body,
                   ),
                   floatingActionButton:
                       gameState.game.result.inProgress == GameInProgress.Final

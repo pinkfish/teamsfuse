@@ -82,7 +82,7 @@ class _EnsureVisibleWhenFocusedState extends State<EnsureVisibleWhenFocused> {
       // No scrolling is necessary to reveal the child
       return;
     }
-    position.ensureVisible(
+    await position.ensureVisible(
       object,
       alignment: alignment,
       duration: widget.duration,

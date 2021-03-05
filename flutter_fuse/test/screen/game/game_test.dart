@@ -32,15 +32,15 @@ void main() {
   var platform = MockGoogleMapsFlutterPlatform();
 
   testWidgets('uninitialized', (tester) async {
-    loadFonts();
+    await loadFonts();
 
     var mockDb = MockDatabaseUpdateModel();
     var mockAnalytics = MockAnalyticsSubsystem();
     var gameController = StreamController<Game>();
 
-    AsyncHydratedStorage.storageDirectory = Directory("fail");
+    AsyncHydratedStorage.storageDirectory = Directory('fail');
 
-    when(mockDb.getGame("123")).thenAnswer((_) => gameController.stream);
+    when(mockDb.getGame('123')).thenAnswer((_) => gameController.stream);
 
     // Build our app and trigger a frame.
 
@@ -50,7 +50,7 @@ void main() {
           RepositoryProvider<DatabaseUpdateModel>(create: (c) => mockDb),
           RepositoryProvider<AnalyticsSubsystem>(create: (c) => mockAnalytics)
         ],
-        child: GameDetailsScreen("123"),
+        child: GameDetailsScreen('123'),
       ),
     );
 
@@ -61,12 +61,12 @@ void main() {
     //await tester.pumpWidget(testWidget);
     await tester.pump(Duration(milliseconds: 600));
 
-    expect(find.text("Loading..."), findsOneWidget);
-    gameController.close();
+    expect(find.text('Loading...'), findsOneWidget);
+    await gameController.close();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('deleted', (tester) async {
-    loadFonts();
+    await loadFonts();
 
     final mockDb = MockDatabaseUpdateModel();
     final mockAnalytics = MockAnalyticsSubsystem();
@@ -74,9 +74,9 @@ void main() {
     final mockObserver = MockNavigatorObserver();
     final mockPlayerBloc = MockPlayerBloc();
 
-    AsyncHydratedStorage.storageDirectory = Directory("fail");
+    AsyncHydratedStorage.storageDirectory = Directory('fail');
 
-    when(mockDb.getGame("123")).thenAnswer((_) => gameController.stream);
+    when(mockDb.getGame('123')).thenAnswer((_) => gameController.stream);
 
     // Build our app and trigger a frame.
     var testWidget = await makeTestableWidget(
@@ -87,7 +87,7 @@ void main() {
         ],
         child: BlocProvider(
           create: (_) => mockPlayerBloc,
-          child: GameDetailsScreen("123"),
+          child: GameDetailsScreen('123'),
         ),
       ),
       observer: mockObserver,
@@ -101,16 +101,16 @@ void main() {
 
     verify(mockObserver.didPop(any, any));
 
-    gameController.close();
+    await gameController.close();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('loaded', (tester) async {
     resetMockitoState();
-    print("Made platform");
+    print('Made platform');
     setupGoogleMapsMock(platform);
     GoogleMapsFlutterPlatform.instance = platform;
 
-    loadFonts();
+    await loadFonts();
 
     final mockDb = MockDatabaseUpdateModel();
     final mockAnalytics = MockAnalyticsSubsystem();
@@ -120,10 +120,10 @@ void main() {
     final mockObserver = MockNavigatorObserver();
     final mockPlayerBloc = MockPlayerBloc();
 
-    when(mockDb.getGame("game123")).thenAnswer((_) => gameController.stream);
-    when(mockDb.getTeamDetails(teamUid: "team123"))
+    when(mockDb.getGame('game123')).thenAnswer((_) => gameController.stream);
+    when(mockDb.getTeamDetails(teamUid: 'team123'))
         .thenAnswer((_) => teamController.stream);
-    when(mockDb.getSingleSeason("season123"))
+    when(mockDb.getSingleSeason('season123'))
         .thenAnswer((_) => seasonController.stream);
     whenListen(mockPlayerBloc, Stream.fromIterable([]));
 
@@ -137,7 +137,7 @@ void main() {
         child: BlocProvider<PlayerBloc>(
           create: (_) => mockPlayerBloc,
           child: RepaintBoundary(
-            child: GameDetailsScreen("game123"),
+            child: GameDetailsScreen('game123'),
           ),
         ),
       ),
@@ -150,14 +150,14 @@ void main() {
     await tester.pump(Duration(milliseconds: 600));
 
     // Still loading when there is no team.
-    expect(find.text("Loading..."), findsOneWidget);
+    expect(find.text('Loading...'), findsOneWidget);
 
-    gameController.close();
+    await gameController.close();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('loaded team', (tester) async {
     resetMockitoState();
-    print("Made platform");
+    print('Made platform');
     setupGoogleMapsMock(platform);
     GoogleMapsFlutterPlatform.instance = platform;
 
@@ -171,21 +171,21 @@ void main() {
     final mockObserver = MockNavigatorObserver();
     final mockPlayerBloc = MockPlayerBloc();
 
-    when(mockDb.getGame("game123")).thenAnswer((_) => gameController.stream);
-    when(mockDb.getTeamDetails(teamUid: "team123"))
+    when(mockDb.getGame('game123')).thenAnswer((_) => gameController.stream);
+    when(mockDb.getTeamDetails(teamUid: 'team123'))
         .thenAnswer((_) => teamController.stream);
-    when(mockDb.getSingleSeason("season123"))
+    when(mockDb.getSingleSeason('season123'))
         .thenAnswer((_) => seasonController.stream);
-    when(mockDb.getTeamOpponents("team123"))
+    when(mockDb.getTeamOpponents('team123'))
         .thenAnswer((_) => opponentController.stream);
-    when(mockDb.getSeasonsForTeam("team123"))
+    when(mockDb.getSeasonsForTeam('team123'))
         .thenAnswer((_) => teamSeasonController.stream);
     when(mockPlayerBloc.state)
         .thenAnswer((_) => (PlayerLoaded.fromState(PlayerUninitialized())
               ..players = MapBuilder({
                 'player123': Player((b) => b
-                  ..name = "Me"
-                  ..uid = "player123")
+                  ..name = 'Me'
+                  ..uid = 'player123')
               }))
             .build());
 
@@ -208,7 +208,7 @@ void main() {
         child: BlocProvider<PlayerBloc>(
           create: (_) => mockPlayerBloc,
           child: RepaintBoundary(
-            child: GameDetailsScreen("game123"),
+            child: GameDetailsScreen('game123'),
           ),
         ),
       ),
@@ -233,14 +233,14 @@ void main() {
     await tester.pump(Duration(milliseconds: 600));
 
     // Still loading when there is no team.
-    expect(find.text("Fluff World"), findsOneWidget);
+    expect(find.text('Fluff World'), findsOneWidget);
 
-    if (Platform.environment["GOLDEN"] != null) {
+    if (Platform.environment['GOLDEN'] != null) {
       await expectLater(find.byType(GameDetailsScreen),
           matchesGoldenFile('../../golden/game_details_set.png'));
     }
 
-    gameController.close();
+    await gameController.close();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('loaded basketball, finished', (tester) async {
@@ -254,21 +254,21 @@ void main() {
     final mockObserver = MockNavigatorObserver();
     final mockPlayerBloc = MockPlayerBloc();
 
-    when(mockDb.getGame("game123")).thenAnswer((_) => gameController.stream);
-    when(mockDb.getTeamDetails(teamUid: "team123"))
+    when(mockDb.getGame('game123')).thenAnswer((_) => gameController.stream);
+    when(mockDb.getTeamDetails(teamUid: 'team123'))
         .thenAnswer((_) => teamController.stream);
-    when(mockDb.getSingleSeason("season123"))
+    when(mockDb.getSingleSeason('season123'))
         .thenAnswer((_) => seasonController.stream);
-    when(mockDb.getTeamOpponents("team123"))
+    when(mockDb.getTeamOpponents('team123'))
         .thenAnswer((_) => opponentController.stream);
-    when(mockDb.getSeasonsForTeam("team123"))
+    when(mockDb.getSeasonsForTeam('team123'))
         .thenAnswer((_) => teamSeasonController.stream);
     when(mockPlayerBloc.state)
         .thenAnswer((_) => (PlayerLoaded.fromState(PlayerUninitialized())
               ..players = MapBuilder({
                 'player123': Player((b) => b
-                  ..name = "Me"
-                  ..uid = "player123")
+                  ..name = 'Me'
+                  ..uid = 'player123')
               }))
             .build());
 
@@ -291,7 +291,7 @@ void main() {
         child: BlocProvider<PlayerBloc>(
           create: (_) => mockPlayerBloc,
           child: RepaintBoundary(
-            child: GameDetailsScreen("game123"),
+            child: GameDetailsScreen('game123'),
           ),
         ),
       ),
@@ -330,13 +330,13 @@ void main() {
     await tester.pump(Duration(milliseconds: 600));
 
     // Still loading when there is no team.
-    expect(find.text("Fluff World"), findsOneWidget);
+    expect(find.text('Fluff World'), findsOneWidget);
 
-    if (Platform.environment["GOLDEN"] != null) {
+    if (Platform.environment['GOLDEN'] != null) {
       await expectLater(find.byType(GameDetailsScreen),
           matchesGoldenFile('../../golden/game_details_basketball.png'));
     }
 
-    gameController.close();
+    await gameController.close();
   }, variant: TeamsFuseTestVariant());
 }

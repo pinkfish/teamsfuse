@@ -127,8 +127,8 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
   Future<void> close() async {
     await super.close();
     _cleanupSnaps();
-    _coordSub?.cancel();
-    _clubSub?.cancel();
+    await _coordSub?.cancel();
+    await _clubSub?.cancel();
   }
 
   @override
@@ -136,47 +136,43 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
     // Start the firestore loading.
     if (event is _TeamFirestoreStart) {
       // Do the admin team loading thing.
-      TraceProxy adminTrace = coordinationBloc.analytics.newTrace('adminTeams');
-      Stream<Iterable<Team>> adminTeamStream =
+      var adminTrace = coordinationBloc.analytics.newTrace('adminTeams');
+      var adminTeamStream =
           coordinationBloc.databaseUpdateModel.getTeamAdmins();
 
-      Completer<Iterable<Team>> adminData = Completer();
-      _adminTeamSub?.cancel();
+      var adminData = Completer<Iterable<Team>>();
+      await _adminTeamSub?.cancel();
       _adminTeamSub = adminTeamStream.listen((Iterable<Team> data) {
         if (!adminData.isCompleted) {
           adminData.complete(data);
         }
         add(_TeamAdminUpdated(
-            adminTeams: BuiltMap.of(
-                Map.fromIterable(data, key: (t) => t.uid, value: (t) => t))));
+            adminTeams: BuiltMap.of({for (var t in data) t.uid: t})));
       });
       _adminTeamSub.onError((error, stack) {
         crashes.recordException(error, stack);
       });
       coordinationBloc.loadingTrace?.incrementCounter('teamAdmin');
-      Iterable<Team> adminStartStuff = await adminData.future;
+      var adminStartStuff = await adminData.future;
 
-      Stream<Iterable<Team>> userTeamStream =
-          coordinationBloc.databaseUpdateModel.getTeams();
+      var userTeamStream = coordinationBloc.databaseUpdateModel.getTeams();
 
-      Completer<Iterable<Team>> userData = Completer();
-      _userTeamSub?.cancel();
+      var userData = Completer<Iterable<Team>>();
+      await _userTeamSub?.cancel();
       _userTeamSub = userTeamStream.listen((Iterable<Team> data) {
         if (!userData.isCompleted) {
           userData.complete(data);
         }
         add(_TeamUserUpdated(
-            userTeams: BuiltMap.of(
-                Map.fromIterable(data, key: (t) => t.uid, value: (t) => t))));
+            userTeams: BuiltMap.of({for (var t in data) t.uid: t})));
       });
-      Iterable<Team> userStartStuff = await userData.future;
+      var userStartStuff = await userData.future;
 
       yield (TeamLoaded.fromState(state)
             ..loadedFirestore = true
-            ..playerTeams = MapBuilder(Map.fromIterable(userStartStuff,
-                key: (t) => t.uid, value: (t) => t))
-            ..adminTeams = MapBuilder(Map.fromIterable(adminStartStuff,
-                key: (t) => t.uid, value: (t) => t)))
+            ..playerTeams = MapBuilder({for (var t in userStartStuff) t.uid: t})
+            ..adminTeams =
+                MapBuilder({for (var t in adminStartStuff) t.uid: t}))
           .build();
 
       adminTrace.stop();
@@ -207,10 +203,10 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
 
     if (event is _NewClubTeams) {
       // Loop ovewer the teams and do stuff.
-      MapBuilder<String, BuiltMap<String, Team>> clubTeams = MapBuilder();
-      for (MapEntry<String, Iterable<Team>> club in event.teams.entries) {
-        MapBuilder<String, Team> teams = MapBuilder();
-        for (Team t in club.value) {
+      var clubTeams = MapBuilder<String, BuiltMap<String, Team>>();
+      for (var club in event.teams.entries) {
+        var teams = MapBuilder<String, Team>();
+        for (var t in club.value) {
           teams[t.uid] = t;
         }
         clubTeams[club.key] = teams.build();
@@ -220,10 +216,10 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
 
     if (event is TeamLoadPublicTeam) {
       if (state.getPublicTeam(event.teamUid) == null) {
-        Team t = await coordinationBloc.databaseUpdateModel
+        var t = await coordinationBloc.databaseUpdateModel
             .getPublicTeamDetails(teamUid: event.teamUid)
             .first;
-        MapBuilder<String, Team> publicStuff = state.publicTeams.toBuilder();
+        var publicStuff = state.publicTeams.toBuilder();
         publicStuff[event.teamUid] = t;
         yield (TeamLoaded.fromState(state)..publicTeams = publicStuff).build();
       }
@@ -236,15 +232,14 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
       return TeamUninitialized();
     }
 
-    TeamBlocStateType type = TeamBlocStateType.valueOf(json['type']);
+    var type = TeamBlocStateType.valueOf(json['type']);
     switch (type) {
       case TeamBlocStateType.Uninitialized:
         return TeamUninitialized();
       case TeamBlocStateType.Loaded:
         try {
           // Starting, nothing loaded yet.
-          TraceProxy teamsTrace =
-              coordinationBloc.analytics.newTrace('teamData');
+          var teamsTrace = coordinationBloc.analytics.newTrace('teamData');
           teamsTrace.start();
           var loaded = TeamLoaded.fromMap(json);
           teamsTrace.stop();

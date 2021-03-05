@@ -59,14 +59,14 @@ class _TournamentOrLeagueTeamPickerState
     var ret = <DropdownMenuItem<String>>[];
     if (widget.includeAll) {
       ret.add(DropdownMenuItem<String>(
-        child: Text(Messages.of(context).allteams),
         value: TournamentOrLeagueTeamPicker.all,
+        child: Text(Messages.of(context).allteams),
       ));
     }
     for (var team in teams) {
       ret.add(DropdownMenuItem<String>(
-        child: Text(team.name),
         value: team.uid,
+        child: Text(team.name),
       ));
     }
     return ret;

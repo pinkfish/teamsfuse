@@ -98,14 +98,14 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
         if (state is TeamUninitialized) {
           return CircularProgressIndicator();
         } else {
-          List<Team> teamSorted = [];
+          var teamSorted = <Team>[];
           for (String uid in state.allTeamUids) {
             var t = state.getTeam(uid);
             if (t.archived == widget.archived) {
               teamSorted.add(t);
             }
           }
-          if (teamSorted.length == 0) {
+          if (teamSorted.isEmpty) {
             return Container(
               margin: EdgeInsets.only(top: 5.0, left: 20.0, right: 20.0),
               child: Text(Messages.of(context).noTeams),

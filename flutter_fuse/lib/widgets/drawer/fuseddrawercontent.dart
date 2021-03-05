@@ -39,7 +39,7 @@ class FusedDrawerContent extends StatelessWidget {
                   TextSpan(
                       text: club.isAdmin()
                           ? '\n${Messages.of(context).administrator}'
-                          : "",
+                          : '',
                       style: Theme.of(context).textTheme.subtitle1.copyWith(
                             fontStyle: FontStyle.italic,
                             fontSize: 10.0,
@@ -171,9 +171,9 @@ class FusedDrawerContent extends StatelessWidget {
           var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
           authenticationBloc.add(AuthenticationLogOut());
 
-          await overlayEntry.remove();
+          overlayEntry.remove();
 
-          Navigator.pushNamedAndRemoveUntil(
+          await Navigator.pushNamedAndRemoveUntil(
               context, '/Login/Home', (d) => false);
         },
       ),

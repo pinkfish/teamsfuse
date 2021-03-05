@@ -68,9 +68,10 @@ abstract class MessagesLoaded
   static void _initializeBuilder(MessagesLoadedBuilder b) {
     MessagesBlocState.initializeStateBuilder(b);
 
-    b..type = MessagesBlocStateType.Loaded;
+    b.type = MessagesBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(MessagesLoaded.serializer, this);
   }
@@ -103,9 +104,10 @@ abstract class MessagesUninitialized
   static void _initializeBuilder(MessagesUninitializedBuilder b) {
     MessagesBlocState.initializeStateBuilder(b);
 
-    b..type = MessagesBlocStateType.Uninitialized;
+    b.type = MessagesBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(MessagesUninitialized.serializer, this);
   }

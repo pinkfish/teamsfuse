@@ -34,6 +34,7 @@ class GameFromOfficial extends GameResultSharedDetails {
             game.officialResult.homeTeamLeagueUid != awayTeamLeageUid);
 
   /// If the game is finished.
+  @override
   bool get isGameFinished =>
       game.officialResult.result != OfficialResult.InProgress &&
       game.officialResult.result != OfficialResult.NotStarted;
@@ -43,12 +44,15 @@ class GameFromOfficial extends GameResultSharedDetails {
       game.officialResult.homeTeamLeagueUid != awayTeamLeageUid;
 
   /// The regulation result for the game
+  @override
   GameResultPerPeriod get regulationResult => _finalResult;
 
   /// The overtime result for the game.
+  @override
   GameResultPerPeriod get overtimeResult => _overtimeResult;
 
   /// The penalty result for the game.
+  @override
   GameResultPerPeriod get penaltyResult => _penaltyResult;
 
   /// Figure out if this is the same as the official results.
@@ -88,7 +92,7 @@ class GameFromOfficial extends GameResultSharedDetails {
     if (isHomeGame) {
       return scores;
     }
-    GameScoreBuilder scoreBuilder = GameScoreBuilder()
+    var scoreBuilder = GameScoreBuilder()
       ..ptsAgainst = scores.score.ptsFor
       ..ptsFor = scores.score.ptsAgainst
       ..intermediate = scores.score.intermediate;
@@ -99,6 +103,7 @@ class GameFromOfficial extends GameResultSharedDetails {
     );
   }
 
+  @override
   GameResult get result {
     switch (game.officialResult.result) {
       case OfficialResult.HomeTeamWon:

@@ -77,8 +77,8 @@ abstract class GameResultPerPeriod
   GameResultPerPeriod._();
 
   /// Factory to create the game result from the builder.
-  factory GameResultPerPeriod([updates(GameResultPerPeriodBuilder b)]) =
-      _$GameResultPerPeriod;
+  factory GameResultPerPeriod(
+      [Function(GameResultPerPeriodBuilder b) updates]) = _$GameResultPerPeriod;
 
   /// Serilizer to a json form
   Map<String, dynamic> toMap() {
@@ -100,10 +100,11 @@ abstract class GameResultDetails
     with GameResultSharedDetails
     implements Built<GameResultDetails, GameResultDetailsBuilder> {
   /// The scores on a per period basis.
-  @BuiltValueField(wireName: "scores")
+  @BuiltValueField(wireName: 'scores')
   BuiltMap<GamePeriod, GameResultPerPeriod> get scoresInternal;
 
   /// The result of this game.
+  @override
   GameResult get result;
 
   /// If the game is currently in progress.
@@ -122,7 +123,7 @@ abstract class GameResultDetails
   BuiltMap<GamePeriod, GameResultPerPeriod> get scores =>
       BuiltMap(scoresInternal.rebuild((b) {
         // Turn a 'final' into a 'regulation'.
-        if (scoresInternal.containsKey("Final")) {
+        if (scoresInternal.containsKey('Final')) {
           b[GamePeriod.regulation1] = b[GamePeriod.finalPeriod];
         }
         return b;
@@ -131,7 +132,7 @@ abstract class GameResultDetails
   GameResultDetails._();
 
   /// Factory to create the game result.
-  factory GameResultDetails([updates(GameResultDetailsBuilder b)]) =
+  factory GameResultDetails([Function(GameResultDetailsBuilder b) updates]) =
       _$GameResultDetails;
 
   /// Defaults for the state.  Always default to no games loaded.
@@ -159,6 +160,7 @@ abstract class GameResultDetails
   /// Result for the regulation period.
   /// (can be null!)
   ///
+  @override
   @memoized
   GameResultPerPeriod get regulationResult =>
       scores.containsKey(GamePeriod.regulation1)
@@ -169,6 +171,7 @@ abstract class GameResultDetails
   /// Result for the overtime period.
   /// (can be null!)
   ///
+  @override
   @memoized
   GameResultPerPeriod get overtimeResult =>
       scores.containsKey(GamePeriod.overtime1)
@@ -196,6 +199,7 @@ abstract class GameResultDetails
   ///
   /// Total score for the game.
   ///
+  @override
   @memoized
   GameResultPerPeriod get penaltyResult =>
       scores.containsKey(GamePeriod.penalty)
@@ -205,6 +209,7 @@ abstract class GameResultDetails
   ///
   /// If this game is currently finished.
   ///
+  @override
   @memoized
   bool get isGameFinished => inProgress == GameInProgress.Final;
 

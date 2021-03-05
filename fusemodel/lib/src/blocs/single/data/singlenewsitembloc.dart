@@ -91,10 +91,11 @@ abstract class SingleNewsItemLoaded
   static void _initializeBuilder(SingleNewsItemLoadedBuilder b) {
     SingleNewsItemState.initializeStateBuilder(b);
 
-    b..type = SingleNewsItemBlocStateType.Loaded;
+    b.type = SingleNewsItemBlocStateType.Loaded;
   }
 
   /// Serialize the state.
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleNewsItemLoaded.serializer, this);
   }
@@ -135,10 +136,11 @@ abstract class SingleNewsItemUninitialized
   static void _initializeBuilder(SingleNewsItemUninitializedBuilder b) {
     SingleNewsItemState.initializeStateBuilder(b);
 
-    b..type = SingleNewsItemBlocStateType.Uninitialized;
+    b.type = SingleNewsItemBlocStateType.Uninitialized;
   }
 
   /// Serialize the state.
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(
         SingleNewsItemUninitialized.serializer, this);
@@ -179,10 +181,11 @@ abstract class SingleNewsItemDeleted
   static void _initializeBuilder(SingleNewsItemDeletedBuilder b) {
     SingleNewsItemState.initializeStateBuilder(b);
 
-    b..type = SingleNewsItemBlocStateType.Deleted;
+    b.type = SingleNewsItemBlocStateType.Deleted;
   }
 
   /// Serialize the state.
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleNewsItemDeleted.serializer, this);
   }
@@ -230,10 +233,11 @@ abstract class SingleNewsItemSaveFailed
   static void _initializeBuilder(SingleNewsItemSaveFailedBuilder b) {
     SingleNewsItemState.initializeStateBuilder(b);
 
-    b..type = SingleNewsItemBlocStateType.SaveFailed;
+    b.type = SingleNewsItemBlocStateType.SaveFailed;
   }
 
   /// Serialize the state.
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleNewsItemSaveFailed.serializer, this);
   }
@@ -275,10 +279,11 @@ abstract class SingleNewsItemSaving
   static void _initializeBuilder(SingleNewsItemSavingBuilder b) {
     SingleNewsItemState.initializeStateBuilder(b);
 
-    b..type = SingleNewsItemBlocStateType.Saving;
+    b.type = SingleNewsItemBlocStateType.Saving;
   }
 
   /// Serialize the state.
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleNewsItemSaving.serializer, this);
   }
@@ -321,10 +326,11 @@ abstract class SingleNewsItemSaveDone
   static void _initializeBuilder(SingleNewsItemSaveDoneBuilder b) {
     SingleNewsItemState.initializeStateBuilder(b);
 
-    b..type = SingleNewsItemBlocStateType.SaveDone;
+    b.type = SingleNewsItemBlocStateType.SaveDone;
   }
 
   /// Serialize the state.
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SingleNewsItemSaveDone.serializer, this);
   }

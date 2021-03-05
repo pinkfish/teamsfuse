@@ -45,13 +45,14 @@ class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
       yield AddItemSaving();
 
       try {
-        var map = Map<String, SeasonPlayer>.fromIterable(event.players,
-            key: (p) => p.playerUid,
-            value: (p) => p.rebuild((b) => b..added = true));
+        var map = {
+          for (var p in event.players)
+            p.playerUid: p.rebuild((b) => b..added = true)
+        };
         // Only setup ourselves, not the whole team.
-        var usersMap = Map<String, Map<String, bool>>();
+        var usersMap = <String, Map<String, bool>>{};
         usersMap[coordinationBloc.authenticationBloc.currentUser.uid] =
-            Map<String, bool>();
+            <String, bool>{};
         usersMap[coordinationBloc.authenticationBloc.currentUser.uid]['added'] =
             true;
         // Add in all my players.
@@ -62,7 +63,7 @@ class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
           }
         }
 
-        Season season = Season((b) => b
+        var season = Season((b) => b
           ..teamUid = event.teamUid
           ..name = event.name
           ..playersData = MapBuilder(map)
@@ -70,7 +71,7 @@ class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
           ..record.loss = 0
           ..record.tie = 0
           ..uid = '');
-        Season ret = await coordinationBloc.databaseUpdateModel
+        var ret = await coordinationBloc.databaseUpdateModel
             .addFirestoreSeason(season, null);
         yield AddItemDone(uid: ret.uid);
       } catch (e, stack) {

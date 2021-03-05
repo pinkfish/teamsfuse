@@ -22,7 +22,7 @@ class AddLeagueOrTournamentEventCommit extends AddLeagueOrTournamentEvent {
       {@required this.leagueOrTournament, @required this.imageFile});
 
   @override
-  List<Object> get props => [this.leagueOrTournament, this.imageFile];
+  List<Object> get props => [leagueOrTournament, imageFile];
 }
 
 ///
@@ -44,7 +44,7 @@ class AddLeagueOrTournamentBloc
       yield AddItemSaving();
 
       try {
-        String uid = await coordinationBloc.databaseUpdateModel
+        var uid = await coordinationBloc.databaseUpdateModel
             .updateLeague(event.leagueOrTournament);
         yield AddItemDone(uid: uid);
       } catch (e, stack) {

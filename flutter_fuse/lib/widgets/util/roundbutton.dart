@@ -46,6 +46,11 @@ class RoundButton extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(padding),
         child: FlatButton(
+          onPressed: onPressed,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular((size - padding) / 2),
+            side: BorderSide(color: borderColor),
+          ),
           child: SizedBox(
             width: size - padding - innerPadding,
             height: min(size - padding - innerPadding, maxHeight),
@@ -55,11 +60,6 @@ class RoundButton extends StatelessWidget {
                 return child;
               }),
             ),
-          ),
-          onPressed: onPressed,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular((size - padding) / 2),
-            side: BorderSide(color: borderColor),
           ),
         ),
       ),

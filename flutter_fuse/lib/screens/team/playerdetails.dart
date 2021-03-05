@@ -44,10 +44,10 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
     for (var role in RoleInTeam.values) {
       widgets.add(
         DropdownMenuItem<RoleInTeam>(
+          value: role,
           child: Text(
             messages.roleInGame(role),
           ),
-          value: role,
         ),
       );
     }
@@ -65,18 +65,18 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
       ),
       actions: <Widget>[
         TextButton(
-          child: Text(MaterialLocalizations.of(context).okButtonLabel),
           onPressed: () {
             // Do the delete.
             Navigator.of(context).pop(_myRole);
           },
+          child: Text(MaterialLocalizations.of(context).okButtonLabel),
         ),
         TextButton(
-          child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
           onPressed: () {
             // Do the delete.
             Navigator.of(context).pop(null);
           },
+          child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
         ),
       ],
     );
@@ -162,18 +162,18 @@ class PlayerDetailsScreen extends StatelessWidget {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   // Do the delete.
                   Navigator.of(context).pop(true);
                 },
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
               ),
               TextButton(
-                child:
-                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
               ),
             ],
           );
@@ -336,18 +336,18 @@ class PlayerDetailsScreen extends StatelessWidget {
           children: <Widget>[
             TextButton(
               onPressed: () => _changeRole(context, playerBloc, playerState),
-              child: Text(messages.changerole),
               style: TextButton.styleFrom(
                 primary: theme.accentColor,
               ),
+              child: Text(messages.changerole),
             ),
             TextButton(
               onPressed: () =>
                   _removeFromTeam(context, playerState, playerBloc),
-              child: Text(messages.deleteplayer),
               style: TextButton.styleFrom(
                 primary: theme.accentColor,
               ),
+              child: Text(messages.deleteplayer),
             ),
           ],
         ),

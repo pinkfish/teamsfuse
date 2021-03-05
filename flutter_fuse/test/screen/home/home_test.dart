@@ -32,7 +32,7 @@ void main() {
       'uninitialized',
       (tester) async =>
           withClock(Clock.fixed(DateTime(2020, 09, 01)), () async {
-            loadFonts();
+            await loadFonts();
 
             var mockDb = MockDatabaseUpdateModel();
             var mockAnalytics = MockAnalyticsSubsystem();
@@ -40,14 +40,14 @@ void main() {
             var userController = StreamController<UserData>();
 
             // Fake out the storage so it doesn't load from anywhere or save anywhere.
-            AsyncHydratedStorage.storageDirectory = Directory("fail");
-            print("Make storage");
+            AsyncHydratedStorage.storageDirectory = Directory('fail');
+            print('Make storage');
             var storage = MockStorage();
             HydratedBloc.storage = storage;
             when(storage.read(any)).thenReturn(<dynamic, dynamic>{});
             when(storage.write(any, any)).thenAnswer((_) => Future.value(null));
 
-            when(mockDb.getGame("123"))
+            when(mockDb.getGame('123'))
                 .thenAnswer((_) => gameController.stream);
 
             // Build our app and trigger a frame.
@@ -91,7 +91,7 @@ void main() {
               crashes: mockAnalytics,
               databaseUpdateModel: mockDb,
             );
-            print("widget make");
+            print('widget make');
             var testWidget = await makeTestableWidget(
               MultiRepositoryProvider(
                 providers: [
@@ -124,7 +124,7 @@ void main() {
               ),
             );
 
-            print("Pump");
+            print('Pump');
             await tester.pumpWidget(
               testWidget,
             );
@@ -133,21 +133,21 @@ void main() {
 
             //await tester.pumpWidget(testWidget);
             await tester.pump(Duration(milliseconds: 600));
-            print("Second pump");
+            print('Second pump');
 
-            expect(find.text("Team Fuse"), findsOneWidget);
+            expect(find.text('Team Fuse'), findsOneWidget);
 
-            if (Platform.environment["GOLDEN"] != null) {
-              print("Golden!");
+            if (Platform.environment['GOLDEN'] != null) {
+              print('Golden!');
               await expectLater(find.byType(HomeScreen),
                   matchesGoldenFile('../../golden/home_uninitialized.png'));
             }
             await tester.pump(Duration(milliseconds: 600));
 
-            print("Fluff");
+            print('Fluff');
 
-            userController.close();
-            gameController.close();
+            await userController.close();
+            await gameController.close();
           }),
       variant: TeamsFuseTestVariant());
 }

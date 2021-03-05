@@ -59,15 +59,16 @@ abstract class Club implements Built<Club, ClubBuilder> {
   String get userUid;
 
   Club._();
-  factory Club([updates(ClubBuilder b)]) => _$Club((b) => b..about = "");
+  factory Club([Function(ClubBuilder b) updates]) =>
+      _$Club((b) => b..about = '');
 
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(ClubBuilder b) => b
-    ..about = ""
+    ..about = ''
     ..arriveBeforeGame = 0
     ..trackAttendence = Tristate.Yes
     ..isPublic = false
-    ..userUid = "";
+    ..userUid = '';
 
   Map<String, dynamic> toMap({bool includeMembers}) {
     Map<String, dynamic> ret =
@@ -82,13 +83,13 @@ abstract class Club implements Built<Club, ClubBuilder> {
   static Club fromMap(String userUid, Map<String, dynamic> jsonData) {
     return dataSerializers
         .deserializeWith(Club.serializer, jsonData)
-        .rebuild((b) => b..userUid = userUid ?? "");
+        .rebuild((b) => b..userUid = userUid ?? '');
   }
 
   static Serializer<Club> get serializer => _$clubSerializer;
 
-  static const String MEMBERS = "members";
-  static const String ADMIN = "admin";
+  static const String MEMBERS = 'members';
+  static const String ADMIN = 'admin';
 
   bool isUserMember(String myUid) {
     return adminsUids.contains(myUid) || members.contains(myUid);

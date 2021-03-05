@@ -38,7 +38,7 @@ class AddSharedGameBloc extends Bloc<AddSharedGameEvent, AddItemState> {
       yield AddItemSaving();
 
       try {
-        String uid = await coordinationBloc.databaseUpdateModel
+        var uid = await coordinationBloc.databaseUpdateModel
             .updateFirestoreSharedGame(event.newSharedData);
         yield AddItemDone(uid: uid);
       } catch (e, stack) {

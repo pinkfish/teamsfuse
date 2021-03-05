@@ -11,6 +11,7 @@ import 'hydratedcubit.dart';
 /// {@endtemplate}
 abstract class AsyncHydratedBloc<Event, State> extends Bloc<Event, State>
     with AsyncHydratedMixin {
+  @override
   AsyncStorage storage;
 
   /// {@macro hydrated_bloc}

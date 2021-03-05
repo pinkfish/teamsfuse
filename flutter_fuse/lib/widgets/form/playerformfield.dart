@@ -86,23 +86,24 @@ class PlayerFormFieldState extends FormFieldState<String> {
     var ret = <DropdownMenuItem<String>>[];
     ret.add(
       DropdownMenuItem<String>(
-        child: Text(Messages.of(context).playerselect),
         value: PlayerFormField.nonePlayer,
+        child: Text(Messages.of(context).playerselect),
       ),
     );
 
     if (_widget.addNew) {
       ret.add(DropdownMenuItem<String>(
-          child: Text(Messages.of(context).addPlayer),
-          value: PlayerFormField.addPlayer));
+        value: PlayerFormField.addPlayer,
+        child: Text(Messages.of(context).addPlayer),
+      ));
     }
 
     for (var player in state.players.values) {
       if (player.name != null) {
         ret.add(
           DropdownMenuItem<String>(
-            child: Text(player.name),
             value: player.uid,
+            child: Text(player.name),
           ),
         );
       }

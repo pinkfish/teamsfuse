@@ -55,7 +55,8 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
   final AnalyticsSubsystem crashes;
 
   StreamSubscription<TeamState> _teamSub;
-  Map<String, StreamSubscription<BuiltList<Game>>> _gameSubscriptions = {};
+  final Map<String, StreamSubscription<BuiltList<Game>>> _gameSubscriptions =
+      {};
   DateTime _start;
   DateTime _end;
 
@@ -84,7 +85,7 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
   Future<void> close() async {
     await super.close();
     _cleanupStuff();
-    _teamSub?.cancel();
+    await _teamSub?.cancel();
     _teamSub = null;
   }
 
@@ -97,10 +98,10 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
 
   void _onTeamsUpdates(Set<String> uids, bool updateBoundary) {
     // Load all of this from the world of firestore.
-    for (String teamUid in uids) {
+    for (var teamUid in uids) {
       if (!_gameSubscriptions.containsKey(teamUid) || updateBoundary) {
         _gameSubscriptions[teamUid]?.cancel();
-        String myUid = teamUid;
+        var myUid = teamUid;
         _gameSubscriptions[teamUid] = coordinationBloc.databaseUpdateModel
             .getBasicGames(start: _start, end: _end, teamUid: teamUid)
             .listen((gse) {
@@ -118,7 +119,7 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
       var newGames = state.gamesByTeam.toBuilder();
       newGames[event.teamUid] = event.games;
       var gamesToSerialize = state.gamesByTeamToSerialize.toBuilder();
-      for (Game g in event.games) {
+      for (var g in event.games) {
         if (g.sharedData.tzTime.isAfter(state.start) &&
             g.sharedData.tzTime.isBefore(state.end)) {
           gamesToSerialize[g.uid] = g;
@@ -156,18 +157,17 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
       return GameUninitialized();
     }
 
-    GameBlocStateType type = GameBlocStateType.valueOf(json['type']);
+    var type = GameBlocStateType.valueOf(json['type']);
     switch (type) {
       case GameBlocStateType.Uninitialized:
         return GameUninitialized();
       case GameBlocStateType.Loaded:
         try {
-          TraceProxy gamesTrace =
-              coordinationBloc.analytics.newTrace('gamaData');
+          var gamesTrace = coordinationBloc.analytics.newTrace('gamaData');
           gamesTrace.start();
           var loaded = GameLoaded.fromMap(json);
           var gamesByTeam = MapBuilder<String, ListBuilder<Game>>();
-          for (Game g in loaded.gamesByTeamToSerialize.values) {
+          for (var g in loaded.gamesByTeamToSerialize.values) {
             gamesByTeam.putIfAbsent(g.teamUid, () => ListBuilder<Game>());
             gamesByTeam[g.teamUid].add(g);
           }

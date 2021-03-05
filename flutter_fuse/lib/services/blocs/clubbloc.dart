@@ -94,7 +94,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
   Future<void> close() async {
     await super.close();
     _cleanupStuff();
-    _coordSub?.cancel();
+    await _coordSub?.cancel();
   }
 
   void _cleanupStuff() {
@@ -132,7 +132,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
   Stream<ClubState> mapEventToState(ClubEvent event) async* {
     if (event is _ClubEventLoadFromFirestore) {
       // Load the clubs first.
-      _clubChangeSub?.cancel();
+      await _clubChangeSub?.cancel();
       _clubChangeSub = coordinationBloc.databaseUpdateModel
           .getMainClubs()
           .listen(_onClubsUpdated);

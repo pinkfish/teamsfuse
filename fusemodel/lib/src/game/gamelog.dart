@@ -41,7 +41,7 @@ abstract class GameLog implements Built<GameLog, GameLogBuilder> {
   String get displayName;
 
   GameLog._();
-  factory GameLog([updates(GameLogBuilder b)]) = _$GameLog;
+  factory GameLog([Function(GameLogBuilder b) updates]) = _$GameLog;
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(GameLog.serializer, this);
@@ -54,7 +54,7 @@ abstract class GameLog implements Built<GameLog, GameLogBuilder> {
   static Serializer<GameLog> get serializer => _$gameLogSerializer;
 
   String initials() {
-    return displayName.splitMapJoin(" ",
+    return displayName.splitMapJoin(' ',
         onNonMatch: (String str) => str.substring(0, 1));
   }
 
@@ -62,7 +62,8 @@ abstract class GameLog implements Built<GameLog, GameLogBuilder> {
     return TZDateTime.fromMicrosecondsSinceEpoch(local, eventTimeInternal);
   }
 
+  @override
   String toString() {
-    return "GameLog($uid)[ $type ($eventTime): $message $period $score]";
+    return 'GameLog($uid)[ $type ($eventTime): $message $period $score]';
   }
 }

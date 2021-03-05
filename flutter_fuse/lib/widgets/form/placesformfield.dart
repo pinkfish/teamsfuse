@@ -86,7 +86,7 @@ class PlacesFormField extends FormField<PlaceAndTimezone> {
 }
 
 class _PlacesFormFieldState extends FormFieldState<PlaceAndTimezone> {
-  static var _initialPosition = LatLng(47.6740, 122.1215);
+  static final _initialPosition = LatLng(47.6740, 122.1215);
   Future<Null> _selectPlace(
       ValueChanged<PlaceAndTimezone> onFieldSubmitted) async {
     PickResult myResult;
@@ -117,10 +117,10 @@ class _PlacesFormFieldState extends FormFieldState<PlaceAndTimezone> {
     );
     if (myResult != null) {
       var newPlace = GamePlace((b) => b
-        ..name = myResult.name ?? ""
+        ..name = myResult.name ?? ''
         ..address = myResult.formattedAddress
-        ..placeId = myResult.placeId ?? ""
-        ..notes = value?.place?.notes ?? ""
+        ..placeId = myResult.placeId ?? ''
+        ..notes = value?.place?.notes ?? ''
         ..latitude = myResult.geometry.location.lat
         ..longitude = myResult.geometry.location.lng);
       // Get the timezone name for the location.

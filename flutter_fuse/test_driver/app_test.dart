@@ -10,10 +10,10 @@ import 'package:test/test.dart';
 
 void main() {
   group('Flutter fuse app', () {
-    final forgotButton = find.byValueKey("FORGOTPASSWORD");
-    final createAccountButton = find.byValueKey("CREATEACCOUNT");
-    final loginButton = find.byValueKey("LOGIN");
-    final addTeamButton = find.byValueKey("ADD_TEAM");
+    final forgotButton = find.byValueKey('FORGOTPASSWORD');
+    final createAccountButton = find.byValueKey('CREATEACCOUNT');
+    final loginButton = find.byValueKey('LOGIN');
+    final addTeamButton = find.byValueKey('ADD_TEAM');
     FlutterDriver driver;
 
     setUpAll(() async {
@@ -22,7 +22,7 @@ void main() {
 
     tearDownAll(() async {
       if (driver != null) {
-        driver.close();
+        await driver.close();
       }
     });
 
@@ -47,58 +47,58 @@ void main() {
     test('Login', () async {
       await doLogin(driver);
       // FInd the fused drawer.
-      await driver.waitFor(find.byType("FusedDrawer"));
+      await driver.waitFor(find.byType('FusedDrawer'));
     });
 
     test('All Teams Page', () async {
       await doLogin(driver);
       // FInd the fused drawer.
-      await driver.waitFor(find.byType("FusedDrawer"));
-      await driver.tap(find.byTooltip("ALL TEAMS"));
-      await driver.waitFor(find.byType("TeamAnimatedList"));
+      await driver.waitFor(find.byType('FusedDrawer'));
+      await driver.tap(find.byTooltip('ALL TEAMS'));
+      await driver.waitFor(find.byType('TeamAnimatedList'));
     });
 
     test('Add Team, delete team', () async {
       await doLogin(driver);
       // FInd the fused drawer.
-      await driver.waitFor(find.byType("FusedDrawer"));
+      await driver.waitFor(find.byType('FusedDrawer'));
 
-      await driver.tap(find.byTooltip("ALL TEAMS"));
+      await driver.tap(find.byTooltip('ALL TEAMS'));
       await driver.waitFor(addTeamButton);
       await driver.tap(addTeamButton);
 
       // Now in the add team form.
       // PLayer paged
-      await driver.tap(find.byValueKey("PLAYER"));
+      await driver.tap(find.byValueKey('PLAYER'));
       await driver.tap(find.text('Rowen Bennett'));
       expect(await driver.getText(find.text('Rowen Bennett')), isNotNull);
-      await driver.tap(find.byValueKey("CONTINUE"));
+      await driver.tap(find.byValueKey('CONTINUE'));
 
       // Team page
-      await driver.tap(find.byTooltip("Name"));
-      await driver.enterText("Woggles");
-      await driver.tap(find.byTooltip("Current team season"));
-      await driver.enterText("Spring 2021");
-      await driver.tap(find.byValueKey("SPORT"));
+      await driver.tap(find.byTooltip('Name'));
+      await driver.enterText('Woggles');
+      await driver.tap(find.byTooltip('Current team season'));
+      await driver.enterText('Spring 2021');
+      await driver.tap(find.byValueKey('SPORT'));
       await driver.tap(find.text('Basketball'));
       expect(await driver.getText(find.text('Basketball')), isNotNull);
-      await driver.tap(find.byValueKey("CONTINUE"));
+      await driver.tap(find.byValueKey('CONTINUE'));
 
       // Section details.
-      await driver.tap(find.byValueKey("CONTINUE"));
+      await driver.tap(find.byValueKey('CONTINUE'));
 
-      await driver.waitFor(find.byType("TeamAnimatedList"));
+      await driver.waitFor(find.byType('TeamAnimatedList'));
     });
   });
 }
 
 Future<void> doLogin(FlutterDriver driver) async {
-  final submitButton = find.byValueKey("SUBMIT");
-  final userNameBox = find.byTooltip("Your email address");
-  final passwordBox = find.byTooltip("Password");
-  final testEmail = String.fromEnvironment("TEST_USER");
-  final testPassword = String.fromEnvironment("TEST_PASSWORD");
-  final addTeamButton = find.byValueKey("ADD_TEAM");
+  final submitButton = find.byValueKey('SUBMIT');
+  final userNameBox = find.byTooltip('Your email address');
+  final passwordBox = find.byTooltip('Password');
+  final testEmail = String.fromEnvironment('TEST_USER');
+  final testPassword = String.fromEnvironment('TEST_PASSWORD');
+  final addTeamButton = find.byValueKey('ADD_TEAM');
 
   // Do the login.  Assumes we are on the login page.
   await driver.tap(userNameBox);

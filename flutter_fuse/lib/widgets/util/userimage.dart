@@ -56,7 +56,7 @@ class UserImage extends StatelessWidget {
                   ? CachedNetworkImage(
                       imageUrl: state.players.first.photoUrl,
                     )
-                  : Text(""),
+                  : Text(''),
             );
           },
         ),

@@ -35,8 +35,10 @@ class _LeagueOrTournamentDivisonDetailsState
     extends State<LeagueOrTournamentDivisonDetails> {
   String _currentTeamConstraint = TournamentOrLeagueTeamPicker.all;
 
-  static DateFormat _dayOfWeekFormat = DateFormat(DateFormat.ABBR_WEEKDAY);
-  static DateFormat _dayOfMonthFormat = DateFormat(DateFormat.ABBR_MONTH_DAY);
+  static final DateFormat _dayOfWeekFormat =
+      DateFormat(DateFormat.ABBR_WEEKDAY);
+  static final DateFormat _dayOfMonthFormat =
+      DateFormat(DateFormat.ABBR_MONTH_DAY);
   static const double _widthFirst = 40.0;
   static const double _inset = 5.0;
 
@@ -67,7 +69,7 @@ class _LeagueOrTournamentDivisonDetailsState
                 g.officialResult.homeTeamLeagueUid == _currentTeamConstraint ||
                 g.officialResult.awayTeamLeagueUid == _currentTeamConstraint);
           }
-          if (games.length == 0) {
+          if (games.isEmpty) {
             if (leagueState.league.isAdmin()) {
               return Container(
                 margin: EdgeInsets.all(5.0),
@@ -111,7 +113,7 @@ class _LeagueOrTournamentDivisonDetailsState
           var widthSecond = screenSize.width - _widthFirst - _inset - 20.0;
 
           for (var g in sortedGames) {
-            if (children.length == 0) {
+            if (children.isEmpty) {
               // The day is the current game day.
               day = g.tzTime;
             }

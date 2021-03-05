@@ -281,10 +281,10 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
 
     var themeData = Theme.of(context);
     var localizations = MaterialLocalizations.of(context);
-    final ColorScheme colorScheme = themeData.colorScheme;
+    final colorScheme = themeData.colorScheme;
     const OutlinedBorder buttonShape = RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(2)));
-    const EdgeInsets buttonPadding = EdgeInsets.symmetric(horizontal: 16.0);
+    const buttonPadding = EdgeInsets.symmetric(horizontal: 16.0);
 
     return Container(
       margin: const EdgeInsets.only(top: 16.0),
@@ -313,8 +313,8 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
                     buttonPadding),
                 shape: MaterialStateProperty.all<OutlinedBorder>(buttonShape),
               ),
-              child: Text(localizations.continueButtonLabel),
               key: Key('CONTINUE'),
+              child: Text(localizations.continueButtonLabel),
             ),
             Container(
               margin: const EdgeInsetsDirectional.only(start: 8.0),
@@ -325,8 +325,8 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
                   padding: buttonPadding,
                   shape: buttonShape,
                 ),
-                child: Text(localizations.cancelButtonLabel),
                 key: Key('BACK'),
+                child: Text(localizations.cancelButtonLabel),
               ),
             ),
           ],

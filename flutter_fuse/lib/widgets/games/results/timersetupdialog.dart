@@ -23,17 +23,17 @@ Future<GamePeriodTime> timerSetupDialog(
           content: _TimerDetails(details.time, detailsState),
           actions: <Widget>[
             FlatButton(
-              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(detailsState.currentState.save());
               },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
             ),
             FlatButton(
-              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(null);
               },
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
             ),
           ],
         );
@@ -65,8 +65,8 @@ class _TimerDetailsState extends State<_TimerDetails> {
   Widget build(BuildContext context) {
     return Scrollbar(
       child: Form(
+        autovalidateMode: AutovalidateMode.disabled,
         key: widget._formState,
-        autovalidate: false,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

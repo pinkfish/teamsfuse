@@ -64,9 +64,10 @@ abstract class SeasonLoaded
   static void _initializeBuilder(SeasonLoadedBuilder b) {
     SeasonState.initializeStateBuilder(b);
 
-    b..type = SeasonBlocStateType.Loaded;
+    b.type = SeasonBlocStateType.Loaded;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SeasonLoaded.serializer, this);
   }
@@ -98,9 +99,10 @@ abstract class SeasonUninitialized
   static void _initializeBuilder(SeasonUninitializedBuilder b) {
     SeasonState.initializeStateBuilder(b);
 
-    b..type = SeasonBlocStateType.Uninitialized;
+    b.type = SeasonBlocStateType.Uninitialized;
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SeasonUninitialized.serializer, this);
   }

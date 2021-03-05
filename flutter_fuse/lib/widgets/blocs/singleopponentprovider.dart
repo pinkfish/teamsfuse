@@ -27,6 +27,7 @@ class SingleOpponentProvider extends SingleBlocProvider<SingleOpponentBloc> {
             builder: builder,
             prefix: 'opponent');
 
+  @override
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleOpponentBloc && bloc.opponentUid == keyUid);
   }

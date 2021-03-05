@@ -25,6 +25,7 @@ class SingleLeagueOrTournamentDivisonProvider
             builder: builder,
             prefix: 'leagueD');
 
+  @override
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleLeagueOrTournamentDivisonBloc &&
         bloc.leagueDivisonUid == keyUid);

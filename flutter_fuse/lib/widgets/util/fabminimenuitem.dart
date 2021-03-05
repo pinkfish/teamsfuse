@@ -73,13 +73,9 @@ class FabMiniMenuItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var chipColor = this.chipColor;
-    if (chipColor == null) {
-      chipColor = Theme.of(context).cardColor;
-    }
+    chipColor ??= Theme.of(context).cardColor;
     var textColor = this.textColor;
-    if (textColor == null) {
-      textColor = Theme.of(context).textTheme.bodyText2.color;
-    }
+    textColor ??= Theme.of(context).textTheme.bodyText2.color;
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
@@ -123,8 +119,8 @@ class FabMiniMenuItemWidget extends StatelessWidget {
               backgroundColor: fabColor,
               heroTag: 'Inner fab ${_details.index}',
               tooltip: tooltip,
-              child: icon,
               onPressed: _doPress,
+              child: icon,
             ),
           )
         ],

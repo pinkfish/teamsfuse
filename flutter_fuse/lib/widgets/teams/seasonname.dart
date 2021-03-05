@@ -14,7 +14,7 @@ class SeasonName extends StatelessWidget {
   final double textScaleFactor;
   final TextStyle style;
 
-  static Map<String, String> _nameCache = {};
+  static final Map<String, String> _nameCache = {};
 
   SeasonName(
       {@required this.seasonUid, this.textScaleFactor = 1.0, this.style});
@@ -24,7 +24,7 @@ class SeasonName extends StatelessWidget {
     return BlocProvider(
       key: Key('season$seasonUid'),
       create: (BuildContext context) => SingleSeasonBloc(
-          seasonUid: this.seasonUid,
+          seasonUid: seasonUid,
           db: RepositoryProvider.of<DatabaseUpdateModel>(context),
           crashes: RepositoryProvider.of<AnalyticsSubsystem>(context)),
       child: Builder(

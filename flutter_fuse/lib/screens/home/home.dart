@@ -146,8 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: <Widget>[
                 GestureDetector(
-                  child: InviteCard(),
                   onTap: () => Navigator.pushNamed(context, 'Invites'),
+                  child: InviteCard(),
                 ),
                 Expanded(
                   child: CalendarWidget(

@@ -29,7 +29,7 @@ class _ClubSettingsState extends State<ClubSettings> {
   void _setClub(SingleTeamBloc singleTeamBloc) async {
     var clubBloc = BlocProvider.of<ClubBloc>(context);
     if (clubBloc.state.clubs.length == 0) {
-      showDialog<bool>(
+      await showDialog<bool>(
           context: context,
           builder: (context) {
             return AlertDialog(
@@ -37,10 +37,10 @@ class _ClubSettingsState extends State<ClubSettings> {
               content: Text(Messages.of(context).noclub),
               actions: <Widget>[
                 FlatButton(
-                  child: Text(MaterialLocalizations.of(context).okButtonLabel),
                   onPressed: () {
                     Navigator.of(context).pop(true);
                   },
+                  child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 ),
               ],
             );

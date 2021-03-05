@@ -97,7 +97,7 @@ class SingleClubCoachBloc
   @override
   Future<void> close() async {
     await super.close();
-    _clubCoachSub?.cancel();
+    await _clubCoachSub?.cancel();
   }
 
   @override
@@ -120,7 +120,7 @@ class SingleClubCoachBloc
       try {
         var clubCoach = event.coach;
         await db.updateClubCoach(
-            clubCoach, event.image != null ? await event.image : null);
+            clubCoach, event.image != null ? event.image : null);
         yield SingleClubCoachSaveDone.fromState(state).build();
         yield (SingleClubCoachLoaded.fromState(state)
               ..coach = event.coach.toBuilder())

@@ -15,8 +15,8 @@ abstract class SeasonPlayerSummary
 
   SeasonPlayerSummary._();
 
-  factory SeasonPlayerSummary([updates(SeasonPlayerSummaryBuilder b)]) =
-      _$SeasonPlayerSummary;
+  factory SeasonPlayerSummary(
+      [Function(SeasonPlayerSummaryBuilder b) updates]) = _$SeasonPlayerSummary;
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(SeasonPlayerSummary.serializer, this);

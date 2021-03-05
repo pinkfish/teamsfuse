@@ -37,17 +37,17 @@ class ClubMembers extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
             ),
             TextButton(
-              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
             ),
           ],
         );
@@ -67,7 +67,7 @@ class ClubMembers extends StatelessWidget {
         return ListTile(
           leading: UserImage(profile.uid),
           title: Text(profile.displayName),
-          subtitle: Text(admin ? Messages.of(context).administrator : ""),
+          subtitle: Text(admin ? Messages.of(context).administrator : ''),
           trailing: club.isAdmin() &&
                   profile.uid != authenticationBloc.currentUser.uid
               ? IconButton(

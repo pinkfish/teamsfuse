@@ -44,7 +44,7 @@ abstract class MediaInfo implements Built<MediaInfo, MediaInfoBuilder> {
   Uri get url;
 
   MediaInfo._();
-  factory MediaInfo([updates(MediaInfoBuilder b)]) = _$MediaInfo;
+  factory MediaInfo([Function(MediaInfoBuilder b) updates]) = _$MediaInfo;
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(MediaInfo.serializer, this);

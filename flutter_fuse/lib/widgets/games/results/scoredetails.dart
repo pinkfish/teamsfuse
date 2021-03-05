@@ -61,10 +61,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     var periodZero = GamePeriod((b) => b
       ..type = widget.game.state.game.result.currentPeriod.type
       ..periodNumber = 1);
-    if (_currentPeriodResults == null) {
-      _currentPeriodResults =
-          widget.game.state.game.result.scores[periodZero].toBuilder();
-    }
+    _currentPeriodResults ??=
+        widget.game.state.game.result.scores[periodZero].toBuilder();
     if (_currentPeriodResults == null) {
       var gameScoreBuilder = GameScoreBuilder()
         ..ptsAgainst = 0
@@ -75,9 +73,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
 
       _details.scoresInternal[periodZero] = _currentPeriodResults.build();
     }
-    if (_details.currentPeriod == null) {
-      _details.currentPeriod = _currentPeriodResults.period;
-    }
+    _details.currentPeriod ??= _currentPeriodResults.period;
     _debouncer = Debouncer<bool>(Duration(seconds: 1), _sendUpdate,
         resetOnAdd: false, atBegin: true);
     _ptsFor = _currentPeriodResults.score.ptsFor;
@@ -196,17 +192,17 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                 gameResult.toString())),
             actions: <Widget>[
               FlatButton(
-                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
               ),
               FlatButton(
-                child:
-                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
               )
             ],
           );
@@ -292,17 +288,17 @@ class _ScoreDetailsState extends State<ScoreDetails> {
             content: Text(Messages.of(context).startgamebody),
             actions: <Widget>[
               FlatButton(
-                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
               ),
               FlatButton(
-                child:
-                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
               )
             ],
           );
@@ -368,17 +364,17 @@ class _ScoreDetailsState extends State<ScoreDetails> {
             content: Text(Messages.of(context).resettimerbody),
             actions: <Widget>[
               FlatButton(
-                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
               ),
               FlatButton(
-                child:
-                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
               )
             ],
           );

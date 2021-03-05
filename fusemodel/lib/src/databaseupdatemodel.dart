@@ -19,19 +19,19 @@ import 'winrecord.dart';
 /// Details the games can be filtered on.
 ///
 class FilterDetails {
-  Set<String> teamUids = Set<String>();
-  Set<String> playerUids = Set<String>();
+  Set<String> teamUids = <String>{};
+  Set<String> playerUids = <String>{};
   GameResult result;
   EventType eventType;
   bool allGames = false;
 
   bool isIncluded(Game game, Season season) {
-    if (teamUids.length != 0) {
+    if (teamUids.isNotEmpty) {
       if (!teamUids.contains(game.teamUid)) {
         return false;
       }
     }
-    if (playerUids.length > 0) {
+    if (playerUids.isNotEmpty) {
       if (season == null) {
         return false;
       }

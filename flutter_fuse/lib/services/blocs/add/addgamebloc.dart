@@ -19,7 +19,7 @@ class AddGameEventCommit extends AddGameEvent {
   AddGameEventCommit({@required this.newGame});
 
   @override
-  List<Object> get props => [this.newGame];
+  List<Object> get props => [newGame];
 }
 
 ///
@@ -39,8 +39,8 @@ class AddGameBloc extends Bloc<AddGameEvent, AddItemState> {
       yield AddItemSaving();
 
       try {
-        Game updatedGame = event.newGame;
-        Game g = await coordinationBloc.databaseUpdateModel
+        var updatedGame = event.newGame;
+        var g = await coordinationBloc.databaseUpdateModel
             .updateFirestoreGame(updatedGame, true);
         print(g);
         yield AddItemDone(uid: g.uid);

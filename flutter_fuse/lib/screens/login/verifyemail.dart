@@ -36,13 +36,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   void _onLogout(BuildContext context) async {
     BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogOut());
     // Now navigate back to the login screen.
-    Navigator.pushNamed(context, '/Login/Home');
+    await Navigator.pushNamed(context, '/Login/Home');
   }
 
   void _onSignup(BuildContext context) async {
     BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogOut());
     // Now navigate back to the signup screen.
-    Navigator.pushNamed(context, '/Login/SignUp');
+    await Navigator.pushNamed(context, '/Login/SignUp');
   }
 
   @override
@@ -124,11 +124,12 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                           Text(messages.verifyExplanation(state.user.email)),
                           Container(
                             child: RaisedButton(
-                                child: Text(messages.resendverify),
-                                color: Theme.of(context).primaryColor,
-                                textColor: Colors.white,
-                                key: Key('SUBMIT'),
-                                onPressed: _handleSubmitted),
+                              color: Theme.of(context).primaryColor,
+                              textColor: Colors.white,
+                              key: Key('SUBMIT'),
+                              onPressed: _handleSubmitted,
+                              child: Text(messages.resendverify),
+                            ),
                             margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                           ),
                         ],
@@ -138,16 +139,16 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         FlatButton(
-                          child: Text(messages.createaccount),
                           textColor: Theme.of(context).accentColor,
                           key: Key('CREATEACCOUNT'),
                           onPressed: () => _onSignup(context),
+                          child: Text(messages.createaccount),
                         ),
                         FlatButton(
-                          child: Text(messages.logout),
                           textColor: Theme.of(context).accentColor,
                           key: Key('LOGOUT'),
                           onPressed: () => _onLogout(context),
+                          child: Text(messages.logout),
                         ),
                       ],
                     )

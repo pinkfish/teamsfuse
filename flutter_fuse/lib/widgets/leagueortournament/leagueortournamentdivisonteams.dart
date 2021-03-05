@@ -223,7 +223,7 @@ class _LeagueOrTournamentDivisonDetailsState
                       } else {
                         Iterable<LeagueOrTournamentTeam> teams =
                             state.teams.values;
-                        if (teams.length == 0) {
+                        if (teams.isEmpty) {
                           if (leagueBloc.state.league.isAdmin()) {
                             return Container(
                               margin: EdgeInsets.all(5.0),

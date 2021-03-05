@@ -14,7 +14,7 @@ import 'loadfonts.dart';
 ///
 Future<Widget> makeTestableWidget(Widget child,
     {NavigatorObserver observer}) async {
-  AsyncHydratedStorage.storageDirectory = Directory("fail");
+  AsyncHydratedStorage.storageDirectory = Directory('fail');
   await loadFonts();
   initializeTimeZones();
 
@@ -41,6 +41,7 @@ Future<Widget> makeTestableWidget(Widget child,
 /// Router name checking class.
 ///
 class HasRouteName extends CustomMatcher {
-  HasRouteName(matcher) : super("Route with the nme that is", "name", matcher);
+  HasRouteName(matcher) : super('Route with the nme that is', 'name', matcher);
+  @override
   featureValueOf(actual) => (actual as Route).settings.name;
 }

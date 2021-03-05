@@ -58,6 +58,7 @@ abstract class ProfileBlocLoaded
   static void _initializeBuilder(ProfileBlocLoadedBuilder b) =>
       b..type = ProfileBlocStateType.Loaded;
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(ProfileBlocLoaded.serializer, this);
   }
@@ -90,6 +91,7 @@ abstract class ProfileBlocUninitialized
   static void _initializeBuilder(ProfileBlocUninitializedBuilder b) =>
       b..type = ProfileBlocStateType.Uninitialized;
 
+  @override
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(ProfileBlocUninitialized.serializer, this);
   }
