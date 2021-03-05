@@ -49,11 +49,11 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
   }
 
   void _openNavigation() {
-    var url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=${Uri.encodeComponent(widget.game.place.address)}";
+    var url = 'https://www.google.com/maps/dir/?api=1';
+    url += '&destination=${Uri.encodeComponent(widget.game.place.address)}';
     if (widget.game.place.placeId != null) {
       url +=
-          "&destination_place_id=${Uri.encodeComponent(widget.game.place.placeId)}";
+          '&destination_place_id=${Uri.encodeComponent(widget.game.place.placeId)}';
     }
     launch(url);
   }
@@ -87,7 +87,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
       var abbr = getLocation(widget.game.timezone)
           .timeZone(widget.game.time.millisecondsSinceEpoch)
           .abbr;
-      tzShortName = " ($abbr)";
+      tzShortName = ' ($abbr)';
     }
 
     var theme = Theme.of(context);
@@ -198,24 +198,24 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
       }
       if (widget.game.officialResult.scores.containsKey(GamePeriod.overtime1)) {
         homeTeamDetails.add(Text(
-          "OT ${widget.game.officialResult.scores[GamePeriod.overtime1].score.ptsFor}",
+          'OT ${widget.game.officialResult.scores[GamePeriod.overtime1].score.ptsFor}',
           style: homeStyle,
           textAlign: TextAlign.end,
         ));
         awayTeamDetails.add(Text(
-          "OT ${widget.game.officialResult.scores[GamePeriod.overtime1].score.ptsAgainst}",
+          'OT ${widget.game.officialResult.scores[GamePeriod.overtime1].score.ptsAgainst}',
           style: awayStyle,
           textAlign: TextAlign.start,
         ));
       }
       if (widget.game.officialResult.scores.containsKey(GamePeriod.penalty)) {
         homeTeamDetails.add(Text(
-          "PT ${widget.game.officialResult.scores[GamePeriod.penalty].score.ptsFor}",
+          'PT ${widget.game.officialResult.scores[GamePeriod.penalty].score.ptsFor}',
           style: homeStyle,
           textAlign: TextAlign.end,
         ));
         awayTeamDetails.add(Text(
-          "PT ${widget.game.officialResult.scores[GamePeriod.penalty].score.ptsAgainst}",
+          'PT ${widget.game.officialResult.scores[GamePeriod.penalty].score.ptsAgainst}',
           style: awayStyle,
           textAlign: TextAlign.start,
         ));
@@ -267,12 +267,12 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     // Map details
     var lastBit = (widget.game.endTime == widget.game.time
         ? ''
-        : " - ${endTimeStr + (tzShortName ?? '')}");
+        : ' - ${endTimeStr + (tzShortName ?? '')}');
     body.add(
       ListTile(
         leading: Icon(Icons.directions),
         title: Text(
-          "$dateStr $timeStr$lastBit",
+          '$dateStr $timeStr$lastBit',
           style: theme.textTheme.subtitle1.copyWith(color: theme.accentColor),
         ),
         subtitle: Column(

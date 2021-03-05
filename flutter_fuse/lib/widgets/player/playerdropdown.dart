@@ -19,8 +19,8 @@ class PlayerDropDown extends StatelessWidget {
   final bool includeDecorator;
   final TextStyle style;
 
-  static String noneValue = "none";
-  static String allValue = "all";
+  static String noneValue = 'none';
+  static String allValue = 'all';
 
   PlayerDropDown(
       {@required this.value,

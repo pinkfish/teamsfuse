@@ -21,11 +21,11 @@ class SqlData {
   Future<bool> _initialized;
   bool _recreating = false;
 
-  static const String _dbName = "teamfuse.db";
+  static const String _dbName = 'teamfuse.db';
 
-  static const String _indexColumn = "fluff";
-  static const String _dataColumn = "data";
-  static const String _teamUidColumn = "teamuid";
+  static const String _indexColumn = 'fluff';
+  static const String _dataColumn = 'data';
+  static const String _teamUidColumn = 'teamuid';
 
   static const List<String> _tables = <String>[
     PersistenDataFrog.teamsTable,
@@ -53,17 +53,17 @@ class SqlData {
     }, onCreate: (db, version) async {
       await Future.forEach(_tables, (table) async {
         print('Made db $table');
-        return await db.execute("CREATE TABLE IF NOT EXISTS $table"
-            " ($_indexColumn)"
-            " text PRIMARY KEY, $_dataColumn "
-            " text NOT NULL);");
+        return await db.execute('CREATE TABLE IF NOT EXISTS $table'
+            ' ($_indexColumn)'
+            ' text PRIMARY KEY, $_dataColumn '
+            ' text NOT NULL);');
       });
       await Future.forEach(_teamSpecificTables, (table) async {
-        return db.execute("CREATE TABLE IF NOT EXISTS $table"
-            "($_indexColumn)"
-            " text PRIMARY KEY, $_teamUidColumn "
-            " text NOT NULL, $_dataColumn"
-            " text NOT NULL);");
+        return db.execute('CREATE TABLE IF NOT EXISTS $table'
+            '($_indexColumn)'
+            ' text PRIMARY KEY, $_teamUidColumn '
+            ' text NOT NULL, $_dataColumn'
+            ' text NOT NULL);');
       });
     });
     _completer.complete(true);
@@ -108,7 +108,7 @@ class SqlData {
     updateData[_indexColumn] = key;
 
     var data = await _database
-        .query(tableId, where: "$_indexColumn = ?", whereArgs: <String>[key]);
+        .query(tableId, where: '$_indexColumn = ?', whereArgs: <String>[key]);
     if (data == null || data.length == 0) {
       return null;
     }
@@ -123,9 +123,9 @@ class SqlData {
     var myJson = json.encode(data);
 
     await _database.execute(
-        "insert or replace into $tableId "
-        " ($_indexColumn, $_dataColumn"
-        ") values (?, ?)",
+        'insert or replace into $tableId '
+        ' ($_indexColumn, $_dataColumn'
+        ') values (?, ?)',
         <String>[key, myJson]);
   }
 
@@ -133,7 +133,7 @@ class SqlData {
   Future<int> deleteElement(String tableId, String key) async {
     await _initialized;
     return _database
-        .delete(tableId, where: "$_indexColumn = ?", whereArgs: <String>[key]);
+        .delete(tableId, where: '$_indexColumn = ?', whereArgs: <String>[key]);
   }
 
   /// Gets all the data out of the json table.
@@ -143,7 +143,7 @@ class SqlData {
     var ret = <String, Map<String, dynamic>>{};
 
     var data = await _database.query(table,
-        where: "$_teamUidColumn = ?", whereArgs: <String>[teamUid]);
+        where: '$_teamUidColumn = ?', whereArgs: <String>[teamUid]);
 
     for (var innerData in data) {
       ret[innerData[_indexColumn].toString()] = json
@@ -160,9 +160,9 @@ class SqlData {
     var myJson = json.encode(data);
 
     await _database.execute(
-        "insert or replace into $tableId "
-        " ($_indexColumn, $_teamUidColumn, $_dataColumn) "
-        ") values (?, ?, ?)",
+        'insert or replace into $tableId '
+        ' ($_indexColumn, $_teamUidColumn, $_dataColumn) '
+        ') values (?, ?, ?)',
         <String>[key, teamUid, myJson]);
   }
 

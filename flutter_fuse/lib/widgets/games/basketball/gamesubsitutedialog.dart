@@ -53,7 +53,7 @@ class _GamePlayerSubsitutionDialogState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Select Player"),
+        title: Text('Select Player'),
         automaticallyImplyLeading: false,
       ),
       body: OrientationBuilder(
@@ -87,11 +87,11 @@ class _GamePlayerSubsitutionDialogState
         onTap: (p) => setState(() => _currentTab = p),
         items: [
           BottomNavigationBarItem(
-            title: Text("Incoming"),
+            title: Text('Incoming'),
             icon: Icon(Icons.person_add),
           ),
           BottomNavigationBarItem(
-            title: Text("Outgoing"),
+            title: Text('Outgoing'),
             icon: Icon(MdiIcons.accountRemoveOutline),
           ),
         ],

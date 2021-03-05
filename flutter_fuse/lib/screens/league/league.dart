@@ -26,14 +26,14 @@ class LeagueScreen extends StatelessWidget {
 
   void _doAction(BuildContext context, String action,
       SingleLeagueOrTournamentBloc bloc) async {
-    if (action == "season") {
+    if (action == 'season') {
       _addSeason(context, bloc);
     }
-    if (action == "admin") {
+    if (action == 'admin') {
       AddInviteToLeagueDialog.showAddLeagueOrTournamentInviteDialog(
           context, bloc);
     }
-    if (action == "image") {
+    if (action == 'image') {
       var imgFile = await RepositoryProvider.of<ImagePicker>(context).getImage(
           source: ImageSource.gallery, maxHeight: 200.0, maxWidth: 200.0);
       if (imgFile != null) {
@@ -41,8 +41,8 @@ class LeagueScreen extends StatelessWidget {
             image: await imgFile.readAsBytes()));
       }
     }
-    if (action == "edit") {
-      Navigator.pushNamed(context, "/League/Edit/$leagueUid");
+    if (action == 'edit') {
+      Navigator.pushNamed(context, '/League/Edit/$leagueUid');
     }
   }
 
@@ -71,16 +71,16 @@ class LeagueScreen extends StatelessWidget {
                     itemBuilder: (context) {
                       return <PopupMenuItem<String>>[
                         PopupMenuItem<String>(
-                          value: "season",
+                          value: 'season',
                           child: Text(Messages.of(context).addSeason),
                         ),
                         PopupMenuItem<String>(
                           child: Text(Messages.of(context).addAdmin),
-                          value: "admin",
+                          value: 'admin',
                         ),
                         PopupMenuItem<String>(
                           child: Text(Messages.of(context).editimagebutton),
-                          value: "image",
+                          value: 'image',
                         ),
                         PopupMenuItem<String>(
                           value: 'edit',

@@ -77,7 +77,7 @@ class _PlayerListState extends State<SeasonPlayerList> {
                     width: width,
                     child: FlatButton(
                       child: Text(
-                        "Pts",
+                        'Pts',
                         overflow: TextOverflow.fade,
                         softWrap: false,
                         style: minDataStyle.copyWith(
@@ -96,7 +96,7 @@ class _PlayerListState extends State<SeasonPlayerList> {
                     width: width,
                     child: FlatButton(
                       child: Text(
-                        "Pct",
+                        'Pct',
                         overflow: TextOverflow.fade,
                         softWrap: false,
                         style: minDataStyle.copyWith(
@@ -115,7 +115,7 @@ class _PlayerListState extends State<SeasonPlayerList> {
                     width: width,
                     child: FlatButton(
                       child: Text(
-                        "Fouls",
+                        'Fouls',
                         overflow: TextOverflow.fade,
                         softWrap: false,
                         style: minDataStyle.copyWith(
@@ -134,7 +134,7 @@ class _PlayerListState extends State<SeasonPlayerList> {
                     width: width,
                     child: FlatButton(
                       child: Text(
-                        "T/O",
+                        'T/O',
                         overflow: TextOverflow.fade,
                         softWrap: false,
                         style: minDataStyle.copyWith(
@@ -153,7 +153,7 @@ class _PlayerListState extends State<SeasonPlayerList> {
                     width: width,
                     child: FlatButton(
                       child: Text(
-                        "Steals",
+                        'Steals',
                         softWrap: false,
                         overflow: TextOverflow.clip,
                         style: minDataStyle.copyWith(
@@ -172,7 +172,7 @@ class _PlayerListState extends State<SeasonPlayerList> {
                     width: width,
                     child: FlatButton(
                       child: Text(
-                        "Blk",
+                        'Blk',
                         softWrap: false,
                         overflow: TextOverflow.clip,
                         style: minDataStyle.copyWith(
@@ -250,7 +250,7 @@ class _PlayerListState extends State<SeasonPlayerList> {
       onTap: widget.onTap != null
           ? () => widget.onTap(widget.season.playersData[uid])
           : () => Navigator.pushNamed(
-              context, "/Game/Player/" + widget.season.uid + "/" + uid),
+              context, '/Game/Player/' + widget.season.uid + '/' + uid),
       child: Row(
         children: <Widget>[
           SizedBox(
@@ -272,14 +272,14 @@ class _PlayerListState extends State<SeasonPlayerList> {
             width: width,
             child: Text(
               ((s.one.attempts + s.two.attempts * 2 + s.three.attempts * 3) == 0
-                  ? "0%"
+                  ? '0%'
                   : ((s.one.made + s.two.made * 2 + s.three.made * 3) /
                               (s.one.attempts +
                                   s.two.attempts * 2 +
                                   s.three.attempts * 3) *
                               100)
                           .toStringAsFixed(0) +
-                      "%"),
+                      '%'),
               textScaleFactor: scale,
             ),
           ),

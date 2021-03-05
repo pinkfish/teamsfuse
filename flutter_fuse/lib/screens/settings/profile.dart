@@ -23,7 +23,7 @@ class ProfileScreen extends StatelessWidget {
   final bool onlyPlayer;
 
   void _editPlayer(BuildContext context, String uid) {
-    Navigator.pushNamed(context, "EditPlayer/$uid");
+    Navigator.pushNamed(context, 'EditPlayer/$uid');
   }
 
   void _deletePlayer(
@@ -73,7 +73,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _onAddPlayerInvite(BuildContext context, Player player) {
-    Navigator.pushNamed(context, "AddInviteToPlayer/${player.uid}");
+    Navigator.pushNamed(context, 'AddInviteToPlayer/${player.uid}');
   }
 
   List<Widget> _buildUserList(BuildContext context, SinglePlayerState player) {
@@ -210,7 +210,7 @@ class ProfileScreen extends StatelessWidget {
                       CachedNetworkImageProvider(playerState.player.photoUrl);
                 } else {
                   leading =
-                      const AssetImage("assets/images/defaultavatar2.png");
+                      const AssetImage('assets/images/defaultavatar2.png');
                 }
                 if (!playerState.seasonsLoaded) {
                   playerBloc.add(SinglePlayerLoadSeasons());
@@ -223,7 +223,7 @@ class ProfileScreen extends StatelessWidget {
                       teamNames.add(
                         GestureDetector(
                           onTap: () => Navigator.pushNamed(
-                              context, "EditPlayer/${player.uid}"),
+                              context, 'EditPlayer/${player.uid}'),
                           child: ListTile(
                             tileColor: Theme.of(context).selectedRowColor,
                             minVerticalPadding: 10.0,
@@ -328,7 +328,7 @@ class ProfileScreen extends StatelessWidget {
   void _editProfile(BuildContext context) {
     // Open up the edit profile dialog.
     Navigator.pushNamed(context,
-        "EditProfile/${BlocProvider.of<PlayerBloc>(context).state.me.uid}");
+        'EditProfile/${BlocProvider.of<PlayerBloc>(context).state.me.uid}');
   }
 
   @override

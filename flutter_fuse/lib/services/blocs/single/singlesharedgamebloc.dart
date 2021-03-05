@@ -57,7 +57,7 @@ class SingleSharedGameBloc
   final String sharedGameUid;
   final AnalyticsSubsystem crashes;
 
-  static String createNew = "new";
+  static String createNew = 'new';
 
   StreamSubscription<GameSharedData> _gameSub;
 
@@ -133,13 +133,13 @@ class SingleSharedGameBloc
       return state;
     }
 
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleSharedGameUninitialized();
     }
 
     try {
       SingleSharedGameBlocStateType type =
-          SingleSharedGameBlocStateType.valueOf(json["type"]);
+          SingleSharedGameBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleSharedGameBlocStateType.Uninitialized:
           return SingleSharedGameUninitialized();

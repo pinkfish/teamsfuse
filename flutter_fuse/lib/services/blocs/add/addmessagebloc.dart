@@ -48,7 +48,7 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
           event.recipients.length == 0 ||
           event.body == null ||
           event.subject == null) {
-        yield AddItemInvalidArguments(error: ArgumentError("Invalid args"));
+        yield AddItemInvalidArguments(error: ArgumentError('Invalid args'));
       } else {
         yield AddItemSaving();
 
@@ -75,13 +75,13 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
                   ..playerId = str.trim());
               }
             } else {
-              print("Cannot find player '$str'");
+              print('Cannot find player "$str"');
             }
           }
           var newMess = builder.build();
           if (newMess.recipients.isEmpty) {
             yield AddItemInvalidArguments(
-                error: ArgumentError("No users to message"));
+                error: ArgumentError('No users to message'));
             return;
           }
 

@@ -58,7 +58,7 @@ class CoachTile extends StatelessWidget {
                       ? IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () => Navigator.of(context)
-                              .pushNamed("/Club/Coach/Edit/$clubUid/$coachUid"))
+                              .pushNamed('/Club/Coach/Edit/$clubUid/$coachUid'))
                       : SizedBox(width: 0),
                 ],
               ),

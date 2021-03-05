@@ -44,7 +44,7 @@ class PlaceProvider extends ChangeNotifier {
 
   Future<void> updateCurrentLocation(bool forceAndroidLocationManager) async {
     try {
-      print("Waiting for the permisson");
+      print('Waiting for the permisson');
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.always ||
           permission == LocationPermission.whileInUse) {

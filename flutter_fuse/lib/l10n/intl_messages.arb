@@ -1,3092 +1,3092 @@
 {
-  "@@last_modified": "2021-02-26T00:42:36.451003",
-  "About": "About",
-  "@About": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Invited as an Administrator": "Invited as an Administrator",
-  "@Invited as an Administrator": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "ADD ADMIN": "ADD ADMIN",
-  "@ADD ADMIN": {
-    "description": "Message to show as the title for the admin adding screen",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add Admin": "Add Admin",
-  "@Add Admin": {
-    "description": "Message to show as the title for the admin adding screen",
-    "type": "text",
-    "placeholders": {}
-  },
-  "ADD": "ADD",
-  "@ADD": {
-    "description": "Add a new item button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "ADD CLUB": "ADD CLUB",
-  "@ADD CLUB": {
-    "description": "Add a new club button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add News": "Add News",
-  "@Add News": {
-    "description": "Add a new news drop down menu item",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add club member": "Add club member",
-  "@Add club member": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add Coach": "Add Coach",
-  "@Add Coach": {
-    "description": "Add coach menu item in the drop down",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add Divison": "Add Divison",
-  "@Add Divison": {
-    "description": "Add a division inside a league/tournament",
-    "type": "text",
-    "placeholders": {}
-  },
-  "ADD DIVISON": "ADD DIVISON",
-  "@ADD DIVISON": {
-    "description": "Add a division inside a league/tournament",
-    "type": "text",
-    "placeholders": {}
-  },
-  "ADD EVENT": "ADD EVENT",
-  "@ADD EVENT": {
-    "description": "Button to add an event to a team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "GAME": "GAME",
-  "@GAME": {
-    "description": "Button to add a game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add Game": "Add Game",
-  "@Add Game": {
-    "description": "Message to on the tooltip to add a game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "ADD INVITE": "ADD INVITE",
-  "@ADD INVITE": {
-    "description": "Button to add an invite",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add Invite": "Add Invite",
-  "@Add Invite": {
-    "description": "Drop down to add an invite",
-    "type": "text",
-    "placeholders": {}
-  },
-  "SHARE PLAYER": "SHARE PLAYER",
-  "@SHARE PLAYER": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add League": "Add League",
-  "@Add League": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add new": "Add new",
-  "@Add new": {
-    "description": "Add new opponent for game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add Player": "Add Player",
-  "@Add Player": {
-    "description": "Text on a add player drop down",
-    "type": "text",
-    "placeholders": {}
-  },
-  "PLAYER": "PLAYER",
-  "@PLAYER": {
-    "description": "Text on a add player button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "ADD RESULT": "ADD RESULT",
-  "@ADD RESULT": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add Season": "Add Season",
-  "@Add Season": {
-    "description": "Add a season to the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "ADD SEASON": "ADD SEASON",
-  "@ADD SEASON": {
-    "description": "Add a season to the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "ADD TEAM": "ADD TEAM",
-  "@ADD TEAM": {
-    "description": "Add a new team button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add Team": "Add Team",
-  "@Add Team": {
-    "description": "Add a new team drop down item",
-    "type": "text",
-    "placeholders": {}
-  },
-  "SHARE TEAM": "SHARE TEAM",
-  "@SHARE TEAM": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Share team": "Share team",
-  "@Share team": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Add Tournamwent": "Add Tournamwent",
-  "@Add Tournamwent": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "ADD TRAINING": "ADD TRAINING",
-  "@ADD TRAINING": {
-    "description": "Button to add a training to a team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Adminstrator": "Adminstrator",
-  "@Adminstrator": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Against": "Against",
-  "@Against": {
-    "description": "Title to the spinner for showing points against in the results screen",
-    "type": "text",
-    "placeholders": {}
-  },
-  "All Events": "All Events",
-  "@All Events": {
-    "description": "Drop down menu item for all events",
-    "type": "text",
-    "placeholders": {}
-  },
-  "All games": "All games",
-  "@All games": {
-    "description": "Checkbox to select all the games",
-    "type": "text",
-    "placeholders": {}
-  },
-  "All Periods": "All Periods",
-  "@All Periods": {
-    "description": "Drop down menu item for all periods",
-    "type": "text",
-    "placeholders": {}
-  },
-  "All Players": "All Players",
-  "@All Players": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "All Seasons": "All Seasons",
-  "@All Seasons": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "All teams": "All teams",
-  "@All teams": {
-    "description": "Drop down for  the all teams result",
-    "type": "text",
-    "placeholders": {}
-  },
-  "ALL TEAMS": "ALL TEAMS",
-  "@ALL TEAMS": {
-    "description": "Drop down for  the all teams result",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Archived": "Archived",
-  "@Archived": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Archived Teams": "Archived Teams",
-  "@Archived Teams": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Archive": "Archive",
-  "@Archive": {
-    "description": "Archive message button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Archive Team": "Archive Team",
-  "@Archive Team": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Arrive At": "Arrive At",
-  "@Arrive At": {
-    "description": "Title for when to arrive",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Minutes to arrive before game": "Minutes to arrive before game",
-  "@Minutes to arrive before game": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Minutes before game": "Minutes before game",
-  "@Minutes before game": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Assists": "Assists",
-  "@Assists": {
-    "description": "Title for the section on a player assist",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Not making it": "Not making it",
-  "@Not making it": {
-    "description": "Negative attendence for the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Attendence": "Attendence",
-  "@Attendence": {
-    "description": "Are you attending the game title",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Will be there": "Will be there",
-  "@Will be there": {
-    "description": "Positive attendence for the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Maybe": "Maybe",
-  "@Maybe": {
-    "description": "Maybe attendence for the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "away": "away",
-  "@away": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Block": "Block",
-  "@Block": {
-    "description": "Block of a shot",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Blocks": "Blocks",
-  "@Blocks": {
-    "description": "Drop down menu item for fouls",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Blk": "Blk",
-  "@Blk": {
-    "description": "Blocks abbreviation",
-    "type": "text",
-    "placeholders": {}
-  },
-  "CHANGE ROLE": "CHANGE ROLE",
-  "@CHANGE ROLE": {
-    "description": "Button to change the role of the member of the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Change Score": "Change Score",
-  "@Change Score": {
-    "description": "Title for the dialog box to change the score after the game has finished",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Are you sure you want to add a player with no email?": "Are you sure you want to add a player with no email?",
-  "@Are you sure you want to add a player with no email?": {
-    "description": "Text in a dialog for when adding a player with no email",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Start Game - Breaks": "Start Game - Breaks",
-  "@Start Game - Breaks": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Club": "Club",
-  "@Club": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Club deleted": "Club deleted",
-  "@Club deleted": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Details": "Details",
-  "@Details": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administators of the club will also be adminstragtors for the team.": "To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administators of the club will also be adminstragtors for the team.",
-  "@To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administators of the club will also be adminstragtors for the team.": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Information about the coach": "Information about the coach",
-  "@Information about the coach": {
-    "description": "Hint text for a form field about the coach",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Coach deleted": "Coach deleted",
-  "@Coach deleted": {
-    "description": "Coach associated with a club is deleted",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Coaches": "Coaches",
-  "@Coaches": {
-    "description": "Header to display the coaches for the team/club",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Name of the coach": "Name of the coach",
-  "@Name of the coach": {
-    "description": "Hint text for a form field for the coachs name",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Copy details from": "Copy details from",
-  "@Copy details from": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Create new": "Create new",
-  "@Create new": {
-    "description": "Create new account button text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "CREATE": "CREATE",
-  "@CREATE": {
-    "description": "Create account button text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Created an account, please look in your email for the verification code..": "Created an account, please look in your email for the verification code..",
-  "@Created an account, please look in your email for the verification code..": {
-    "description": "Confirmation message after requesting the email verification code",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Create": "Create",
-  "@Create": {
-    "description": "Title for the step to create a game or team in a stepper",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Current": "Current",
-  "@Current": {
-    "description": "Subtitle to markt he season as current",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Def Rebound": "Def Rebound",
-  "@Def Rebound": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "D/RB": "D/RB",
-  "@D/RB": {
-    "description": "Defensive rebound abbreviation",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Delete Admin": "Delete Admin",
-  "@Delete Admin": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Delete admin invite": "Delete admin invite",
-  "@Delete admin invite": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "DELETE": "DELETE",
-  "@DELETE": {
-    "description": "Button text to delete an iteam",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Delete game": "Delete game",
-  "@Delete game": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Delete training": "Delete training",
-  "@Delete training": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Delete special event": "Delete special event",
-  "@Delete special event": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Delete invite": "Delete invite",
-  "@Delete invite": {
-    "description": "Title for the dialog to delete an invite",
-    "type": "text",
-    "placeholders": {}
-  },
-  "DELETE INVITE": "DELETE INVITE",
-  "@DELETE INVITE": {
-    "description": "Title for the dialog to delete an invite",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Delete member": "Delete member",
-  "@Delete member": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Delete": "Delete",
-  "@Delete": {
-    "description": "Delete message button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Delete opponent": "Delete opponent",
-  "@Delete opponent": {
-    "description": "Title to the alert dialog to delete an opponent from the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Delete Player": "Delete Player",
-  "@Delete Player": {
-    "description": "Dialog title for deleting a playern",
-    "type": "text",
-    "placeholders": {}
-  },
-  "REMOVE FROM TEAM": "REMOVE FROM TEAM",
-  "@REMOVE FROM TEAM": {
-    "description": "Button to change the remove a member from the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "DIRECTIONS": "DIRECTIONS",
-  "@DIRECTIONS": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Name": "Name",
-  "@Name": {
-    "description": "Name for the edit box to edit the user name",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Your name": "Your name",
-  "@Your name": {
-    "description": "Name for the edit box to edit the user name",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Divison": "Divison",
-  "@Divison": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "DONE": "DONE",
-  "@DONE": {
-    "description": "Done completely button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Duration": "Duration",
-  "@Duration": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "EDIT": "EDIT",
-  "@EDIT": {
-    "description": "The edit text for the dialog",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Edit Game": "Edit Game",
-  "@Edit Game": {
-    "description": "Edit Game help text for button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "EDIT IMAGE": "EDIT IMAGE",
-  "@EDIT IMAGE": {
-    "description": "Button to edit the image",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Edit Team": "Edit Team",
-  "@Edit Team": {
-    "description": "Edit Team help text for button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Email": "Email",
-  "@Email": {
-    "description": "Email input field",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Email Preferences": "Email Preferences",
-  "@Email Preferences": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Upcoming games/events": "Upcoming games/events",
-  "@Upcoming games/events": {
-    "description": "Switch text for emailing on upcoming games",
-    "type": "text",
-    "placeholders": {}
-  },
-  "On changes to games/events": "On changes to games/events",
-  "@On changes to games/events": {
-    "description": "Switch text for emailing on updates",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Email is empty.": "Email is empty.",
-  "@Email is empty.": {
-    "description": "Message to say they have an empty email field",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Please choose a password.": "Please choose a password.",
-  "@Please choose a password.": {
-    "description": "Message to say they have an empty password field",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Must not be empty": "Must not be empty",
-  "@Must not be empty": {
-    "description": "Hint text to say the name must not be empty",
-    "type": "text",
-    "placeholders": {}
-  },
-  "END": "END",
-  "@END": {
-    "description": "Text on a end button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "End timeout": "End timeout",
-  "@End timeout": {
-    "description": "Text to end the timeout",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Error creating user, maybe the email address is already used": "Error creating user, maybe the email address is already used",
-  "@Error creating user, maybe the email address is already used": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Special Events": "Special Events",
-  "@Special Events": {
-    "description": "Drop down for only the special events",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Everyone": "Everyone",
-  "@Everyone": {
-    "description": "Message to mean everyone in the team (coaches + everyone)",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Final score": "Final score",
-  "@Final score": {
-    "description": "Final score dialofg title",
-    "type": "text",
-    "placeholders": {}
-  },
-  "FINISH": "FINISH",
-  "@FINISH": {
-    "description": "Text for the button to finish the game in the update score screen",
-    "type": "text",
-    "placeholders": {}
-  },
-  "FORGOT PASSWORD": "FORGOT PASSWORD",
-  "@FORGOT PASSWORD": {
-    "description": "Forgot password button text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "The email to resend the password to": "The email to resend the password to",
-  "@The email to resend the password to": {
-    "description": "Forgot password happy button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Sent email to your email address to reset your password": "Sent email to your email address to reset your password",
-  "@Sent email to your email address to reset your password": {
-    "description": "Forgot password happy button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Please fix the items outlined in red": "Please fix the items outlined in red",
-  "@Please fix the items outlined in red": {
-    "description": "Error when submitting a form",
-    "type": "text",
-    "placeholders": {}
-  },
-  "For": "For",
-  "@For": {
-    "description": "Title to the spinner for showing points for in the results screen",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Foul": "Foul",
-  "@Foul": {
-    "description": "Foul on player",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Foul Flagrent": "Foul Flagrent",
-  "@Foul Flagrent": {
-    "description": "Flagrant foul on player",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Fouls": "Fouls",
-  "@Fouls": {
-    "description": "Drop down menu item for fouls",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Foul Technical": "Foul Technical",
-  "@Foul Technical": {
-    "description": "Technical foul on player",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Game": "Game",
-  "@Game": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Availability": "Availability",
-  "@Availability": {
-    "description": "Availability for the game, botton tab bar title",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Game end": "Game end",
-  "@Game end": {
-    "description": "Title for the time drop down to choose the game end time",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Game notes": "Game notes",
-  "@Game notes": {
-    "description": "The notes associated with the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Notes for the game": "Notes for the game",
-  "@Notes for the game": {
-    "description": "The hint text for notes associated with the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Away team won": "Away team won",
-  "@Away team won": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Home team won": "Home team won",
-  "@Home team won": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "In progress": "In progress",
-  "@In progress": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Games": "Games",
-  "@Games": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Game Time": "Game Time",
-  "@Game Time": {
-    "description": "Title for the game time",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Coed": "Coed",
-  "@Coed": {
-    "description": "Coed gender for the sport in the drop down",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Female": "Female",
-  "@Female": {
-    "description": "Female gender for the sport in the drop down",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Male": "Male",
-  "@Male": {
-    "description": "Male gender for the sport in the drop down",
-    "type": "text",
-    "placeholders": {}
-  },
-  "N/A": "N/A",
-  "@N/A": {
-    "description": "Not applicable gender for the sport in the drop down",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select gender": "Select gender",
-  "@Select gender": {
-    "description": "Hint text to select a gender",
-    "type": "text",
-    "placeholders": {}
-  },
-  "home": "home",
-  "@home": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Home": "Home",
-  "@Home": {
-    "description": "Title for the home game checkbox",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Photo": "Photo",
-  "@Photo": {
-    "description": "Upload a photo",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Import\nplayers": "Import\nplayers",
-  "@Import\nplayers": {
-    "description": "Import players from previous season",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Send to yourself": "Send to yourself",
-  "@Send to yourself": {
-    "description": "If the message should also be sent to ourselves",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Email address must be of form xxx@xxx.": "Email address must be of form xxx@xxx.",
-  "@Email address must be of form xxx@xxx.": {
-    "description": "Message to say they have an invalid email field",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Name can only contain alphanumerical characters.": "Name can only contain alphanumerical characters.",
-  "@Name can only contain alphanumerical characters.": {
-    "description": "Message to say they have an invalid user name field",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Invalid URL": "Invalid URL",
-  "@Invalid URL": {
-    "description": "Error in a form when the url is invalid",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Invites": "Invites",
-  "@Invites": {
-    "description": "Title for the screen with the list of current invites",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Jersey Number": "Jersey Number",
-  "@Jersey Number": {
-    "description": "Jersey number for the playerr",
-    "type": "text",
-    "placeholders": {}
-  },
-  "JOIN LEAGUE": "JOIN LEAGUE",
-  "@JOIN LEAGUE": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "League": "League",
-  "@League": {
-    "description": "The league the team is playing in",
-    "type": "text",
-    "placeholders": {}
-  },
-  "League the team is playing in": "League the team is playing in",
-  "@League the team is playing in": {
-    "description": "League the team is playing in",
-    "type": "text",
-    "placeholders": {}
-  },
-  "League/Tournaments": "League/Tournaments",
-  "@League/Tournaments": {
-    "description": "Link to the league/tournament section",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Loading...": "Loading...",
-  "@Loading...": {
-    "description": "Message for loading the app",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Load more": "Load more",
-  "@Load more": {
-    "description": "Message to load more messages",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Delete News Item": "Delete News Item",
-  "@Delete News Item": {
-    "description": "Dialog title to delete the news item",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Are you sure you want to delete the news item?": "Are you sure you want to delete the news item?",
-  "@Are you sure you want to delete the news item?": {
-    "description": "Dialog text to see if the news item should be deleted",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Location": "Location",
-  "@Location": {
-    "description": "Location of the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "LOGIN": "LOGIN",
-  "@LOGIN": {
-    "description": "Login button text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "LOGOUT": "LOGOUT",
-  "@LOGOUT": {
-    "description": "Logout button text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Description": "Description",
-  "@Description": {
-    "description": "Long description of a tournament/league to display on the league page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Detailed Description": "Detailed Description",
-  "@Detailed Description": {
-    "description": "Long description of a tournament/league to display on the league/tournament page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Loss": "Loss",
-  "@Loss": {
-    "description": "Drop down for  the loss result",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Members": "Members",
-  "@Members": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Message": "Message",
-  "@Message": {
-    "description": "In a text edit box to send a message to the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Monthly": "Monthly",
-  "@Monthly": {
-    "description": "Monthly repeat",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Username is empty.": "Username is empty.",
-  "@Username is empty.": {
-    "description": "Message to say they have an empty email field",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Need to select a place": "Need to select a place",
-  "@Need to select a place": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Need to be an administrator": "Need to be an administrator",
-  "@Need to be an administrator": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Please choose a gender.": "Please choose a gender.",
-  "@Please choose a gender.": {
-    "description": "Message to suggest they need to select a gender",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Please choose an opponent.": "Please choose an opponent.",
-  "@Please choose an opponent.": {
-    "description": "Message to suggest they need to select an oppoent",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Need to select a role": "Need to select a role",
-  "@Need to select a role": {
-    "description": "Error to say they must select the role in the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Please choose a sport.": "Please choose a sport.",
-  "@Please choose a sport.": {
-    "description": "Message to suggest they need to select a sport",
-    "type": "text",
-    "placeholders": {}
-  },
-  "NEW": "NEW",
-  "@NEW": {
-    "description": "New button text in the system",
-    "type": "text",
-    "placeholders": {}
-  },
-  "New Divison Name": "New Divison Name",
-  "@New Divison Name": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "NEW MESSAGE": "NEW MESSAGE",
-  "@NEW MESSAGE": {
-    "description": "New message in the teamfuse system",
-    "type": "text",
-    "placeholders": {}
-  },
-  "New player name": "New player name",
-  "@New player name": {
-    "description": "Text to show before the player name.",
-    "type": "text",
-    "placeholders": {}
-  },
-  "New player name of player in team": "New player name of player in team",
-  "@New player name of player in team": {
-    "description": "Hint for the name of the player in the team.",
-    "type": "text",
-    "placeholders": {}
-  },
-  "New Season Name": "New Season Name",
-  "@New Season Name": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "News": "News",
-  "@News": {
-    "description": "Header the for the news section",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No News": "No News",
-  "@No News": {
-    "description": "No news in the stuff",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No club": "No club",
-  "@No club": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "No coaches": "No coaches",
-  "@No coaches": {
-    "description": "Message to show that there are no coaches for this club",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No divisions": "No divisions",
-  "@No divisions": {
-    "description": "Divisons inside the season for a league/tournament",
-    "type": "text",
-    "placeholders": {}
-  },
-  "All events": "All events",
-  "@All events": {
-    "description": "Drop down for all the events",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No games": "No games",
-  "@No games": {
-    "description": "No games scheduled",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No games to display, check filters": "No games to display, check filters",
-  "@No games to display, check filters": {
-    "description": "No games to display based on filters",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No games this season": "No games this season",
-  "@No games this season": {
-    "description": "No games played this season, but some in a previous season",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No invites": "No invites",
-  "@No invites": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "No leagues": "No leagues",
-  "@No leagues": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "No Media": "No Media",
-  "@No Media": {
-    "description": "No media to display",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No Messages": "No Messages",
-  "@No Messages": {
-    "description": "In a text edit box to send a message to the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No repeat": "No repeat",
-  "@No repeat": {
-    "description": "No repeat period",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No players": "No players",
-  "@No players": {
-    "description": "Description for no players",
-    "type": "text",
-    "placeholders": {}
-  },
-  "You must have some players in a season to be able to create a game.": "You must have some players in a season to be able to create a game.",
-  "@You must have some players in a season to be able to create a game.": {
-    "description": "Text in a dialog to warn you need players",
-    "type": "text",
-    "placeholders": {}
-  },
-  "All Games": "All Games",
-  "@All Games": {
-    "description": "Drop down for all the games",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No seasons": "No seasons",
-  "@No seasons": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Not archived": "Not archived",
-  "@Not archived": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "No teams": "No teams",
-  "@No teams": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Not finished": "Not finished",
-  "@Not finished": {
-    "description": "Drop down for the not finished result",
-    "type": "text",
-    "placeholders": {}
-  },
-  "No tournaments": "No tournaments",
-  "@No tournaments": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Off Rebound": "Off Rebound",
-  "@Off Rebound": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "O/RB": "O/RB",
-  "@O/RB": {
-    "description": "Offensive rebound abbreviation",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Offical": "Offical",
-  "@Offical": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Offical results don't match": "Offical results don't match",
-  "@Offical results don't match": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "OPEN": "OPEN",
-  "@OPEN": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Opponent": "Opponent",
-  "@Opponent": {
-    "description": "Title for the opponent marker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Contact": "Contact",
-  "@Contact": {
-    "description": "The text for the contact of an opponent",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Contact for the opponent": "Contact for the opponent",
-  "@Contact for the opponent": {
-    "description": "The hint text for the contact of an opponent",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Name of the opponent.": "Name of the opponent.",
-  "@Name of the opponent.": {
-    "description": "The hint text for the name of an opponent",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select opponent": "Select opponent",
-  "@Select opponent": {
-    "description": "The hint text for selecting opponent for the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Opponents without results": "Opponents without results",
-  "@Opponents without results": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Opponents with results": "Opponents with results",
-  "@Opponents with results": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Optional": "Optional",
-  "@Optional": {
-    "description": "Optional subtitle for a stepper",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Password": "Password",
-  "@Password": {
-    "description": "Input box for a password",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Email and/or password incorrect": "Email and/or password incorrect",
-  "@Email and/or password incorrect": {
-    "description": "Passwords or email is not correct, login failed",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Passwords must match": "Passwords must match",
-  "@Passwords must match": {
-    "description": "Passwords must match signup form error",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Penalty": "Penalty",
-  "@Penalty": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "%age": "%age",
-  "@%age": {
-    "description": "Percentage made in game summary title",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Period": "Period",
-  "@Period": {
-    "description": "Dialog title for sertting the current period",
-    "type": "text",
-    "placeholders": {}
-  },
-  "PERIOD": "PERIOD",
-  "@PERIOD": {
-    "description": "Button to set the current period",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Break": "Break",
-  "@Break": {
-    "description": "The game is on a break",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Final": "Final",
-  "@Final": {
-    "description": "The game has finished",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Not started": "Not started",
-  "@Not started": {
-    "description": "The game is not started",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Overtime 1": "Overtime 1",
-  "@Overtime 1": {
-    "description": "The game is in overtime",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Overtime Break": "Overtime Break",
-  "@Overtime Break": {
-    "description": "The game is on an overtime break",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Period 1": "Period 1",
-  "@Period 1": {
-    "description": "The game is in period 1",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Period 2": "Period 2",
-  "@Period 2": {
-    "description": "The game is in period 2",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Period 3": "Period 3",
-  "@Period 3": {
-    "description": "The game is in period 3",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Period 4": "Period 4",
-  "@Period 4": {
-    "description": "The game is in period 4",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Period 5": "Period 5",
-  "@Period 5": {
-    "description": "The game is in period 4",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Period 6": "Period 6",
-  "@Period 6": {
-    "description": "The game is in period 4",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Period x": "Period x",
-  "@Period x": {
-    "description": "The game is in an unknown",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Phone Number": "Phone Number",
-  "@Phone Number": {
-    "description": "Phone number for the edit box to edit the phone number",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Contact phone number": "Contact phone number",
-  "@Contact phone number": {
-    "description": "Phone number for the edit box to edit the phone number",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Phone number (optional)": "Phone number (optional)",
-  "@Phone number (optional)": {
-    "description": "Phone number for the edit box to edit the phone number marked as optional",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Place notes, ie court #": "Place notes, ie court #",
-  "@Place notes, ie court #": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Details of the place": "Details of the place",
-  "@Details of the place": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Player": "Player",
-  "@Player": {
-    "description": "Title in team stepper to select a player",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Player email address": "Player email address",
-  "@Player email address": {
-    "description": "Player email input field hint",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Player Name": "Player Name",
-  "@Player Name": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Players": "Players",
-  "@Players": {
-    "description": "Title in the bottom navigation tab for players",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select player": "Select player",
-  "@Select player": {
-    "description": "Label for the player drop down",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Points": "Points",
-  "@Points": {
-    "description": "Drop down menu item for points",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Pts": "Pts",
-  "@Pts": {
-    "description": "Points summary in game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Previous Seasons": "Previous Seasons",
-  "@Previous Seasons": {
-    "description": "Previous seasons for this game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Don't track attendence": "Don't track attendence",
-  "@Don't track attendence": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Track attendence": "Track attendence",
-  "@Track attendence": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Don't Panic": "Don't Panic",
-  "@Don't Panic": {
-    "description": "Douglas Adams quote",
-    "type": "text",
-    "placeholders": {}
-  },
-  "You must expect great things of yourself before you can do them.": "You must expect great things of yourself before you can do them.",
-  "@You must expect great things of yourself before you can do them.": {
-    "description": "Michael Jordan quote",
-    "type": "text",
-    "placeholders": {}
-  },
-  "What stands in the way, becomes the way.": "What stands in the way, becomes the way.",
-  "@What stands in the way, becomes the way.": {
-    "description": "Marcus Aurelius quote",
-    "type": "text",
-    "placeholders": {}
-  },
-  "I've missed more than 9000 shots in my career. I've lost almost 300 games. 26 times, I've been trusted to take the game winning shot and missed. I've failed over and over and over again in my life. And that is why I succeed.": "I've missed more than 9000 shots in my career. I've lost almost 300 games. 26 times, I've been trusted to take the game winning shot and missed. I've failed over and over and over again in my life. And that is why I succeed.",
-  "@I've missed more than 9000 shots in my career. I've lost almost 300 games. 26 times, I've been trusted to take the game winning shot and missed. I've failed over and over and over again in my life. And that is why I succeed.": {
-    "description": "Michael Jordan quote",
-    "type": "text",
-    "placeholders": {}
-  },
-  "I know I am getting better at golf because I am hitting fewer spectators.": "I know I am getting better at golf because I am hitting fewer spectators.",
-  "@I know I am getting better at golf because I am hitting fewer spectators.": {
-    "description": "Gerald R Ford quote",
-    "type": "text",
-    "placeholders": {}
-  },
-  "The only time you run out of chances is when you stop taking them.": "The only time you run out of chances is when you stop taking them.",
-  "@The only time you run out of chances is when you stop taking them.": {
-    "description": "David Beckham quote",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Lies, damn lies and statistics": "Lies, damn lies and statistics",
-  "@Lies, damn lies and statistics": {
-    "description": "Mark Twain quote",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Rebounds": "Rebounds",
-  "@Rebounds": {
-    "description": "Drop down menu item for rebounds",
-    "type": "text",
-    "placeholders": {}
-  },
-  "RBs": "RBs",
-  "@RBs": {
-    "description": "Rebounds in game summary",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Friend": "Friend",
-  "@Friend": {
-    "description": "Relationship desc for friend",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Guardian": "Guardian",
-  "@Guardian": {
-    "description": "Relationship desc for guardian",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Me": "Me",
-  "@Me": {
-    "description": "Relationship desc for me",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Parent": "Parent",
-  "@Parent": {
-    "description": "Relationship desc for parent",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select relationship": "Select relationship",
-  "@Select relationship": {
-    "description": "Label to select the relatiobship from a drop down",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Repeat": "Repeat",
-  "@Repeat": {
-    "description": "Repeat title for the traning create steps",
-    "type": "text",
-    "placeholders": {}
-  },
-  "RESEND EMAIL": "RESEND EMAIL",
-  "@RESEND EMAIL": {
-    "description": "Button to resend the email to verify their email address",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Reset Timer": "Reset Timer",
-  "@Reset Timer": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Do you want to reset the timer to zero?": "Do you want to reset the timer to zero?",
-  "@Do you want to reset the timer to zero?": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "No result.": "No result.",
-  "@No result.": {
-    "description": "No result for the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Role": "Role",
-  "@Role": {
-    "description": "Header for a column talking about the role",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select role": "Select role",
-  "@Select role": {
-    "description": "Drop down to select the role in the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "SAVE": "SAVE",
-  "@SAVE": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Save Failed": "Save Failed",
-  "@Save Failed": {
-    "description": "Save failed, server error",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Season": "Season",
-  "@Season": {
-    "description": "Title for the season marker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Current team season": "Current team season",
-  "@Current team season": {
-    "description": "Hint for the season text box",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Season name is required": "Season name is required",
-  "@Season name is required": {
-    "description": "The error text when the season name is required",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Seasons": "Seasons",
-  "@Seasons": {
-    "description": "Header for the seasons section",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select season": "Select season",
-  "@Select season": {
-    "description": "Title for the select season marker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select club": "Select club",
-  "@Select club": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "GALLERY": "GALLERY",
-  "@GALLERY": {
-    "description": "Live video streaming",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select Media": "Select Media",
-  "@Select Media": {
-    "description": "Title for the dialog to select a video",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select place": "Select place",
-  "@Select place": {
-    "description": "Title for the drop down to say select place if nothing is selected",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Need to have a subject": "Need to have a subject",
-  "@Need to have a subject": {
-    "description": "Error to display for the form when a subject is empty.",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select Player": "Select Player",
-  "@Select Player": {
-    "description": "Selects the player for the event",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Send message": "Send message",
-  "@Send message": {
-    "description": "In a text edit box to send a message to a user",
-    "type": "text",
-    "placeholders": {}
-  },
-  "SEND": "SEND",
-  "@SEND": {
-    "description": "Button to send the message",
-    "type": "text",
-    "placeholders": {}
-  },
-  "SET CLUB": "SET CLUB",
-  "@SET CLUB": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Settings": "Settings",
-  "@Settings": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Summary": "Summary",
-  "@Summary": {
-    "description": "Short description of a tournament/league to display in the ux",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Short Description": "Short Description",
-  "@Short Description": {
-    "description": "Short description of a tournament/league to display in the ux",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Shots": "Shots",
-  "@Shots": {
-    "description": "Heading for the shots sectionn",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Signout": "Signout",
-  "@Signout": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "SKIP": "SKIP",
-  "@SKIP": {
-    "description": "Skip button text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select sport": "Select sport",
-  "@Select sport": {
-    "description": "Name for the default select sport text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "START": "START",
-  "@START": {
-    "description": "Text on a button to start the period",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Start Game": "Start Game",
-  "@Start Game": {
-    "description": "Start game dialofg title",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Do you want to start the game?": "Do you want to start the game?",
-  "@Do you want to start the game?": {
-    "description": "Start game dialofg body text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Stats": "Stats",
-  "@Stats": {
-    "description": "Title in the bottom navigation bar for the stats",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Steal": "Steal",
-  "@Steal": {
-    "description": "Steal a ball",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Steals": "Steals",
-  "@Steals": {
-    "description": "Drop down menu item for steals",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Stl": "Stl",
-  "@Stl": {
-    "description": "Steals abbreviation",
-    "type": "text",
-    "placeholders": {}
-  },
-  "STREAM": "STREAM",
-  "@STREAM": {
-    "description": "Button to display a stream",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Stream Live": "Stream Live",
-  "@Stream Live": {
-    "description": "Live video streaming",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Subject": "Subject",
-  "@Subject": {
-    "description": "Subject for the message, title of input field",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Subsitution": "Subsitution",
-  "@Subsitution": {
-    "description": "Subsitiution of player",
-    "type": "text",
-    "placeholders": {}
-  },
-  "CAMERA": "CAMERA",
-  "@CAMERA": {
-    "description": "Live video streaming",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Team": "Team",
-  "@Team": {
-    "description": "Title for the team marker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Team deleted": "Team deleted",
-  "@Team deleted": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Change team": "Change team",
-  "@Change team": {
-    "description": "Hint for the button to edit the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Team Name": "Team Name",
-  "@Team Name": {
-    "description": "Hint for the name of the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Teams": "Teams",
-  "@Teams": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Select team": "Select team",
-  "@Select team": {
-    "description": "The text for notes for selecting team for the event",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Team Selected": "Team Selected",
-  "@Team Selected": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Tie": "Tie",
-  "@Tie": {
-    "description": "Drop down for  the tie result",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Timer count up": "Timer count up",
-  "@Timer count up": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Team Fuse": "Team Fuse",
-  "@Team Fuse": {
-    "description": "Title for the Team Fuse application",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Tournament": "Tournament",
-  "@Tournament": {
-    "description": "Title for the tournament section",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Attendence is from team": "Attendence is from team",
-  "@Attendence is from team": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Training end": "Training end",
-  "@Training end": {
-    "description": "Title for the time drop down to choose the training end time",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Training notes": "Training notes",
-  "@Training notes": {
-    "description": "The notes associated with the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Notes for the training": "Notes for the training",
-  "@Notes for the training": {
-    "description": "The hint text for notes associated with the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Training times": "Training times",
-  "@Training times": {
-    "description": "HEader for the extra training times in a repeat event",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Training": "Training",
-  "@Training": {
-    "description": "Drop down foronlhy the training events",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Turnover": "Turnover",
-  "@Turnover": {
-    "description": "Caused a turnover",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Turnovers": "Turnovers",
-  "@Turnovers": {
-    "description": "Drop down menu item for turnovers",
-    "type": "text",
-    "placeholders": {}
-  },
-  "T/O": "T/O",
-  "@T/O": {
-    "description": "Turnover summary in game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Unable to load games": "Unable to load games",
-  "@Unable to load games": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Uniform": "Uniform",
-  "@Uniform": {
-    "description": "Title for the uniform input box",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Uniform to wear": "Uniform to wear",
-  "@Uniform to wear": {
-    "description": "Hint for the uniform input box",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Unknown": "Unknown",
-  "@Unknown": {
-    "description": "Unknown name",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Until": "Until",
-  "@Until": {
-    "description": "Drop down for the until option",
-    "type": "text",
-    "placeholders": {}
-  },
-  "UPDATE SCORE": "UPDATE SCORE",
-  "@UPDATE SCORE": {
-    "description": "Title to the button to update the score results screen",
-    "type": "text",
-    "placeholders": {}
-  },
-  "UPLOAD": "UPLOAD",
-  "@UPLOAD": {
-    "description": "Button to display upload a stream",
-    "type": "text",
-    "placeholders": {}
-  },
-  "URL": "URL",
-  "@URL": {
-    "description": "Title for the form field to set the url for media",
-    "type": "text",
-    "placeholders": {}
-  },
-  "USE OFFICAL": "USE OFFICAL",
-  "@USE OFFICAL": {
-    "description": "Button to pull the offical results in from the shared game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Use the results of the offical game for this game?": "Use the results of the offical game for this game?",
-  "@Use the results of the offical game for this game?": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "No account found for email or internal error occured": "No account found for email or internal error occured",
-  "@No account found for email or internal error occured": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Sent verification email, please check your email inbox.": "Sent verification email, please check your email inbox.",
-  "@Sent verification email, please check your email inbox.": {
-    "description": "Confirmation message after requesting the email verification code",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Verify password": "Verify password",
-  "@Verify password": {
-    "description": "Input box for a verification to the main password password",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Video": "Video",
-  "@Video": {
-    "description": "Shows video for the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Upload Video": "Upload Video",
-  "@Upload Video": {
-    "description": "Upload a video",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Weekly": "Weekly",
-  "@Weekly": {
-    "description": "Weekly repeat",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Where": "Where",
-  "@Where": {
-    "description": "Where the game is",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Win": "Win",
-  "@Win": {
-    "description": "Drop down for  the win result",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Your email address": "Your email address",
-  "@Your email address": {
-    "description": "Your email input field hint",
-    "type": "text",
-    "placeholders": {}
-  },
-  "arrivebefore": "Arrive {mins} mins before games",
-  "@arrivebefore": {
-    "type": "text",
-    "placeholders": {
-      "mins": {}
-    }
-  },
-  "cardResultInProgressFinal": "{ptsFor} - {ptsAgainst}",
-  "@cardResultInProgressFinal": {
-    "description": "In progress result details",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "cardResultInProgressOvertime": "{ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
-  "@cardResultInProgressOvertime": {
-    "description": "Win result details with penalty shootout",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {}
-    }
-  },
-  "cardResultInProgressOvertimeAndPenalty": "{ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
-  "@cardResultInProgressOvertimeAndPenalty": {
-    "description": "Win result details with penalty shootout",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "cardResultInProgressPenalty": "{ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
-  "@cardResultInProgressPenalty": {
-    "description": "In progress result details with penalty shootout",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "confirmCreateTeamForLeague": "Are you sure you want to create a team {teamName} with a season of {season} for the league {league}.  This is not possible to undo?",
-  "@confirmCreateTeamForLeague": {
-    "type": "text",
-    "placeholders": {
-      "teamName": {},
-      "season": {},
-      "league": {}
-    }
-  },
-  "confirmDeleteAsAdmin": "Do you want to delete the invite to be admin for the team {teamName}?",
-  "@confirmDeleteAsAdmin": {
-    "description": "Text to delete the invite to be an admin in the alert dialog.",
-    "type": "text",
-    "placeholders": {
-      "teamName": {}
-    }
-  },
-  "confirmDeleteClub": "Do you want to delete the invite to be in the club {clubName}?",
-  "@confirmDeleteClub": {
-    "description": "Text to delete the invite to the club in the alert dialog.",
-    "type": "text",
-    "placeholders": {
-      "clubName": {}
-    }
-  },
-  "confirmDeleteInvitePlayer": "Do you want to delete the invite to follow {playerName}?",
-  "@confirmDeleteInvitePlayer": {
-    "description": "Text to delete the invite to the team in the alert dialog.",
-    "type": "text",
-    "placeholders": {
-      "playerName": {}
-    }
-  },
-  "confirmDeleteInviteTeam": "Do you want to delete the invite to {teamName} for {playerName}?",
-  "@confirmDeleteInviteTeam": {
-    "description": "Text to delete the invite to the team in the alert dialog.",
-    "type": "text",
-    "placeholders": {
-      "teamName": {},
-      "playerName": {}
-    }
-  },
-  "confirmDeleteLeagueAsAdmin": "Do you want to delete the invite to be in the league {leagueName}?",
-  "@confirmDeleteLeagueAsAdmin": {
-    "description": "Text to delete the invite to the league in the alert dialog.",
-    "type": "text",
-    "placeholders": {
-      "leagueName": {}
-    }
-  },
-  "confirmDeleteLeagueTeam": "Do you want to delete the invite to be in the league {leagueName} with team {leagueTeamName}?",
-  "@confirmDeleteLeagueTeam": {
-    "type": "text",
-    "placeholders": {
-      "leagueName": {},
-      "leagueTeamName": {}
-    }
-  },
-  "confirmDeleteMember": "Delete club member {displayName}?",
-  "@confirmDeleteMember": {
-    "type": "text",
-    "placeholders": {
-      "displayName": {}
-    }
-  },
-  "confirmDeletePlayerBreakout": "Do you want to delete your connection to {playerName}?",
-  "@confirmDeletePlayerBreakout": {
-    "description": "Text to confirm asking if the players wants to be delete",
-    "type": "text",
-    "placeholders": {
-      "playerName": {}
-    }
-  },
-  "confirmRemoveFromTeam": "Are you sure you want to remove {name} from the team?",
-  "@confirmRemoveFromTeam": {
-    "description": "Dialog text to confirm removing a user from the team",
-    "type": "text",
-    "placeholders": {
-      "name": {}
-    }
-  },
-  "displayNameRelationshipBreakout": "{name} ({rel})",
-  "@displayNameRelationshipBreakout": {
-    "description": "Name for the edit box to edit the user name",
-    "type": "text",
-    "placeholders": {
-      "name": {},
-      "rel": {}
-    }
-  },
-  "eventTitleNowSpecialEvent": "NOW! Event {time}",
-  "@eventTitleNowSpecialEvent": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {}
-    }
-  },
-  "eventTitleNowSpecialEventName": "NOW! {name} {time}",
-  "@eventTitleNowSpecialEventName": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "name": {},
-      "time": {}
-    }
-  },
-  "eventTitleNowSpecialEventNameEndTime": "NOW! {name} {time} - {endTime}",
-  "@eventTitleNowSpecialEventNameEndTime": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "name": {},
-      "time": {},
-      "endTime": {}
-    }
-  },
-  "eventTitleNowSpecialEventNameEndTimeTimeZone": "NOW! {name} {time} - {endTime}  ({tzShortName})",
-  "@eventTitleNowSpecialEventNameEndTimeTimeZone": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "name": {},
-      "time": {},
-      "endTime": {},
-      "tzShortName": {}
-    }
-  },
-  "eventTitleNowSpecialEventNameTimeZone": "NOW! {name} {time} ({tzShortName})",
-  "@eventTitleNowSpecialEventNameTimeZone": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "name": {},
-      "time": {},
-      "tzShortName": {}
-    }
-  },
-  "eventTitleNowSpecialEventStartAndEnd": "NOW! Event {time} - {endTime}",
-  "@eventTitleNowSpecialEventStartAndEnd": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {}
-    }
-  },
-  "eventTitleNowSpecialEventStartAndEndTimezone": "NOW! Event {time} - {endTime} ({tzShortName})",
-  "@eventTitleNowSpecialEventStartAndEndTimezone": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {},
-      "tzShortName": {}
-    }
-  },
-  "eventTitleNowSpecialWithTimezone": "NOW! Event {time} ({tzShortName})",
-  "@eventTitleNowSpecialWithTimezone": {
-    "description": "Special event title in game list with timezone",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "tzShortName": {}
-    }
-  },
-  "eventTitleSpecialEvent": "Event {time}",
-  "@eventTitleSpecialEvent": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {}
-    }
-  },
-  "eventTitleSpecialEventName": "{name} {time}",
-  "@eventTitleSpecialEventName": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "name": {},
-      "time": {}
-    }
-  },
-  "eventTitleSpecialEventNameEndTime": "{name} {time} - {endTime}",
-  "@eventTitleSpecialEventNameEndTime": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "name": {},
-      "time": {},
-      "endTime": {}
-    }
-  },
-  "eventTitleSpecialEventNameEndTimeTimeZone": "{name} {time} - {endTime}  ({tzShortName})",
-  "@eventTitleSpecialEventNameEndTimeTimeZone": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "name": {},
-      "time": {},
-      "endTime": {},
-      "tzShortName": {}
-    }
-  },
-  "eventTitleSpecialEventNameTimeZone": "{name} {time} ({tzShortName})",
-  "@eventTitleSpecialEventNameTimeZone": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "name": {},
-      "time": {},
-      "tzShortName": {}
-    }
-  },
-  "eventTitleSpecialEventStartAndEnd": "Event {time} - {endTime}",
-  "@eventTitleSpecialEventStartAndEnd": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {}
-    }
-  },
-  "eventTitleSpecialEventStartAndEndTimezone": "Event {time} - {endTime} ({tzShortName})",
-  "@eventTitleSpecialEventStartAndEndTimezone": {
-    "description": "Special event title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {},
-      "tzShortName": {}
-    }
-  },
-  "eventTitleSpecialWithTimezone": "Event {time} ({tzShortName})",
-  "@eventTitleSpecialWithTimezone": {
-    "description": "Special event title in game list with timezone",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "tzShortName": {}
-    }
-  },
-  "finalOfficalScoreBodyOvertimePenalty": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nOvertime Home: {overtimeFor} Away: {overtimeAgainst}Penalty Home: {penaltyFor} Away: {penaltyAgainst}",
-  "@finalOfficalScoreBodyOvertimePenalty": {
-    "type": "text",
-    "placeholders": {
-      "resultString": {},
-      "homeFor": {},
-      "homeAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "finalOfficalScoreBodyOvertime": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nOvertime Home: {overtimeFor} Away: {overtimeAgainst}",
-  "@finalOfficalScoreBodyOvertime": {
-    "type": "text",
-    "placeholders": {
-      "resultString": {},
-      "homeFor": {},
-      "homeAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {}
-    }
-  },
-  "finalOfficalScoreBodyPenalty": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nPenalty Home: {penaltyFor} Away: {penaltyAgainst}",
-  "@finalOfficalScoreBodyPenalty": {
-    "type": "text",
-    "placeholders": {
-      "resultString": {},
-      "homeFor": {},
-      "homeAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "finalScoreBody": "Do you want to set {ptsFor} {ptsAgainst} {result} as the final score?",
-  "@finalScoreBody": {
-    "description": "Start game dialofg body text",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "result": {}
-    }
-  },
-  "fixScoreBreakout": "Fix score: {ptsFor} - {ptsAgainst}",
-  "@fixScoreBreakout": {
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "followPlayer": "Follow {player}",
-  "@followPlayer": {
-    "type": "text",
-    "placeholders": {
-      "player": {}
-    }
-  },
-  "gameAddressArriveAt": "Arrive by {arriveAt}\n{address}",
-  "@gameAddressArriveAt": {
-    "description": "Game address in game list with arrive by",
-    "type": "text",
-    "placeholders": {
-      "arriveAt": {},
-      "address": {}
-    }
-  },
-  "gameResultOfficalBreakout": "{resultString}\nHome: {ptsFor} Away: {ptsAgainst}",
-  "@gameResultOfficalBreakout": {
-    "type": "text",
-    "placeholders": {
-      "resultString": {},
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "gameTitleSharedEndShort": "{time} - {endTime} ({tzShortName})",
-  "@gameTitleSharedEndShort": {
-    "description": "Game title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {},
-      "tzShortName": {}
-    }
-  },
-  "gameTitleSharedEnd": "{time} - {endTime}",
-  "@gameTitleSharedEnd": {
-    "description": "Game title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {}
-    }
-  },
-  "gameTitleSharedShort": "{time} ({tzShortName})",
-  "@gameTitleSharedShort": {
-    "description": "Game title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "tzShortName": {}
-    }
-  },
-  "gameTitleSharedTime": "{time}",
-  "@gameTitleSharedTime": {
-    "description": "Game title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {}
-    }
-  },
-  "gameTitleNowSharedEndShort": "NOW! {time} - {endTime} ({tzShortName})",
-  "@gameTitleNowSharedEndShort": {
-    "description": "Game title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {},
-      "tzShortName": {}
-    }
-  },
-  "gameTitleNowSharedEnd": "NOW! {time} - {endTime}",
-  "@gameTitleNowSharedEnd": {
-    "description": "Game title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {}
-    }
-  },
-  "gameTitleNowSharedShort": "NOW! {time} ({tzShortName})",
-  "@gameTitleNowSharedShort": {
-    "description": "Game title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "tzShortName": {}
-    }
-  },
-  "gameTitleNowSharedTime": "NOW! {time}",
-  "@gameTitleNowSharedTime": {
-    "description": "Game title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {}
-    }
-  },
-  "gameTitleVsGame": "Game vs {opponent}",
-  "@gameTitleVsGame": {
-    "description": "Game details title for the screen",
-    "type": "text",
-    "placeholders": {
-      "opponent": {}
-    }
-  },
-  "Event": "Event",
-  "@Event": {
-    "description": "Event details title for the screen",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Practice": "Practice",
-  "@Practice": {
-    "description": "Practice details title for the screen",
-    "type": "text",
-    "placeholders": {}
-  },
-  "invitedBy": "By {by}",
-  "@invitedBy": {
-    "description": "Who did the invite to this team/player",
-    "type": "text",
-    "placeholders": {
-      "by": {}
-    }
-  },
-  "Invited to team": "Invited to team",
-  "@Invited to team": {
-    "description": "The user that is invited to the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "invitedToTeamWithName": "{name} (Invited)",
-  "@invitedToTeamWithName": {
-    "description": "Player name with the invited tag",
-    "type": "text",
-    "placeholders": {
-      "name": {}
-    }
-  },
-  "invitedPeople": "Invited: {num}",
-  "@invitedPeople": {
-    "type": "text",
-    "placeholders": {
-      "num": {}
-    }
-  },
-  "madeEventType": "{points}",
-  "@madeEventType": {
-    "description": "+num points",
-    "type": "text",
-    "placeholders": {
-      "points": {}
-    }
-  },
-  "missedEventType": "Miss {points}",
-  "@missedEventType": {
-    "description": "missed num points",
-    "type": "text",
-    "placeholders": {
-      "points": {}
-    }
-  },
-  "nameAndTeam": "{teamName} {playerName}",
-  "@nameAndTeam": {
-    "description": "Format for name and player for the team",
-    "type": "text",
-    "placeholders": {
-      "teamName": {},
-      "playerName": {}
-    }
-  },
-  "numberOfTeamsForPlayer": "{num,plural, =0{No teams}=1{One team}other{{num} teams}}",
-  "@numberOfTeamsForPlayer": {
-    "description": "Number of teams associated with this player",
-    "type": "text",
-    "placeholders": {
-      "num": {}
-    }
-  },
-  "numberOfUserForPlayer": "{num,plural, =1{One user}other{{num} users}}",
-  "@numberOfUserForPlayer": {
-    "description": "Number of user associated with this player",
-    "type": "text",
-    "placeholders": {
-      "num": {}
-    }
-  },
-  "onlyScoreBreakout": "{ptsFor} - {ptsAgainst}",
-  "@onlyScoreBreakout": {
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "opponentSeason": "{opponentName} - {seasonName}",
-  "@opponentSeason": {
-    "description": "Shows the opponent and season",
-    "type": "text",
-    "placeholders": {
-      "opponentName": {},
-      "seasonName": {}
-    }
-  },
-  "opponentWinRecordBreakout": "Win: {win} Loss: {loss} Tie: {tie}",
-  "@opponentWinRecordBreakout": {
-    "description": "Win record for an opponent for this season",
-    "type": "text",
-    "placeholders": {
-      "win": {},
-      "loss": {},
-      "tie": {}
-    }
-  },
-  "pendingInvites": "Pending Invites: {num}",
-  "@pendingInvites": {
-    "description": "Header showing the number of pending invites",
-    "type": "text",
-    "placeholders": {
-      "num": {}
-    }
-  },
-  "periodEnd": "End of {periodName}",
-  "@periodEnd": {
-    "description": "End of period",
-    "type": "text",
-    "placeholders": {
-      "periodName": {}
-    }
-  },
-  "Regulation": "Regulation",
-  "@Regulation": {
-    "description": "Header for the regulation period",
-    "type": "text",
-    "placeholders": {}
-  },
-  "periodNameRegulationNumber": "Regulation {periodNumber}",
-  "@periodNameRegulationNumber": {
-    "description": "Header for the regulation period with number",
-    "type": "text",
-    "placeholders": {
-      "periodNumber": {}
-    }
-  },
-  "Overtime": "Overtime",
-  "@Overtime": {
-    "description": "Header for the overtime period",
-    "type": "text",
-    "placeholders": {}
-  },
-  "periodNameOvertimeNumber": "Overtime {periodNumber}",
-  "@periodNameOvertimeNumber": {
-    "description": "Header for the overtime period with number",
-    "type": "text",
-    "placeholders": {
-      "periodNumber": {}
-    }
-  },
-  "periodStartRegulationBreakout": "Start period {periodNumber} Score: {ptsFor} - {ptsAgainst}",
-  "@periodStartRegulationBreakout": {
-    "type": "text",
-    "placeholders": {
-      "periodNumber": {},
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStartPenaltyBreakout": "Start penalty Score: {ptsFor} - {ptsAgainst}",
-  "@periodStartPenaltyBreakout": {
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStartOvertimeBreakout": "Start overtime {periodNumber} Score: {ptsFor} - {ptsAgainst}",
-  "@periodStartOvertimeBreakout": {
-    "type": "text",
-    "placeholders": {
-      "periodNumber": {},
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStartBreakBreakout": "Start break Score: {ptsFor} - {ptsAgainst}",
-  "@periodStartBreakBreakout": {
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStartOvertimeBreakBreakout": "Start overtime break Score: {ptsFor} - {ptsAgainst}",
-  "@periodStartOvertimeBreakBreakout": {
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStart": "Start of {periodName}",
-  "@periodStart": {
-    "description": "Start of period",
-    "type": "text",
-    "placeholders": {
-      "periodName": {}
-    }
-  },
-  "Searching...": "Searching...",
-  "@Searching...": {
-    "description": "The searching text in the search box when the search is inprogress.",
-    "type": "text",
-    "placeholders": {}
-  },
-  "periodStopRegulationBreakout": "Stop period {periodNumber} Score: {ptsFor} - {ptsAgainst}",
-  "@periodStopRegulationBreakout": {
-    "description": "the stop for the regulation perod in the logs",
-    "type": "text",
-    "placeholders": {
-      "periodNumber": {},
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStopBreakBreakout": "Stop break Score: {ptsFor} - {ptsAgainst}",
-  "@periodStopBreakBreakout": {
-    "description": "the stop for the regulation break in the logs",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStopOvertimeBreakBreakout": "Stop overttime break Score: {ptsFor} - {ptsAgainst}",
-  "@periodStopOvertimeBreakBreakout": {
-    "description": "the stop for the overtime break in the logs",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStopOvertimeBreakout": "Stop overttime {periodNumber} Score: {ptsFor} - {ptsAgainst}",
-  "@periodStopOvertimeBreakout": {
-    "description": "the stop for the overtime  in the logs",
-    "type": "text",
-    "placeholders": {
-      "periodNumber": {},
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStopPenaltyBreakout": "Stop penalty Score: {ptsFor} - {ptsAgainst}",
-  "@periodStopPenaltyBreakout": {
-    "description": "the stop for the penalty period in the logs",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "playerInviteDesc": "This will follow {name} and allow you to see which games they are in and all the teams they are in.  Please setup your relationship with the player and save.",
-  "@playerInviteDesc": {
-    "description": "Long description of the player invite accept path.",
-    "type": "text",
-    "placeholders": {
-      "name": {}
-    }
-  },
-  "resultInProgressOvertimePenalty": "Playing {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
-  "@resultInProgressOvertimePenalty": {
-    "description": "InProgress result details with penalty shootout",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "resultInProgressOvertime": "Playing {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
-  "@resultInProgressOvertime": {
-    "description": "InProgress result details in overtime",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {}
-    }
-  },
-  "resultInProgressPenalty": "Playing {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
-  "@resultInProgressPenalty": {
-    "description": "InProgress result details with penalty shootout",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "resultInProgressRegulation": "Playing {ptsFor} - {ptsAgainst}",
-  "@resultInProgressRegulation": {
-    "description": "InProgress result details",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "resultLossOvertimePenalty": "Loss {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
-  "@resultLossOvertimePenalty": {
-    "description": "Loss result details with penalty shootout",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "resultLossOvertime": "Loss {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
-  "@resultLossOvertime": {
-    "description": "Loss result details in overtime",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {}
-    }
-  },
-  "resultLossPenalty": "Loss {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
-  "@resultLossPenalty": {
-    "description": "Loss result details with penalty shootout",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "resultLossRegulation": "Loss {ptsFor} - {ptsAgainst}",
-  "@resultLossRegulation": {
-    "description": "Loss result details",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "resultTieOvertimePenalty": "Tie {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
-  "@resultTieOvertimePenalty": {
-    "description": "Tie result details with penalty shootout",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "resultTieOvertime": "Tie {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
-  "@resultTieOvertime": {
-    "description": "Tie result details in overtime",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {}
-    }
-  },
-  "resultTiePenalty": "Tie {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
-  "@resultTiePenalty": {
-    "description": "Tie result details with penalty shootout",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "resultTieRegulation": "Tie {ptsFor} - {ptsAgainst}",
-  "@resultTieRegulation": {
-    "description": "Tie result details",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "resultWinOvertimePenalty": "Win {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
-  "@resultWinOvertimePenalty": {
-    "description": "Win result details with penalty shootout",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "resultWinOvertime": "Win {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
-  "@resultWinOvertime": {
-    "description": "Win result details in overtime",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "overtimeFor": {},
-      "overtimeAgainst": {}
-    }
-  },
-  "resultWinPenalty": "Win {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
-  "@resultWinPenalty": {
-    "description": "Win result details with penalty shootout",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {},
-      "penaltyFor": {},
-      "penaltyAgainst": {}
-    }
-  },
-  "resultWinRegulation": "Win {ptsFor} - {ptsAgainst}",
-  "@resultWinRegulation": {
-    "description": "Win result details",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "Coach": "Coach",
-  "@Coach": {
-    "description": "Coach role in the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Non Player": "Non Player",
-  "@Non Player": {
-    "description": "Non Player role in the team",
-    "type": "text",
-    "placeholders": {}
-  },
-  "seasonSummaryExpanded": "Pts {points} Blks {blocks} Stls {steals}",
-  "@seasonSummaryExpanded": {
-    "description": "Subtitle to markt he season as current",
-    "type": "text",
-    "placeholders": {
-      "points": {},
-      "blocks": {},
-      "steals": {}
-    }
-  },
-  "Basketball": "Basketball",
-  "@Basketball": {
-    "description": "Name for the item in a drop down for basketball",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Softball": "Softball",
-  "@Softball": {
-    "description": "Name for the item in a drop down for softball",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Soccer": "Soccer",
-  "@Soccer": {
-    "description": "Name for the item in a drop down for soccer",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Other sport": "Other sport",
-  "@Other sport": {
-    "description": "Name for the item in a drop down for other as the sport type",
-    "type": "text",
-    "placeholders": {}
-  },
-  "None": "None",
-  "@None": {
-    "description": "Name for the item in a drop down for none as the sport type",
-    "type": "text",
-    "placeholders": {}
-  },
-  "teamAndSeason": "Team {teamName}\nSeason {seasonName}",
-  "@teamAndSeason": {
-    "type": "text",
-    "placeholders": {
-      "teamName": {},
-      "seasonName": {}
-    }
-  },
-  "teamNumbers": "{num} club teams",
-  "@teamNumbers": {
-    "description": "How many teams in the club",
-    "type": "text",
-    "placeholders": {
-      "num": {}
-    }
-  },
-  "titleWith": "Team Fuse ({str})",
-  "@titleWith": {
-    "description": "Title for the Team Fuse application with some context",
-    "type": "text",
-    "placeholders": {
-      "str": {}
-    }
-  },
-  "trainingTitleEndShortName": "Practice {time} - {endTime} ({tzShortName})",
-  "@trainingTitleEndShortName": {
-    "description": "Training title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {},
-      "tzShortName": {}
-    }
-  },
-  "trainingTitleEnd": "Practice {time} - {endTime}",
-  "@trainingTitleEnd": {
-    "description": "Training title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {}
-    }
-  },
-  "trainingTitleShortName": "Practice {time} ({tzShortName})",
-  "@trainingTitleShortName": {
-    "description": "Training title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "tzShortName": {}
-    }
-  },
-  "trainingTitleTime": "Practice {time}",
-  "@trainingTitleTime": {
-    "description": "Training title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {}
-    }
-  },
-  "trainingTitleNowEndShortName": "NOW! Practice {time} - {endTime} ({tzShortName})",
-  "@trainingTitleNowEndShortName": {
-    "description": "Training title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {},
-      "tzShortName": {}
-    }
-  },
-  "trainingTitleNowEnd": "NOW! Practice {time} - {endTime}",
-  "@trainingTitleNowEnd": {
-    "description": "Training title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "endTime": {}
-    }
-  },
-  "trainingTitleNowShortName": "NOW! Practice {time} ({tzShortName})",
-  "@trainingTitleNowShortName": {
-    "description": "Training title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {},
-      "tzShortName": {}
-    }
-  },
-  "trainingTitleNowTime": "NOW! Practice {time}",
-  "@trainingTitleNowTime": {
-    "description": "Training title in game list",
-    "type": "text",
-    "placeholders": {
-      "time": {}
-    }
-  },
-  "verifyExplanation": "Email address {email} needs to be verified, please check your email or resend the verification details.",
-  "@verifyExplanation": {
-    "description": "Button to resend the email to verify their email address",
-    "type": "text",
-    "placeholders": {
-      "email": {}
-    }
-  },
-  "wearUniform": "Wear {wear}",
-  "@wearUniform": {
-    "description": "Wear uniform in a game desc",
-    "type": "text",
-    "placeholders": {
-      "wear": {}
-    }
-  },
-  "winRecordBreakout": "Win: {win} Loss: {loss} Tie: {tie}",
-  "@winRecordBreakout": {
-    "description": "Win record for a team",
-    "type": "text",
-    "placeholders": {
-      "win": {},
-      "loss": {},
-      "tie": {}
-    }
-  },
-  "STATS": "STATS",
-  "@STATS": {
-    "description": "Button to add states to the game",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Personal Foul": "Personal Foul",
-  "@Personal Foul": {
-    "description": "Personal foul type",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Technical Foul": "Technical Foul",
-  "@Technical Foul": {
-    "description": "Technical foul type",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Flagrant Foul": "Flagrant Foul",
-  "@Flagrant Foul": {
-    "description": "Flagrant foul type",
-    "type": "text",
-    "placeholders": {}
-  },
-  "FOUL": "FOUL",
-  "@FOUL": {
-    "description": "Text on the foul button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "BLK": "BLK",
-  "@BLK": {
-    "description": "Block button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "ASST": "ASST",
-  "@ASST": {
-    "description": "Assist button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "STL": "STL",
-  "@STL": {
-    "description": "Steal button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "DEF RB": "DEF RB",
-  "@DEF RB": {
-    "description": "Defensive Rebound button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "OFF RB": "OFF RB",
-  "@OFF RB": {
-    "description": "Offensive Rebound button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "SUB": "SUB",
-  "@SUB": {
-    "description": "Text on a substitution button",
-    "type": "text",
-    "placeholders": {}
+  '@@last_modified': '2021-02-26T00:42:36.451003',
+  'About': 'About',
+  '@About': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Invited as an Administrator': 'Invited as an Administrator',
+  '@Invited as an Administrator': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ADD ADMIN': 'ADD ADMIN',
+  '@ADD ADMIN': {
+    'description': 'Message to show as the title for the admin adding screen',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add Admin': 'Add Admin',
+  '@Add Admin': {
+    'description': 'Message to show as the title for the admin adding screen',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ADD': 'ADD',
+  '@ADD': {
+    'description': 'Add a new item button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ADD CLUB': 'ADD CLUB',
+  '@ADD CLUB': {
+    'description': 'Add a new club button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add News': 'Add News',
+  '@Add News': {
+    'description': 'Add a new news drop down menu item',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add club member': 'Add club member',
+  '@Add club member': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add Coach': 'Add Coach',
+  '@Add Coach': {
+    'description': 'Add coach menu item in the drop down',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add Divison': 'Add Divison',
+  '@Add Divison': {
+    'description': 'Add a division inside a league/tournament',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ADD DIVISON': 'ADD DIVISON',
+  '@ADD DIVISON': {
+    'description': 'Add a division inside a league/tournament',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ADD EVENT': 'ADD EVENT',
+  '@ADD EVENT': {
+    'description': 'Button to add an event to a team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'GAME': 'GAME',
+  '@GAME': {
+    'description': 'Button to add a game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add Game': 'Add Game',
+  '@Add Game': {
+    'description': 'Message to on the tooltip to add a game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ADD INVITE': 'ADD INVITE',
+  '@ADD INVITE': {
+    'description': 'Button to add an invite',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add Invite': 'Add Invite',
+  '@Add Invite': {
+    'description': 'Drop down to add an invite',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'SHARE PLAYER': 'SHARE PLAYER',
+  '@SHARE PLAYER': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add League': 'Add League',
+  '@Add League': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add new': 'Add new',
+  '@Add new': {
+    'description': 'Add new opponent for game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add Player': 'Add Player',
+  '@Add Player': {
+    'description': 'Text on a add player drop down',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'PLAYER': 'PLAYER',
+  '@PLAYER': {
+    'description': 'Text on a add player button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ADD RESULT': 'ADD RESULT',
+  '@ADD RESULT': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add Season': 'Add Season',
+  '@Add Season': {
+    'description': 'Add a season to the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ADD SEASON': 'ADD SEASON',
+  '@ADD SEASON': {
+    'description': 'Add a season to the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ADD TEAM': 'ADD TEAM',
+  '@ADD TEAM': {
+    'description': 'Add a new team button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add Team': 'Add Team',
+  '@Add Team': {
+    'description': 'Add a new team drop down item',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'SHARE TEAM': 'SHARE TEAM',
+  '@SHARE TEAM': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Share team': 'Share team',
+  '@Share team': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Add Tournamwent': 'Add Tournamwent',
+  '@Add Tournamwent': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ADD TRAINING': 'ADD TRAINING',
+  '@ADD TRAINING': {
+    'description': 'Button to add a training to a team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Adminstrator': 'Adminstrator',
+  '@Adminstrator': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Against': 'Against',
+  '@Against': {
+    'description': 'Title to the spinner for showing points against in the results screen',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'All Events': 'All Events',
+  '@All Events': {
+    'description': 'Drop down menu item for all events',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'All games': 'All games',
+  '@All games': {
+    'description': 'Checkbox to select all the games',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'All Periods': 'All Periods',
+  '@All Periods': {
+    'description': 'Drop down menu item for all periods',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'All Players': 'All Players',
+  '@All Players': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'All Seasons': 'All Seasons',
+  '@All Seasons': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'All teams': 'All teams',
+  '@All teams': {
+    'description': 'Drop down for  the all teams result',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ALL TEAMS': 'ALL TEAMS',
+  '@ALL TEAMS': {
+    'description': 'Drop down for  the all teams result',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Archived': 'Archived',
+  '@Archived': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Archived Teams': 'Archived Teams',
+  '@Archived Teams': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Archive': 'Archive',
+  '@Archive': {
+    'description': 'Archive message button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Archive Team': 'Archive Team',
+  '@Archive Team': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Arrive At': 'Arrive At',
+  '@Arrive At': {
+    'description': 'Title for when to arrive',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Minutes to arrive before game': 'Minutes to arrive before game',
+  '@Minutes to arrive before game': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Minutes before game': 'Minutes before game',
+  '@Minutes before game': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Assists': 'Assists',
+  '@Assists': {
+    'description': 'Title for the section on a player assist',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Not making it': 'Not making it',
+  '@Not making it': {
+    'description': 'Negative attendence for the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Attendence': 'Attendence',
+  '@Attendence': {
+    'description': 'Are you attending the game title',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Will be there': 'Will be there',
+  '@Will be there': {
+    'description': 'Positive attendence for the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Maybe': 'Maybe',
+  '@Maybe': {
+    'description': 'Maybe attendence for the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'away': 'away',
+  '@away': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Block': 'Block',
+  '@Block': {
+    'description': 'Block of a shot',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Blocks': 'Blocks',
+  '@Blocks': {
+    'description': 'Drop down menu item for fouls',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Blk': 'Blk',
+  '@Blk': {
+    'description': 'Blocks abbreviation',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'CHANGE ROLE': 'CHANGE ROLE',
+  '@CHANGE ROLE': {
+    'description': 'Button to change the role of the member of the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Change Score': 'Change Score',
+  '@Change Score': {
+    'description': 'Title for the dialog box to change the score after the game has finished',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Are you sure you want to add a player with no email?': 'Are you sure you want to add a player with no email?',
+  '@Are you sure you want to add a player with no email?': {
+    'description': 'Text in a dialog for when adding a player with no email',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Start Game - Breaks': 'Start Game - Breaks',
+  '@Start Game - Breaks': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Club': 'Club',
+  '@Club': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Club deleted': 'Club deleted',
+  '@Club deleted': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Details': 'Details',
+  '@Details': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administators of the club will also be adminstragtors for the team.': 'To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administators of the club will also be adminstragtors for the team.',
+  '@To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administators of the club will also be adminstragtors for the team.': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Information about the coach': 'Information about the coach',
+  '@Information about the coach': {
+    'description': 'Hint text for a form field about the coach',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Coach deleted': 'Coach deleted',
+  '@Coach deleted': {
+    'description': 'Coach associated with a club is deleted',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Coaches': 'Coaches',
+  '@Coaches': {
+    'description': 'Header to display the coaches for the team/club',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Name of the coach': 'Name of the coach',
+  '@Name of the coach': {
+    'description': 'Hint text for a form field for the coachs name',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Copy details from': 'Copy details from',
+  '@Copy details from': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Create new': 'Create new',
+  '@Create new': {
+    'description': 'Create new account button text',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'CREATE': 'CREATE',
+  '@CREATE': {
+    'description': 'Create account button text',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Created an account, please look in your email for the verification code..': 'Created an account, please look in your email for the verification code..',
+  '@Created an account, please look in your email for the verification code..': {
+    'description': 'Confirmation message after requesting the email verification code',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Create': 'Create',
+  '@Create': {
+    'description': 'Title for the step to create a game or team in a stepper',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Current': 'Current',
+  '@Current': {
+    'description': 'Subtitle to markt he season as current',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Def Rebound': 'Def Rebound',
+  '@Def Rebound': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'D/RB': 'D/RB',
+  '@D/RB': {
+    'description': 'Defensive rebound abbreviation',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Delete Admin': 'Delete Admin',
+  '@Delete Admin': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Delete admin invite': 'Delete admin invite',
+  '@Delete admin invite': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'DELETE': 'DELETE',
+  '@DELETE': {
+    'description': 'Button text to delete an iteam',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Delete game': 'Delete game',
+  '@Delete game': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Delete training': 'Delete training',
+  '@Delete training': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Delete special event': 'Delete special event',
+  '@Delete special event': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Delete invite': 'Delete invite',
+  '@Delete invite': {
+    'description': 'Title for the dialog to delete an invite',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'DELETE INVITE': 'DELETE INVITE',
+  '@DELETE INVITE': {
+    'description': 'Title for the dialog to delete an invite',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Delete member': 'Delete member',
+  '@Delete member': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Delete': 'Delete',
+  '@Delete': {
+    'description': 'Delete message button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Delete opponent': 'Delete opponent',
+  '@Delete opponent': {
+    'description': 'Title to the alert dialog to delete an opponent from the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Delete Player': 'Delete Player',
+  '@Delete Player': {
+    'description': 'Dialog title for deleting a playern',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'REMOVE FROM TEAM': 'REMOVE FROM TEAM',
+  '@REMOVE FROM TEAM': {
+    'description': 'Button to change the remove a member from the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'DIRECTIONS': 'DIRECTIONS',
+  '@DIRECTIONS': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Name': 'Name',
+  '@Name': {
+    'description': 'Name for the edit box to edit the user name',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Your name': 'Your name',
+  '@Your name': {
+    'description': 'Name for the edit box to edit the user name',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Divison': 'Divison',
+  '@Divison': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'DONE': 'DONE',
+  '@DONE': {
+    'description': 'Done completely button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Duration': 'Duration',
+  '@Duration': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'EDIT': 'EDIT',
+  '@EDIT': {
+    'description': 'The edit text for the dialog',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Edit Game': 'Edit Game',
+  '@Edit Game': {
+    'description': 'Edit Game help text for button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'EDIT IMAGE': 'EDIT IMAGE',
+  '@EDIT IMAGE': {
+    'description': 'Button to edit the image',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Edit Team': 'Edit Team',
+  '@Edit Team': {
+    'description': 'Edit Team help text for button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Email': 'Email',
+  '@Email': {
+    'description': 'Email input field',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Email Preferences': 'Email Preferences',
+  '@Email Preferences': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Upcoming games/events': 'Upcoming games/events',
+  '@Upcoming games/events': {
+    'description': 'Switch text for emailing on upcoming games',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'On changes to games/events': 'On changes to games/events',
+  '@On changes to games/events': {
+    'description': 'Switch text for emailing on updates',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Email is empty.': 'Email is empty.',
+  '@Email is empty.': {
+    'description': 'Message to say they have an empty email field',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Please choose a password.': 'Please choose a password.',
+  '@Please choose a password.': {
+    'description': 'Message to say they have an empty password field',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Must not be empty': 'Must not be empty',
+  '@Must not be empty': {
+    'description': 'Hint text to say the name must not be empty',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'END': 'END',
+  '@END': {
+    'description': 'Text on a end button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'End timeout': 'End timeout',
+  '@End timeout': {
+    'description': 'Text to end the timeout',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Error creating user, maybe the email address is already used': 'Error creating user, maybe the email address is already used',
+  '@Error creating user, maybe the email address is already used': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Special Events': 'Special Events',
+  '@Special Events': {
+    'description': 'Drop down for only the special events',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Everyone': 'Everyone',
+  '@Everyone': {
+    'description': 'Message to mean everyone in the team (coaches + everyone)',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Final score': 'Final score',
+  '@Final score': {
+    'description': 'Final score dialofg title',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'FINISH': 'FINISH',
+  '@FINISH': {
+    'description': 'Text for the button to finish the game in the update score screen',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'FORGOT PASSWORD': 'FORGOT PASSWORD',
+  '@FORGOT PASSWORD': {
+    'description': 'Forgot password button text',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'The email to resend the password to': 'The email to resend the password to',
+  '@The email to resend the password to': {
+    'description': 'Forgot password happy button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Sent email to your email address to reset your password': 'Sent email to your email address to reset your password',
+  '@Sent email to your email address to reset your password': {
+    'description': 'Forgot password happy button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Please fix the items outlined in red': 'Please fix the items outlined in red',
+  '@Please fix the items outlined in red': {
+    'description': 'Error when submitting a form',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'For': 'For',
+  '@For': {
+    'description': 'Title to the spinner for showing points for in the results screen',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Foul': 'Foul',
+  '@Foul': {
+    'description': 'Foul on player',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Foul Flagrent': 'Foul Flagrent',
+  '@Foul Flagrent': {
+    'description': 'Flagrant foul on player',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Fouls': 'Fouls',
+  '@Fouls': {
+    'description': 'Drop down menu item for fouls',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Foul Technical': 'Foul Technical',
+  '@Foul Technical': {
+    'description': 'Technical foul on player',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Game': 'Game',
+  '@Game': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Availability': 'Availability',
+  '@Availability': {
+    'description': 'Availability for the game, botton tab bar title',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Game end': 'Game end',
+  '@Game end': {
+    'description': 'Title for the time drop down to choose the game end time',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Game notes': 'Game notes',
+  '@Game notes': {
+    'description': 'The notes associated with the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Notes for the game': 'Notes for the game',
+  '@Notes for the game': {
+    'description': 'The hint text for notes associated with the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Away team won': 'Away team won',
+  '@Away team won': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Home team won': 'Home team won',
+  '@Home team won': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'In progress': 'In progress',
+  '@In progress': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Games': 'Games',
+  '@Games': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Game Time': 'Game Time',
+  '@Game Time': {
+    'description': 'Title for the game time',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Coed': 'Coed',
+  '@Coed': {
+    'description': 'Coed gender for the sport in the drop down',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Female': 'Female',
+  '@Female': {
+    'description': 'Female gender for the sport in the drop down',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Male': 'Male',
+  '@Male': {
+    'description': 'Male gender for the sport in the drop down',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'N/A': 'N/A',
+  '@N/A': {
+    'description': 'Not applicable gender for the sport in the drop down',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select gender': 'Select gender',
+  '@Select gender': {
+    'description': 'Hint text to select a gender',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'home': 'home',
+  '@home': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Home': 'Home',
+  '@Home': {
+    'description': 'Title for the home game checkbox',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Photo': 'Photo',
+  '@Photo': {
+    'description': 'Upload a photo',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Import\nplayers': 'Import\nplayers',
+  '@Import\nplayers': {
+    'description': 'Import players from previous season',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Send to yourself': 'Send to yourself',
+  '@Send to yourself': {
+    'description': 'If the message should also be sent to ourselves',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Email address must be of form xxx@xxx.': 'Email address must be of form xxx@xxx.',
+  '@Email address must be of form xxx@xxx.': {
+    'description': 'Message to say they have an invalid email field',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Name can only contain alphanumerical characters.': 'Name can only contain alphanumerical characters.',
+  '@Name can only contain alphanumerical characters.': {
+    'description': 'Message to say they have an invalid user name field',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Invalid URL': 'Invalid URL',
+  '@Invalid URL': {
+    'description': 'Error in a form when the url is invalid',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Invites': 'Invites',
+  '@Invites': {
+    'description': 'Title for the screen with the list of current invites',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Jersey Number': 'Jersey Number',
+  '@Jersey Number': {
+    'description': 'Jersey number for the playerr',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'JOIN LEAGUE': 'JOIN LEAGUE',
+  '@JOIN LEAGUE': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'League': 'League',
+  '@League': {
+    'description': 'The league the team is playing in',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'League the team is playing in': 'League the team is playing in',
+  '@League the team is playing in': {
+    'description': 'League the team is playing in',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'League/Tournaments': 'League/Tournaments',
+  '@League/Tournaments': {
+    'description': 'Link to the league/tournament section',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Loading...': 'Loading...',
+  '@Loading...': {
+    'description': 'Message for loading the app',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Load more': 'Load more',
+  '@Load more': {
+    'description': 'Message to load more messages',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Delete News Item': 'Delete News Item',
+  '@Delete News Item': {
+    'description': 'Dialog title to delete the news item',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Are you sure you want to delete the news item?': 'Are you sure you want to delete the news item?',
+  '@Are you sure you want to delete the news item?': {
+    'description': 'Dialog text to see if the news item should be deleted',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Location': 'Location',
+  '@Location': {
+    'description': 'Location of the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'LOGIN': 'LOGIN',
+  '@LOGIN': {
+    'description': 'Login button text',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'LOGOUT': 'LOGOUT',
+  '@LOGOUT': {
+    'description': 'Logout button text',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Description': 'Description',
+  '@Description': {
+    'description': 'Long description of a tournament/league to display on the league page',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Detailed Description': 'Detailed Description',
+  '@Detailed Description': {
+    'description': 'Long description of a tournament/league to display on the league/tournament page',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Loss': 'Loss',
+  '@Loss': {
+    'description': 'Drop down for  the loss result',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Members': 'Members',
+  '@Members': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Message': 'Message',
+  '@Message': {
+    'description': 'In a text edit box to send a message to the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Monthly': 'Monthly',
+  '@Monthly': {
+    'description': 'Monthly repeat',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Username is empty.': 'Username is empty.',
+  '@Username is empty.': {
+    'description': 'Message to say they have an empty email field',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Need to select a place': 'Need to select a place',
+  '@Need to select a place': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Need to be an administrator': 'Need to be an administrator',
+  '@Need to be an administrator': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Please choose a gender.': 'Please choose a gender.',
+  '@Please choose a gender.': {
+    'description': 'Message to suggest they need to select a gender',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Please choose an opponent.': 'Please choose an opponent.',
+  '@Please choose an opponent.': {
+    'description': 'Message to suggest they need to select an oppoent',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Need to select a role': 'Need to select a role',
+  '@Need to select a role': {
+    'description': 'Error to say they must select the role in the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Please choose a sport.': 'Please choose a sport.',
+  '@Please choose a sport.': {
+    'description': 'Message to suggest they need to select a sport',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'NEW': 'NEW',
+  '@NEW': {
+    'description': 'New button text in the system',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'New Divison Name': 'New Divison Name',
+  '@New Divison Name': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'NEW MESSAGE': 'NEW MESSAGE',
+  '@NEW MESSAGE': {
+    'description': 'New message in the teamfuse system',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'New player name': 'New player name',
+  '@New player name': {
+    'description': 'Text to show before the player name.',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'New player name of player in team': 'New player name of player in team',
+  '@New player name of player in team': {
+    'description': 'Hint for the name of the player in the team.',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'New Season Name': 'New Season Name',
+  '@New Season Name': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'News': 'News',
+  '@News': {
+    'description': 'Header the for the news section',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No News': 'No News',
+  '@No News': {
+    'description': 'No news in the stuff',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No club': 'No club',
+  '@No club': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No coaches': 'No coaches',
+  '@No coaches': {
+    'description': 'Message to show that there are no coaches for this club',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No divisions': 'No divisions',
+  '@No divisions': {
+    'description': 'Divisons inside the season for a league/tournament',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'All events': 'All events',
+  '@All events': {
+    'description': 'Drop down for all the events',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No games': 'No games',
+  '@No games': {
+    'description': 'No games scheduled',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No games to display, check filters': 'No games to display, check filters',
+  '@No games to display, check filters': {
+    'description': 'No games to display based on filters',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No games this season': 'No games this season',
+  '@No games this season': {
+    'description': 'No games played this season, but some in a previous season',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No invites': 'No invites',
+  '@No invites': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No leagues': 'No leagues',
+  '@No leagues': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No Media': 'No Media',
+  '@No Media': {
+    'description': 'No media to display',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No Messages': 'No Messages',
+  '@No Messages': {
+    'description': 'In a text edit box to send a message to the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No repeat': 'No repeat',
+  '@No repeat': {
+    'description': 'No repeat period',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No players': 'No players',
+  '@No players': {
+    'description': 'Description for no players',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'You must have some players in a season to be able to create a game.': 'You must have some players in a season to be able to create a game.',
+  '@You must have some players in a season to be able to create a game.': {
+    'description': 'Text in a dialog to warn you need players',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'All Games': 'All Games',
+  '@All Games': {
+    'description': 'Drop down for all the games',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No seasons': 'No seasons',
+  '@No seasons': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Not archived': 'Not archived',
+  '@Not archived': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No teams': 'No teams',
+  '@No teams': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Not finished': 'Not finished',
+  '@Not finished': {
+    'description': 'Drop down for the not finished result',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No tournaments': 'No tournaments',
+  '@No tournaments': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Off Rebound': 'Off Rebound',
+  '@Off Rebound': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'O/RB': 'O/RB',
+  '@O/RB': {
+    'description': 'Offensive rebound abbreviation',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Offical': 'Offical',
+  '@Offical': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Offical results don't match': 'Offical results don't match',
+  '@Offical results don't match': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'OPEN': 'OPEN',
+  '@OPEN': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Opponent': 'Opponent',
+  '@Opponent': {
+    'description': 'Title for the opponent marker',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Contact': 'Contact',
+  '@Contact': {
+    'description': 'The text for the contact of an opponent',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Contact for the opponent': 'Contact for the opponent',
+  '@Contact for the opponent': {
+    'description': 'The hint text for the contact of an opponent',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Name of the opponent.': 'Name of the opponent.',
+  '@Name of the opponent.': {
+    'description': 'The hint text for the name of an opponent',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select opponent': 'Select opponent',
+  '@Select opponent': {
+    'description': 'The hint text for selecting opponent for the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Opponents without results': 'Opponents without results',
+  '@Opponents without results': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Opponents with results': 'Opponents with results',
+  '@Opponents with results': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Optional': 'Optional',
+  '@Optional': {
+    'description': 'Optional subtitle for a stepper',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Password': 'Password',
+  '@Password': {
+    'description': 'Input box for a password',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Email and/or password incorrect': 'Email and/or password incorrect',
+  '@Email and/or password incorrect': {
+    'description': 'Passwords or email is not correct, login failed',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Passwords must match': 'Passwords must match',
+  '@Passwords must match': {
+    'description': 'Passwords must match signup form error',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Penalty': 'Penalty',
+  '@Penalty': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  '%age': '%age',
+  '@%age': {
+    'description': 'Percentage made in game summary title',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Period': 'Period',
+  '@Period': {
+    'description': 'Dialog title for sertting the current period',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'PERIOD': 'PERIOD',
+  '@PERIOD': {
+    'description': 'Button to set the current period',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Break': 'Break',
+  '@Break': {
+    'description': 'The game is on a break',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Final': 'Final',
+  '@Final': {
+    'description': 'The game has finished',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Not started': 'Not started',
+  '@Not started': {
+    'description': 'The game is not started',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Overtime 1': 'Overtime 1',
+  '@Overtime 1': {
+    'description': 'The game is in overtime',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Overtime Break': 'Overtime Break',
+  '@Overtime Break': {
+    'description': 'The game is on an overtime break',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Period 1': 'Period 1',
+  '@Period 1': {
+    'description': 'The game is in period 1',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Period 2': 'Period 2',
+  '@Period 2': {
+    'description': 'The game is in period 2',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Period 3': 'Period 3',
+  '@Period 3': {
+    'description': 'The game is in period 3',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Period 4': 'Period 4',
+  '@Period 4': {
+    'description': 'The game is in period 4',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Period 5': 'Period 5',
+  '@Period 5': {
+    'description': 'The game is in period 4',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Period 6': 'Period 6',
+  '@Period 6': {
+    'description': 'The game is in period 4',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Period x': 'Period x',
+  '@Period x': {
+    'description': 'The game is in an unknown',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Phone Number': 'Phone Number',
+  '@Phone Number': {
+    'description': 'Phone number for the edit box to edit the phone number',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Contact phone number': 'Contact phone number',
+  '@Contact phone number': {
+    'description': 'Phone number for the edit box to edit the phone number',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Phone number (optional)': 'Phone number (optional)',
+  '@Phone number (optional)': {
+    'description': 'Phone number for the edit box to edit the phone number marked as optional',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Place notes, ie court #': 'Place notes, ie court #',
+  '@Place notes, ie court #': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Details of the place': 'Details of the place',
+  '@Details of the place': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Player': 'Player',
+  '@Player': {
+    'description': 'Title in team stepper to select a player',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Player email address': 'Player email address',
+  '@Player email address': {
+    'description': 'Player email input field hint',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Player Name': 'Player Name',
+  '@Player Name': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Players': 'Players',
+  '@Players': {
+    'description': 'Title in the bottom navigation tab for players',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select player': 'Select player',
+  '@Select player': {
+    'description': 'Label for the player drop down',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Points': 'Points',
+  '@Points': {
+    'description': 'Drop down menu item for points',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Pts': 'Pts',
+  '@Pts': {
+    'description': 'Points summary in game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Previous Seasons': 'Previous Seasons',
+  '@Previous Seasons': {
+    'description': 'Previous seasons for this game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Don't track attendence': 'Don't track attendence',
+  '@Don't track attendence': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Track attendence': 'Track attendence',
+  '@Track attendence': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Don't Panic': 'Don't Panic',
+  '@Don't Panic': {
+    'description': 'Douglas Adams quote',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'You must expect great things of yourself before you can do them.': 'You must expect great things of yourself before you can do them.',
+  '@You must expect great things of yourself before you can do them.': {
+    'description': 'Michael Jordan quote',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'What stands in the way, becomes the way.': 'What stands in the way, becomes the way.',
+  '@What stands in the way, becomes the way.': {
+    'description': 'Marcus Aurelius quote',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'I've missed more than 9000 shots in my career. I've lost almost 300 games. 26 times, I've been trusted to take the game winning shot and missed. I've failed over and over and over again in my life. And that is why I succeed.': 'I've missed more than 9000 shots in my career. I've lost almost 300 games. 26 times, I've been trusted to take the game winning shot and missed. I've failed over and over and over again in my life. And that is why I succeed.',
+  '@I've missed more than 9000 shots in my career. I've lost almost 300 games. 26 times, I've been trusted to take the game winning shot and missed. I've failed over and over and over again in my life. And that is why I succeed.': {
+    'description': 'Michael Jordan quote',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'I know I am getting better at golf because I am hitting fewer spectators.': 'I know I am getting better at golf because I am hitting fewer spectators.',
+  '@I know I am getting better at golf because I am hitting fewer spectators.': {
+    'description': 'Gerald R Ford quote',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'The only time you run out of chances is when you stop taking them.': 'The only time you run out of chances is when you stop taking them.',
+  '@The only time you run out of chances is when you stop taking them.': {
+    'description': 'David Beckham quote',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Lies, damn lies and statistics': 'Lies, damn lies and statistics',
+  '@Lies, damn lies and statistics': {
+    'description': 'Mark Twain quote',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Rebounds': 'Rebounds',
+  '@Rebounds': {
+    'description': 'Drop down menu item for rebounds',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'RBs': 'RBs',
+  '@RBs': {
+    'description': 'Rebounds in game summary',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Friend': 'Friend',
+  '@Friend': {
+    'description': 'Relationship desc for friend',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Guardian': 'Guardian',
+  '@Guardian': {
+    'description': 'Relationship desc for guardian',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Me': 'Me',
+  '@Me': {
+    'description': 'Relationship desc for me',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Parent': 'Parent',
+  '@Parent': {
+    'description': 'Relationship desc for parent',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select relationship': 'Select relationship',
+  '@Select relationship': {
+    'description': 'Label to select the relatiobship from a drop down',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Repeat': 'Repeat',
+  '@Repeat': {
+    'description': 'Repeat title for the traning create steps',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'RESEND EMAIL': 'RESEND EMAIL',
+  '@RESEND EMAIL': {
+    'description': 'Button to resend the email to verify their email address',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Reset Timer': 'Reset Timer',
+  '@Reset Timer': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Do you want to reset the timer to zero?': 'Do you want to reset the timer to zero?',
+  '@Do you want to reset the timer to zero?': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No result.': 'No result.',
+  '@No result.': {
+    'description': 'No result for the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Role': 'Role',
+  '@Role': {
+    'description': 'Header for a column talking about the role',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select role': 'Select role',
+  '@Select role': {
+    'description': 'Drop down to select the role in the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'SAVE': 'SAVE',
+  '@SAVE': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Save Failed': 'Save Failed',
+  '@Save Failed': {
+    'description': 'Save failed, server error',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Season': 'Season',
+  '@Season': {
+    'description': 'Title for the season marker',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Current team season': 'Current team season',
+  '@Current team season': {
+    'description': 'Hint for the season text box',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Season name is required': 'Season name is required',
+  '@Season name is required': {
+    'description': 'The error text when the season name is required',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Seasons': 'Seasons',
+  '@Seasons': {
+    'description': 'Header for the seasons section',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select season': 'Select season',
+  '@Select season': {
+    'description': 'Title for the select season marker',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select club': 'Select club',
+  '@Select club': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'GALLERY': 'GALLERY',
+  '@GALLERY': {
+    'description': 'Live video streaming',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select Media': 'Select Media',
+  '@Select Media': {
+    'description': 'Title for the dialog to select a video',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select place': 'Select place',
+  '@Select place': {
+    'description': 'Title for the drop down to say select place if nothing is selected',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Need to have a subject': 'Need to have a subject',
+  '@Need to have a subject': {
+    'description': 'Error to display for the form when a subject is empty.',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select Player': 'Select Player',
+  '@Select Player': {
+    'description': 'Selects the player for the event',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Send message': 'Send message',
+  '@Send message': {
+    'description': 'In a text edit box to send a message to a user',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'SEND': 'SEND',
+  '@SEND': {
+    'description': 'Button to send the message',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'SET CLUB': 'SET CLUB',
+  '@SET CLUB': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Settings': 'Settings',
+  '@Settings': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Summary': 'Summary',
+  '@Summary': {
+    'description': 'Short description of a tournament/league to display in the ux',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Short Description': 'Short Description',
+  '@Short Description': {
+    'description': 'Short description of a tournament/league to display in the ux',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Shots': 'Shots',
+  '@Shots': {
+    'description': 'Heading for the shots sectionn',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Signout': 'Signout',
+  '@Signout': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'SKIP': 'SKIP',
+  '@SKIP': {
+    'description': 'Skip button text',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select sport': 'Select sport',
+  '@Select sport': {
+    'description': 'Name for the default select sport text',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'START': 'START',
+  '@START': {
+    'description': 'Text on a button to start the period',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Start Game': 'Start Game',
+  '@Start Game': {
+    'description': 'Start game dialofg title',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Do you want to start the game?': 'Do you want to start the game?',
+  '@Do you want to start the game?': {
+    'description': 'Start game dialofg body text',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Stats': 'Stats',
+  '@Stats': {
+    'description': 'Title in the bottom navigation bar for the stats',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Steal': 'Steal',
+  '@Steal': {
+    'description': 'Steal a ball',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Steals': 'Steals',
+  '@Steals': {
+    'description': 'Drop down menu item for steals',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Stl': 'Stl',
+  '@Stl': {
+    'description': 'Steals abbreviation',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'STREAM': 'STREAM',
+  '@STREAM': {
+    'description': 'Button to display a stream',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Stream Live': 'Stream Live',
+  '@Stream Live': {
+    'description': 'Live video streaming',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Subject': 'Subject',
+  '@Subject': {
+    'description': 'Subject for the message, title of input field',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Subsitution': 'Subsitution',
+  '@Subsitution': {
+    'description': 'Subsitiution of player',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'CAMERA': 'CAMERA',
+  '@CAMERA': {
+    'description': 'Live video streaming',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Team': 'Team',
+  '@Team': {
+    'description': 'Title for the team marker',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Team deleted': 'Team deleted',
+  '@Team deleted': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Change team': 'Change team',
+  '@Change team': {
+    'description': 'Hint for the button to edit the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Team Name': 'Team Name',
+  '@Team Name': {
+    'description': 'Hint for the name of the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Teams': 'Teams',
+  '@Teams': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Select team': 'Select team',
+  '@Select team': {
+    'description': 'The text for notes for selecting team for the event',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Team Selected': 'Team Selected',
+  '@Team Selected': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Tie': 'Tie',
+  '@Tie': {
+    'description': 'Drop down for  the tie result',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Timer count up': 'Timer count up',
+  '@Timer count up': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Team Fuse': 'Team Fuse',
+  '@Team Fuse': {
+    'description': 'Title for the Team Fuse application',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Tournament': 'Tournament',
+  '@Tournament': {
+    'description': 'Title for the tournament section',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Attendence is from team': 'Attendence is from team',
+  '@Attendence is from team': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Training end': 'Training end',
+  '@Training end': {
+    'description': 'Title for the time drop down to choose the training end time',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Training notes': 'Training notes',
+  '@Training notes': {
+    'description': 'The notes associated with the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Notes for the training': 'Notes for the training',
+  '@Notes for the training': {
+    'description': 'The hint text for notes associated with the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Training times': 'Training times',
+  '@Training times': {
+    'description': 'HEader for the extra training times in a repeat event',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Training': 'Training',
+  '@Training': {
+    'description': 'Drop down foronlhy the training events',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Turnover': 'Turnover',
+  '@Turnover': {
+    'description': 'Caused a turnover',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Turnovers': 'Turnovers',
+  '@Turnovers': {
+    'description': 'Drop down menu item for turnovers',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'T/O': 'T/O',
+  '@T/O': {
+    'description': 'Turnover summary in game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Unable to load games': 'Unable to load games',
+  '@Unable to load games': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Uniform': 'Uniform',
+  '@Uniform': {
+    'description': 'Title for the uniform input box',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Uniform to wear': 'Uniform to wear',
+  '@Uniform to wear': {
+    'description': 'Hint for the uniform input box',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Unknown': 'Unknown',
+  '@Unknown': {
+    'description': 'Unknown name',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Until': 'Until',
+  '@Until': {
+    'description': 'Drop down for the until option',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'UPDATE SCORE': 'UPDATE SCORE',
+  '@UPDATE SCORE': {
+    'description': 'Title to the button to update the score results screen',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'UPLOAD': 'UPLOAD',
+  '@UPLOAD': {
+    'description': 'Button to display upload a stream',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'URL': 'URL',
+  '@URL': {
+    'description': 'Title for the form field to set the url for media',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'USE OFFICAL': 'USE OFFICAL',
+  '@USE OFFICAL': {
+    'description': 'Button to pull the offical results in from the shared game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Use the results of the offical game for this game?': 'Use the results of the offical game for this game?',
+  '@Use the results of the offical game for this game?': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'No account found for email or internal error occured': 'No account found for email or internal error occured',
+  '@No account found for email or internal error occured': {
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Sent verification email, please check your email inbox.': 'Sent verification email, please check your email inbox.',
+  '@Sent verification email, please check your email inbox.': {
+    'description': 'Confirmation message after requesting the email verification code',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Verify password': 'Verify password',
+  '@Verify password': {
+    'description': 'Input box for a verification to the main password password',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Video': 'Video',
+  '@Video': {
+    'description': 'Shows video for the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Upload Video': 'Upload Video',
+  '@Upload Video': {
+    'description': 'Upload a video',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Weekly': 'Weekly',
+  '@Weekly': {
+    'description': 'Weekly repeat',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Where': 'Where',
+  '@Where': {
+    'description': 'Where the game is',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Win': 'Win',
+  '@Win': {
+    'description': 'Drop down for  the win result',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Your email address': 'Your email address',
+  '@Your email address': {
+    'description': 'Your email input field hint',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'arrivebefore': 'Arrive {mins} mins before games',
+  '@arrivebefore': {
+    'type': 'text',
+    'placeholders': {
+      'mins': {}
+    }
+  },
+  'cardResultInProgressFinal': '{ptsFor} - {ptsAgainst}',
+  '@cardResultInProgressFinal': {
+    'description': 'In progress result details',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'cardResultInProgressOvertime': '{ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})',
+  '@cardResultInProgressOvertime': {
+    'description': 'Win result details with penalty shootout',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {}
+    }
+  },
+  'cardResultInProgressOvertimeAndPenalty': '{ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})',
+  '@cardResultInProgressOvertimeAndPenalty': {
+    'description': 'Win result details with penalty shootout',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'cardResultInProgressPenalty': '{ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})',
+  '@cardResultInProgressPenalty': {
+    'description': 'In progress result details with penalty shootout',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'confirmCreateTeamForLeague': 'Are you sure you want to create a team {teamName} with a season of {season} for the league {league}.  This is not possible to undo?',
+  '@confirmCreateTeamForLeague': {
+    'type': 'text',
+    'placeholders': {
+      'teamName': {},
+      'season': {},
+      'league': {}
+    }
+  },
+  'confirmDeleteAsAdmin': 'Do you want to delete the invite to be admin for the team {teamName}?',
+  '@confirmDeleteAsAdmin': {
+    'description': 'Text to delete the invite to be an admin in the alert dialog.',
+    'type': 'text',
+    'placeholders': {
+      'teamName': {}
+    }
+  },
+  'confirmDeleteClub': 'Do you want to delete the invite to be in the club {clubName}?',
+  '@confirmDeleteClub': {
+    'description': 'Text to delete the invite to the club in the alert dialog.',
+    'type': 'text',
+    'placeholders': {
+      'clubName': {}
+    }
+  },
+  'confirmDeleteInvitePlayer': 'Do you want to delete the invite to follow {playerName}?',
+  '@confirmDeleteInvitePlayer': {
+    'description': 'Text to delete the invite to the team in the alert dialog.',
+    'type': 'text',
+    'placeholders': {
+      'playerName': {}
+    }
+  },
+  'confirmDeleteInviteTeam': 'Do you want to delete the invite to {teamName} for {playerName}?',
+  '@confirmDeleteInviteTeam': {
+    'description': 'Text to delete the invite to the team in the alert dialog.',
+    'type': 'text',
+    'placeholders': {
+      'teamName': {},
+      'playerName': {}
+    }
+  },
+  'confirmDeleteLeagueAsAdmin': 'Do you want to delete the invite to be in the league {leagueName}?',
+  '@confirmDeleteLeagueAsAdmin': {
+    'description': 'Text to delete the invite to the league in the alert dialog.',
+    'type': 'text',
+    'placeholders': {
+      'leagueName': {}
+    }
+  },
+  'confirmDeleteLeagueTeam': 'Do you want to delete the invite to be in the league {leagueName} with team {leagueTeamName}?',
+  '@confirmDeleteLeagueTeam': {
+    'type': 'text',
+    'placeholders': {
+      'leagueName': {},
+      'leagueTeamName': {}
+    }
+  },
+  'confirmDeleteMember': 'Delete club member {displayName}?',
+  '@confirmDeleteMember': {
+    'type': 'text',
+    'placeholders': {
+      'displayName': {}
+    }
+  },
+  'confirmDeletePlayerBreakout': 'Do you want to delete your connection to {playerName}?',
+  '@confirmDeletePlayerBreakout': {
+    'description': 'Text to confirm asking if the players wants to be delete',
+    'type': 'text',
+    'placeholders': {
+      'playerName': {}
+    }
+  },
+  'confirmRemoveFromTeam': 'Are you sure you want to remove {name} from the team?',
+  '@confirmRemoveFromTeam': {
+    'description': 'Dialog text to confirm removing a user from the team',
+    'type': 'text',
+    'placeholders': {
+      'name': {}
+    }
+  },
+  'displayNameRelationshipBreakout': '{name} ({rel})',
+  '@displayNameRelationshipBreakout': {
+    'description': 'Name for the edit box to edit the user name',
+    'type': 'text',
+    'placeholders': {
+      'name': {},
+      'rel': {}
+    }
+  },
+  'eventTitleNowSpecialEvent': 'NOW! Event {time}',
+  '@eventTitleNowSpecialEvent': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {}
+    }
+  },
+  'eventTitleNowSpecialEventName': 'NOW! {name} {time}',
+  '@eventTitleNowSpecialEventName': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'name': {},
+      'time': {}
+    }
+  },
+  'eventTitleNowSpecialEventNameEndTime': 'NOW! {name} {time} - {endTime}',
+  '@eventTitleNowSpecialEventNameEndTime': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'name': {},
+      'time': {},
+      'endTime': {}
+    }
+  },
+  'eventTitleNowSpecialEventNameEndTimeTimeZone': 'NOW! {name} {time} - {endTime}  ({tzShortName})',
+  '@eventTitleNowSpecialEventNameEndTimeTimeZone': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'name': {},
+      'time': {},
+      'endTime': {},
+      'tzShortName': {}
+    }
+  },
+  'eventTitleNowSpecialEventNameTimeZone': 'NOW! {name} {time} ({tzShortName})',
+  '@eventTitleNowSpecialEventNameTimeZone': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'name': {},
+      'time': {},
+      'tzShortName': {}
+    }
+  },
+  'eventTitleNowSpecialEventStartAndEnd': 'NOW! Event {time} - {endTime}',
+  '@eventTitleNowSpecialEventStartAndEnd': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {}
+    }
+  },
+  'eventTitleNowSpecialEventStartAndEndTimezone': 'NOW! Event {time} - {endTime} ({tzShortName})',
+  '@eventTitleNowSpecialEventStartAndEndTimezone': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {},
+      'tzShortName': {}
+    }
+  },
+  'eventTitleNowSpecialWithTimezone': 'NOW! Event {time} ({tzShortName})',
+  '@eventTitleNowSpecialWithTimezone': {
+    'description': 'Special event title in game list with timezone',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'tzShortName': {}
+    }
+  },
+  'eventTitleSpecialEvent': 'Event {time}',
+  '@eventTitleSpecialEvent': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {}
+    }
+  },
+  'eventTitleSpecialEventName': '{name} {time}',
+  '@eventTitleSpecialEventName': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'name': {},
+      'time': {}
+    }
+  },
+  'eventTitleSpecialEventNameEndTime': '{name} {time} - {endTime}',
+  '@eventTitleSpecialEventNameEndTime': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'name': {},
+      'time': {},
+      'endTime': {}
+    }
+  },
+  'eventTitleSpecialEventNameEndTimeTimeZone': '{name} {time} - {endTime}  ({tzShortName})',
+  '@eventTitleSpecialEventNameEndTimeTimeZone': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'name': {},
+      'time': {},
+      'endTime': {},
+      'tzShortName': {}
+    }
+  },
+  'eventTitleSpecialEventNameTimeZone': '{name} {time} ({tzShortName})',
+  '@eventTitleSpecialEventNameTimeZone': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'name': {},
+      'time': {},
+      'tzShortName': {}
+    }
+  },
+  'eventTitleSpecialEventStartAndEnd': 'Event {time} - {endTime}',
+  '@eventTitleSpecialEventStartAndEnd': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {}
+    }
+  },
+  'eventTitleSpecialEventStartAndEndTimezone': 'Event {time} - {endTime} ({tzShortName})',
+  '@eventTitleSpecialEventStartAndEndTimezone': {
+    'description': 'Special event title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {},
+      'tzShortName': {}
+    }
+  },
+  'eventTitleSpecialWithTimezone': 'Event {time} ({tzShortName})',
+  '@eventTitleSpecialWithTimezone': {
+    'description': 'Special event title in game list with timezone',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'tzShortName': {}
+    }
+  },
+  'finalOfficalScoreBodyOvertimePenalty': '{resultString}\nHome: {homeFor} Away: {homeAgainst}\nOvertime Home: {overtimeFor} Away: {overtimeAgainst}Penalty Home: {penaltyFor} Away: {penaltyAgainst}',
+  '@finalOfficalScoreBodyOvertimePenalty': {
+    'type': 'text',
+    'placeholders': {
+      'resultString': {},
+      'homeFor': {},
+      'homeAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'finalOfficalScoreBodyOvertime': '{resultString}\nHome: {homeFor} Away: {homeAgainst}\nOvertime Home: {overtimeFor} Away: {overtimeAgainst}',
+  '@finalOfficalScoreBodyOvertime': {
+    'type': 'text',
+    'placeholders': {
+      'resultString': {},
+      'homeFor': {},
+      'homeAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {}
+    }
+  },
+  'finalOfficalScoreBodyPenalty': '{resultString}\nHome: {homeFor} Away: {homeAgainst}\nPenalty Home: {penaltyFor} Away: {penaltyAgainst}',
+  '@finalOfficalScoreBodyPenalty': {
+    'type': 'text',
+    'placeholders': {
+      'resultString': {},
+      'homeFor': {},
+      'homeAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'finalScoreBody': 'Do you want to set {ptsFor} {ptsAgainst} {result} as the final score?',
+  '@finalScoreBody': {
+    'description': 'Start game dialofg body text',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'result': {}
+    }
+  },
+  'fixScoreBreakout': 'Fix score: {ptsFor} - {ptsAgainst}',
+  '@fixScoreBreakout': {
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'followPlayer': 'Follow {player}',
+  '@followPlayer': {
+    'type': 'text',
+    'placeholders': {
+      'player': {}
+    }
+  },
+  'gameAddressArriveAt': 'Arrive by {arriveAt}\n{address}',
+  '@gameAddressArriveAt': {
+    'description': 'Game address in game list with arrive by',
+    'type': 'text',
+    'placeholders': {
+      'arriveAt': {},
+      'address': {}
+    }
+  },
+  'gameResultOfficalBreakout': '{resultString}\nHome: {ptsFor} Away: {ptsAgainst}',
+  '@gameResultOfficalBreakout': {
+    'type': 'text',
+    'placeholders': {
+      'resultString': {},
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'gameTitleSharedEndShort': '{time} - {endTime} ({tzShortName})',
+  '@gameTitleSharedEndShort': {
+    'description': 'Game title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {},
+      'tzShortName': {}
+    }
+  },
+  'gameTitleSharedEnd': '{time} - {endTime}',
+  '@gameTitleSharedEnd': {
+    'description': 'Game title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {}
+    }
+  },
+  'gameTitleSharedShort': '{time} ({tzShortName})',
+  '@gameTitleSharedShort': {
+    'description': 'Game title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'tzShortName': {}
+    }
+  },
+  'gameTitleSharedTime': '{time}',
+  '@gameTitleSharedTime': {
+    'description': 'Game title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {}
+    }
+  },
+  'gameTitleNowSharedEndShort': 'NOW! {time} - {endTime} ({tzShortName})',
+  '@gameTitleNowSharedEndShort': {
+    'description': 'Game title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {},
+      'tzShortName': {}
+    }
+  },
+  'gameTitleNowSharedEnd': 'NOW! {time} - {endTime}',
+  '@gameTitleNowSharedEnd': {
+    'description': 'Game title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {}
+    }
+  },
+  'gameTitleNowSharedShort': 'NOW! {time} ({tzShortName})',
+  '@gameTitleNowSharedShort': {
+    'description': 'Game title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'tzShortName': {}
+    }
+  },
+  'gameTitleNowSharedTime': 'NOW! {time}',
+  '@gameTitleNowSharedTime': {
+    'description': 'Game title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {}
+    }
+  },
+  'gameTitleVsGame': 'Game vs {opponent}',
+  '@gameTitleVsGame': {
+    'description': 'Game details title for the screen',
+    'type': 'text',
+    'placeholders': {
+      'opponent': {}
+    }
+  },
+  'Event': 'Event',
+  '@Event': {
+    'description': 'Event details title for the screen',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Practice': 'Practice',
+  '@Practice': {
+    'description': 'Practice details title for the screen',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'invitedBy': 'By {by}',
+  '@invitedBy': {
+    'description': 'Who did the invite to this team/player',
+    'type': 'text',
+    'placeholders': {
+      'by': {}
+    }
+  },
+  'Invited to team': 'Invited to team',
+  '@Invited to team': {
+    'description': 'The user that is invited to the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'invitedToTeamWithName': '{name} (Invited)',
+  '@invitedToTeamWithName': {
+    'description': 'Player name with the invited tag',
+    'type': 'text',
+    'placeholders': {
+      'name': {}
+    }
+  },
+  'invitedPeople': 'Invited: {num}',
+  '@invitedPeople': {
+    'type': 'text',
+    'placeholders': {
+      'num': {}
+    }
+  },
+  'madeEventType': '{points}',
+  '@madeEventType': {
+    'description': '+num points',
+    'type': 'text',
+    'placeholders': {
+      'points': {}
+    }
+  },
+  'missedEventType': 'Miss {points}',
+  '@missedEventType': {
+    'description': 'missed num points',
+    'type': 'text',
+    'placeholders': {
+      'points': {}
+    }
+  },
+  'nameAndTeam': '{teamName} {playerName}',
+  '@nameAndTeam': {
+    'description': 'Format for name and player for the team',
+    'type': 'text',
+    'placeholders': {
+      'teamName': {},
+      'playerName': {}
+    }
+  },
+  'numberOfTeamsForPlayer': '{num,plural, =0{No teams}=1{One team}other{{num} teams}}',
+  '@numberOfTeamsForPlayer': {
+    'description': 'Number of teams associated with this player',
+    'type': 'text',
+    'placeholders': {
+      'num': {}
+    }
+  },
+  'numberOfUserForPlayer': '{num,plural, =1{One user}other{{num} users}}',
+  '@numberOfUserForPlayer': {
+    'description': 'Number of user associated with this player',
+    'type': 'text',
+    'placeholders': {
+      'num': {}
+    }
+  },
+  'onlyScoreBreakout': '{ptsFor} - {ptsAgainst}',
+  '@onlyScoreBreakout': {
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'opponentSeason': '{opponentName} - {seasonName}',
+  '@opponentSeason': {
+    'description': 'Shows the opponent and season',
+    'type': 'text',
+    'placeholders': {
+      'opponentName': {},
+      'seasonName': {}
+    }
+  },
+  'opponentWinRecordBreakout': 'Win: {win} Loss: {loss} Tie: {tie}',
+  '@opponentWinRecordBreakout': {
+    'description': 'Win record for an opponent for this season',
+    'type': 'text',
+    'placeholders': {
+      'win': {},
+      'loss': {},
+      'tie': {}
+    }
+  },
+  'pendingInvites': 'Pending Invites: {num}',
+  '@pendingInvites': {
+    'description': 'Header showing the number of pending invites',
+    'type': 'text',
+    'placeholders': {
+      'num': {}
+    }
+  },
+  'periodEnd': 'End of {periodName}',
+  '@periodEnd': {
+    'description': 'End of period',
+    'type': 'text',
+    'placeholders': {
+      'periodName': {}
+    }
+  },
+  'Regulation': 'Regulation',
+  '@Regulation': {
+    'description': 'Header for the regulation period',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'periodNameRegulationNumber': 'Regulation {periodNumber}',
+  '@periodNameRegulationNumber': {
+    'description': 'Header for the regulation period with number',
+    'type': 'text',
+    'placeholders': {
+      'periodNumber': {}
+    }
+  },
+  'Overtime': 'Overtime',
+  '@Overtime': {
+    'description': 'Header for the overtime period',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'periodNameOvertimeNumber': 'Overtime {periodNumber}',
+  '@periodNameOvertimeNumber': {
+    'description': 'Header for the overtime period with number',
+    'type': 'text',
+    'placeholders': {
+      'periodNumber': {}
+    }
+  },
+  'periodStartRegulationBreakout': 'Start period {periodNumber} Score: {ptsFor} - {ptsAgainst}',
+  '@periodStartRegulationBreakout': {
+    'type': 'text',
+    'placeholders': {
+      'periodNumber': {},
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'periodStartPenaltyBreakout': 'Start penalty Score: {ptsFor} - {ptsAgainst}',
+  '@periodStartPenaltyBreakout': {
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'periodStartOvertimeBreakout': 'Start overtime {periodNumber} Score: {ptsFor} - {ptsAgainst}',
+  '@periodStartOvertimeBreakout': {
+    'type': 'text',
+    'placeholders': {
+      'periodNumber': {},
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'periodStartBreakBreakout': 'Start break Score: {ptsFor} - {ptsAgainst}',
+  '@periodStartBreakBreakout': {
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'periodStartOvertimeBreakBreakout': 'Start overtime break Score: {ptsFor} - {ptsAgainst}',
+  '@periodStartOvertimeBreakBreakout': {
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'periodStart': 'Start of {periodName}',
+  '@periodStart': {
+    'description': 'Start of period',
+    'type': 'text',
+    'placeholders': {
+      'periodName': {}
+    }
+  },
+  'Searching...': 'Searching...',
+  '@Searching...': {
+    'description': 'The searching text in the search box when the search is inprogress.',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'periodStopRegulationBreakout': 'Stop period {periodNumber} Score: {ptsFor} - {ptsAgainst}',
+  '@periodStopRegulationBreakout': {
+    'description': 'the stop for the regulation perod in the logs',
+    'type': 'text',
+    'placeholders': {
+      'periodNumber': {},
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'periodStopBreakBreakout': 'Stop break Score: {ptsFor} - {ptsAgainst}',
+  '@periodStopBreakBreakout': {
+    'description': 'the stop for the regulation break in the logs',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'periodStopOvertimeBreakBreakout': 'Stop overttime break Score: {ptsFor} - {ptsAgainst}',
+  '@periodStopOvertimeBreakBreakout': {
+    'description': 'the stop for the overtime break in the logs',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'periodStopOvertimeBreakout': 'Stop overttime {periodNumber} Score: {ptsFor} - {ptsAgainst}',
+  '@periodStopOvertimeBreakout': {
+    'description': 'the stop for the overtime  in the logs',
+    'type': 'text',
+    'placeholders': {
+      'periodNumber': {},
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'periodStopPenaltyBreakout': 'Stop penalty Score: {ptsFor} - {ptsAgainst}',
+  '@periodStopPenaltyBreakout': {
+    'description': 'the stop for the penalty period in the logs',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'playerInviteDesc': 'This will follow {name} and allow you to see which games they are in and all the teams they are in.  Please setup your relationship with the player and save.',
+  '@playerInviteDesc': {
+    'description': 'Long description of the player invite accept path.',
+    'type': 'text',
+    'placeholders': {
+      'name': {}
+    }
+  },
+  'resultInProgressOvertimePenalty': 'Playing {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})',
+  '@resultInProgressOvertimePenalty': {
+    'description': 'InProgress result details with penalty shootout',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'resultInProgressOvertime': 'Playing {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})',
+  '@resultInProgressOvertime': {
+    'description': 'InProgress result details in overtime',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {}
+    }
+  },
+  'resultInProgressPenalty': 'Playing {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})',
+  '@resultInProgressPenalty': {
+    'description': 'InProgress result details with penalty shootout',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'resultInProgressRegulation': 'Playing {ptsFor} - {ptsAgainst}',
+  '@resultInProgressRegulation': {
+    'description': 'InProgress result details',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'resultLossOvertimePenalty': 'Loss {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})',
+  '@resultLossOvertimePenalty': {
+    'description': 'Loss result details with penalty shootout',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'resultLossOvertime': 'Loss {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})',
+  '@resultLossOvertime': {
+    'description': 'Loss result details in overtime',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {}
+    }
+  },
+  'resultLossPenalty': 'Loss {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})',
+  '@resultLossPenalty': {
+    'description': 'Loss result details with penalty shootout',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'resultLossRegulation': 'Loss {ptsFor} - {ptsAgainst}',
+  '@resultLossRegulation': {
+    'description': 'Loss result details',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'resultTieOvertimePenalty': 'Tie {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})',
+  '@resultTieOvertimePenalty': {
+    'description': 'Tie result details with penalty shootout',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'resultTieOvertime': 'Tie {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})',
+  '@resultTieOvertime': {
+    'description': 'Tie result details in overtime',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {}
+    }
+  },
+  'resultTiePenalty': 'Tie {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})',
+  '@resultTiePenalty': {
+    'description': 'Tie result details with penalty shootout',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'resultTieRegulation': 'Tie {ptsFor} - {ptsAgainst}',
+  '@resultTieRegulation': {
+    'description': 'Tie result details',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'resultWinOvertimePenalty': 'Win {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})',
+  '@resultWinOvertimePenalty': {
+    'description': 'Win result details with penalty shootout',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'resultWinOvertime': 'Win {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})',
+  '@resultWinOvertime': {
+    'description': 'Win result details in overtime',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'overtimeFor': {},
+      'overtimeAgainst': {}
+    }
+  },
+  'resultWinPenalty': 'Win {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})',
+  '@resultWinPenalty': {
+    'description': 'Win result details with penalty shootout',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {},
+      'penaltyFor': {},
+      'penaltyAgainst': {}
+    }
+  },
+  'resultWinRegulation': 'Win {ptsFor} - {ptsAgainst}',
+  '@resultWinRegulation': {
+    'description': 'Win result details',
+    'type': 'text',
+    'placeholders': {
+      'ptsFor': {},
+      'ptsAgainst': {}
+    }
+  },
+  'Coach': 'Coach',
+  '@Coach': {
+    'description': 'Coach role in the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Non Player': 'Non Player',
+  '@Non Player': {
+    'description': 'Non Player role in the team',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'seasonSummaryExpanded': 'Pts {points} Blks {blocks} Stls {steals}',
+  '@seasonSummaryExpanded': {
+    'description': 'Subtitle to markt he season as current',
+    'type': 'text',
+    'placeholders': {
+      'points': {},
+      'blocks': {},
+      'steals': {}
+    }
+  },
+  'Basketball': 'Basketball',
+  '@Basketball': {
+    'description': 'Name for the item in a drop down for basketball',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Softball': 'Softball',
+  '@Softball': {
+    'description': 'Name for the item in a drop down for softball',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Soccer': 'Soccer',
+  '@Soccer': {
+    'description': 'Name for the item in a drop down for soccer',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Other sport': 'Other sport',
+  '@Other sport': {
+    'description': 'Name for the item in a drop down for other as the sport type',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'None': 'None',
+  '@None': {
+    'description': 'Name for the item in a drop down for none as the sport type',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'teamAndSeason': 'Team {teamName}\nSeason {seasonName}',
+  '@teamAndSeason': {
+    'type': 'text',
+    'placeholders': {
+      'teamName': {},
+      'seasonName': {}
+    }
+  },
+  'teamNumbers': '{num} club teams',
+  '@teamNumbers': {
+    'description': 'How many teams in the club',
+    'type': 'text',
+    'placeholders': {
+      'num': {}
+    }
+  },
+  'titleWith': 'Team Fuse ({str})',
+  '@titleWith': {
+    'description': 'Title for the Team Fuse application with some context',
+    'type': 'text',
+    'placeholders': {
+      'str': {}
+    }
+  },
+  'trainingTitleEndShortName': 'Practice {time} - {endTime} ({tzShortName})',
+  '@trainingTitleEndShortName': {
+    'description': 'Training title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {},
+      'tzShortName': {}
+    }
+  },
+  'trainingTitleEnd': 'Practice {time} - {endTime}',
+  '@trainingTitleEnd': {
+    'description': 'Training title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {}
+    }
+  },
+  'trainingTitleShortName': 'Practice {time} ({tzShortName})',
+  '@trainingTitleShortName': {
+    'description': 'Training title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'tzShortName': {}
+    }
+  },
+  'trainingTitleTime': 'Practice {time}',
+  '@trainingTitleTime': {
+    'description': 'Training title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {}
+    }
+  },
+  'trainingTitleNowEndShortName': 'NOW! Practice {time} - {endTime} ({tzShortName})',
+  '@trainingTitleNowEndShortName': {
+    'description': 'Training title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {},
+      'tzShortName': {}
+    }
+  },
+  'trainingTitleNowEnd': 'NOW! Practice {time} - {endTime}',
+  '@trainingTitleNowEnd': {
+    'description': 'Training title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'endTime': {}
+    }
+  },
+  'trainingTitleNowShortName': 'NOW! Practice {time} ({tzShortName})',
+  '@trainingTitleNowShortName': {
+    'description': 'Training title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {},
+      'tzShortName': {}
+    }
+  },
+  'trainingTitleNowTime': 'NOW! Practice {time}',
+  '@trainingTitleNowTime': {
+    'description': 'Training title in game list',
+    'type': 'text',
+    'placeholders': {
+      'time': {}
+    }
+  },
+  'verifyExplanation': 'Email address {email} needs to be verified, please check your email or resend the verification details.',
+  '@verifyExplanation': {
+    'description': 'Button to resend the email to verify their email address',
+    'type': 'text',
+    'placeholders': {
+      'email': {}
+    }
+  },
+  'wearUniform': 'Wear {wear}',
+  '@wearUniform': {
+    'description': 'Wear uniform in a game desc',
+    'type': 'text',
+    'placeholders': {
+      'wear': {}
+    }
+  },
+  'winRecordBreakout': 'Win: {win} Loss: {loss} Tie: {tie}',
+  '@winRecordBreakout': {
+    'description': 'Win record for a team',
+    'type': 'text',
+    'placeholders': {
+      'win': {},
+      'loss': {},
+      'tie': {}
+    }
+  },
+  'STATS': 'STATS',
+  '@STATS': {
+    'description': 'Button to add states to the game',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Personal Foul': 'Personal Foul',
+  '@Personal Foul': {
+    'description': 'Personal foul type',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Technical Foul': 'Technical Foul',
+  '@Technical Foul': {
+    'description': 'Technical foul type',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'Flagrant Foul': 'Flagrant Foul',
+  '@Flagrant Foul': {
+    'description': 'Flagrant foul type',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'FOUL': 'FOUL',
+  '@FOUL': {
+    'description': 'Text on the foul button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'BLK': 'BLK',
+  '@BLK': {
+    'description': 'Block button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'ASST': 'ASST',
+  '@ASST': {
+    'description': 'Assist button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'STL': 'STL',
+  '@STL': {
+    'description': 'Steal button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'DEF RB': 'DEF RB',
+  '@DEF RB': {
+    'description': 'Defensive Rebound button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'OFF RB': 'OFF RB',
+  '@OFF RB': {
+    'description': 'Offensive Rebound button',
+    'type': 'text',
+    'placeholders': {}
+  },
+  'SUB': 'SUB',
+  '@SUB': {
+    'description': 'Text on a substitution button',
+    'type': 'text',
+    'placeholders': {}
   }
 }

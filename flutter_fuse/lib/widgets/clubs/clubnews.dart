@@ -65,7 +65,7 @@ class ClubNewsItems extends StatelessWidget {
                     Messages.of(context).addNews,
                   ),
                   onPressed: () =>
-                      Navigator.pushNamed(context, "/Club/News/Add/$clubUid"),
+                      Navigator.pushNamed(context, '/Club/News/Add/$clubUid'),
                 ));
               }
 

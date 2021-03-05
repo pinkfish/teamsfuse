@@ -68,16 +68,16 @@ class GameNotification {
       if (game.place.name.isNotEmpty) {
         addr = game.place.name;
       }
-      body.write(messages.gameaddressarriveat(arriveFormat, addr) + "<br>");
+      body.write(messages.gameaddressarriveat(arriveFormat, addr) + '<br>');
     } else {
       if (game.place.name.isNotEmpty) {
-        body.write(game.place.name + "<br>");
+        body.write(game.place.name + '<br>');
       } else {
-        body.write(game.place.address + "<br>");
+        body.write(game.place.address + '<br>');
       }
     }
     for (Player play in players) {
-      body.write("<i>" + messages.nameandteam(team, play) + "</i>");
+      body.write('<i>' + messages.nameandteam(team, play) + '</i>');
     }
 
     switch (game.type) {
@@ -116,14 +116,14 @@ class GameNotification {
         if (game.result.scores.containsKey(GameInProgress.Penalty)) {
           penaltyResult = game.result.scores[GameInProgress.Penalty];
         }
-        body += "${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}";
+        body += '${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}';
         if (overtimeResult != null) {
-          body += "OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score
-              .ptsAgainst}";
+          body += 'OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score
+              .ptsAgainst}';
         }
         if (penaltyResult != null) {
-          body += "PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score
-              .ptsAgainst}";
+          body += 'PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score
+              .ptsAgainst}';
         }
         */
       } else {
@@ -133,10 +133,10 @@ class GameNotification {
     }
 
     NotificationDetailsAndroid android =
-        NotificationDetailsAndroid("Game", "Games", "Games notifications");
+        NotificationDetailsAndroid('Game', 'Games', 'Games notifications');
     NotificationDetailsIOS iOS = NotificationDetailsIOS();
     NotificationDetails details = NotificationDetails(android, iOS);
-    print("$title $body $details");
+    print('$title $body $details');
     /*
     if (game.arriveTime > scheduleToShow) {
       await notification.show(id, title, body, details);

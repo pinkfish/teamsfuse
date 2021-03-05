@@ -190,7 +190,7 @@ class _PlacePickerState extends State<PlacePicker> {
         );
 
         if (detailResponse.errorMessage?.isNotEmpty == true ||
-            detailResponse.status == "REQUEST_DENIED") {
+            detailResponse.status == 'REQUEST_DENIED') {
         } else {
           provider.selectedPlace =
               PickResult.fromPlaceDetailResult(detailResponse.result);
@@ -203,7 +203,7 @@ class _PlacePickerState extends State<PlacePicker> {
         );
 
         if (response.errorMessage?.isNotEmpty == true ||
-            response.status == "REQUEST_DENIED") {
+            response.status == 'REQUEST_DENIED') {
         } else if (response.results.isNotEmpty) {
           // Yay, now we can set the result stuff.
           provider.selectedPlace =
@@ -211,7 +211,7 @@ class _PlacePickerState extends State<PlacePicker> {
         }
       }
     } catch (e) {
-      print("Exception getting the place $e");
+      print('Exception getting the place $e');
     }
 
     return provider;
@@ -334,7 +334,7 @@ class _PlacePickerState extends State<PlacePicker> {
     );
 
     if (response.errorMessage?.isNotEmpty == true ||
-        response.status == "REQUEST_DENIED") {
+        response.status == 'REQUEST_DENIED') {
       if (widget.onAutoCompleteFailed != null) {
         widget.onAutoCompleteFailed(response.status);
       }

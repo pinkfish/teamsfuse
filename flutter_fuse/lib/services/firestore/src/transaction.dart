@@ -16,7 +16,7 @@ class Transaction extends wfs.TransactionWrapper {
       return DocumentSnapshot(snap);
     }
 
-    throw ArgumentError("${ref.runtimeType} Not a DocumentReference");
+    throw ArgumentError('${ref.runtimeType} Not a DocumentReference');
   }
 
   @override
@@ -24,7 +24,7 @@ class Transaction extends wfs.TransactionWrapper {
     if (ref is MyDocumentReference) {
       return await _transaction.delete(ref._doc);
     }
-    throw ArgumentError("${ref.runtimeType} Not a DocumentReference");
+    throw ArgumentError('${ref.runtimeType} Not a DocumentReference');
   }
 
   @override
@@ -33,7 +33,7 @@ class Transaction extends wfs.TransactionWrapper {
     if (ref is MyDocumentReference) {
       return await _transaction.update(ref._doc, data);
     }
-    throw ArgumentError("${ref.runtimeType} Not a DocumentReference");
+    throw ArgumentError('${ref.runtimeType} Not a DocumentReference');
   }
 
   @override
@@ -42,6 +42,6 @@ class Transaction extends wfs.TransactionWrapper {
     if (ref is MyDocumentReference) {
       return await _transaction.set(ref._doc, data);
     }
-    throw ArgumentError("${ref.runtimeType} Not a DocumentReference");
+    throw ArgumentError('${ref.runtimeType} Not a DocumentReference');
   }
 }

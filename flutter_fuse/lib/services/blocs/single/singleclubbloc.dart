@@ -231,7 +231,7 @@ class SingleClubBloc
   ///
   SingleClubBloc(
       {@required this.db, @required this.clubUid, @required this.crashes})
-      : super(SingleClubUninitialized(), "Singleclub$clubUid") {
+      : super(SingleClubUninitialized(), 'Singleclub$clubUid') {
     _clubSub = db.getClubData(clubUid: clubUid).listen((club) {
       if (club != null) {
         add(_SingleClubNewClub(newClub: club));
@@ -464,12 +464,12 @@ class SingleClubBloc
     if (!(state is SingleClubUninitialized)) {
       return state;
     }
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleClubUninitialized();
     }
 
     try {
-      var type = SingleClubBlocStateType.valueOf(json["type"]);
+      var type = SingleClubBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleClubBlocStateType.Uninitialized:
           return SingleClubUninitialized();

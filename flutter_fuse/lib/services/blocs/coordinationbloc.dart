@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
+
 import 'internal/blocstoload.dart';
 
 ///
@@ -148,7 +149,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
       : super(CoordinationStateUninitialized(BuiltSet())) {
     authenticationBloc.listen((AuthenticationState authState) {
       if (authState is AuthenticationLoggedIn) {
-        loadingTrace = analytics.newTrace("fullLoadTrace");
+        loadingTrace = analytics.newTrace('fullLoadTrace');
         start = clock.now();
         assert(authState.user.uid != null);
         add(_CoordintationStateStart(uid: authState.user.uid));

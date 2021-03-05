@@ -85,7 +85,7 @@ class TeamTile extends StatelessWidget {
                           style: Theme.of(context).textTheme.subtitle1.copyWith(
                               fontWeight: FontWeight.bold, fontSize: 17.0),
                           children: <TextSpan>[
-                            TextSpan(text: "  "),
+                            TextSpan(text: '  '),
                             TextSpan(
                               text: seasonName,
                               style: Theme.of(context)
@@ -97,7 +97,7 @@ class TeamTile extends StatelessWidget {
                             ),
                             TextSpan(
                               text: teamState.isAdmin()
-                                  ? "\n${Messages.of(context).administrator}"
+                                  ? '\n${Messages.of(context).administrator}'
                                   : "",
                               style: Theme.of(context)
                                   .textTheme
@@ -133,7 +133,7 @@ class TeamTile extends StatelessWidget {
                           Navigator.pop(context);
                         }
                         RepositoryProvider.of<fluro.FluroRouter>(context)
-                            .navigateTo(context, "Team/${teamState.team.uid}",
+                            .navigateTo(context, 'Team/${teamState.team.uid}',
                                 transition: fluro.TransitionType.inFromRight);
                       },
                 );

@@ -41,11 +41,11 @@ class GameSharedCard extends StatelessWidget {
   }
 
   void _showDirections(BuildContext context) {
-    var url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=${Uri.encodeComponent(game.place.address)}";
+    var url = 'https://www.google.com/maps/dir/?api=1';
+    url += '&destination=${Uri.encodeComponent(game.place.address)}';
     if (game.place.placeId != null) {
       url +=
-          "&destionation_place_id=${Uri.encodeComponent(game.place.placeId)}";
+          '&destionation_place_id=${Uri.encodeComponent(game.place.placeId)}';
     }
     launch(url);
   }
@@ -112,14 +112,14 @@ class GameSharedCard extends StatelessWidget {
       subtitle.add(
         TextSpan(
           style: Theme.of(context).textTheme.subtitle1,
-          text: "${game.place.name}\n",
+          text: '${game.place.name}\n',
         ),
       );
     } else {
       subtitle.add(
         TextSpan(
           style: Theme.of(context).textTheme.subtitle1,
-          text: "${game.place.address}\n",
+          text: '${game.place.address}\n',
         ),
       );
     }
@@ -200,18 +200,18 @@ class GameSharedCard extends StatelessWidget {
           }
           if (game.officialResult.scores.containsKey(GamePeriod.overtime1)) {
             homeTeamDetails.add(Text(
-                "OT ${game.officialResult.scores[GamePeriod.overtime1].score.ptsFor}",
+                'OT ${game.officialResult.scores[GamePeriod.overtime1].score.ptsFor}',
                 style: homeStyle));
             awayTeamDetails.add(Text(
-                "OT ${game.officialResult.scores[GamePeriod.overtime1].score.ptsAgainst}",
+                'OT ${game.officialResult.scores[GamePeriod.overtime1].score.ptsAgainst}',
                 style: awayStyle));
           }
           if (game.officialResult.scores.containsKey(GamePeriod.penalty)) {
             homeTeamDetails.add(Text(
-                "PT ${game.officialResult.scores[GamePeriod.penalty].score.ptsFor}",
+                'PT ${game.officialResult.scores[GamePeriod.penalty].score.ptsFor}',
                 style: homeStyle));
             awayTeamDetails.add(Text(
-                "PT ${game.officialResult.scores[GamePeriod.penalty].score.ptsAgainst}",
+                'PT ${game.officialResult.scores[GamePeriod.penalty].score.ptsAgainst}',
                 style: awayStyle));
           }
         }
@@ -235,7 +235,7 @@ class GameSharedCard extends StatelessWidget {
           ListTile(
             contentPadding: EdgeInsets.zero,
             onTap: () {
-              Navigator.pushNamed(context, "/SharedGame/${game.uid}");
+              Navigator.pushNamed(context, '/SharedGame/${game.uid}');
             },
             leading: game.officialResult.homeTeamLeagueUid == null
                 ? Icon(MdiIcons.skullCrossbones)

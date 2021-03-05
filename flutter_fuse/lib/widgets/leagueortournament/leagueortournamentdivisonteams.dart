@@ -198,7 +198,7 @@ class _LeagueOrTournamentDivisonDetailsState
                     style: Theme.of(context).textTheme.headline5,
                   ),
                   subtitle: Text(
-                    "${seasonState.season.name} ${divisonState.divison.name}",
+                    '${seasonState.season.name} ${divisonState.divison.name}',
                     style: Theme.of(context).textTheme.subtitle1,
                   ),
                 );

@@ -97,7 +97,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ],
               ),
             ).then((ok) {
-              Navigator.pushNamed(context, "/Login/Verify");
+              Navigator.pushNamed(context, '/Login/Verify');
             });
           }
         },
@@ -118,7 +118,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         Center(
                             child: Image(
                           image: ExactAssetImage(
-                              "assets/images/abstractsport.png"),
+                              'assets/images/abstractsport.png'),
                           width: (screenSize.width < 500)
                               ? 120.0
                               : (screenSize.width / 4) + 12.0,
@@ -241,7 +241,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         Messages.of(context).createaccount),
                                     color: Theme.of(context).primaryColor,
                                     textColor: Colors.white,
-                                    key: Key("SUBMIT"),
+                                    key: Key('SUBMIT'),
                                     onPressed: _handleSubmitted),
                                 margin:
                                     EdgeInsets.only(top: 20.0, bottom: 20.0),
@@ -255,15 +255,15 @@ class _SignupScreenState extends State<SignupScreen> {
                             FlatButton(
                               child: Text(Messages.of(context).login),
                               textColor: Theme.of(context).accentColor,
-                              key: Key("LOGIN"),
-                              onPressed: () => _onPressed("/Login/Home"),
+                              key: Key('LOGIN'),
+                              onPressed: () => _onPressed('/Login/Home'),
                             ),
                             FlatButton(
                               child: Text(Messages.of(context).forgotPassword),
                               textColor: Theme.of(context).accentColor,
-                              key: Key("FORGOTPASSWORD"),
+                              key: Key('FORGOTPASSWORD'),
                               onPressed: () =>
-                                  _onPressed("/Login/ForgotPassword"),
+                                  _onPressed('/Login/ForgotPassword'),
                             ),
                           ],
                         )

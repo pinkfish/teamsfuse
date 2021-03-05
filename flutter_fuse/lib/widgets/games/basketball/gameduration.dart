@@ -24,8 +24,8 @@ class _GameDurationState extends State<GameDuration> {
   Timer _timer;
 
   String twoDigits(int n) {
-    if (n >= 10) return "$n";
-    return "0$n";
+    if (n >= 10) return '$n';
+    return '0$n';
   }
 
   @override
@@ -51,7 +51,7 @@ class _GameDurationState extends State<GameDuration> {
     diff += widget.game.gameTime.inSeconds;
 
     return Text(
-      twoDigits(diff ~/ 60) + ":" + twoDigits(diff % 60),
+      twoDigits(diff ~/ 60) + ':' + twoDigits(diff % 60),
       style: widget.style,
       textScaleFactor: widget.textScaleFactor,
     );

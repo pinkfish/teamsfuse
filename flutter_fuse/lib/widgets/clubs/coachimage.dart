@@ -59,7 +59,7 @@ class CoachImage extends StatelessWidget {
               state is SingleClubCoachDeleted ||
               state.coach.photoUrl == null ||
               state.coach.photoUrl.isEmpty) {
-            img = Image.asset("assets/images/defaultavatar.png",
+            img = Image.asset('assets/images/defaultavatar.png',
                 key: key,
                 width: width,
                 height: height,
@@ -72,13 +72,13 @@ class CoachImage extends StatelessWidget {
               width: width,
               height: height,
               placeholder: (context, url) => Image.asset(
-                "assets/images/defaultavatar.png",
+                'assets/images/defaultavatar.png',
                 width: width,
                 height: height,
                 fit: fit,
               ),
               errorWidget: (context, url, error) => Image.asset(
-                "assets/images/defaultavatar.png",
+                'assets/images/defaultavatar.png',
                 width: width,
                 height: height,
                 fit: fit,

@@ -100,7 +100,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
       _seasonSub = initialState.listen((Iterable<Season> data) {
         if (!seasonData.isCompleted) {
           seasonData.complete(data);
-          coordinationBloc.loadingTrace?.incrementCounter("seasons");
+          coordinationBloc.loadingTrace?.incrementCounter('seasons');
           coordinationBloc
               .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Season));
           adminTrace.stop();
@@ -130,18 +130,18 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
 
   @override
   SeasonState fromJson(Map<String, dynamic> json) {
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SeasonUninitialized();
     }
 
-    SeasonBlocStateType type = SeasonBlocStateType.valueOf(json["type"]);
+    SeasonBlocStateType type = SeasonBlocStateType.valueOf(json['type']);
     switch (type) {
       case SeasonBlocStateType.Uninitialized:
         return SeasonUninitialized();
       case SeasonBlocStateType.Loaded:
         // Starting, nothing loaded yet.
         TraceProxy seasonsTrace =
-            coordinationBloc.analytics.newTrace("SeasonData");
+            coordinationBloc.analytics.newTrace('SeasonData');
         seasonsTrace.start();
         try {
           var state = SeasonLoaded.fromMap(json);

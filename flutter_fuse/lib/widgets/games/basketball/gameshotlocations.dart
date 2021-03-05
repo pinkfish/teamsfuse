@@ -66,13 +66,13 @@ class _GameShotLocationsState extends State<GameShotLocations>
       children: <Widget>[
         kIsWeb
             ? Image.network(
-                "assets/images/Basketball_Halfcourt.svg",
+                'assets/images/Basketball_Halfcourt.svg',
                 fit: BoxFit.contain,
                 height: min(box.maxWidth, box.maxHeight),
                 width: min(box.maxWidth, box.maxHeight),
               )
             : SvgPicture.asset(
-                "assets/images/Basketball_Halfcourt.svg",
+                'assets/images/Basketball_Halfcourt.svg',
                 height: min(box.maxWidth, box.maxHeight),
                 width: min(box.maxWidth, box.maxHeight),
               ),
@@ -202,10 +202,10 @@ class _ImageBasketballStuff extends CustomPainter {
 
   _ImageBasketballStuff({this.events, this.oldEvents, this.fraction});
 
-  final Paint madePainter = new Paint()
+  final Paint madePainter = Paint()
     ..color = Colors.blue[400]
     ..style = PaintingStyle.fill;
-  final Paint missedPainter = new Paint()
+  final Paint missedPainter = Paint()
     ..color = Colors.white
     ..strokeWidth = 1.5
     ..style = PaintingStyle.stroke;

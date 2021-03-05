@@ -16,7 +16,7 @@ class LeagueHomeScreen extends StatelessWidget {
   Widget _buildLeagueOrTournament(BuildContext context, LeagueOrTournament l) {
     return Card(
       child: ListTile(
-        onTap: () => Navigator.pushNamed(context, "/League/Main/${l.uid}"),
+        onTap: () => Navigator.pushNamed(context, '/League/Main/${l.uid}'),
         leading: LeagueImage(
           leagueOrTournament: l,
           width: 50.0,
@@ -95,11 +95,11 @@ class LeagueHomeScreen extends StatelessWidget {
   }
 
   void _doAction(BuildContext context, String value) {
-    if (value == "league") {
-      Navigator.pushNamed(context, "/League/AddLeague");
+    if (value == 'league') {
+      Navigator.pushNamed(context, '/League/AddLeague');
     }
-    if (value == "tournament") {
-      Navigator.pushNamed(context, "/League/AddTournament");
+    if (value == 'tournament') {
+      Navigator.pushNamed(context, '/League/AddTournament');
     }
   }
 
@@ -114,11 +114,11 @@ class LeagueHomeScreen extends StatelessWidget {
             itemBuilder: (context) {
               return <PopupMenuItem<String>>[
                 PopupMenuItem<String>(
-                  value: "league",
+                  value: 'league',
                   child: Text(Messages.of(context).addleague),
                 ),
                 PopupMenuItem<String>(
-                  value: "tournament",
+                  value: 'tournament',
                   child: Text(Messages.of(context).addtournament),
                 ),
                 PopupMenuItem<String>(

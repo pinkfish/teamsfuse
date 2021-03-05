@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singlegameprovider.dart';
 import '../blocs/singleopponentprovider.dart';
@@ -73,7 +73,7 @@ class TeamResultsByOpponent extends StatelessWidget {
                     if (showYear) {
                       var year = MaterialLocalizations.of(context)
                           .formatYear(game.sharedData.tzTime);
-                      textToShow = "$monthDay $year ";
+                      textToShow = '$monthDay $year ';
                     } else {
                       textToShow = monthDay;
                     }
@@ -185,7 +185,7 @@ class TeamResultsBySeason extends StatelessWidget {
                     if (showYear) {
                       var year = MaterialLocalizations.of(context)
                           .formatYear(game.sharedData.tzTime);
-                      textToShow = "$monthDay $year";
+                      textToShow = '$monthDay $year';
                     } else {
                       textToShow = monthDay;
                     }

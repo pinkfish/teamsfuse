@@ -55,14 +55,14 @@ class AsyncHydratedStorage implements AsyncStorage {
       Box<dynamic> box;
       if (isWeb) {
         box = await hive.openBox<dynamic>(
-          "${runtimeType.toString()}.$boxName",
+          '${runtimeType.toString()}.$boxName',
           encryptionCipher: encryptionCipher,
         );
       } else {
         final directory = storageDirectory;
-        hive.init(directory.path + "/async");
+        hive.init(directory.path + '/async');
         box = await hive.openBox<dynamic>(
-          "${runtimeType.toString()}.$boxName",
+          '${runtimeType.toString()}.$boxName',
           encryptionCipher: encryptionCipher,
         );
       }

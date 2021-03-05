@@ -240,7 +240,7 @@ class _AcceptInviteToLeagueTeamScreenState
                                 ),
                                 FlatButton(
                                   onPressed: () => Navigator.pushNamed(context,
-                                      "/League/Main/${inviteToLeagueTeam.leagueUid}"),
+                                      '/League/Main/${inviteToLeagueTeam.leagueUid}'),
                                   child: Text(messages.openbutton),
                                 ),
                                 FlatButton(

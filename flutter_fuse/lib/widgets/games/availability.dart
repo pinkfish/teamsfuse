@@ -50,7 +50,7 @@ class Availaility extends StatelessWidget {
 
   void _showPlayer(BuildContext context, Game game, String playerUid) {
     Navigator.pushNamed(
-        context, "PlayerDetails/${game.teamUid}/${game.seasonUid}/$playerUid");
+        context, 'PlayerDetails/${game.teamUid}/${game.seasonUid}/$playerUid');
   }
 
   Iterable<Widget> _buildChildren(

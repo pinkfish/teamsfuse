@@ -170,7 +170,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
   void _teamChanged(Team team) {
     setState(() => _team = team);
     var sharedGameData = GameSharedDataBuilder()
-      ..uid = ""
+      ..uid = ''
       ..timezone = tz.local.name
       ..officialResult.homeTeamLeagueUid = team.uid
       ..type = EventType.Game;
@@ -179,8 +179,8 @@ class _AddGameScreenState extends State<AddGameScreen> {
       ..result = GameResult.Unknown
       ..inProgress = GameInProgress.NotStarted;
     _initGame = Game((b) => b
-      ..sharedDataUid = ""
-      ..uid = ""
+      ..sharedDataUid = ''
+      ..uid = ''
       ..teamUid = team.uid
       ..sharedData = sharedGameData
       ..sharedData.time = start.toUtc()
@@ -188,8 +188,8 @@ class _AddGameScreenState extends State<AddGameScreen> {
           start.subtract(Duration(minutes: team.arriveEarlyInternal.toInt()))
       ..sharedData.endTime = start.toUtc()
       ..seasonUid = team.currentSeason
-      ..uniform = ""
-      ..notes = ""
+      ..uniform = ''
+      ..notes = ''
       ..result = result
       ..trackAttendance = team.trackAttendenceInternal);
     setState(() {});
@@ -219,7 +219,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
               Navigator.pop(context);
             }
             if (state is AddItemSaveFailed) {
-              _showInSnackBar("Error saving the game");
+              _showInSnackBar('Error saving the game');
             }
           },
           child: BlocBuilder(

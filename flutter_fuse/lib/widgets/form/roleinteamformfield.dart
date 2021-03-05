@@ -17,7 +17,7 @@ class RoleInTeamFormField extends FormField<String> {
     FormFieldValidator<String> validator,
   })  : assert(initialValue != null),
         super(
-            key: key ?? Key("ROLE"),
+            key: key ?? Key('ROLE'),
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,

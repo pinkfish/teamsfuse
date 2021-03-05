@@ -72,16 +72,16 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
   }
 
   void _select(String value) {
-    if (value == "addadmin") {
-      Navigator.pushNamed(context, "AddClubMember/${widget.clubUid}");
-    } else if (value == "addteam") {
-      Navigator.pushNamed(context, "AddClubTeam/${widget.clubUid}");
-    } else if (value == "editclub") {
-      Navigator.pushNamed(context, "EditClub/${widget.clubUid}");
-    } else if (value == "addcoach") {
-      Navigator.pushNamed(context, "Club/Coach/Add/${widget.clubUid}");
-    } else if (value == "addnews") {
-      Navigator.pushNamed(context, "Club/News/Add/${widget.clubUid}");
+    if (value == 'addadmin') {
+      Navigator.pushNamed(context, 'AddClubMember/${widget.clubUid}');
+    } else if (value == 'addteam') {
+      Navigator.pushNamed(context, 'AddClubTeam/${widget.clubUid}');
+    } else if (value == 'editclub') {
+      Navigator.pushNamed(context, 'EditClub/${widget.clubUid}');
+    } else if (value == 'addcoach') {
+      Navigator.pushNamed(context, 'Club/Coach/Add/${widget.clubUid}');
+    } else if (value == 'addnews') {
+      Navigator.pushNamed(context, 'Club/News/Add/${widget.clubUid}');
     }
   }
 
@@ -112,11 +112,11 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                 itemBuilder: (context) {
                   return <PopupMenuItem<String>>[
                     PopupMenuItem<String>(
-                      value: "editclub",
+                      value: 'editclub',
                       child: Text(Messages.of(context).editbuttontext),
                     ),
                     PopupMenuItem<String>(
-                      value: "addteam",
+                      value: 'addteam',
                       child: Text(Messages.of(context).addTeam),
                     ),
                     PopupMenuItem<String>(
@@ -124,7 +124,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                       child: Text(Messages.of(context).addNews),
                     ),
                     PopupMenuItem<String>(
-                      value: "addcoach",
+                      value: 'addcoach',
                       child: Text(Messages.of(context).addCoach),
                     ),
                     PopupMenuItem<String>(

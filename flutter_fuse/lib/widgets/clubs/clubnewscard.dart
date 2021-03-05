@@ -87,7 +87,7 @@ class ClubNewsCard extends StatelessWidget {
                         IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () => Navigator.pushNamed(
-                              context, "/Club/News/Edit/$clubUid/$newsItemUid"),
+                              context, '/Club/News/Edit/$clubUid/$newsItemUid'),
                         ),
                         IconButton(
                           icon: Icon(Icons.delete),

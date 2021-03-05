@@ -117,7 +117,7 @@ class _PlayerDataTableState extends State<PlayerDataTable> {
                 columns: [
                   DataColumn(
                     label: Text(
-                      "Name",
+                      'Name',
                       textScaleFactor: scale,
                       style: style,
                     ),
@@ -323,7 +323,7 @@ class _PlayerDataTableState extends State<PlayerDataTable> {
                   ),
                 )),
           onTap: () => Navigator.pushNamed(
-              context, "/Game/Player/" + widget.game.game.uid + "/" + uid),
+              context, '/Game/Player/' + widget.game.game.uid + '/' + uid),
         ),
         DataCell(
           Text(
@@ -338,14 +338,14 @@ class _PlayerDataTableState extends State<PlayerDataTable> {
                         data.two.attempts * 2 +
                         data.three.attempts * 3) ==
                     0
-                ? "0%"
+                ? '0%'
                 : ((data.one.made + data.two.made * 2 + data.three.made * 3) /
                             (data.one.attempts +
                                 data.two.attempts * 2 +
                                 data.three.attempts * 3) *
                             100)
                         .toStringAsFixed(0) +
-                    "%"),
+                    '%'),
             textScaleFactor: scale,
           ),
         ),

@@ -95,7 +95,7 @@ class _AcceptInviteToLeagueScreenState
                         ),
                         FlatButton(
                           onPressed: () => Navigator.pushNamed(context,
-                              "/League/Main/${inviteToLeagueAsAdmin.leagueUid}"),
+                              '/League/Main/${inviteToLeagueAsAdmin.leagueUid}'),
                           child: Text(messages.openbutton),
                         ),
                         FlatButton(

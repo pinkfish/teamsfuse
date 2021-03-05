@@ -252,7 +252,7 @@ class _GameTimeseriesData extends State<GameTimeseries> {
               value: _showTimeSeries,
               onChanged: (v) => setState(() => _showTimeSeries = v),
             ),
-            Text("Show Events"),
+            Text('Show Events'),
           ],
         ),
         Expanded(
@@ -268,15 +268,15 @@ class _GameTimeseriesData extends State<GameTimeseries> {
   String _nameOfSeries(GameEventType type, bool opponent) {
     switch (type) {
       case GameEventType.Foul:
-        return Messages.of(context).fouls + (opponent ? " (op)" : "");
+        return Messages.of(context).fouls + (opponent ? ' (op)' : "");
       case GameEventType.Turnover:
-        return Messages.of(context).turnovers + (opponent ? " (op)" : "");
+        return Messages.of(context).turnovers + (opponent ? ' (op)' : "");
       case GameEventType.Steal:
-        return Messages.of(context).steals + (opponent ? " (op)" : "");
+        return Messages.of(context).steals + (opponent ? ' (op)' : "");
       case GameEventType.Block:
-        return Messages.of(context).blocks + (opponent ? " (op)" : "");
+        return Messages.of(context).blocks + (opponent ? ' (op)' : "");
       default:
-        return Messages.of(context).unknown + (opponent ? " (op)" : "");
+        return Messages.of(context).unknown + (opponent ? ' (op)' : "");
     }
   }
 

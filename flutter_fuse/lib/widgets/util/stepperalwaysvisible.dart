@@ -314,7 +314,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
                 shape: MaterialStateProperty.all<OutlinedBorder>(buttonShape),
               ),
               child: Text(localizations.continueButtonLabel),
-              key: Key("CONTINUE"),
+              key: Key('CONTINUE'),
             ),
             Container(
               margin: const EdgeInsetsDirectional.only(start: 8.0),
@@ -326,7 +326,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
                   shape: buttonShape,
                 ),
                 child: Text(localizations.cancelButtonLabel),
-                key: Key("BACK"),
+                key: Key('BACK'),
               ),
             ),
           ],

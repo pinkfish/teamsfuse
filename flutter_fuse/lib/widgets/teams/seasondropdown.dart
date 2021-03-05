@@ -20,8 +20,8 @@ class SeasonDropDown extends StatelessWidget {
   final bool includeDecorator;
   final TextStyle style;
 
-  static String noneValue = "none";
-  static String allValue = "all";
+  static String noneValue = 'none';
+  static String allValue = 'all';
 
   SeasonDropDown(
       {@required this.teamUid,

@@ -132,18 +132,18 @@ class LeagueOrTournamentBloc
 
   @override
   LeagueOrTournamentState fromJson(Map<String, dynamic> json) {
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return LeagueOrTournamentUninitialized();
     }
     LeagueOrTournamentBlocStateType type =
-        LeagueOrTournamentBlocStateType.valueOf(json["type"]);
+        LeagueOrTournamentBlocStateType.valueOf(json['type']);
     switch (type) {
       case LeagueOrTournamentBlocStateType.Uninitialized:
         return LeagueOrTournamentUninitialized();
       case LeagueOrTournamentBlocStateType.Loaded:
         try {
           TraceProxy leagueTrace =
-              coordinationBloc.analytics.newTrace("leagueOrTournamentData");
+              coordinationBloc.analytics.newTrace('leagueOrTournamentData');
           leagueTrace.start();
           var loaded = LeagueOrTournamentLoaded.fromMap(json);
           leagueTrace.stop();

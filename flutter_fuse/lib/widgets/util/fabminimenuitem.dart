@@ -121,7 +121,7 @@ class FabMiniMenuItemWidget extends StatelessWidget {
               elevation: elevation,
               mini: true,
               backgroundColor: fabColor,
-              heroTag: "Inner fab ${_details.index}",
+              heroTag: 'Inner fab ${_details.index}',
               tooltip: tooltip,
               child: icon,
               onPressed: _doPress,

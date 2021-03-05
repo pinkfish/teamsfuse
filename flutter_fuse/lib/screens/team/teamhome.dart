@@ -9,7 +9,7 @@ import '../../widgets/teams/teamanimatedlist.dart';
 ///
 class TeamHomeScreen extends StatelessWidget {
   void _addTeam(BuildContext context) {
-    Navigator.pushNamed(context, "/AddTeam");
+    Navigator.pushNamed(context, '/AddTeam');
   }
 
   @override
@@ -46,7 +46,7 @@ class TeamHomeScreen extends StatelessWidget {
             ButtonBar(
               children: <Widget>[
                 TextButton(
-                  key: Key("ADD_TEAM"),
+                  key: Key('ADD_TEAM'),
                   child: Text(Messages.of(context).addTeamButton),
                   onPressed: () => _addTeam(context),
                 ),

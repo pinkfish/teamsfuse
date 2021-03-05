@@ -46,7 +46,7 @@ class _LeagueOrTournamentDivisonDetailsState
   }
 
   void _addGame(String uid, String leagueOrTournamentUid) {
-    Navigator.pushNamed(context, "/AddSharedGame/$leagueOrTournamentUid/$uid");
+    Navigator.pushNamed(context, '/AddSharedGame/$leagueOrTournamentUid/$uid');
   }
 
   Widget _buildGamesList(SingleLeagueOrTournamentDivisonState divisonState,
@@ -212,7 +212,7 @@ class _LeagueOrTournamentDivisonDetailsState
                           leagueOrTournmentSeasonUid:
                               divisonState.divison.leagueOrTournmentSeasonUid),
                       Text(
-                        "${divisonState.divison.name}",
+                        '${divisonState.divison.name}',
                         style: Theme.of(context).textTheme.subtitle1,
                       ),
                     ],

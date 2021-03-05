@@ -92,7 +92,7 @@ class FirebaseMessaging {
   /// Subscribe to topic in background.
   ///
   /// [topic] must match the following regular expression:
-  /// "[a-zA-Z0-9-_.~%]{1,900}".
+  /// '[a-zA-Z0-9-_.~%]{1,900}'.
   void subscribeToTopic(String topic) {
     _channel.invokeMethod<String>('subscribeToTopic', topic);
   }
@@ -104,28 +104,28 @@ class FirebaseMessaging {
 
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
-      case "onToken":
+      case 'onToken':
         var token = call.arguments as String;
         if (_token != token) {
           _token = token;
           _tokenStreamController.add(_token);
         }
         return null;
-      case "onIosSettingsRegistered":
+      case 'onIosSettingsRegistered':
         _iosSettingsStreamController.add(IosNotificationSettings._fromMap(
             call.arguments.cast<String, bool>() as Map<String, bool>));
         return null;
-      case "onMessage":
+      case 'onMessage':
         return _onMessage(
             call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
-      case "onLaunch":
+      case 'onLaunch':
         return _onLaunch(
             call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
-      case "onResume":
+      case 'onResume':
         return _onResume(
             call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
       default:
-        throw UnsupportedError("Unrecognized JSON message");
+        throw UnsupportedError('Unrecognized JSON message');
     }
   }
 }

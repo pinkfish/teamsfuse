@@ -118,7 +118,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
       @required this.leagueDivisonUid,
       @required this.crashes})
       : super(SingleLeagueOrTournamentDivisonUninitialized(),
-            "LeagueDivison.$leagueDivisonUid}") {
+            'LeagueDivison.$leagueDivisonUid}') {
     assert(this.db != null);
     _divSub = db
         .getLeagueDivisionData(leagueDivisionUid: leagueDivisonUid)
@@ -166,7 +166,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
         crashes.recordException(e, stack);
       }
     } else {
-      var e = ArgumentError("league uids don't match");
+      var e = ArgumentError('league uids do not match');
       yield (SingleLeagueOrTournamentDivisonSaveFailed.fromState(state)
             ..error = e)
           .build();
@@ -179,7 +179,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
       {String teamName}) async* {
     yield SingleLeagueOrTournamentDivisonSaving.fromState(state).build();
     try {
-      LeagueOrTournamentTeam teamData = new LeagueOrTournamentTeam((b) => b
+      LeagueOrTournamentTeam teamData = LeagueOrTournamentTeam((b) => b
         ..leagueOrTournamentDivisonUid = state.divison.uid
         ..leagueOrTournamentUid = state.divison.leagueOrTournamentUid
         ..name = teamName);
@@ -275,13 +275,13 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
     if (!(state is SingleLeagueOrTournamentDivisonUninitialized)) {
       return state;
     }
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleLeagueOrTournamentDivisonUninitialized();
     }
 
     try {
       SingleLeagueOrTournamentDivisonBlocStateType type =
-          SingleLeagueOrTournamentDivisonBlocStateType.valueOf(json["type"]);
+          SingleLeagueOrTournamentDivisonBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleLeagueOrTournamentDivisonBlocStateType.Uninitialized:
           return SingleLeagueOrTournamentDivisonUninitialized();

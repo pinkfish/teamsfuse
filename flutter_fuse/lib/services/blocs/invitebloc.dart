@@ -104,7 +104,7 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
   }
 
   void _onInviteUpdated(Iterable<Invite> invites) {
-    MapBuilder<String, Invite> newInvites = new MapBuilder<String, Invite>();
+    MapBuilder<String, Invite> newInvites = MapBuilder<String, Invite>();
 
     add(_InviteEventNewDataLoaded(invites: newInvites.build()));
   }
@@ -114,7 +114,7 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
     if (event is _InviteEventLoadFirestore) {
       _inviteChangeSub =
           databaseUpdateModel.getInvites().listen((Iterable<Invite> invites) {
-        coordinationBloc.loadingTrace?.incrementCounter("invite");
+        coordinationBloc.loadingTrace?.incrementCounter('invite');
         this._onInviteUpdated(invites);
       });
       print(
@@ -144,17 +144,17 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
 
   @override
   InviteState fromJson(Map<String, dynamic> json) {
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return InviteUninitialized();
     }
 
-    InviteBlocStateType type = InviteBlocStateType.valueOf(json["type"]);
+    InviteBlocStateType type = InviteBlocStateType.valueOf(json['type']);
     switch (type) {
       case InviteBlocStateType.Uninitialized:
         return InviteUninitialized();
       case InviteBlocStateType.Loaded:
         try {
-          TraceProxy invitesTrace = crashes.newTrace("invitesData");
+          TraceProxy invitesTrace = crashes.newTrace('invitesData');
           invitesTrace.start();
           var loaded = InviteLoaded.fromMap(json);
           invitesTrace.stop();

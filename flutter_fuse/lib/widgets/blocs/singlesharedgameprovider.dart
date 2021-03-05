@@ -24,7 +24,7 @@ class SingleSharedGameProvider
             keyUid: sharedGameUid,
             creator: _createBloc,
             builder: builder,
-            prefix: "shared");
+            prefix: 'shared');
 
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleSharedGameBloc && bloc.sharedGameUid == keyUid);

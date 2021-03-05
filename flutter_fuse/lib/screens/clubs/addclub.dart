@@ -36,7 +36,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
     _clubBloc = AddClubBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
     _clubToAdd = Club((b) => b
-      ..name = ""
+      ..name = ''
       ..arriveBeforeGame = 0
       ..trackAttendence = Tristate.Unset);
   }

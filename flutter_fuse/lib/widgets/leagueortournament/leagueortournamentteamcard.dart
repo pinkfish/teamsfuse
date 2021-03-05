@@ -45,7 +45,7 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
               }
               return ListTile(
                 onTap: () =>
-                    Navigator.pushNamed(context, "/League/Team/${team.uid}"),
+                    Navigator.pushNamed(context, '/League/Team/${team.uid}'),
                 leading: team.teamUid != null
                     ? TeamImage(
                         width: 50.0,

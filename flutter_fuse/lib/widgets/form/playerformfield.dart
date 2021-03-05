@@ -20,7 +20,7 @@ class PlayerFormField extends FormField<String> {
     FormFieldValidator<String> validator,
   })  : assert(initialValue != null),
         super(
-          key: key ?? Key("PLAYER"),
+          key: key ?? Key('PLAYER'),
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,

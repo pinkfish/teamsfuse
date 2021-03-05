@@ -102,17 +102,17 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
     var end = MaterialLocalizations.of(context)
         .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
     if (myGame.sharedData.time != myGame.sharedData.endTime) {
-      timeStr = "$start - $end";
+      timeStr = '$start - $end';
     } else {
       timeStr = MaterialLocalizations.of(context)
           .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
     }
     var cols = <Widget>[
       RaisedButton(
-        child: Text(Messages.of(context).createNew),
         color: Theme.of(context).accentColor,
         textColor: Colors.white,
         onPressed: () => _onStepperContinue(context),
+        child: Text(Messages.of(context).createNew),
       ),
       ListTile(
         leading: Icon(Icons.calendar_today),
@@ -124,10 +124,10 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
         leading: Icon(Icons.place),
         title: Text(myGame.sharedData.place.name != null
             ? myGame.sharedData.place.name
-            : ""),
+            : ''),
         subtitle: Text(myGame.sharedData.place.address != null
             ? myGame.sharedData.place.address
-            : ""),
+            : ''),
       ),
     ];
 
@@ -239,8 +239,8 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: Text("Error"),
-                    content: Text("Error saving the training"),
+                    title: Text('Error'),
+                    content: Text('Error saving the training'),
                   );
                 });
           });
@@ -262,7 +262,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
       var start = clock.now().add(const Duration(days: 1));
 
       var sharedGameData = GameSharedData((b) => b
-        ..uid = ""
+        ..uid = ''
         ..type = EventType.Practice
         ..time = start
         ..endTime = start.add(const Duration(hours: 1))
@@ -275,10 +275,10 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
 
       _initGame = Game((b) => b
         ..teamUid = _team.uid
-        ..sharedDataUid = ""
+        ..sharedDataUid = ''
         ..sharedData = sharedGameData.toBuilder()
-        ..uniform = ""
-        ..uid = ""
+        ..uniform = ''
+        ..uid = ''
         ..teamUid = _team.uid
         ..seasonUid = _team.currentSeason
         ..trackAttendance = _team.trackAttendenceInternal
@@ -328,8 +328,8 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: Text("Error"),
-                    content: Text("Error saving the training"),
+                    title: Text('Error'),
+                    content: Text('Error saving the training'),
                   );
                 },
               );

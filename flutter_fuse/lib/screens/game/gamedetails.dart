@@ -42,10 +42,10 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
       // Show a dialog and then delete it!
       var deleted = await deleteGameDialog(context, gameBloc);
       if (deleted) {
-        Navigator.pop(context);
+        await Navigator.pop(context);
       }
-    } else if (choice == "edit") {
-      Navigator.pushNamed(context, "EditGame/${widget.gameUid}");
+    } else if (choice == 'edit') {
+      await Navigator.pushNamed(context, 'EditGame/${widget.gameUid}');
     }
   }
 
@@ -150,12 +150,12 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                         itemBuilder: (context) {
                           return <PopupMenuItem<String>>[
                             PopupMenuItem<String>(
-                              value: "delete",
+                              value: 'delete',
                               child: Text(Messages.of(context)
                                   .deletegame(game.sharedData)),
                             ),
                             PopupMenuItem<String>(
-                              value: "edit",
+                              value: 'edit',
                               child: Text(Messages.of(context).editGame),
                             ),
                           ];
@@ -196,11 +196,11 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                               label: Text(Messages.of(context).statsButton),
                               onPressed: () => Navigator.pushNamed(
                                   context,
-                                  "/GameStats/" +
+                                  '/GameStats/' +
                                       gameState.game.uid +
-                                      "/" +
+                                      '/' +
                                       gameState.game.seasonUid +
-                                      "/" +
+                                      '/' +
                                       gameState.game.teamUid),
                             ),
                 );

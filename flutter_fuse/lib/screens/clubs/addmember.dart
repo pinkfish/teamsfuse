@@ -118,7 +118,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                         decoration: InputDecoration(
                             labelText: Messages.of(context).email,
                             hintText: Messages.of(context).playeremailHint),
-                        initialValue: "",
+                        initialValue: '',
                         validator: (value) =>
                             validations.validateEmail(context, value),
                         onSaved: (value) => _emailToInvite = value,

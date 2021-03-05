@@ -54,7 +54,7 @@ class ClubImage extends StatelessWidget {
               state is SingleClubDeleted ||
               state.club.photoUrl == null ||
               state.club.photoUrl.isEmpty) {
-            img = Image.asset("assets/images/defaultavatar.png",
+            img = Image.asset('assets/images/defaultavatar.png',
                 key: key,
                 width: width,
                 height: height,
@@ -67,7 +67,7 @@ class ClubImage extends StatelessWidget {
               width: width,
               height: height,
               placeholder: (context, url) => Image.asset(
-                "assets/images/defaultavatar.png",
+                'assets/images/defaultavatar.png',
                 width: width,
                 height: height,
                 fit: fit,

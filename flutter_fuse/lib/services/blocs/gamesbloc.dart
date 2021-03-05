@@ -63,16 +63,16 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
       {@required this.coordinationBloc,
       @required this.teamBloc,
       @required this.crashes})
-      : _start = clock.now().subtract(new Duration(days: 60)).toUtc(),
-        _end = clock.now().add(new Duration(days: 240)).toUtc(),
+      : _start = clock.now().subtract(Duration(days: 60)).toUtc(),
+        _end = clock.now().add(Duration(days: 240)).toUtc(),
         super(GameUninitialized()) {
     if (teamBloc.state is TeamLoaded) {
       _onTeamsUpdates(teamBloc.state.allTeamUids, true);
     }
     _teamSub = teamBloc.listen((TeamState state) {
       if (state is TeamLoaded) {
-        _start = _start ?? clock.now().subtract(new Duration(days: 60)).toUtc();
-        _end = _end ?? clock.now().add(new Duration(days: 240)).toUtc();
+        _start = _start ?? clock.now().subtract(Duration(days: 60)).toUtc();
+        _end = _end ?? clock.now().add(Duration(days: 240)).toUtc();
         _onTeamsUpdates(state.allTeamUids, false);
       } else {
         add(_GameEventLogout());
@@ -152,18 +152,18 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
 
   @override
   GameState fromJson(Map<String, dynamic> json) {
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return GameUninitialized();
     }
 
-    GameBlocStateType type = GameBlocStateType.valueOf(json["type"]);
+    GameBlocStateType type = GameBlocStateType.valueOf(json['type']);
     switch (type) {
       case GameBlocStateType.Uninitialized:
         return GameUninitialized();
       case GameBlocStateType.Loaded:
         try {
           TraceProxy gamesTrace =
-              coordinationBloc.analytics.newTrace("gamaData");
+              coordinationBloc.analytics.newTrace('gamaData');
           gamesTrace.start();
           var loaded = GameLoaded.fromMap(json);
           var gamesByTeam = MapBuilder<String, ListBuilder<Game>>();

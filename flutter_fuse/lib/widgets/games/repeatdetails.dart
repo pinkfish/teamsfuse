@@ -127,7 +127,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                     ),
                     margin: EdgeInsets.only(left: 10.0),
                     child: TextFormField(
-                      initialValue: "1",
+                      initialValue: '1',
                       keyboardType: TextInputType.number,
                       onSaved: (val) {
                         _updatedRepeat = _updatedRepeat
@@ -151,7 +151,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
         var days = MaterialLocalizations.of(context).narrowWeekdays;
         var first = MaterialLocalizations.of(context).firstDayOfWeekIndex;
         var daysWidgets = <Widget>[];
-        print("$days");
+        print('$days');
         daysWidgets.add(const Icon(Icons.calendar_today));
         for (var i = first; i < first + days.length; i++) {
           var pos = i % days.length;
@@ -190,7 +190,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
       case RepeatPeriod.Monthly:
         ret.add(
           TextFormField(
-            initialValue: "1",
+            initialValue: '1',
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: messages.repeat,

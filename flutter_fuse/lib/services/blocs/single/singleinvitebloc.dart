@@ -101,7 +101,7 @@ class SingleInviteBloc
   StreamSubscription<Invite> _inviteListen;
 
   /// Used for the season/team etc if we want to make a new one.
-  static String createNew = "createNew";
+  static String createNew = 'createNew';
 
   SingleInviteBloc(
       {@required this.db,
@@ -134,7 +134,7 @@ class SingleInviteBloc
       await db.addUserToClub(invite.clubUid, db.currentUser.uid, invite.admin);
       // This should cause the data to update
       await db.firestoreInviteDelete(invite.uid);
-      crashes.logInviteAccepted("club", invite.clubUid);
+      crashes.logInviteAccepted('club', invite.clubUid);
       return SingleInviteDeleted();
     } else {
       //
@@ -164,7 +164,7 @@ class SingleInviteBloc
 
       // This should cause the data to update
       await db.firestoreInviteDelete(invite.uid);
-      crashes.logInviteAccepted("leagueAdmin", invite.leagueUid);
+      crashes.logInviteAccepted('leagueAdmin', invite.leagueUid);
       return SingleInviteDeleted();
     } else {
       return (SingleInviteSaveFailed.fromState(state)
@@ -184,7 +184,7 @@ class SingleInviteBloc
               ..error = ArgumentError('Relationship incorrec'))
             .build();
       }
-      crashes.logInviteAccepted("inviteToPlayer", invite.playerUid);
+      crashes.logInviteAccepted('inviteToPlayer', invite.playerUid);
       // Add ourselves to the player.
       bool exists = await db.playerExists(invite.playerUid);
       if (!exists) {
@@ -214,7 +214,7 @@ class SingleInviteBloc
       // Invite to league team
       //
       if (event.teamUid == SingleInviteBloc.createNew) {
-        TeamBuilder team = new TeamBuilder();
+        TeamBuilder team = TeamBuilder();
         team.name = invite.leagueTeamName;
         team.adminsData[db.currentUser.uid] = BuiltMap.of({
           'admin': true,
@@ -223,7 +223,7 @@ class SingleInviteBloc
         var pregen = db.precreateTeamUid();
         var pregenSeason = db.precreateUidSeason();
         team.uid = pregen.documentID;
-        Season season = new Season((b) => b
+        Season season = Season((b) => b
           ..uid = pregenSeason.documentID
           ..name = invite.leagueSeasonName
           ..teamUid = team.uid
@@ -245,20 +245,20 @@ class SingleInviteBloc
           await db.updateLeagueTeam(leagueTeam);
           await db.addFirestoreTeam(team.build(), pregen, season, null);
         }
-        crashes.logInviteAccepted("leagueTeam", leagueTeam.uid);
+        crashes.logInviteAccepted('leagueTeam', leagueTeam.uid);
       } else if (event.seasonUid == SingleInviteBloc.createNew) {
         var pregenSeason = db.precreateUidSeason();
 
-        Season season = new Season((b) => b
+        Season season = Season((b) => b
           ..uid = pregenSeason.documentID
           ..name = invite.leagueSeasonName
           ..teamUid = event.teamUid);
         await db.addFirestoreSeason(season, pregenSeason);
-        crashes.logInviteAccepted("leagueSeason", season.uid);
+        crashes.logInviteAccepted('leagueSeason', season.uid);
       } else {
         Season season = seasonBloc.state.seasons[event.seasonUid];
         await db.connectLeagueTeamToSeason(invite.leagueTeamUid, season);
-        crashes.logInviteAccepted("leagueSeasonTeam", invite.leagueTeamUid);
+        crashes.logInviteAccepted('leagueSeasonTeam', invite.leagueTeamUid);
       }
       // This should cause the data to update
       await db.firestoreInviteDelete(invite.uid);
@@ -280,7 +280,7 @@ class SingleInviteBloc
 
       // This should cause the data to update
       await db.firestoreInviteDelete(invite.uid);
-      crashes.logInviteAccepted("admin", invite.teamUid);
+      crashes.logInviteAccepted('admin', invite.teamUid);
       return SingleInviteDeleted();
     } else {
       return (SingleInviteSaveFailed.fromState(state)
@@ -402,13 +402,13 @@ class SingleInviteBloc
       return state;
     }
 
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleInviteUninitialized();
     }
 
     try {
       SingleInviteBlocStateType type =
-          SingleInviteBlocStateType.valueOf(json["type"]);
+          SingleInviteBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleInviteBlocStateType.Uninitialized:
           return SingleInviteUninitialized();

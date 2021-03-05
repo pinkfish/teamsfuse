@@ -182,7 +182,7 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
     }
 
     if (!widget.autocompleteOnTrailingWhitespace &&
-        controller.text.substring(controller.text.length - 1) == " ") {
+        controller.text.substring(controller.text.length - 1) == ' ') {
       provider.debounceTimer?.cancel();
       return;
     }
@@ -311,7 +311,7 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
       );
 
       if (response.errorMessage?.isNotEmpty == true ||
-          response.status == "REQUEST_DENIED") {
+          response.status == 'REQUEST_DENIED') {
         if (widget.onSearchFailed != null) {
           widget.onSearchFailed(response.status);
         }

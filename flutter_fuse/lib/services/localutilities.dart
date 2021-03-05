@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 /// data.
 ///
 class LocalUtilities {
-  static String themeMode = "ThemeMode";
-  static String settingsBox = "settings";
-  static String uploadsBox = "uploads";
+  static String themeMode = 'ThemeMode';
+  static String settingsBox = 'settings';
+  static String uploadsBox = 'uploads';
 
   static bool isDark(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark;

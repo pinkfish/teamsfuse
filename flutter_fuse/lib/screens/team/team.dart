@@ -55,16 +55,16 @@ class _TeamScreenState extends State<TeamScreen> {
     // Causes the app to rebuild with the _selectedChoice.
     setState(() {});
     if (choice == 'settings') {
-      Navigator.pushNamed(context, "TeamSettings/${widget.teamUid}");
+      Navigator.pushNamed(context, 'TeamSettings/${widget.teamUid}');
     }
-    if (choice == "club") {
-      Navigator.pushNamed(context, "TeamClub/${widget.teamUid}");
+    if (choice == 'club') {
+      Navigator.pushNamed(context, 'TeamClub/${widget.teamUid}');
     }
     if (choice == 'archive') {
       singleTeamBloc
           .add(SingleTeamArchive(archive: !singleTeamBloc.state.team.archived));
     } else if (choice == 'edit') {
-      Navigator.pushNamed(context, "EditTeam/${widget.teamUid}");
+      Navigator.pushNamed(context, 'EditTeam/${widget.teamUid}');
     }
   }
 
@@ -90,21 +90,21 @@ class _TeamScreenState extends State<TeamScreen> {
                 itemBuilder: (context) {
                   return <PopupMenuItem<String>>[
                     PopupMenuItem<String>(
-                      value: "edit",
+                      value: 'edit',
                       child: ListTile(
                         leading: Icon(Icons.edit),
                         title: Text(Messages.of(context).editbuttontext),
                       ),
                     ),
                     PopupMenuItem<String>(
-                      value: "settings",
+                      value: 'settings',
                       child: ListTile(
                         leading: Icon(Icons.settings),
                         title: Text(Messages.of(context).settings),
                       ),
                     ),
                     PopupMenuItem<String>(
-                      value: "club",
+                      value: 'club',
                       child: ListTile(
                         leading: Icon(MdiIcons.cardsClub),
                         title: Text(Messages.of(context).club),

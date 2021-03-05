@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fusemodel/fusemodel.dart';
-import '../../services/blocs.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 
 ///
@@ -10,11 +9,11 @@ import '../../services/messages.dart';
 ///
 class EmptyGameList extends StatelessWidget {
   void _addTeam(BuildContext context) {
-    Navigator.pushNamed(context, "AddTeam");
+    Navigator.pushNamed(context, 'AddTeam');
   }
 
   void _addGame(BuildContext context) {
-    Navigator.pushNamed(context, "AddGame");
+    Navigator.pushNamed(context, 'AddGame');
   }
 
   @override
@@ -38,7 +37,7 @@ class EmptyGameList extends StatelessWidget {
       children: <Widget>[
         Center(
             child: Image(
-          image: ExactAssetImage("assets/images/abstractsport.png"),
+          image: ExactAssetImage('assets/images/abstractsport.png'),
           width: screenSize.width < screenSize.height
               ? screenSize.width - 30.0
               : screenSize.height - 30.0,

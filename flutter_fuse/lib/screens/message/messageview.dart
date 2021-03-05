@@ -102,7 +102,7 @@ class _ShowMessageScreenState extends State<ShowMessageScreen> {
       ListTile(
         leading: const Icon(Icons.calendar_today),
         title: Text(
-          "$start $end",
+          '$start $end',
         ),
       ),
     );

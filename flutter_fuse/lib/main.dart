@@ -57,14 +57,14 @@ void main() async {
 
   // Timezone
   initializeDatabase(loadedData.buffer.asUint8List());
-  if (currentTimeZone == "GMT") {
-    currentTimeZone = "Europe/London";
+  if (currentTimeZone == 'GMT') {
+    currentTimeZone = 'Europe/London';
     setLocalLocation(getLocation(currentTimeZone));
-  } else if (currentTimeZone == "Pacific Standard Time") {
-    currentTimeZone = "America/Los_Angeles";
+  } else if (currentTimeZone == 'Pacific Standard Time') {
+    currentTimeZone = 'America/Los_Angeles';
     setLocalLocation(getLocation(currentTimeZone));
-  } else if (currentTimeZone == "Mountain Standard Time") {
-    currentTimeZone = "America/Detroit";
+  } else if (currentTimeZone == 'Mountain Standard Time') {
+    currentTimeZone = 'America/Detroit';
     setLocalLocation(getLocation(currentTimeZone));
   } else {
     setLocalLocation(getLocation(currentTimeZone));
@@ -92,7 +92,7 @@ void main() async {
   // License for the freepik picture.
   LicenseRegistry.addLicense(() async* {
     yield const LicenseEntryWithLineBreaks(
-        null, "Designed by FreePik\nwww.freepik.com ");
+        null, 'Designed by FreePik\nwww.freepik.com ');
   });
   trace.stop();
 
@@ -106,8 +106,8 @@ class _SimpleBlocDelegate extends BlocObserver {
   @override
   void onTransition(Bloc bloc, Transition transition) {
     super.onTransition(bloc, transition);
-    print("Transition: ${transition.currentState.runtimeType.toString()} "
-        "event: ${transition.event.runtimeType.toString()} "
-        "nextState: ${transition.nextState.runtimeType.toString()}");
+    print('Transition: ${transition.currentState.runtimeType.toString()} '
+        'event: ${transition.event.runtimeType.toString()} '
+        'nextState: ${transition.nextState.runtimeType.toString()}');
   }
 }

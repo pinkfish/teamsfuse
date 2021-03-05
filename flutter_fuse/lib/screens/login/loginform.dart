@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: <Widget>[
                         Text(errorText),
                         TextFormField(
-                          key: Key("EMAIL"),
+                          key: Key('EMAIL'),
                           decoration: const InputDecoration(
                             icon: Icon(Icons.email),
                             hintText: 'Your email address',
@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         TextFormField(
-                          key: Key("PASSWORD"),
+                          key: Key('PASSWORD'),
                           decoration: InputDecoration(
                             icon: Icon(Icons.lock_open),
                             hintText: 'Password',
@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Theme.of(context).primaryColor,
                       textColor: Colors.white,
                       onPressed: _handleSubmitted,
-                      key: Key("SUBMIT"),
+                      key: Key('SUBMIT'),
                     ),
                     margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                   ),
@@ -119,14 +119,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       FlatButton(
                         child: Text(Messages.of(context).createaccount),
                         textColor: Theme.of(context).accentColor,
-                        key: Key("CREATEACCOUNT"),
-                        onPressed: () => _onPressed("/Login/SignUp"),
+                        key: Key('CREATEACCOUNT'),
+                        onPressed: () => _onPressed('/Login/SignUp'),
                       ),
                       FlatButton(
                         child: Text(Messages.of(context).forgotPassword),
                         textColor: Theme.of(context).accentColor,
-                        key: Key("FORGOTPASSWORD"),
-                        onPressed: () => _onPressed("/Login/ForgotPassword"),
+                        key: Key('FORGOTPASSWORD'),
+                        onPressed: () => _onPressed('/Login/ForgotPassword'),
                       ),
                     ],
                   )
@@ -146,14 +146,14 @@ class _LoginScreenState extends State<LoginScreen> {
         cubit: BlocProvider.of<AuthenticationBloc>(context),
         listener: (context, state) {
           if (state is AuthenticationLoggedIn) {
-            Navigator.pushNamedAndRemoveUntil(context, "/Home", (d) => false);
+            Navigator.pushNamedAndRemoveUntil(context, '/Home', (d) => false);
           }
           if (state is AuthenticationFailed) {
             errorText = Messages.of(context).passwordnotcorrect;
             _showInSnackBar(errorText);
           }
           if (state is AuthenticationLoggedInUnverified) {
-            Navigator.popAndPushNamed(context, "/Login/Verify");
+            Navigator.popAndPushNamed(context, '/Login/Verify');
           }
         },
         builder: (context, state) {

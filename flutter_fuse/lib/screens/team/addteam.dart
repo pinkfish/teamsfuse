@@ -73,7 +73,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
       _detailsStepState = StepState.editing;
     }
     _teamToAdd = TeamBuilder();
-    _teamToAdd.name = "";
+    _teamToAdd.name = '';
     _teamToAdd.arriveEarlyInternal = 0;
   }
 

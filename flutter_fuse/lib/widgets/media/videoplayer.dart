@@ -1,6 +1,5 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:video_player/video_player.dart';
 
@@ -48,7 +47,7 @@ class _GameVideoPlayer extends State<GameVideoPlayer> {
     if (newUrl != _currentUrl) {
       _currentUrl = newUrl;
       String downloadUrl = newUrl.toString();
-      if (newUrl.scheme == "gs") {
+      if (newUrl.scheme == 'gs') {
         var ref = await FirebaseStorage.instance.refFromURL(newUrl.toString());
         downloadUrl = await ref.getDownloadURL();
       }
@@ -62,7 +61,7 @@ class _GameVideoPlayer extends State<GameVideoPlayer> {
           _lastStart = widget.start;
           setState(() {});
         }).catchError((e) {
-          print("Error $e");
+          print('Error $e');
         });
     }
   }

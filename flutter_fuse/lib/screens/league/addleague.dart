@@ -2,9 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/leagueortournament/leagueimage.dart';
 import '../../widgets/leagueortournament/leagueortournamenteditform.dart';
@@ -45,9 +45,9 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
     super.initState();
     _league = LeagueOrTournamentBuilder()
       ..type = widget.type
-      ..name = ""
-      ..shortDescription = ""
-      ..longDescription = "";
+      ..name = ''
+      ..shortDescription = ''
+      ..longDescription = '';
     _league.membersData[authenticationBloc.currentUser.uid] =
         AddedOrAdmin((b) => b
           ..admin = true
@@ -183,8 +183,8 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text("Error"),
-                        content: Text("Error saving the league"),
+                        title: Text('Error'),
+                        content: Text('Error saving the league'),
                       );
                     });
               }

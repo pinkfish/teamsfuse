@@ -23,7 +23,7 @@ class LeagueTeamScreen extends StatelessWidget {
 
   void _doAction(
       BuildContext context, String action, SingleLeagueOrTournamentBloc bloc) {
-    if (action == "invite") {
+    if (action == 'invite') {
       AddInviteToTeamDialog.showAddTeamInviteDialogByUid(
           context, leagueTeamUid);
     }
@@ -60,7 +60,7 @@ class LeagueTeamScreen extends StatelessWidget {
                         itemBuilder: (context) {
                           return <PopupMenuItem<String>>[
                             PopupMenuItem<String>(
-                              value: "invite",
+                              value: 'invite',
                               child: Text(Messages.of(context).shareTeam),
                             ),
                           ];

@@ -139,12 +139,12 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
     if (!(state is SingleTeamSeasonPlayerUninitialized)) {
       return state;
     }
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleTeamSeasonPlayerUninitialized();
     }
 
     SingleTeamSeasonPlayerBlocStateType type =
-        SingleTeamSeasonPlayerBlocStateType.valueOf(json["type"]);
+        SingleTeamSeasonPlayerBlocStateType.valueOf(json['type']);
     try {
       switch (type) {
         case SingleTeamSeasonPlayerBlocStateType.Uninitialized:

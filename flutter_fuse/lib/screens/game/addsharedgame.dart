@@ -190,8 +190,8 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: Text("Error"),
-                      content: Text("Error saving the game"),
+                      title: Text('Error'),
+                      content: Text('Error saving the game'),
                     );
                   });
             }

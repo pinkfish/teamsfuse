@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
 
-    await _calendarEvents.loadGames(_details);
+    _calendarEvents.loadGames(_details);
     setState(() {});
   }
 
@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.mail),
-                  onPressed: () => Navigator.pushNamed(context, "Messages"),
+                  onPressed: () => Navigator.pushNamed(context, 'Messages'),
                 ));
           }),
     ];
@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: <Widget>[
                 GestureDetector(
                   child: InviteCard(),
-                  onTap: () => Navigator.pushNamed(context, "Invites"),
+                  onTap: () => Navigator.pushNamed(context, 'Invites'),
                 ),
                 Expanded(
                   child: CalendarWidget(
@@ -156,8 +156,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     getEvents: _calendarEvents.getEvents,
                     buildItem: _calendarEvents.buildWidget,
                     bannerHeader:
-                        AssetImage("assets/images/calendarheader.png"),
-                    monthHeader: AssetImage("assets/images/calendarbanner.jpg"),
+                        AssetImage('assets/images/calendarheader.png'),
+                    monthHeader: AssetImage('assets/images/calendarbanner.jpg'),
                   ),
                 ),
               ],
@@ -175,25 +175,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: const Icon(Icons.mail),
                   fabColor: Colors.lightBlueAccent,
                   text: messages.newmail,
-                  onPressed: () => Navigator.pushNamed(context, "AddMessage"),
+                  onPressed: () => Navigator.pushNamed(context, 'AddMessage'),
                 ),
                 FabMiniMenuItemWidget(
                   icon: const Icon(Icons.calendar_today),
                   fabColor: Colors.blueAccent,
                   text: messages.addEventButton,
-                  onPressed: () => Navigator.pushNamed(context, "AddEvent"),
+                  onPressed: () => Navigator.pushNamed(context, 'AddEvent'),
                 ),
                 FabMiniMenuItemWidget(
                   icon: const Icon(Icons.people),
                   fabColor: Colors.blueGrey,
                   text: messages.addTrainingButton,
-                  onPressed: () => Navigator.pushNamed(context, "AddTraining"),
+                  onPressed: () => Navigator.pushNamed(context, 'AddTraining'),
                 ),
                 FabMiniMenuItemWidget(
                   icon: const Icon(Icons.gamepad),
                   fabColor: theme.accentColor,
                   text: messages.addGameButton,
-                  onPressed: () => Navigator.pushNamed(context, "AddGame"),
+                  onPressed: () => Navigator.pushNamed(context, 'AddGame'),
                 ),
               ],
               color: state.allTeamUids.length == 0

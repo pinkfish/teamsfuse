@@ -23,7 +23,7 @@ class SingleLeagueOrTournamentDivisonProvider
             keyUid: leagueDivisonUid,
             creator: (context, uid) => _createBloc(context, uid),
             builder: builder,
-            prefix: "leagueD");
+            prefix: 'leagueD');
 
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleLeagueOrTournamentDivisonBloc &&

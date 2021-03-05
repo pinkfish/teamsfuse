@@ -5,8 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singleplayerprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../../services/blocs.dart';
-
 ///
 /// Image of the specific player.  Will make an oval clip rect of the specific
 /// radius and fill the image to fit that circle.
@@ -48,13 +46,13 @@ class PlayerImage extends StatelessWidget {
                   if (state is SinglePlayerUninitialized ||
                       state is SinglePlayerDeleted ||
                       state.player.photoUrl == null) {
-                    image = AssetImage("assets/images/defaultavatar2.png");
+                    image = AssetImage('assets/images/defaultavatar2.png');
                   } else {
                     image = CachedNetworkImageProvider(state.player.photoUrl);
                   }
                   return FadeInImage(
                       placeholder:
-                          AssetImage("assets/images/defaultavatar2.png"),
+                          AssetImage('assets/images/defaultavatar2.png'),
                       image: image);
                 }),
           ),

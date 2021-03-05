@@ -34,11 +34,11 @@ class GameDetails extends StatefulWidget {
 
 class _GameDetailsState extends State<GameDetails> {
   void openNavigation(Game game) {
-    var url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=${Uri.encodeComponent(game.sharedData.place.address)}";
+    var url = 'https://www.google.com/maps/dir/?api=1';
+    url += '&destination=${Uri.encodeComponent(game.sharedData.place.address)}';
     if (game.sharedData.place.placeId != null) {
       url +=
-          "&destination_place_id=${Uri.encodeComponent(game.sharedData.place.placeId)}";
+          '&destination_place_id=${Uri.encodeComponent(game.sharedData.place.placeId)}';
     }
     launch(url);
   }

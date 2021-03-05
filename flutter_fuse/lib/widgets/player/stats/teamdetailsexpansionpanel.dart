@@ -282,7 +282,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
           ),
           DataColumn(
             label: Text(
-              "1",
+              '1',
               style: headerStyle,
             ),
             onSort: (int index, bool ascending) {
@@ -305,7 +305,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
           ),
           DataColumn(
             label: Text(
-              "2",
+              '2',
               style: headerStyle,
             ),
             onSort: (int index, bool ascending) {
@@ -328,7 +328,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
           ),
           DataColumn(
             label: Text(
-              "3",
+              '3',
               style: headerStyle,
             ),
             onSort: (int index, bool ascending) {
@@ -490,9 +490,9 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
 
   String _getMadeMissed(MadeAttempt att) {
     if (att == null || att.attempts == 0) {
-      return "n/a";
+      return 'n/a';
     }
-    return ((att.made / att.attempts) * 100).toStringAsFixed(0) + "%";
+    return ((att.made / att.attempts) * 100).toStringAsFixed(0) + '%';
   }
 
   DataRow _gameDataRow(Game g) {

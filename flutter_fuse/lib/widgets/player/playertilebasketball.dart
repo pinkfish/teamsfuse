@@ -54,10 +54,10 @@ class PlayerTileBasketball extends StatelessWidget {
         builder: (context, singleGameBloc) => BlocBuilder(
             cubit: singleGameBloc,
             builder: (context, gameState) {
-              var jerseyNumber = "U";
+              var jerseyNumber = 'U';
               if (gameState is SingleGameLoaded) {
                 var player = gameState.game.getPlayerSummary(playerUid);
-                jerseyNumber = player?.jerseyNumber ?? "U";
+                jerseyNumber = player?.jerseyNumber ?? 'U';
               }
               return _buildPlayer(context, jerseyNumber);
             }),
@@ -68,10 +68,10 @@ class PlayerTileBasketball extends StatelessWidget {
         builder: (context, singleSeasonBloc) => BlocBuilder(
             cubit: singleSeasonBloc,
             builder: (context, seasonState) {
-              var jerseyNumber = "U";
+              var jerseyNumber = 'U';
               if (seasonState is SingleSeasonLoaded) {
                 var player = seasonState.season.playersData[playerUid];
-                jerseyNumber = player?.jerseyNumber ?? "U";
+                jerseyNumber = player?.jerseyNumber ?? 'U';
               }
               return _buildPlayer(context, jerseyNumber);
             }),
@@ -136,7 +136,7 @@ class PlayerTileBasketball extends StatelessWidget {
             }
             if (singlePlayerState is SinglePlayerLoaded) {
               print(
-                  "Loaded ${singlePlayerState.player.playerType} ${singlePlayerBloc.playerUid}");
+                  'Loaded ${singlePlayerState.player.playerType} ${singlePlayerBloc.playerUid}');
               return _loadedData(
                   context, singlePlayerState.player, jerseyNumber);
             }
@@ -234,7 +234,7 @@ class PlayerTileBasketball extends StatelessWidget {
             child: Container(
               child: Center(
                 child: Text(
-                  jerseyNumber ?? "U",
+                  jerseyNumber ?? 'U',
                   style: Theme.of(context).textTheme.caption.copyWith(
                         color: contentColor ?? Theme.of(context).accentColor,
                         fontWeight: FontWeight.bold,
@@ -258,7 +258,7 @@ class PlayerTileBasketball extends StatelessWidget {
               ? IconButton(
                   icon: Icon(Icons.edit),
                   onPressed: () => Navigator.pushNamed(
-                      context, "/Player/Edit/" + loadedPlayer.uid),
+                      context, '/Player/Edit/' + loadedPlayer.uid),
                 )
               : null,
         );

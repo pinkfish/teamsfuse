@@ -52,7 +52,7 @@ class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
         var usersMap = Map<String, Map<String, bool>>();
         usersMap[coordinationBloc.authenticationBloc.currentUser.uid] =
             Map<String, bool>();
-        usersMap[coordinationBloc.authenticationBloc.currentUser.uid]["added"] =
+        usersMap[coordinationBloc.authenticationBloc.currentUser.uid]['added'] =
             true;
         // Add in all my players.
         for (final pl in event.players) {
@@ -69,7 +69,7 @@ class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
           ..record.win = 0
           ..record.loss = 0
           ..record.tie = 0
-          ..uid = "");
+          ..uid = '');
         Season ret = await coordinationBloc.databaseUpdateModel
             .addFirestoreSeason(season, null);
         yield AddItemDone(uid: ret.uid);

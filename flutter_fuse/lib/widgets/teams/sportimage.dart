@@ -53,13 +53,13 @@ class SportImage extends StatelessWidget {
   Widget _getSportWidget() {
     switch (sport) {
       case Sport.Basketball:
-        return Image.asset("assets/sports/Sport.Basketball.png");
+        return Image.asset('assets/sports/Sport.Basketball.png');
       case Sport.Soccer:
-        return Image.asset("assets/sports/Sport.Soccer.png");
+        return Image.asset('assets/sports/Sport.Soccer.png');
       default:
         break;
     }
-    return Image.asset("assets/images/defaultavatar2.png");
+    return Image.asset('assets/images/defaultavatar2.png');
   }
 
   @override

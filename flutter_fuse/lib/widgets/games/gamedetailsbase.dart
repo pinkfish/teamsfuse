@@ -160,7 +160,7 @@ class GameDetailsBase extends StatelessWidget {
 
     if (official) {
       title = TextSpan(
-          text: "${Messages.of(context).offical}\n",
+          text: '${Messages.of(context).offical}\n',
           style:
               theme.textTheme.subtitle1.copyWith(fontWeight: FontWeight.w600),
           children: <TextSpan>[title]);
@@ -217,7 +217,7 @@ class GameDetailsBase extends StatelessWidget {
           .timeZone(game.sharedData.time.millisecondsSinceEpoch)
           .abbr;
 
-      tzShortName = " ($abbr)";
+      tzShortName = ' ($abbr)';
     }
     String arriveAttimeStr;
     if (dayArrive.minute == day.minute && dayArrive.hour == day.hour) {
@@ -280,13 +280,13 @@ class GameDetailsBase extends StatelessWidget {
     // Map details
     var timeEnd = (game.sharedData.endTime == game.sharedData.time
         ? ''
-        : " - $endTimeStr ${tzShortName ?? ''}");
+        : ' - $endTimeStr ${tzShortName ?? ''}');
     var body = <Widget>[];
     body.add(
       ListTile(
         leading: Icon(Icons.directions),
         title: Text(
-          "$dateStr $timeStr$timeEnd",
+          '$dateStr $timeStr$timeEnd',
           style: theme.textTheme.subtitle1.copyWith(color: theme.accentColor),
         ),
         subtitle: Column(

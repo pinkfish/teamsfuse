@@ -150,7 +150,7 @@ class SinglePlayerBloc
       : super(SinglePlayerUninitialized(), playerUid) {
     _playerSub = db.getPlayerDetails(playerUid).listen((data) {
       if (data == null) {
-        print("Couldnt find $playerUid");
+        print('Couldnt find $playerUid');
         add(_SinglePlayerDeleted());
       } else {
         add(_SinglePlayerNewPlayer(newPlayer: data));
@@ -269,13 +269,13 @@ class SinglePlayerBloc
     if (!(state is SinglePlayerUninitialized)) {
       return state;
     }
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SinglePlayerUninitialized();
     }
 
     try {
       SinglePlayerBlocStateType type =
-          SinglePlayerBlocStateType.valueOf(json["type"]);
+          SinglePlayerBlocStateType.valueOf(json['type']);
       switch (type) {
         case SinglePlayerBlocStateType.Uninitialized:
           return SinglePlayerUninitialized();

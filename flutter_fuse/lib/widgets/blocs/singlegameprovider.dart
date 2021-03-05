@@ -22,7 +22,7 @@ class SingleGameProvider extends SingleBlocProvider<SingleGameBloc> {
             keyUid: gameUid,
             creator: _createBloc,
             builder: builder,
-            prefix: "game");
+            prefix: 'game');
 
   /// is the bloc equal to this one.
   bool isBlocEqual(Bloc bloc) {

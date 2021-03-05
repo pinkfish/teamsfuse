@@ -259,26 +259,26 @@ class PlayerDetailsScreen extends StatelessWidget {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text("${profile.phoneNumber}\n${profile.email}"),
+                            Text('${profile.phoneNumber}\n${profile.email}'),
                             Row(
                               children: <Widget>[
                                 IconButton(
                                   icon: const Icon(Icons.sms),
                                   color: Theme.of(context).primaryColorDark,
                                   onPressed: () =>
-                                      launch("sms:${profile.phoneNumber}"),
+                                      launch('sms:${profile.phoneNumber}'),
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.email),
                                   color: Theme.of(context).primaryColorDark,
                                   onPressed: () =>
-                                      launch("mailto:${profile.email}"),
+                                      launch('mailto:${profile.email}'),
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.message),
                                   color: Theme.of(context).primaryColorDark,
                                   onPressed: () => Navigator.pushNamed(context,
-                                      "/AddMessagePlayer/$teamUid/$seasonUid/$playerUid"),
+                                      '/AddMessagePlayer/$teamUid/$seasonUid/$playerUid'),
                                 )
                               ],
                             )
@@ -361,11 +361,11 @@ class PlayerDetailsScreen extends StatelessWidget {
 
   void _onInvite(BuildContext context, SingleTeamSeasonPlayerState state) {
     Navigator.pushNamed(
-        context, "AddInviteToPlayer/${state.seasonPlayer.playerUid}");
+        context, 'AddInviteToPlayer/${state.seasonPlayer.playerUid}');
   }
 
   void _editPlayer(BuildContext context, String playrrUid) {
-    Navigator.pushNamed(context, "EditPlayer/$playerUid");
+    Navigator.pushNamed(context, 'EditPlayer/$playerUid');
   }
 
   @override
@@ -433,7 +433,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                             context, seasonPlayerState.seasonPlayer.playerUid),
                         itemBuilder: (context) => <PopupMenuItem<String>>[
                           PopupMenuItem<String>(
-                            value: "edit",
+                            value: 'edit',
                             child: ListTile(
                               title: Text(Messages.of(context).editbuttontext),
                               leading: Icon(Icons.edit),

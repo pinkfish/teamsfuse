@@ -75,7 +75,7 @@ class SingleClubCoachBloc
       @required this.coachUid,
       @required this.clubUid,
       @required this.crashes})
-      : super(SingleClubCoachUninitialized(), "SingleclubCoach$coachUid") {
+      : super(SingleClubCoachUninitialized(), 'SingleclubCoach$coachUid') {
     _clubCoachSub =
         db.getSingleClubCoach(clubUid, coachUid).listen((clubCoach) {
       if (clubCoach != null) {
@@ -152,12 +152,12 @@ class SingleClubCoachBloc
       return state;
     }
 
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleClubCoachUninitialized();
     }
 
     try {
-      var type = SingleClubCoachBlocStateType.valueOf(json["type"]);
+      var type = SingleClubCoachBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleClubCoachBlocStateType.Uninitialized:
           return SingleClubCoachUninitialized();

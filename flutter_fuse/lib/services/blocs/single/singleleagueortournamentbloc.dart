@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 
@@ -208,7 +207,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
   Stream<SingleLeagueOrTournamentState> _inviteMember(String email) async* {
     yield SingleLeagueOrTournamentSaving.fromState(state).build();
     try {
-      InviteToLeagueAsAdmin inviteToClub = new InviteToLeagueAsAdmin((b) => b
+      InviteToLeagueAsAdmin inviteToClub = InviteToLeagueAsAdmin((b) => b
         ..sentByUid = db.currentUser.uid
         ..email = email
         ..leagueUid = state.league.uid
@@ -269,7 +268,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       }
     } else {
       yield (SingleLeagueOrTournamentSaveFailed.fromState(state)
-            ..error = ArgumentError("league uids don't match"))
+            ..error = ArgumentError('league uids do not match'))
           .build();
       yield SingleLeagueOrTournamentLoaded.fromState(state).build();
     }
@@ -278,7 +277,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
   Stream<SingleLeagueOrTournamentState> _addSeason(String seasonName) async* {
     yield SingleLeagueOrTournamentSaving.fromState(state).build();
     try {
-      LeagueOrTournamentSeason season = new LeagueOrTournamentSeason((b) => b
+      LeagueOrTournamentSeason season = LeagueOrTournamentSeason((b) => b
         ..uid = null
         ..name = seasonName
         ..leagueOrTournmentUid = state.league.uid);
@@ -364,13 +363,13 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       return state;
     }
 
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleLeagueOrTournamentUninitialized();
     }
 
     try {
       SingleLeagueOrTournamentBlocStateType type =
-          SingleLeagueOrTournamentBlocStateType.valueOf(json["type"]);
+          SingleLeagueOrTournamentBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleLeagueOrTournamentBlocStateType.Uninitialized:
           return SingleLeagueOrTournamentUninitialized();

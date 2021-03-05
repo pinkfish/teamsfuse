@@ -105,13 +105,13 @@ class _TeamSettingsState extends State<TeamSettings> {
   }
 
   void _addAdmin() {
-    Navigator.pushNamed(context, "TeamAddAdmin/${widget._teamUid}");
+    Navigator.pushNamed(context, 'TeamAddAdmin/${widget._teamUid}');
   }
 
   List<Widget> _buildAdmins(List<Widget> ret, SingleTeamState state) {
     var theme = Theme.of(context);
 
-    ret.add(Text("Admins", style: theme.textTheme.headline6));
+    ret.add(Text('Admins', style: theme.textTheme.headline6));
 
     for (var uid in state.team.admins) {
       ret.add(
@@ -158,7 +158,7 @@ class _TeamSettingsState extends State<TeamSettings> {
     ret.add(
       FlatButton(
         onPressed: _addAdmin,
-        child: Text("ADD ADMIN"),
+        child: Text('ADD ADMIN'),
         textColor: Theme.of(context).accentColor,
       ),
     );
@@ -198,7 +198,7 @@ class _TeamSettingsState extends State<TeamSettings> {
     ret.add(
       SwitchListTile(
         value: state.team.trackAttendence(state.club),
-        title: Text("Track Attendence"),
+        title: Text('Track Attendence'),
         onChanged: (attend) => null,
       ),
     );

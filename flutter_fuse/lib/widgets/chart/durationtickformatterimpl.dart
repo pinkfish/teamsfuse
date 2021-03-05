@@ -24,7 +24,7 @@ class DurationFormatterImpl implements DurationFormatter {
 
   String twoDigits(int num) {
     if (num < 10) {
-      return "0" + num.toString();
+      return '0' + num.toString();
     }
     return num.toString();
   }
@@ -34,7 +34,7 @@ class DurationFormatterImpl implements DurationFormatter {
       (date.inMilliseconds ~/ msPerTransition > 0
           ? twoDigits(date.inMilliseconds ~/ msPerTransition) +
               transitionFormat +
-              ":" +
+              ':' +
               twoDigits(date.inMilliseconds ~/ msPerTick) +
               tickFormat
           : (date.inMilliseconds ~/ msPerTick).toString() + tickFormat);

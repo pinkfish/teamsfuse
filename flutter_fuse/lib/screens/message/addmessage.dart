@@ -102,7 +102,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
             subject: _subject,
             body: _messageBody));
       } else {
-        _showInSnackBar("Need to specify some recipients");
+        _showInSnackBar('Need to specify some recipients');
       }
     } else {
       _showInSnackBar(Messages.of(context).formerror);
@@ -345,7 +345,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
                               teamUid: _teamUid,
                               builder: (context, singleTeamBloc) {
                                 return SeasonFormField(
-                                  key: Key("season" + _teamUid),
+                                  key: Key('season' + _teamUid),
                                   teamBloc: singleTeamBloc,
                                   initialValue: _seasonUid,
                                   onSaved: (seasonUid) =>

@@ -22,10 +22,10 @@ class SingleClubCoachProvider extends SingleBlocProvider<SingleClubCoachBloc> {
       @required String coachUid,
       SingleClubCoachProviderBuilder builder})
       : super(
-            keyUid: "$clubUid.$coachUid",
+            keyUid: '$clubUid.$coachUid',
             creator: (c, uid) => _createBloc(c, clubUid, coachUid),
             builder: builder,
-            prefix: "club");
+            prefix: 'club');
 
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleClubBloc && bloc.clubUid == keyUid);

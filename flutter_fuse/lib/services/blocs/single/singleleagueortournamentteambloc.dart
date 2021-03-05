@@ -147,7 +147,7 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
   SingleLeagueOrTournamentTeamBloc(
       {@required this.leagueTeamUid, @required this.db, @required this.crashes})
       : super(SingleLeagueOrTournamentTeamUninitialized(),
-            "LeagueTeam.$leagueTeamUid") {
+            'LeagueTeam.$leagueTeamUid') {
     _teamSub = db
         .getLeagueTeamData(leagueTeamUid)
         .listen((LeagueOrTournamentTeam team) {
@@ -209,7 +209,7 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
         crashes.recordException(e, stack);
       }
     } else {
-      final e = ArgumentError("league uids don't match");
+      final e = ArgumentError('league uids do not match');
       yield (SingleLeagueOrTournamentTeamSaveFailed.fromState(state)..error = e)
           .build();
       yield SingleLeagueOrTournamentTeamLoaded.fromState(state).build();
@@ -323,13 +323,13 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     if (!(state is SingleLeagueOrTournamentTeamUninitialized)) {
       return state;
     }
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleLeagueOrTournamentTeamUninitialized();
     }
 
     try {
       SingleLeagueOrTournamentTeamBlocStateType type =
-          SingleLeagueOrTournamentTeamBlocStateType.valueOf(json["type"]);
+          SingleLeagueOrTournamentTeamBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleLeagueOrTournamentTeamBlocStateType.Uninitialized:
           return SingleLeagueOrTournamentTeamUninitialized();

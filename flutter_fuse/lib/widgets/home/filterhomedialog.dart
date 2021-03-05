@@ -68,7 +68,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
       var teamBloc = BlocProvider.of<TeamBloc>(context);
       pickerText = widget.details.teamUids
           .map((uid) => teamBloc.state.getTeam(uid).name)
-          .join((", "));
+          .join((', '));
     }
     return InkWell(
       child: Row(
@@ -128,7 +128,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
 
       pickerText = widget.details.playerUids
           .map((uid) => playerBloc.state.getPlayer(uid).name)
-          .join((", "));
+          .join((', '));
     }
     return InkWell(
       child: Row(

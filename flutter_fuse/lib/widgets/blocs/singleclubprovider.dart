@@ -22,7 +22,7 @@ class SingleClubProvider extends SingleBlocProvider<SingleClubBloc> {
             keyUid: clubUid,
             creator: _createBloc,
             builder: builder,
-            prefix: "club");
+            prefix: 'club');
 
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleClubBloc && bloc.clubUid == keyUid);

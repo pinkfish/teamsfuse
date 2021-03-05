@@ -73,7 +73,7 @@ class SingleNewsItemBloc
       @required this.newsItemUid,
       @required this.crashes})
       : super(SingleNewsItemUninitialized(),
-            "SinglenewsItem_$clubUid.$newsItemUid") {
+            'SinglenewsItem_$clubUid.$newsItemUid') {
     _newsItemSub =
         db.getSingleClubNews(clubUid, newsItemUid).listen((newsItem) {
       if (newsItem != null) {
@@ -147,12 +147,12 @@ class SingleNewsItemBloc
     if (!(state is SingleNewsItemUninitialized)) {
       return state;
     }
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleNewsItemUninitialized();
     }
 
     try {
-      var type = SingleNewsItemBlocStateType.valueOf(json["type"]);
+      var type = SingleNewsItemBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleNewsItemBlocStateType.Uninitialized:
           return SingleNewsItemUninitialized();

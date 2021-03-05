@@ -16,7 +16,7 @@ class SwitchedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (imageUrl.startsWith("gs:")) {
+    if (imageUrl.startsWith('gs:')) {
       return FirebaseStorageImage(
         storageId: imageUrl,
         placeholder: placeholder,

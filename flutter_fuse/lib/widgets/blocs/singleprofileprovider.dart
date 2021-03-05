@@ -19,7 +19,7 @@ class SingleProfileProvider extends SingleBlocProvider<SingleProfileBloc> {
             keyUid: userUid,
             creator: _createBloc,
             builder: builder,
-            prefix: "profile");
+            prefix: 'profile');
 
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleProfileBloc && bloc.profileUid == keyUid);

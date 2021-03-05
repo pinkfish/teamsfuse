@@ -71,12 +71,12 @@ class LeagueImage extends StatelessWidget {
         alignment: alignment,
         repeat: repeat,
         matchTextDirection: matchTextDirection,
-        placeholder: AssetImage("assets/images/defaultavatar.png"),
+        placeholder: AssetImage('assets/images/defaultavatar.png'),
       ),
       placeholder: (context, url) =>
-          Image.asset("assets/images/defaultavatar.png"),
+          Image.asset('assets/images/defaultavatar.png'),
       errorWidget: (context, url, error) =>
-          Image.asset("assets/images/defaultavatar.png"),
+          Image.asset('assets/images/defaultavatar.png'),
     );
   }
 

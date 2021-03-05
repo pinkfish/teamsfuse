@@ -1,7 +1,7 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:clock/clock.dart';
 
 import '../../../services/blocs.dart';
 import '../../../services/messages.dart';
@@ -38,7 +38,7 @@ class TimeoutEnd extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                "assets/sports/Sport.Basketball.png",
+                'assets/sports/Sport.Basketball.png',
                 height: 90.0,
               ),
             ],

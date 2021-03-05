@@ -86,7 +86,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
                 Navigator.pop(context);
               }
               if (addState is AddItemSaveFailed) {
-                showInSnackBar("Error ${addState.error.toString()}");
+                showInSnackBar('Error ${addState.error.toString()}');
               }
             },
             child: BlocBuilder(

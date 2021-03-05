@@ -31,7 +31,7 @@ class ClubPicker extends StatelessWidget {
   final bool selectedTitle;
 
   /// The variable to use if nothing is selected.
-  static const String noClub = "noClub";
+  static const String noClub = 'noClub';
 
   List<DropdownMenuItem<String>> _buildItems(
       BuildContext context, ClubState state) {
@@ -77,7 +77,7 @@ class ClubPicker extends StatelessWidget {
                   cubit: BlocProvider.of<ClubBloc>(context),
                   builder: (context, state) {
                     return DropdownButton<String>(
-                      key: Key("CLUB"),
+                      key: Key('CLUB'),
                       hint: Text(Messages.of(context).selectclub),
                       items: _buildItems(context, state),
                       value: clubUid,

@@ -41,7 +41,7 @@ class FuseMaterialApp extends StatelessWidget {
       navigatorObservers: <NavigatorObserver>[
         FirebaseAnalyticsObserver(analytics: AnalyticsSubsystemImpl.analytics),
       ],
-      title: "Teams Fuse",
+      title: 'Teams Fuse',
       theme: _theme,
       initialRoute: route,
       home: SplashScreen(),

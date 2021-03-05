@@ -22,7 +22,7 @@ class OpponentFormField extends FormField<String> {
   })  : assert(initialValue != null),
         assert(teamBloc != null),
         super(
-          key: key ?? Key("OPPONENT"),
+          key: key ?? Key('OPPONENT'),
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,

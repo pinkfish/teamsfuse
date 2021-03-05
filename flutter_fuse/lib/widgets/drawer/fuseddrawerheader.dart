@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../../services/blocs.dart';
 import '../../services/messages.dart';
 
 ///
@@ -10,7 +9,7 @@ import '../../services/messages.dart';
 ///
 class FusedDrawerHeader extends StatelessWidget {
   void _showProfile(BuildContext context) {
-    Navigator.pushNamed(context, "Profile");
+    Navigator.pushNamed(context, 'Profile');
   }
 
   @override
@@ -27,7 +26,7 @@ class FusedDrawerHeader extends StatelessWidget {
             ),
             currentAccountPicture: const CircleAvatar(
               backgroundImage: AssetImage(
-                "assets/images/defaultavatar2.png",
+                'assets/images/defaultavatar2.png',
               ),
             ),
             onDetailsPressed: () => _showProfile(context),

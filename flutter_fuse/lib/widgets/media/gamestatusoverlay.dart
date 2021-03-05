@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:video_player/video_player.dart';
 
@@ -34,7 +33,7 @@ class GameStatusOverlay extends StatelessWidget {
             Text(status.ptsFor.toString(), style: ptsTheme),
             Padding(
               padding: EdgeInsets.only(left: 10, right: 10),
-              child: Text("-", style: ptsTheme),
+              child: Text('-', style: ptsTheme),
             ),
             Text(status.ptsAgainst.toString(), style: ptsTheme),
           ],

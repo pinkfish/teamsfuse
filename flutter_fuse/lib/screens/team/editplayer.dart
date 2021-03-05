@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -63,7 +62,7 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
   }
 
   void _onAddPlayerInvite(BuildContext context) {
-    Navigator.pushNamed(context, "AddInviteToPlayer/${widget.playerUid}");
+    Navigator.pushNamed(context, 'AddInviteToPlayer/${widget.playerUid}');
   }
 
   List<Widget> _buildPlayerData(SinglePlayerState singlePlayerState) {
@@ -77,7 +76,7 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
     } else if (singlePlayerState.player.photoUrl != null) {
       provider = CachedNetworkImageProvider(singlePlayerState.player.photoUrl);
     } else {
-      provider = AssetImage("assets/images/defaultavatar2.png");
+      provider = AssetImage('assets/images/defaultavatar2.png');
     }
     ret.add(
       Center(

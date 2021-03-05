@@ -109,7 +109,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
   void _onUnreadMessagesUpdated(Iterable<MessageRecipient> data) async {
     // Fill in all the messages.
     for (MessageRecipient recipient in data) {
-      coordinationBloc.loadingTrace?.incrementCounter("message");
+      coordinationBloc.loadingTrace?.incrementCounter('message');
     }
 
     add(_MessagesEventNewUnReadLoaded(unreadMessages: ListBuilder(data)));
@@ -128,14 +128,14 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
       _messageSnapshot = coordinationBloc.databaseUpdateModel
           .getMessages(true)
           .listen((Iterable<MessageRecipient> messages) {
-        coordinationBloc.loadingTrace?.incrementCounter("message");
+        coordinationBloc.loadingTrace?.incrementCounter('message');
         _onUnreadMessagesUpdated(messages);
       });
       _messageSnapshot.onError((e, stack) => crashes.recordException(e, stack));
       _readMessageSnapshot = coordinationBloc.databaseUpdateModel
           .getMessages(false)
           .listen((Iterable<MessageRecipient> messages) {
-        coordinationBloc.loadingTrace?.incrementCounter("message");
+        coordinationBloc.loadingTrace?.incrementCounter('message');
         this._onReadMessagesUpdated(messages);
       });
       _readMessageSnapshot
@@ -169,18 +169,18 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
 
   @override
   fromJson(Map<String, dynamic> json) {
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return MessagesUninitialized();
     }
 
-    MessagesBlocStateType type = MessagesBlocStateType.valueOf(json["type"]);
+    MessagesBlocStateType type = MessagesBlocStateType.valueOf(json['type']);
     switch (type) {
       case MessagesBlocStateType.Uninitialized:
         return MessagesUninitialized();
       case MessagesBlocStateType.Loaded:
         try {
           TraceProxy messagesTrace =
-              coordinationBloc.analytics.newTrace("messagesTrace");
+              coordinationBloc.analytics.newTrace('messagesTrace');
           messagesTrace.start();
           var loaded = MessagesLoaded.fromMap(json);
           messagesTrace.stop();

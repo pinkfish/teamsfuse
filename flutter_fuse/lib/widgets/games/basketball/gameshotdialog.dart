@@ -283,14 +283,14 @@ class _GameShotDialogState extends State<GameShotDialog> {
                               children: <Widget>[
                                 kIsWeb
                                     ? Image.network(
-                                        "assets/images/Basketball_Halfcourt.svg",
+                                        'assets/images/Basketball_Halfcourt.svg',
                                         fit: BoxFit.contain,
                                         height:
                                             min(box.maxHeight, box.maxWidth),
                                         width: min(box.maxHeight, box.maxWidth),
                                       )
                                     : SvgPicture.asset(
-                                        "assets/images/Basketball_Halfcourt.svg",
+                                        'assets/images/Basketball_Halfcourt.svg',
                                         height:
                                             min(box.maxHeight, box.maxWidth),
                                         width: min(box.maxHeight, box.maxWidth),
@@ -344,7 +344,7 @@ class _ImageBasketballStuff extends CustomPainter {
 
   _ImageBasketballStuff({this.location, this.fraction});
 
-  final Paint madePainter = new Paint()
+  final Paint madePainter = Paint()
     ..color = Colors.blue[400]
     ..style = PaintingStyle.fill;
 

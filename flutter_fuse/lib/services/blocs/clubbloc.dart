@@ -164,17 +164,17 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
 
   @override
   ClubState fromJson(Map<String, dynamic> json) {
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return ClubUninitialized();
     }
 
-    var type = ClubBlocStateType.valueOf(json["type"]);
+    var type = ClubBlocStateType.valueOf(json['type']);
     switch (type) {
       case ClubBlocStateType.Uninitialized:
         return ClubUninitialized();
       case ClubBlocStateType.Loaded:
         try {
-          var clubTrace = coordinationBloc.analytics.newTrace("clubData");
+          var clubTrace = coordinationBloc.analytics.newTrace('clubData');
           clubTrace.start();
           // If recovered this way it is only local data.
           var loaded = ClubLoaded.fromMap(json);

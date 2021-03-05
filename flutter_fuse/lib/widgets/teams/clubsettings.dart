@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 
@@ -23,7 +23,7 @@ class ClubSettings extends StatefulWidget {
 
 class _ClubSettingsState extends State<ClubSettings> {
   void _addClub() {
-    Navigator.pushNamed(context, "AddClub");
+    Navigator.pushNamed(context, 'AddClub');
   }
 
   void _setClub(SingleTeamBloc singleTeamBloc) async {

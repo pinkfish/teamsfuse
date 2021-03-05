@@ -160,13 +160,13 @@ class SingleSeasonBloc
       return state;
     }
 
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return state;
     }
 
     try {
       SingleSeasonBlocStateType type =
-          SingleSeasonBlocStateType.valueOf(json["type"]);
+          SingleSeasonBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleSeasonBlocStateType.Uninitialized:
           return SingleSeasonUninitialized();

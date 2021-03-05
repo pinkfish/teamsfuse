@@ -152,15 +152,15 @@ class GameCard extends StatelessWidget {
     );
     children.add(
       Text(
-        "${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}",
+        '${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}',
         style: style,
       ),
     );
     if (overtimeResult != null) {
       children.add(
         Text(
-          "OT ${overtimeResult.score.ptsFor} - "
-          "${overtimeResult.score.ptsAgainst}",
+          'OT ${overtimeResult.score.ptsFor} - '
+          '${overtimeResult.score.ptsAgainst}',
           style: style,
         ),
       );
@@ -168,8 +168,8 @@ class GameCard extends StatelessWidget {
     if (penaltyResult != null) {
       children.add(
         Text(
-          "PT ${penaltyResult.score.ptsFor} - "
-          "${penaltyResult.score.ptsAgainst}",
+          'PT ${penaltyResult.score.ptsFor} - '
+          '${penaltyResult.score.ptsAgainst}',
           style: style,
         ),
       );
@@ -268,11 +268,11 @@ class GameCard extends StatelessWidget {
   }
 
   void _showDirections(BuildContext context, Game game) {
-    var url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=${Uri.encodeComponent(game.sharedData.place.address)}";
+    var url = 'https://www.google.com/maps/dir/?api=1';
+    url += '&destination=${Uri.encodeComponent(game.sharedData.place.address)}';
     if (game.sharedData.place.placeId != null) {
-      url += "&destionation_place_id="
-          "${Uri.encodeComponent(game.sharedData.place.placeId)}";
+      url += '&destionation_place_id='
+          '${Uri.encodeComponent(game.sharedData.place.placeId)}';
     }
     launch(url);
   }
@@ -301,7 +301,7 @@ class GameCard extends StatelessWidget {
       op = (OpponentBuilder()
             ..name = Messages.of(context).unknown
             ..teamUid = game.teamUid
-            ..uid = "12")
+            ..uid = '12')
           .build();
     }
     */
@@ -378,7 +378,7 @@ class GameCard extends StatelessWidget {
               .subtitle1
               .copyWith(fontWeight: FontWeight.bold),
           text:
-              "${Messages.of(context).gameAddressArriveAt(arriveFormat, addr)}\n",
+              '${Messages.of(context).gameAddressArriveAt(arriveFormat, addr)}\n',
         ),
       );
     } else {
@@ -389,7 +389,7 @@ class GameCard extends StatelessWidget {
                 .textTheme
                 .subtitle1
                 .copyWith(fontWeight: FontWeight.bold),
-            text: "${game.sharedData.place.name}\n",
+            text: '${game.sharedData.place.name}\n',
           ),
         );
       } else {
@@ -399,7 +399,7 @@ class GameCard extends StatelessWidget {
                 .textTheme
                 .subtitle1
                 .copyWith(fontWeight: FontWeight.bold),
-            text: "${game.sharedData.place.address}\n",
+            text: '${game.sharedData.place.address}\n',
           ),
         );
       }
@@ -422,7 +422,7 @@ class GameCard extends StatelessWidget {
 
     var tile = ListTile(
       onTap: () {
-        Navigator.pushNamed(context, "/Game/${game.uid}");
+        Navigator.pushNamed(context, '/Game/${game.uid}');
       },
       leading: TeamImage(
         teamUid: game.teamUid,

@@ -2,9 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentteamprovider.dart';
 
@@ -73,13 +73,13 @@ class LeagueTeamImage extends StatelessWidget {
   Widget _getDefaultForSport(Team team) {
     switch (team.sport) {
       case Sport.Basketball:
-        return Image.asset("assets/sports/Sport.Basketball.png");
+        return Image.asset('assets/sports/Sport.Basketball.png');
       case Sport.Soccer:
-        return Image.asset("assets/sports/Sport.Soccer.png");
+        return Image.asset('assets/sports/Sport.Soccer.png');
       default:
         break;
     }
-    return Image.asset("assets/images/leagueteam.png");
+    return Image.asset('assets/images/leagueteam.png');
   }
 
   @override

@@ -42,12 +42,12 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
         crashes: RepositoryProvider.of<AnalyticsSubsystem>(context));
     _newsItemToAdd = NewsItem((b) => b
-      ..subject = ""
-      ..uid = ""
+      ..subject = ''
+      ..uid = ''
       ..clubUid = widget.clubUid
-      ..body = ""
-      ..postedByName = ""
-      ..postedByUid = "");
+      ..body = ''
+      ..postedByName = ''
+      ..postedByUid = '');
   }
 
   void _showInSnackBar(String value) {

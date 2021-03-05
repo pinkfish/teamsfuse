@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
@@ -38,7 +37,7 @@ class _SharedGameDetailsScreenState extends State<SharedGameDetailsScreen> {
   }
 
   void _editGame() {
-    Navigator.pushNamed(context, "EditSharedGame/${widget.sharedGameUid}");
+    Navigator.pushNamed(context, 'EditSharedGame/${widget.sharedGameUid}');
   }
 
   @override

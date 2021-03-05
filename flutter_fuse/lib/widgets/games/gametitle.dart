@@ -23,7 +23,7 @@ class GameTitle extends StatelessWidget {
     if (game.sharedData.type == EventType.Game && game.opponentUid.isNotEmpty) {
       return game.opponentUid;
     }
-    return "123";
+    return '123';
   }
 
   Opponent _opponentData(BuildContext context, Game game,
@@ -36,7 +36,7 @@ class GameTitle extends StatelessWidget {
       return (OpponentBuilder()
             ..name = Messages.of(context).unknown
             ..teamUid = game.teamUid
-            ..uid = "12")
+            ..uid = '12')
           .build();
     }
   }

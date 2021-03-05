@@ -114,8 +114,8 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                             : record.win < record.loss
                                 ? Colors.redAccent
                                 : Colors.black),
-                    text: "${op.name} W:${record.win} L:${record.loss} "
-                        "T:${record.tie}",
+                    text: '${op.name} W:${record.win} L:${record.loss} '
+                        'T:${record.tie}',
                   ),
                 ),
                 initiallyExpanded: false,

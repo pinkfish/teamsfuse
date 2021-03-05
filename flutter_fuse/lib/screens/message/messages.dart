@@ -8,7 +8,7 @@ import '../../widgets/messages/messagelist.dart';
 ///
 class MessagesScreen extends StatelessWidget {
   void _newMessage(BuildContext context) {
-    Navigator.pushNamed(context, "AddMessage");
+    Navigator.pushNamed(context, 'AddMessage');
   }
 
   @override

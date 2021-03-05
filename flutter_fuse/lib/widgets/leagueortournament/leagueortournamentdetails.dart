@@ -83,7 +83,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
             (divison) {
               return ListTile(
                 onTap: () => Navigator.pushNamed(context,
-                    "/League/Divison/${widget.leagueOrTournamentUid}/${season.uid}/${divison.uid}"),
+                    '/League/Divison/${widget.leagueOrTournamentUid}/${season.uid}/${divison.uid}'),
                 leading: Icon(MdiIcons.accountGroup),
                 title: Text(divison.name),
               );

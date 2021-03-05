@@ -70,7 +70,7 @@ class SingleOpponentBloc
   final DatabaseUpdateModel db;
   final AnalyticsSubsystem crashes;
 
-  static String createNew = "new";
+  static String createNew = 'new';
 
   StreamSubscription<Opponent> _opponentSub;
   StreamSubscription<Iterable<Game>> _gameSub;
@@ -80,7 +80,7 @@ class SingleOpponentBloc
       @required this.teamUid,
       @required this.opponentUid,
       @required this.crashes})
-      : super(SingleOpponentUninitialized(), "opponent.$teamUid.$opponentUid") {
+      : super(SingleOpponentUninitialized(), 'opponent.$teamUid.$opponentUid') {
     _opponentSub = db
         .getFirestoreOpponent(teamUid: teamUid, opponentUid: opponentUid)
         .listen((op) {
@@ -172,13 +172,13 @@ class SingleOpponentBloc
     if (!(state is SingleOpponentUninitialized)) {
       return state;
     }
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return state;
     }
 
     try {
       SingleOpponentBlocStateType type =
-          SingleOpponentBlocStateType.valueOf(json["type"]);
+          SingleOpponentBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleOpponentBlocStateType.Uninitialized:
           return SingleOpponentUninitialized();

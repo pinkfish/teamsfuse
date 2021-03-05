@@ -30,7 +30,7 @@ class GameEventWidget extends StatelessWidget {
   final GameEventTapCallback onTap;
 
   /// The format for the datetime.
-  static DateFormat format = DateFormat("HH:mm");
+  static DateFormat format = DateFormat('HH:mm');
 
   /// The widget to display the game event
   GameEventWidget(

@@ -38,27 +38,27 @@ class _InviteListScreenState extends State<InviteListScreen> {
   }
 
   void _addInviteToTeam(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteToTeam/${invite.uid}");
+    Navigator.pushNamed(context, 'AcceptInviteToTeam/${invite.uid}');
   }
 
   void _addInviteToPlayer(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteToPlayer/${invite.uid}");
+    Navigator.pushNamed(context, 'AcceptInviteToPlayer/${invite.uid}');
   }
 
   void _addInviteAsAdmin(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteAsAdmin/${invite.uid}");
+    Navigator.pushNamed(context, 'AcceptInviteAsAdmin/${invite.uid}');
   }
 
   void _addInviteToLeague(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteToLeague/${invite.uid}");
+    Navigator.pushNamed(context, 'AcceptInviteToLeague/${invite.uid}');
   }
 
   void _addInviteToLeagueTeam(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteToLeagueTeam/${invite.uid}");
+    Navigator.pushNamed(context, 'AcceptInviteToLeagueTeam/${invite.uid}');
   }
 
   void _addInviteToClub(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteToClub/${invite.uid}");
+    Navigator.pushNamed(context, 'AcceptInviteToClub/${invite.uid}');
   }
 
   Card _buildInviteAsAdmin(InviteAsAdmin invite) {

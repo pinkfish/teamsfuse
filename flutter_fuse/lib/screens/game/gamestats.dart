@@ -62,7 +62,7 @@ class GameStatsScreen extends StatelessWidget {
       return;
     }
     var undoBloc = BlocProvider.of<GameEventUndoStack>(context);
-    undoBloc.addEvent(
+    await undoBloc.addEvent(
       GameEvent((b) => b
         ..playerUid = playerData.playerUid
         ..points = pts
@@ -79,7 +79,7 @@ class GameStatsScreen extends StatelessWidget {
       false,
     );
     if (playerData.assistPlayerUid != null) {
-      undoBloc.addEvent(
+      await undoBloc.addEvent(
         GameEvent(
           (b) => b
             ..playerUid = playerData.assistPlayerUid
@@ -113,7 +113,7 @@ class GameStatsScreen extends StatelessWidget {
       return;
     }
     var undoBloc = BlocProvider.of<GameEventUndoStack>(context);
-    undoBloc.addEvent(
+    await undoBloc.addEvent(
       GameEvent((b) => b
         ..playerUid = playerData.item1
         ..replacementPlayerUid = playerData.item2
@@ -193,7 +193,7 @@ class GameStatsScreen extends StatelessWidget {
       return;
     }
     var undoBloc = BlocProvider.of<GameEventUndoStack>(context);
-    undoBloc.addEvent(
+    await undoBloc.addEvent(
       GameEvent((b) => b
         ..playerUid = playerUid
         ..points = 0
@@ -210,7 +210,7 @@ class GameStatsScreen extends StatelessWidget {
 
   Widget _buildPointSection(BuildContext context, BoxConstraints constraints,
       Orientation orientation, SingleGameBloc singleGameBloc) {
-    print("Game ${singleGameBloc.gameUid}");
+    print('Game ${singleGameBloc.gameUid}');
     double buttonSize;
     if (orientation == Orientation.portrait) {
       buttonSize = constraints.maxWidth / 4;
@@ -219,9 +219,9 @@ class GameStatsScreen extends StatelessWidget {
     }
     List<Widget> firstWidgets = <Widget>[
       Hero(
-        tag: "1plus",
+        tag: '1plus',
         child: RoundButton(
-          child: Text("1"),
+          child: Text('1'),
           size: buttonSize,
           borderColor: Colors.green,
           onPressed: () => _doAddPoints(context, 1, true, singleGameBloc),
@@ -234,7 +234,7 @@ class GameStatsScreen extends StatelessWidget {
           size: buttonSize,
           onPressed: () => _doAddPoints(context, 1, false, singleGameBloc),
           child: Text(
-            "1",
+            '1',
             style: Theme.of(context).textTheme.button,
           ),
         ),
@@ -244,7 +244,7 @@ class GameStatsScreen extends StatelessWidget {
       RoundButton(
         borderColor: Colors.green,
         size: buttonSize,
-        child: Text("2"),
+        child: Text('2'),
         onPressed: () => _doAddPoints(context, 2, true, singleGameBloc),
       ),
       CustomPaint(
@@ -253,7 +253,7 @@ class GameStatsScreen extends StatelessWidget {
           borderColor: Colors.red,
           size: buttonSize,
           child: Text(
-            "2",
+            '2',
             style: Theme.of(context).textTheme.button,
           ),
           onPressed: () => _doAddPoints(context, 2, false, singleGameBloc),
@@ -264,7 +264,7 @@ class GameStatsScreen extends StatelessWidget {
       RoundButton(
         borderColor: Colors.green,
         size: buttonSize,
-        child: Text("3"),
+        child: Text('3'),
         onPressed: () => _doAddPoints(context, 3, true, singleGameBloc),
       ),
       CustomPaint(
@@ -274,7 +274,7 @@ class GameStatsScreen extends StatelessWidget {
           size: buttonSize,
           onPressed: () => _doAddPoints(context, 3, false, singleGameBloc),
           child: Text(
-            "3",
+            '3',
             style: Theme.of(context).textTheme.button,
           ),
         ),
@@ -554,7 +554,7 @@ class GameStatsScreen extends StatelessWidget {
                                 state.loadedEvents) {
                               var undoBloc =
                                   BlocProvider.of<GameEventUndoStack>(context);
-                              print("undoBloc $undoBloc");
+                              print('undoBloc $undoBloc');
                               if (undoBloc.isGameEmpty) {
                                 // Fill in with all these stats.
                                 for (GameEvent ev in state.gameEvents) {
@@ -590,9 +590,9 @@ class GameStatsScreen extends StatelessWidget {
                             if (state is SingleGameLoaded &&
                                 state.game.opponents.isEmpty &&
                                 state.loadedOpponentPlayers) {
-                              print("Adding missing opponent");
+                              print('Adding missing opponent');
                               singleGameBloc.add(
-                                SingleGameAddOpponentPlayer(jerseyNumber: "xx"),
+                                SingleGameAddOpponentPlayer(jerseyNumber: 'xx'),
                               );
                             }
 
@@ -757,9 +757,9 @@ class GameStatsScreen extends StatelessWidget {
       BuildContext context, SingleGameBloc singleGameBloc) async {
     // Write out the event to start the new period.
     var undoBloc = BlocProvider.of<GameEventUndoStack>(context);
-    undoBloc.addEvent(
+    await undoBloc.addEvent(
       GameEvent((b) => b
-        ..playerUid = ""
+        ..playerUid = ''
         ..points = 0
         ..timestamp = (clock.now().toUtc())
         ..gameUid = singleGameBloc.gameUid

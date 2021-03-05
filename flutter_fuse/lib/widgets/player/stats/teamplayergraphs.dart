@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/util/deleted.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
-import '../../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../../services/blocs.dart';
 import '../../../services/messages.dart';
 
 ///
@@ -135,7 +135,7 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
         ),
         Expanded(
           child: BlocProvider(
-            key: Key("season${widget.seasonState.season.uid}"),
+            key: Key('season${widget.seasonState.season.uid}'),
             create: (BuildContext context) => SingleSeasonBloc(
               seasonUid: widget.seasonState.season.uid,
               db: RepositoryProvider.of<DatabaseUpdateModel>(context),
@@ -253,7 +253,7 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
       id: eventType.toString(),
       seriesCategory: eventType == _GameTimeseriesType.DefensiveRebounds ||
               eventType == _GameTimeseriesType.DefensiveRebounds
-          ? "Rebounds"
+          ? 'Rebounds'
           : null,
       colorFn: (_, __) =>
           charts.Color(r: color.red, g: color.green, b: color.blue),

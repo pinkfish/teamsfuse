@@ -146,7 +146,7 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
         crashes.recordException(e, stack);
       }
     } else {
-      var e = ArgumentError("season uids don't match");
+      var e = ArgumentError('season uids do not match');
       yield (SingleLeagueOrTournamentSeasonSaveFailed.fromState(state)
             ..error = e)
           .build();
@@ -217,13 +217,13 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
     if (!(state is SingleLeagueOrTournamentSeasonUninitialized)) {
       return state;
     }
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleLeagueOrTournamentSeasonUninitialized();
     }
 
     try {
       SingleLeagueOrTournamentSeasonBlocStateType type =
-          SingleLeagueOrTournamentSeasonBlocStateType.valueOf(json["type"]);
+          SingleLeagueOrTournamentSeasonBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleLeagueOrTournamentSeasonBlocStateType.Uninitialized:
           return SingleLeagueOrTournamentSeasonUninitialized();

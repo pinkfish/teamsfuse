@@ -25,8 +25,8 @@ class TeamDetails extends StatelessWidget {
     return ExpansionTile(
       key: PageStorageKey<Season>(season),
       title: Text(
-        "${season.name} W:${season.record.win} L:${season.record.loss} "
-        "T:${season.record.tie}",
+        '${season.name} W:${season.record.win} L:${season.record.loss} '
+        'T:${season.record.tie}',
       ),
       children: <Widget>[
         TeamResultsBySeason(
@@ -39,21 +39,21 @@ class TeamDetails extends StatelessWidget {
                   TextButton(
                     child: Text(Messages.of(context).addPlayerButton),
                     onPressed: () => Navigator.pushNamed(
-                        context, "/AddPlayer/${team.uid}/${season.uid}"),
+                        context, '/AddPlayer/${team.uid}/${season.uid}'),
                   ),
                   TextButton(
                     child: Text(Messages.of(context).addGameButton),
                     onPressed: () => Navigator.pushNamed(
-                        context, "/Game/Add/${team.uid}/${season.uid}"),
+                        context, '/Game/Add/${team.uid}/${season.uid}'),
                   ),
                   TextButton(
                     child: Text(Messages.of(context).addTrainingButton),
                     onPressed: () =>
-                        Navigator.pushNamed(context, "/AddTraining"),
+                        Navigator.pushNamed(context, '/AddTraining'),
                   ),
                   TextButton(
                     child: Text(Messages.of(context).addEventButton),
-                    onPressed: () => Navigator.pushNamed(context, "/AddEvent"),
+                    onPressed: () => Navigator.pushNamed(context, '/AddEvent'),
                   ),
                 ],
               )
@@ -71,7 +71,7 @@ class TeamDetails extends StatelessWidget {
       ret.add(
         TextButton(
           onPressed: () =>
-              Navigator.pushNamed(context, "AddSeason/${team.team.uid}"),
+              Navigator.pushNamed(context, 'AddSeason/${team.team.uid}'),
           child: Text(Messages.of(context).addSeasonButton),
         ),
       );
@@ -124,7 +124,7 @@ class TeamDetails extends StatelessWidget {
               children: <Widget>[
                 Center(
                   child: Image(
-                    image: ExactAssetImage("assets/images/abstractsport.png"),
+                    image: ExactAssetImage('assets/images/abstractsport.png'),
                     width: (screenSize.width < 500)
                         ? 120.0
                         : (screenSize.width / 4) + 12.0,
@@ -154,7 +154,7 @@ class TeamDetails extends StatelessWidget {
               ),
               label: middle,
               onPressed: () => Navigator.pushNamed(
-                  context, "/Club/${teamState.team.clubUid}"),
+                  context, '/Club/${teamState.team.clubUid}'),
             ));
           }
           if (team.archived) {
@@ -203,7 +203,7 @@ class TeamDetails extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.people),
                 title: Text(team.name),
-                subtitle: Text("${team.sport}(${team.league}) "),
+                subtitle: Text('${team.sport}(${team.league}) '),
                 trailing: GenderIcon(team.gender),
               ),
               Padding(

@@ -65,19 +65,19 @@ class _AddEventScreenState extends State<AddEventScreen> {
             .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
         var end = MaterialLocalizations.of(context).formatTimeOfDay(
             TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
-        timeStr = "$start - $end";
+        timeStr = '$start - $end';
       } else {
         timeStr = MaterialLocalizations.of(context)
             .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
       }
       var cols = <Widget>[
         ElevatedButton(
-          child: Text(Messages.of(context).createNew),
           style: ElevatedButton.styleFrom(
             primary: Theme.of(context).accentColor,
             onPrimary: Colors.white,
           ),
           onPressed: () => _onStepperContinue(context),
+          child: Text(Messages.of(context).createNew),
         ),
         ListTile(
           leading: Icon(Icons.calendar_today),
@@ -89,7 +89,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
           leading: Icon(Icons.place),
           title: Text(
               myGame.sharedData.place.name ?? Messages.of(context).unknown),
-          subtitle: Text(myGame.sharedData.place.address ?? ""),
+          subtitle: Text(myGame.sharedData.place.address ?? ''),
         ),
       ];
 
@@ -186,7 +186,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
       var start = clock.now().add(const Duration(days: 1));
 
       var sharedGameData = GameSharedData((b) => b
-        ..uid = ""
+        ..uid = ''
         ..type = EventType.Event
         ..time = start
         ..endTime = start.add(const Duration(hours: 1))
@@ -199,10 +199,10 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
       _initGame = Game((b) => b
         ..teamUid = _team.uid
-        ..sharedDataUid = ""
+        ..sharedDataUid = ''
         ..sharedData = sharedGameData.toBuilder()
-        ..uniform = ""
-        ..uid = ""
+        ..uniform = ''
+        ..uid = ''
         ..teamUid = _team.uid
         ..seasonUid = _team.currentSeason
         ..trackAttendance = _team.trackAttendenceInternal
@@ -252,8 +252,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: Text("Error"),
-                    content: Text("Error saving the event"),
+                    title: Text('Error'),
+                    content: Text('Error saving the event'),
                   );
                 },
               );

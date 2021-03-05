@@ -34,7 +34,7 @@ class SplashScreen extends StatelessWidget {
                   Center(
                       child: Image(
                     image:
-                        ExactAssetImage("assets/images/hands_and_trophy.png"),
+                        ExactAssetImage('assets/images/hands_and_trophy.png'),
                     width: (screenSize.width < 500)
                         ? 120.0
                         : (screenSize.width / 4) + 12.0,
@@ -69,10 +69,10 @@ class SplashScreen extends StatelessWidget {
         AnalyticsSubsystemImpl.analytics.setUserId(state.user.uid);
         if (AnalyticsSubsystemImpl.instance.debugMode) {
           AnalyticsSubsystemImpl.analytics
-              .setUserProperty(name: "developer", value: "true");
+              .setUserProperty(name: 'developer', value: 'true');
         } else {
           AnalyticsSubsystemImpl.analytics
-              .setUserProperty(name: "developer", value: "false");
+              .setUserProperty(name: 'developer', value: 'false');
         }
       });
     }

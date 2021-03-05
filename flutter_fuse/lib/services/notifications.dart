@@ -12,7 +12,7 @@ import 'firebasemessaging.dart';
 /// notifications and incoming notications.
 ///
 class Notifications {
-  static const String _keyNotificationData = "lib_notification_data";
+  static const String _keyNotificationData = 'lib_notification_data';
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   //final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -47,17 +47,17 @@ class Notifications {
     });
     _firebaseMessaging.configure(
       onMessage: (message) {
-        print("onMessage: $message");
+        print('onMessage: $message');
         //this._handleMessage(message);
         return;
       },
       onLaunch: (message) {
-        print("onLaunch: $message");
+        print('onLaunch: $message');
         //this._handleLaunch(message);
         return;
       },
       onResume: (message) {
-        print("onResume: $message");
+        print('onResume: $message');
         //this._handleResume(message);
         return;
       },
@@ -84,7 +84,7 @@ class Notifications {
         InitializationSettingsAndroid('app_icon');
     InitializationSettingsIOS initializationSettingsIOS =
         InitializationSettingsIOS(categorySetup: <IOSCategoryDetails>[
-      IOSCategoryDetails(id: "GAMES", actions: <IOSActionDetails>[
+      IOSCategoryDetails(id: 'GAMES', actions: <IOSActionDetails>[
         IOSActionDetails(
           id: 'directions',
           title: 'DIRECTIONS',

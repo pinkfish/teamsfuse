@@ -60,7 +60,7 @@ class GameTile extends StatelessWidget {
             textScaleFactor: 1.2,
           ),
           subtitle: Text(
-            DateFormat("dd MMM hh:mm").format(game.sharedData.time.toLocal()),
+            DateFormat('dd MMM hh:mm').format(game.sharedData.time.toLocal()),
             style: Theme.of(context).textTheme.subtitle2.copyWith(
                   color: Theme.of(context).accentColor,
                 ),
@@ -68,7 +68,7 @@ class GameTile extends StatelessWidget {
           ),
           onTap: this.onTap,
           trailing: Hero(
-            tag: "game" + game.uid,
+            tag: 'game' + game.uid,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[

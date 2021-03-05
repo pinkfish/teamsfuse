@@ -159,12 +159,12 @@ class SingleProfileBloc
     if (!(state is SingleProfileUninitialized)) {
       return state;
     }
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleProfileUninitialized();
     }
     try {
       SingleProfileBlocStateType type =
-          SingleProfileBlocStateType.valueOf(json["type"]);
+          SingleProfileBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleProfileBlocStateType.Uninitialized:
           return SingleProfileUninitialized();

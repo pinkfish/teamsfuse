@@ -177,13 +177,13 @@ class SingleMessageBloc
     if (!(state is SingleMessageUninitialized)) {
       return state;
     }
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleMessageUninitialized();
     }
 
     try {
       SingleMessageBlocStateType type =
-          SingleMessageBlocStateType.valueOf(json["type"]);
+          SingleMessageBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleMessageBlocStateType.Uninitialized:
           return SingleMessageUninitialized();

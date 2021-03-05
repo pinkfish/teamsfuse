@@ -45,7 +45,7 @@ class EditResultDialog extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "${Messages.of(context).gameTitleVs(game.sharedData, opponent?.name ?? Messages.of(context).unknown)}  $resultStr",
+          '${Messages.of(context).gameTitleVs(game.sharedData, opponent?.name ?? Messages.of(context).unknown)}  $resultStr',
           overflow: TextOverflow.clip,
         ),
       ),

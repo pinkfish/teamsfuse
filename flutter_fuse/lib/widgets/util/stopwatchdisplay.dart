@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:clock/clock.dart';
 
 ///
 /// Shows a stopwatch on the screen in a nice widget that updates itself
@@ -54,10 +54,10 @@ class _StopwatchDisplayState extends State<StopwatchDisplay> {
     if (hours > 0) {
       var minutesStr = (minutes % 60).toString().padLeft(2, '0');
 
-      return "$hours:$minutesStr:$secondsStr";
+      return '$hours:$minutesStr:$secondsStr';
     }
     var minutesStr = (minutes % 60).toString().padLeft(2);
-    return "$minutesStr:$secondsStr";
+    return '$minutesStr:$secondsStr';
   }
 
   @override

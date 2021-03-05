@@ -68,8 +68,8 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
                         true,
                       ),
                     ),
-                    MapEntry("admin", true),
-                    MapEntry("added", true),
+                    MapEntry('admin', true),
+                    MapEntry('added', true),
                   ],
                 ),
               ),
@@ -77,8 +77,8 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
           ],
         );
         Season season = Season((b) => b
-          ..uid = ""
-          ..teamUid = ""
+          ..uid = ''
+          ..teamUid = ''
           ..name = event.seasonName
           ..record = (WinRecordBuilder()
             ..loss = 0
@@ -90,12 +90,12 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
               value: (p) => p))
           ..users = MapBuilder(entries));
         TeamBuilder team = event.team;
-        team.uid = "";
+        team.uid = '';
         team.adminsData = MapBuilder({
           coordinationBloc.authenticationBloc.currentUser.uid:
               BuiltMap<String, bool>.of({
-            "added": true,
-            "admin": true,
+            'added': true,
+            'admin': true,
           }),
         });
         team.users = MapBuilder(entries);

@@ -22,7 +22,7 @@ class SingleTeamProvider extends SingleBlocProvider<SingleTeamBloc> {
             keyUid: teamUid,
             creator: _createBloc,
             builder: builder,
-            prefix: "team");
+            prefix: 'team');
 
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleTeamBloc && bloc.teamUid == keyUid);

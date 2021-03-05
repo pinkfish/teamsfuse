@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/games/basketball/gametile.dart';
 import '../../widgets/player/playertilebasketball.dart';
@@ -55,7 +55,7 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
                     child: GameTile(
                       game: g,
                       onTap: () =>
-                          Navigator.pushNamed(context, "/Season/View/" + g.uid),
+                          Navigator.pushNamed(context, '/Season/View/' + g.uid),
                     )),
               )
               .toList(),
@@ -70,13 +70,13 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
                 textScaleFactor: 1.5,
               ),
               subtitle: Text(
-                "${state.season.playersData.length} players",
+                '${state.season.playersData.length} players',
                 textScaleFactor: 1.5,
               ),
               trailing: IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () => Navigator.pushNamed(
-                    context, "/Season/Edit/" + widget.seasonUid),
+                    context, '/Season/Edit/' + widget.seasonUid),
               ),
             ),
           ),
@@ -97,11 +97,11 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
                   playerUid: str,
                   onTap: (String playerUid) => Navigator.pushNamed(
                       context,
-                      "/PlayerDetails/" +
+                      '/PlayerDetails/' +
                           state.season.teamUid +
-                          "/" +
+                          '/' +
                           state.season.uid +
-                          "/" +
+                          '/' +
                           str),
                 ))
             .toList(),
@@ -225,7 +225,7 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
         ),
       );
     } else {
-      Navigator.pushNamed(context, "/AddGame/" + seasonUid);
+      Navigator.pushNamed(context, '/AddGame/' + seasonUid);
     }
   }
 
@@ -238,7 +238,7 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
         builder: (BuildContext context) => AddPlayerSeasonScreen(
               defaultSeasonUid: widget.seasonUid,
             )).then((FutureOr<String> playerUid) {
-      if (playerUid == null || playerUid == "") {
+      if (playerUid == null || playerUid == '') {
         // Canceled.
         return;
       }

@@ -38,7 +38,7 @@ class _AddOpponentState extends State<AddOpponent> {
 
   void _savePressed(BuildContext context, SingleTeamBloc singleTeamBloc) async {
     _formKey.currentState.save();
-    _opponent.uid = "";
+    _opponent.uid = '';
     singleTeamBloc.add(SingleTeamAddOpponent(opponent: _opponent.build()));
   }
 

@@ -2,9 +2,9 @@ import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
-import '../../services/blocs.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../teams/teamtile.dart';
 import 'fuseddrawer.dart';
@@ -38,7 +38,7 @@ class FusedDrawerContent extends StatelessWidget {
                 children: <TextSpan>[
                   TextSpan(
                       text: club.isAdmin()
-                          ? "\n${Messages.of(context).administrator}"
+                          ? '\n${Messages.of(context).administrator}'
                           : "",
                       style: Theme.of(context).textTheme.subtitle1.copyWith(
                             fontStyle: FontStyle.italic,
@@ -67,7 +67,7 @@ class FusedDrawerContent extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               RepositoryProvider.of<fluro.FluroRouter>(context).navigateTo(
-                  context, "Club/${club.uid}",
+                  context, 'Club/${club.uid}',
                   transition: fluro.TransitionType.inFromRight);
             },
           ),
@@ -103,7 +103,7 @@ class FusedDrawerContent extends StatelessWidget {
           Messages.of(context).allTeamsButton,
           style: Theme.of(context).textTheme.button,
         ),
-        onTap: () => Navigator.popAndPushNamed(context, "AllTeams"),
+        onTap: () => Navigator.popAndPushNamed(context, 'AllTeams'),
       ),
     );
     return Column(children: data);
@@ -131,14 +131,14 @@ class FusedDrawerContent extends StatelessWidget {
               leading: const Icon(Icons.people_outline),
               title: Text(Messages.of(context).leaguetournament),
               onTap: () {
-                Navigator.popAndPushNamed(context, "/League/Home");
+                Navigator.popAndPushNamed(context, '/League/Home');
               },
             )
           : ListTile(
               leading: const Icon(Icons.list),
               title: Text(Messages.of(context).allgames),
               onTap: () {
-                Navigator.popAndPushNamed(context, "/Home");
+                Navigator.popAndPushNamed(context, '/Home');
               },
             ),
       Divider(),
@@ -146,7 +146,7 @@ class FusedDrawerContent extends StatelessWidget {
         leading: const Icon(Icons.people_outline),
         title: Text(Messages.of(context).players),
         onTap: () {
-          Navigator.popAndPushNamed(context, "/Players");
+          Navigator.popAndPushNamed(context, '/Players');
         },
       ),
       ListTile(
@@ -174,21 +174,21 @@ class FusedDrawerContent extends StatelessWidget {
           await overlayEntry.remove();
 
           Navigator.pushNamedAndRemoveUntil(
-              context, "/Login/Home", (d) => false);
+              context, '/Login/Home', (d) => false);
         },
       ),
       ListTile(
         leading: const Icon(Icons.settings),
         title: Text(Messages.of(context).settings),
         onTap: () {
-          Navigator.popAndPushNamed(context, "/Settings");
+          Navigator.popAndPushNamed(context, '/Settings');
         },
       ),
       ListTile(
         leading: const Icon(Icons.help),
         title: Text(Messages.of(context).about),
         onTap: () {
-          Navigator.popAndPushNamed(context, "/About");
+          Navigator.popAndPushNamed(context, '/About');
         },
       ),
     ];

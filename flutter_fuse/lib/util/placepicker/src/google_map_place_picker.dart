@@ -87,7 +87,7 @@ class GoogleMapPlacePicker extends StatelessWidget {
     );
 
     if (response.errorMessage?.isNotEmpty == true ||
-        response.status == "REQUEST_DENIED") {
+        response.status == 'REQUEST_DENIED') {
       if (onSearchFailed != null) {
         onSearchFailed(response.status);
       }
@@ -103,7 +103,7 @@ class GoogleMapPlacePicker extends StatelessWidget {
       );
 
       if (detailResponse.errorMessage?.isNotEmpty == true ||
-          detailResponse.status == "REQUEST_DENIED") {
+          detailResponse.status == 'REQUEST_DENIED') {
         if (onSearchFailed != null) {
           onSearchFailed(detailResponse.status);
         }
@@ -256,7 +256,7 @@ class GoogleMapPlacePicker extends StatelessWidget {
           RaisedButton(
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Text(
-              "Select here",
+              'Select here',
               style: TextStyle(fontSize: 16),
             ),
             shape: RoundedRectangleBorder(

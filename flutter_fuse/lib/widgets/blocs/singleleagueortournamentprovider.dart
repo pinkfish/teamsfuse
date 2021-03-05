@@ -22,7 +22,7 @@ class SingleLeagueOrTournamentProvider
             keyUid: leagueUid,
             creator: _createBloc,
             builder: builder,
-            prefix: "league");
+            prefix: 'league');
 
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleLeagueOrTournamentBloc && bloc.leagueUid == keyUid);

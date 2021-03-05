@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 
 import '../../services/analytics.dart';
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../../widgets/util/savingoverlay.dart';
@@ -78,7 +78,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
 
     if (_emailNames.isEmpty) {
       // Add in the start elements.
-      _emailNames.add("");
+      _emailNames.add('');
     }
     for (var i = 0; i < _emailNames.length; i++) {
       var en = _emailNames[i];
@@ -96,7 +96,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
           onFieldSubmitted: (value) {
             if (value.isNotEmpty && en.isEmpty && en == _emailNames.last) {
               setState(() {
-                _emailNames.add("");
+                _emailNames.add('');
               });
             }
           },

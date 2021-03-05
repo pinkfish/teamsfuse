@@ -17,7 +17,7 @@ class GenderFormField extends FormField<Gender> {
     FormFieldValidator<Gender> validator,
   })  : assert(initialValue != null),
         super(
-          key: key ?? Key("GENDER"),
+          key: key ?? Key('GENDER'),
           initialValue: initialValue ?? Gender.Female,
           onSaved: onSaved,
           validator: validator,

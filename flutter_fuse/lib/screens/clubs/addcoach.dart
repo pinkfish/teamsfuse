@@ -46,10 +46,10 @@ class _AddCoachScreenState extends State<AddCoachScreen> {
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
         crashes: RepositoryProvider.of<AnalyticsSubsystem>(context));
     _coachToAdd = Coach((b) => b
-      ..name = ""
-      ..uid = ""
+      ..name = ''
+      ..uid = ''
       ..clubUid = widget.clubUid
-      ..about = "");
+      ..about = '');
   }
 
   void _showInSnackBar(String value) {

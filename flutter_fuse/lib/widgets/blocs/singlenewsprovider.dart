@@ -22,10 +22,10 @@ class SingleNewsItemProvider extends SingleBlocProvider<SingleNewsItemBloc> {
       @required String newsItemUid,
       SingleClubNewsProviderBuilder builder})
       : super(
-            keyUid: "$clubUid.$newsItemUid",
+            keyUid: '$clubUid.$newsItemUid',
             creator: (c, uid) => _createBloc(c, clubUid, newsItemUid),
             builder: builder,
-            prefix: "club");
+            prefix: 'club');
 
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleClubBloc && bloc.clubUid == keyUid);

@@ -28,7 +28,7 @@ class TeamPlayersSeason extends StatelessWidget {
         GestureDetector(
           onTap: () {
             Navigator.pushNamed(context,
-                "PlayerDetails/$_teamUid/$_seasonUid/${player.playerUid}");
+                'PlayerDetails/$_teamUid/$_seasonUid/${player.playerUid}');
           },
           child: teamState.team.sport == Sport.Basketball
               ? PlayerTileBasketball(
@@ -51,7 +51,7 @@ class TeamPlayersSeason extends StatelessWidget {
         ListTile(
           title: TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, "AddPlayer/$_teamUid/$_seasonUid");
+              Navigator.pushNamed(context, 'AddPlayer/$_teamUid/$_seasonUid');
             },
             style: TextButton.styleFrom(primary: Theme.of(context).accentColor),
             child: Text(Messages.of(context).addPlayerButton),

@@ -22,7 +22,7 @@ class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
             keyUid: seasonUid,
             creator: _createBloc,
             builder: builder,
-            prefix: "season");
+            prefix: 'season');
 
   bool isBlocEqual(Bloc bloc) {
     var myBloc = bloc as SingleSeasonBloc;

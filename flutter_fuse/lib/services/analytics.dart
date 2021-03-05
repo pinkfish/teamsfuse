@@ -38,7 +38,7 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
 
     // Load the device and package info.
     _packageInfo = PackageInfo(
-        version: "unknown", packageName: "unknown", buildNumber: "unknown");
+        version: 'unknown', packageName: 'unknown', buildNumber: 'unknown');
 
     _deviceInfo = DeviceInfoPlugin();
 
@@ -102,18 +102,18 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
     if (Platform.isAndroid || Platform.isIOS) {
       var trace = FirebasePerformance.instance.newTrace(name);
 
-      trace.putAttribute("os", Platform.operatingSystem);
-      trace.putAttribute("osVersion", Platform.operatingSystemVersion);
+      trace.putAttribute('os', Platform.operatingSystem);
+      trace.putAttribute('osVersion', Platform.operatingSystemVersion);
 
-      trace.putAttribute("version", _packageInfo.version);
-      trace.putAttribute("build", _packageInfo.buildNumber);
+      trace.putAttribute('version', _packageInfo.version);
+      trace.putAttribute('build', _packageInfo.buildNumber);
       if (Platform.isIOS && _iosDeviceInfo != null) {
         trace.putAttribute(
-            "emulator", _iosDeviceInfo.isPhysicalDevice.toString());
+            'emulator', _iosDeviceInfo.isPhysicalDevice.toString());
       }
       if (Platform.isAndroid && _androidDeviceInfo != null) {
         trace.putAttribute(
-            "emulator", _androidDeviceInfo.isPhysicalDevice.toString());
+            'emulator', _androidDeviceInfo.isPhysicalDevice.toString());
       }
       return FirebaseTrace(trace);
     } else {

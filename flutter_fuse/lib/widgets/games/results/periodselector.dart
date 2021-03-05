@@ -54,7 +54,7 @@ class PeriodTypeSelector extends StatelessWidget {
               ? null
               : () => _setPeriodType(GamePeriodType.Regulation),
           disabledTextColor: Colors.white,
-          child: Text("Regulation"),
+          child: Text('Regulation'),
         ),
       ),
     );
@@ -67,7 +67,7 @@ class PeriodTypeSelector extends StatelessWidget {
                   currentPeriod.type == GamePeriodType.OvertimeBreak)
               ? null
               : () => _setPeriodType(GamePeriodType.Overtime),
-          child: Text("Overtime"),
+          child: Text('Overtime'),
         ),
       ),
     );
@@ -80,7 +80,7 @@ class PeriodTypeSelector extends StatelessWidget {
             onPressed: (currentPeriod.type == GamePeriodType.Penalty)
                 ? null
                 : () => _setPeriodType(GamePeriodType.Penalty),
-            child: Text("Penalty"),
+            child: Text('Penalty'),
           ),
         ),
       );
@@ -190,25 +190,25 @@ class PeriodNumberSelector extends StatelessWidget {
 
     switch (divisionsType) {
       case GameDivisionsType.Quarters:
-        ret.add(_makePeriodButton("First", 1));
-        ret.add(_makeBreakButton("Half time", 1));
-        ret.add(_makePeriodButton("Second", 2));
+        ret.add(_makePeriodButton('First', 1));
+        ret.add(_makeBreakButton('Half time', 1));
+        ret.add(_makePeriodButton('Second', 2));
         break;
       case GameDivisionsType.Thirds:
-        ret.add(_makePeriodButton("First", 1));
-        ret.add(_makeBreakButton("First break", 1));
-        ret.add(_makePeriodButton("Second", 2));
-        ret.add(_makeBreakButton("Second break", 2));
-        ret.add(_makePeriodButton("Third", 3));
+        ret.add(_makePeriodButton('First', 1));
+        ret.add(_makeBreakButton('First break', 1));
+        ret.add(_makePeriodButton('Second', 2));
+        ret.add(_makeBreakButton('Second break', 2));
+        ret.add(_makePeriodButton('Third', 3));
         break;
       case GameDivisionsType.Halves:
-        ret.add(_makePeriodButton("1st", 1));
-        ret.add(_makeBreakButton("1st break", 1));
-        ret.add(_makePeriodButton("2nd", 2));
-        ret.add(_makeBreakButton("Half", 2));
-        ret.add(_makePeriodButton("3rd", 3));
-        ret.add(_makeBreakButton("3rd break", 3));
-        ret.add(_makePeriodButton("4th", 4));
+        ret.add(_makePeriodButton('1st', 1));
+        ret.add(_makeBreakButton('1st break', 1));
+        ret.add(_makePeriodButton('2nd', 2));
+        ret.add(_makeBreakButton('Half', 2));
+        ret.add(_makePeriodButton('3rd', 3));
+        ret.add(_makeBreakButton('3rd break', 3));
+        ret.add(_makePeriodButton('4th', 4));
         break;
     }
 
@@ -257,18 +257,18 @@ class PeriodSelector extends StatelessWidget {
       BuildContext context) {
     var ret = <DropdownMenuItem<GamePeriodType>>[
       DropdownMenuItem<GamePeriodType>(
-        child: Text("Regulation"),
+        child: Text('Regulation'),
         value: GamePeriodType.Regulation,
       ),
       DropdownMenuItem<GamePeriodType>(
-        child: Text("Overtime"),
+        child: Text('Overtime'),
         value: GamePeriodType.Overtime,
       ),
     ];
     if (team.sport == Sport.Soccer) {
       ret.add(
         DropdownMenuItem<GamePeriodType>(
-          child: Text("Penalty"),
+          child: Text('Penalty'),
           value: GamePeriodType.Penalty,
         ),
       );
@@ -297,31 +297,31 @@ class PeriodSelector extends StatelessWidget {
     var ret = <DropdownMenuItem<int>>[];
 
     if (currentPeriod.type == GamePeriodType.Penalty) {
-      ret.add(_makePeriodButton("None", 1));
+      ret.add(_makePeriodButton('None', 1));
       return ret;
     }
 
     switch (divisionsType) {
       case GameDivisionsType.Halves:
-        ret.add(_makePeriodButton("First", 1));
-        ret.add(_makeBreakButton("Half time", 1));
-        ret.add(_makePeriodButton("Second", 2));
+        ret.add(_makePeriodButton('First', 1));
+        ret.add(_makeBreakButton('Half time', 1));
+        ret.add(_makePeriodButton('Second', 2));
         break;
       case GameDivisionsType.Thirds:
-        ret.add(_makePeriodButton("First", 1));
-        ret.add(_makeBreakButton("First break", 1));
-        ret.add(_makePeriodButton("Second", 2));
-        ret.add(_makeBreakButton("Second break", 2));
-        ret.add(_makePeriodButton("Third", 3));
+        ret.add(_makePeriodButton('First', 1));
+        ret.add(_makeBreakButton('First break', 1));
+        ret.add(_makePeriodButton('Second', 2));
+        ret.add(_makeBreakButton('Second break', 2));
+        ret.add(_makePeriodButton('Third', 3));
         break;
       case GameDivisionsType.Quarters:
-        ret.add(_makePeriodButton("1st Quarter", 1));
-        ret.add(_makeBreakButton("End of 1st Quarter", 1));
-        ret.add(_makePeriodButton("2nd Quarter", 2));
-        ret.add(_makeBreakButton("Half", 2));
-        ret.add(_makePeriodButton("3rd Quarter", 3));
-        ret.add(_makeBreakButton("End of 3rd Quarter", 3));
-        ret.add(_makePeriodButton("4th Quarter", 4));
+        ret.add(_makePeriodButton('1st Quarter', 1));
+        ret.add(_makeBreakButton('End of 1st Quarter', 1));
+        ret.add(_makePeriodButton('2nd Quarter', 2));
+        ret.add(_makeBreakButton('Half', 2));
+        ret.add(_makePeriodButton('3rd Quarter', 3));
+        ret.add(_makeBreakButton('End of 3rd Quarter', 3));
+        ret.add(_makePeriodButton('4th Quarter', 4));
         break;
     }
     return ret;

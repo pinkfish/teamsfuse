@@ -216,7 +216,7 @@ class SingleTeamBloc
   final DatabaseUpdateModel db;
   final AnalyticsSubsystem crashes;
 
-  static String createNew = "new";
+  static String createNew = 'new';
 
   StreamSubscription<Team> _teamSub;
   StreamSubscription<Club> _clubSub;
@@ -228,7 +228,7 @@ class SingleTeamBloc
 
   SingleTeamBloc(
       {@required this.db, @required this.teamUid, @required this.crashes})
-      : super(SingleTeamUninitialized(), "TeamState.$teamUid") {
+      : super(SingleTeamUninitialized(), 'TeamState.$teamUid') {
     _teamSub = db.getTeamDetails(teamUid: teamUid).listen((team) {
       if (team != null) {
         add(
@@ -343,7 +343,7 @@ class SingleTeamBloc
       yield SingleTeamSaving.fromState(state).build();
       if (state.team.publicOnly) {
         yield (SingleTeamSaveFailed.fromState(state)
-              ..error = ArgumentError("Cannot save a public team"))
+              ..error = ArgumentError('Cannot save a public team'))
             .build();
       } else {
         try {
@@ -367,7 +367,7 @@ class SingleTeamBloc
       yield SingleTeamSaving.fromState(state).build();
       if (state.team.publicOnly) {
         yield (SingleTeamSaveFailed.fromState(state)
-              ..error = ArgumentError("Cannot save a public team"))
+              ..error = ArgumentError('Cannot save a public team'))
             .build();
       } else {
         try {
@@ -544,13 +544,13 @@ class SingleTeamBloc
     if (!(state is SingleTeamUninitialized)) {
       return state;
     }
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return state;
     }
 
     try {
       SingleTeamBlocStateType type =
-          SingleTeamBlocStateType.valueOf(json["type"]);
+          SingleTeamBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleTeamBlocStateType.Uninitialized:
           return SingleTeamUninitialized();

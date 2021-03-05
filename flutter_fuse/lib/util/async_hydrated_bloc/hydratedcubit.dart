@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'asyncstorage.dart';
 
 /// {@template hydrated_cubit}
@@ -35,7 +35,7 @@ abstract class AsyncHydratedCubit<State> extends Cubit<State>
   AsyncHydratedCubit(State state, String boxName, {AsyncStorage asyncStorage})
       : super(state) {
     storage = asyncStorage ??
-        AsyncHydratedStorage("${runtimeType.toString()}$boxName");
+        AsyncHydratedStorage('${runtimeType.toString()}$boxName');
     hydrate();
   }
 }

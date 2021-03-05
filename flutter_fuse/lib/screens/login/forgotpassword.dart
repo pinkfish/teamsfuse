@@ -76,7 +76,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: RaisedButton(
                       child: Text(Messages.of(context).forgotPassword),
                       color: Theme.of(context).primaryColor,
-                      key: Key("SUBMIT"),
+                      key: Key('SUBMIT'),
                       onPressed: _handleSubmitted),
                   margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                 ),
@@ -89,17 +89,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               FlatButton(
                 child: Text(Messages.of(context).createaccount),
                 textColor: Theme.of(context).accentColor,
-                key: Key("CREATEACCOUNT"),
+                key: Key('CREATEACCOUNT'),
                 onPressed: () {
-                  onPressed("/Login/SignUp");
+                  onPressed('/Login/SignUp');
                 },
               ),
               FlatButton(
                 child: Text(Messages.of(context).login),
                 textColor: Theme.of(context).accentColor,
-                key: Key("LOGIN"),
+                key: Key('LOGIN'),
                 onPressed: () {
-                  onPressed("/Login/Home");
+                  onPressed('/Login/Home');
                 },
               ),
             ],
@@ -122,18 +122,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               FlatButton(
                 child: Text(Messages.of(context).createaccount),
                 textColor: Theme.of(context).accentColor,
-                key: Key("CREATEACCOUNT"),
+                key: Key('CREATEACCOUNT'),
                 onPressed: () {
-                  onPressed("/Login/SignUp");
+                  onPressed('/Login/SignUp');
                 },
               ),
               FlatButton(
                   child: Text(Messages.of(context).login),
                   textColor: Theme.of(context).accentColor,
-                  key: Key("LOGIN"),
+                  key: Key('LOGIN'),
                   onPressed: () {
                     // Go back to the initial state.
-                    onPressed("/Login/Home");
+                    onPressed('/Login/Home');
                   }),
             ],
           )

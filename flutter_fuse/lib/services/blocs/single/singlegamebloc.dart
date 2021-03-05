@@ -230,7 +230,7 @@ class SingleGameBloc
   final Lock _lock = Lock();
   final AnalyticsSubsystem crashes;
 
-  static String createNew = "new";
+  static String createNew = 'new';
 
   StreamSubscription<Game> _gameSub;
   StreamSubscription<Iterable<GameLog>> _gameLogSub;
@@ -248,7 +248,7 @@ class SingleGameBloc
       if (g != null) {
         add(_SingleGameNewGame(newGame: g));
       } else {
-        print("Got null, pushing game deleted");
+        print('Got null, pushing game deleted');
         add(_SingleGameDeleted());
       }
     });
@@ -838,12 +838,12 @@ class SingleGameBloc
       return state;
     }
 
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return SingleGameUninitialized();
     }
     try {
       SingleGameBlocStateType type =
-          SingleGameBlocStateType.valueOf(json["type"]);
+          SingleGameBlocStateType.valueOf(json['type']);
       switch (type) {
         case SingleGameBlocStateType.Uninitialized:
           return SingleGameUninitialized();

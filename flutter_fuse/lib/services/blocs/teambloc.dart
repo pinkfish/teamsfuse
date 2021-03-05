@@ -153,7 +153,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
       _adminTeamSub.onError((error, stack) {
         crashes.recordException(error, stack);
       });
-      coordinationBloc.loadingTrace?.incrementCounter("teamAdmin");
+      coordinationBloc.loadingTrace?.incrementCounter('teamAdmin');
       Iterable<Team> adminStartStuff = await adminData.future;
 
       Stream<Iterable<Team>> userTeamStream =
@@ -232,11 +232,11 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
 
   @override
   TeamState fromJson(Map<String, dynamic> json) {
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return TeamUninitialized();
     }
 
-    TeamBlocStateType type = TeamBlocStateType.valueOf(json["type"]);
+    TeamBlocStateType type = TeamBlocStateType.valueOf(json['type']);
     switch (type) {
       case TeamBlocStateType.Uninitialized:
         return TeamUninitialized();
@@ -244,7 +244,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
         try {
           // Starting, nothing loaded yet.
           TraceProxy teamsTrace =
-              coordinationBloc.analytics.newTrace("teamData");
+              coordinationBloc.analytics.newTrace('teamData');
           teamsTrace.start();
           var loaded = TeamLoaded.fromMap(json);
           teamsTrace.stop();

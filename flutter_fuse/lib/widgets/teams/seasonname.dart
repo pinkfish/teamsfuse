@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 
 ///
@@ -22,7 +22,7 @@ class SeasonName extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      key: Key("season$seasonUid"),
+      key: Key('season$seasonUid'),
       create: (BuildContext context) => SingleSeasonBloc(
           seasonUid: this.seasonUid,
           db: RepositoryProvider.of<DatabaseUpdateModel>(context),

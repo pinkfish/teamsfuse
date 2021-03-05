@@ -1,9 +1,9 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singlemessageprovider.dart';
 import 'package:flutter_fuse/widgets/util/username.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:clock/clock.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -36,7 +36,7 @@ class MessageList extends StatelessWidget {
           if (singleMessageState is SingleMessageUninitialized) {
             return ListTile(
               onTap: () => Navigator.pushNamed(
-                  context, "/ShowMessage/${mess.messageId}"),
+                  context, '/ShowMessage/${mess.messageId}'),
               title: Text(Messages.of(context).loading),
             );
           }
@@ -45,7 +45,7 @@ class MessageList extends StatelessWidget {
           }
           return ListTile(
             onTap: () =>
-                Navigator.pushNamed(context, "/ShowMessage/${mess.messageId}"),
+                Navigator.pushNamed(context, '/ShowMessage/${mess.messageId}'),
             leading: TeamImage(
               team: teamBloc.state.getTeam(singleMessageState.message.teamUid),
               width: 30.0,

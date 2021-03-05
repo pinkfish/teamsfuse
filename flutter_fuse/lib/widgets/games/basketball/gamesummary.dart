@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:intl/intl.dart';
 
 import '../../../services/localutilities.dart';
-import '../../../services/messages.dart';
-import '../../util/loading.dart';
-import 'gameduration.dart';
 
 ///
 /// Shows the summary of the game in periods.
@@ -19,10 +15,10 @@ class BasketballGameSummary extends StatelessWidget {
 
   String _madeSummary(MadeAttempt attempt) {
     return attempt.made > 0
-        ? "${attempt.made}/${attempt.attempts}  " +
+        ? '${attempt.made}/${attempt.attempts}  ' +
             ((attempt.made / attempt.attempts) * 100.0).toStringAsFixed(0) +
-            "%"
-        : "0/0 (0%)";
+            '%'
+        : '0/0 (0%)';
   }
 
   @override
@@ -49,9 +45,9 @@ class BasketballGameSummary extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("1pt", style: headerStyle),
-            Text("2pt", style: headerStyle),
-            Text("3pt", style: headerStyle),
+            Text('1pt', style: headerStyle),
+            Text('2pt', style: headerStyle),
+            Text('3pt', style: headerStyle),
           ],
         ),
         Row(
@@ -80,9 +76,9 @@ class BasketballGameSummary extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Foul", style: headerStyle),
-            Text("Steals", style: headerStyle),
-            Text("Turnover", style: headerStyle),
+            Text('Foul', style: headerStyle),
+            Text('Steals', style: headerStyle),
+            Text('Turnover', style: headerStyle),
           ],
         ),
         Row(
@@ -111,9 +107,9 @@ class BasketballGameSummary extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Off Rb", style: headerStyle),
-            Text("Def Db", style: headerStyle),
-            Text("Blocks", style: headerStyle),
+            Text('Off Rb', style: headerStyle),
+            Text('Def Db', style: headerStyle),
+            Text('Blocks', style: headerStyle),
           ],
         ),
         Row(

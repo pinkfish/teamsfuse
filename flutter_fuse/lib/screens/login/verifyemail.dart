@@ -36,13 +36,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   void _onLogout(BuildContext context) async {
     BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogOut());
     // Now navigate back to the login screen.
-    Navigator.pushNamed(context, "/Login/Home");
+    Navigator.pushNamed(context, '/Login/Home');
   }
 
   void _onSignup(BuildContext context) async {
     BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogOut());
     // Now navigate back to the signup screen.
-    Navigator.pushNamed(context, "/Login/SignUp");
+    Navigator.pushNamed(context, '/Login/SignUp');
   }
 
   @override
@@ -84,12 +84,12 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   ],
                 ),
               ).then((res) {
-                Navigator.pushNamed(context, "/");
+                Navigator.pushNamed(context, '/');
               });
             } else if (state is AuthenticationFailed) {
               showInSnackBar(Messages.of(context).verifyemailerror);
             } else if (!(state is AuthenticationLoggedInUnverified)) {
-              Navigator.popAndPushNamed(context, "/Login/Home");
+              Navigator.popAndPushNamed(context, '/Login/Home');
             }
           },
           builder: (context, state) {
@@ -127,7 +127,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                                 child: Text(messages.resendverify),
                                 color: Theme.of(context).primaryColor,
                                 textColor: Colors.white,
-                                key: Key("SUBMIT"),
+                                key: Key('SUBMIT'),
                                 onPressed: _handleSubmitted),
                             margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                           ),
@@ -140,13 +140,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                         FlatButton(
                           child: Text(messages.createaccount),
                           textColor: Theme.of(context).accentColor,
-                          key: Key("CREATEACCOUNT"),
+                          key: Key('CREATEACCOUNT'),
                           onPressed: () => _onSignup(context),
                         ),
                         FlatButton(
                           child: Text(messages.logout),
                           textColor: Theme.of(context).accentColor,
-                          key: Key("LOGOUT"),
+                          key: Key('LOGOUT'),
                           onPressed: () => _onLogout(context),
                         ),
                       ],

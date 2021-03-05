@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
-import 'package:clock/clock.dart';
 
 import '../../../services/blocs.dart';
 import '../../../services/messages.dart';
@@ -511,7 +511,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                       onPressed: _changeResult,
                       color: Theme.of(context).accentColor,
                       textColor: Colors.white,
-                      child: Text("Change score"),
+                      child: Text('Change score'),
                     ),
                   ),
                 )

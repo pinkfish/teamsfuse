@@ -95,10 +95,10 @@ class ProfileBloc extends HydratedBloc<ProfileEvent, ProfileBlocState> {
 
   @override
   ProfileBlocState fromJson(Map<String, dynamic> json) {
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return ProfileBlocUninitialized();
     }
-    ProfileBlocStateType type = ProfileBlocStateType.valueOf(json["type"]);
+    ProfileBlocStateType type = ProfileBlocStateType.valueOf(json['type']);
     switch (type) {
       case ProfileBlocStateType.Uninitialized:
         return ProfileBlocUninitialized();

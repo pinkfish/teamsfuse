@@ -17,7 +17,7 @@ class SportFormField extends FormField<Sport> {
     FormFieldValidator<Sport> validator,
   })  : assert(initialValue != null),
         super(
-            key: key ?? Key("SPORT"),
+            key: key ?? Key('SPORT'),
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,

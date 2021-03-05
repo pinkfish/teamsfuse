@@ -20,16 +20,16 @@ class GameEventUndoStack extends Cubit<GameEventWithChange> {
             GameEvent((b) => b
               ..points = 0
               ..opponent = false
-              ..playerUid = ""
+              ..playerUid = ''
               ..timestamp = Timestamp.fromMicrosecondsSinceEpoch(
                   clock.now().millisecondsSinceEpoch)
-              ..uid = ""
+              ..uid = ''
               ..type = GameEventType.EmptyEvent
               ..period = GamePeriod.regulation1.toBuilder()
               ..courtLocation = (GameEventLocationBuilder()
                 ..x = 0
                 ..y = 0)
-              ..gameUid = ""),
+              ..gameUid = ''),
             true));
 
   Future<void> addEvent(GameEvent ev, bool existing) async {

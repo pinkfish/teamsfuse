@@ -96,7 +96,7 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
   }
 
   void _onPlayerUpdated(Iterable<Player> data) {
-    Set<String> toDeletePlayers = new Set<String>();
+    Set<String> toDeletePlayers = Set<String>();
     bool foundMe = false;
     MapBuilder<String, Player> players = state.players.toBuilder();
     Player me;
@@ -121,17 +121,17 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
       players.remove(id);
     });
     if (!foundMe && !_createdMePlayer) {
-      PlayerUserInternal playerUser = new PlayerUserInternal((b) => b
+      PlayerUserInternal playerUser = PlayerUserInternal((b) => b
         ..added = true
         ..relationship = Relationship.Me);
       PlayerBuilder player = PlayerBuilder()
-        ..uid = ""
+        ..uid = ''
         ..playerType = PlayerType.player;
       player.usersData[coordinationBloc.authenticationBloc.currentUser.uid] =
           playerUser;
       player.name = coordinationBloc
               .authenticationBloc.currentUser.profile?.displayName ??
-          "Frog";
+          'Frog';
       _createdMePlayer = true;
       me = player.build();
       coordinationBloc.databaseUpdateModel
@@ -185,18 +185,18 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
 
   @override
   PlayerState fromJson(Map<String, dynamic> json) {
-    if (json == null || !json.containsKey("type")) {
+    if (json == null || !json.containsKey('type')) {
       return PlayerUninitialized();
     }
 
-    PlayerBlocStateType type = PlayerBlocStateType.valueOf(json["type"]);
+    PlayerBlocStateType type = PlayerBlocStateType.valueOf(json['type']);
     switch (type) {
       case PlayerBlocStateType.Uninitialized:
         return PlayerUninitialized();
       case PlayerBlocStateType.Loaded:
         try {
           TraceProxy playerTrace =
-              coordinationBloc.analytics.newTrace("playerData");
+              coordinationBloc.analytics.newTrace('playerData');
           playerTrace.start();
           var loaded = PlayerLoaded.fromMap(json);
           playerTrace.stop();
