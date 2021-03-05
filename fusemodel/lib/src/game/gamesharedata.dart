@@ -89,8 +89,8 @@ abstract class GameSharedData
     return getLocation(this.timezone);
   }
 
-  TZDateTime get tzTime => new TZDateTime.from(time, location);
-  TZDateTime get tzEndTime => new TZDateTime.from(time, location);
+  TZDateTime get tzTime => TZDateTime.from(time, location);
+  TZDateTime get tzEndTime => TZDateTime.from(time, location);
 
   static const String OFFICIALRESULT = 'officialResult';
   static const String TYPE = 'type';

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
@@ -16,7 +16,7 @@ abstract class SingleTeamEvent extends Equatable {}
 ///
 class SingleTeamUpdate extends SingleTeamEvent {
   final TeamBuilder team;
-  final File image;
+  final Uint8List image;
 
   SingleTeamUpdate({@required this.team, this.image});
 
@@ -28,7 +28,7 @@ class SingleTeamUpdate extends SingleTeamEvent {
 /// Updates the image for the team.
 ///
 class SingleTeamUpdateImage extends SingleTeamEvent {
-  final File image;
+  final Uint8List image;
 
   SingleTeamUpdateImage({@required this.image});
 
@@ -348,7 +348,7 @@ class SingleTeamBloc
       } else {
         try {
           if (event.image != null) {
-            await db.updateTeamImage(teamUid, await event.image.readAsBytes());
+            await db.updateTeamImage(teamUid, await event.image);
           }
           await db.updateFirestoreTeam(event.team.build());
           yield (SingleTeamSaveDone.fromState(state)..savedUid = event.team.uid)
@@ -371,7 +371,7 @@ class SingleTeamBloc
             .build();
       } else {
         try {
-          await db.updateTeamImage(teamUid, await event.image.readAsBytes());
+          await db.updateTeamImage(teamUid, await event.image);
           yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid)
               .build();
           yield SingleTeamLoaded.fromState(state).build();

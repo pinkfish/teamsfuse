@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +28,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
   StepState _createStepStage = StepState.disabled;
   Club _clubToAdd;
   AddClubBloc _clubBloc;
-  File _imageFileToAdd;
+  Uint8List _imageFileToAdd;
 
   @override
   void initState() {
@@ -123,7 +123,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
       );
     }
     return ClipOval(
-      child: Image.file(_imageFileToAdd),
+      child: Image.memory(_imageFileToAdd),
     );
   }
 

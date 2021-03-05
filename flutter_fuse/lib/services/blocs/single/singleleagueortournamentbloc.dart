@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
@@ -68,7 +69,7 @@ class SingleLeagueOrTournamentUpdate extends SingleLeagueOrTournamentEvent {
 ///
 class SingleLeagueOrTournamentUpdateImage
     extends SingleLeagueOrTournamentEvent {
-  final File image;
+  final Uint8List image;
 
   SingleLeagueOrTournamentUpdateImage({this.image});
 
@@ -167,10 +168,11 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
   ///
   /// Update the image for this league or tournament.
   ///
-  Stream<SingleLeagueOrTournamentState> _updateImage(File imageFile) async* {
+  Stream<SingleLeagueOrTournamentState> _updateImage(
+      Uint8List imageFile) async* {
     yield SingleLeagueOrTournamentSaving.fromState(state).build();
     try {
-      await db.updateLeagueImage(state.league, await imageFile.readAsBytes());
+      await db.updateLeagueImage(state.league, await imageFile);
       yield SingleLeagueOrTournamentSaveDone.fromState(state).build();
       yield SingleLeagueOrTournamentLoaded.fromState(state).build();
     } catch (e, stack) {

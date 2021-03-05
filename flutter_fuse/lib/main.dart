@@ -9,6 +9,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:timezone/timezone.dart';
 import 'package:universal_io/io.dart';
 import 'package:clock/clock.dart';
@@ -26,7 +27,7 @@ void main() async {
   await Firebase.initializeApp();
 
   // Trace as the first thing in the system.
-  var trace = AnalyticsSubsystemImpl.instance.newTrace("startup");
+  var trace = AnalyticsSubsystemImpl.instance.newTrace('startup');
   trace.start();
 
   Bloc.observer = _SimpleBlocDelegate();
@@ -77,11 +78,11 @@ void main() async {
   // Start the loading, but don't block on it,
   // Load notifications after the app config has loaded.
   var config = AppConfiguration();
-  config.load();
+  unawaited(config.load());
 
   var loggingData = LoggingData();
 
-  AnalyticsSubsystemImpl.analytics.logAppOpen();
+  unawaited(AnalyticsSubsystemImpl.analytics.logAppOpen());
 
   // Send error logs up to crashalytics.
   FlutterError.onError = (details) {

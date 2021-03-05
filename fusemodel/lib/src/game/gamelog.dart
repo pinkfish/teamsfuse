@@ -59,7 +59,7 @@ abstract class GameLog implements Built<GameLog, GameLogBuilder> {
   }
 
   TZDateTime get eventTime {
-    return new TZDateTime.fromMicrosecondsSinceEpoch(local, eventTimeInternal);
+    return TZDateTime.fromMicrosecondsSinceEpoch(local, eventTimeInternal);
   }
 
   String toString() {

@@ -6,6 +6,7 @@ import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart';
@@ -164,7 +165,7 @@ class GamesComponent implements OnInit, OnDestroy {
 }
 
 class MonthDetails {
-  StreamSubscription<GameSnapshotEvent> _curMonthSubscription;
+  StreamSubscription<BuiltList<Game>> _curMonthSubscription;
   final TZDateTime start;
   final TZDateTime end;
   Iterable<Game> _games = [];
@@ -175,7 +176,7 @@ class MonthDetails {
   MonthDetails(this._db, {this.start, this.end, FilterDetails details}) {
     _curMonthSubscription =
         _db.getBasicGames(start: start, end: end).listen((e) {
-      _games = e.newGames.toList();
+      _games = e;
       _controller?.add(_games);
       cachedLoaded = true;
     });

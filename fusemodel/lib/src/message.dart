@@ -49,7 +49,7 @@ abstract class MessageRecipient
 
   @memoized
   TZDateTime get tzSentAt {
-    return new TZDateTime.fromMillisecondsSinceEpoch(
+    return TZDateTime.fromMillisecondsSinceEpoch(
         local, sentAt.millisecondsSinceEpoch);
   }
 
@@ -100,7 +100,7 @@ abstract class Message implements Built<Message, MessageBuilder> {
 
   @memoized
   TZDateTime get tzTimeSent {
-    return new TZDateTime.fromMillisecondsSinceEpoch(
+    return TZDateTime.fromMillisecondsSinceEpoch(
         local, timeSent.millisecondsSinceEpoch);
   }
 

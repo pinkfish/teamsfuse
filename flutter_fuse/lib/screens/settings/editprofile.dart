@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,7 +37,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final Validations _validations = Validations();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
-  File _imageFile;
+  Uint8List _imageFile;
   bool _changedImage = false;
 
   // Details to update.
@@ -53,12 +53,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void _selectImage() async {
-    var imgFile = await ImagePicker.pickImage(
+    var imgFile = await RepositoryProvider.of<ImagePicker>(context).getImage(
         source: ImageSource.gallery, maxHeight: 150.0, maxWidth: 150.0);
 
     if (imgFile != null) {
+      var data = await imgFile.readAsBytes();
       setState(() {
-        _imageFile = imgFile;
+        _imageFile = data;
         _changedImage = true;
       });
     }
@@ -68,7 +69,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!_changedImage) {
       return UserImage(profileState.profile.uid);
     }
-    return Image.file(_imageFile);
+    return Image.memory(_imageFile);
   }
 
   void _showInSnackBar(String value) {

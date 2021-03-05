@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
@@ -20,7 +20,7 @@ class AddTeamEventCommit extends AddTeamEvent {
   final String seasonName;
   final String playerUid;
   final String clubUid;
-  final File teamImage;
+  final Uint8List teamImage;
 
   AddTeamEventCommit(
       {@required this.team,
@@ -101,13 +101,8 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
         team.users = MapBuilder(entries);
 
         String uid = await coordinationBloc.databaseUpdateModel
-            .addFirestoreTeam(
-                team.build(),
-                null,
-                season,
-                event.teamImage == null
-                    ? null
-                    : await event.teamImage.readAsBytes());
+            .addFirestoreTeam(team.build(), null, season,
+                event.teamImage == null ? null : await event.teamImage);
 
         yield AddItemDone(uid: uid);
       } catch (e, stack) {

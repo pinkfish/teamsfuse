@@ -52,8 +52,8 @@ abstract class GameState with GameMixin {
 
   static void initializeStateBuilder(GameStateBuilder b) => b
     ..loadedFirestore = false
-    ..start = clock.now().subtract(new Duration(days: 60)).toUtc()
-    ..end = clock.now().add(new Duration(days: 240)).toUtc();
+    ..start = clock.now().subtract(Duration(days: 60)).toUtc()
+    ..end = clock.now().add(Duration(days: 240)).toUtc();
 
   Map<String, dynamic> toMap();
 }

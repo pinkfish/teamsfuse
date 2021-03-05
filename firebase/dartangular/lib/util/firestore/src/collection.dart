@@ -115,6 +115,11 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   Stream<wfs.QuerySnapshotWrapper> snapshots() {
     return _doc.onSnapshot.transform(new QuerySnapshotStreamTransformer());
   }
+
+  @override
+  wfs.QueryWrapper startAt(arg) {
+    _doc.startAt(fieldValues: [arg]);
+  }
 }
 
 class QuerySnapshotStreamTransformer

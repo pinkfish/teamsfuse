@@ -90,7 +90,7 @@ class _GameStatusVideoPlayerOverlayState
   Widget build(BuildContext context) {
     return GameStatusOverlay(
       status: status,
-      initialized: widget.controller.value.initialized,
+      initialized: widget.controller.value.isInitialized,
     );
   }
 }

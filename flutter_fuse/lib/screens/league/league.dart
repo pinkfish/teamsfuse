@@ -34,10 +34,11 @@ class LeagueScreen extends StatelessWidget {
           context, bloc);
     }
     if (action == "image") {
-      var imgFile = await ImagePicker.pickImage(
+      var imgFile = await RepositoryProvider.of<ImagePicker>(context).getImage(
           source: ImageSource.gallery, maxHeight: 200.0, maxWidth: 200.0);
       if (imgFile != null) {
-        bloc.add(SingleLeagueOrTournamentUpdateImage(image: imgFile));
+        bloc.add(SingleLeagueOrTournamentUpdateImage(
+            image: await imgFile.readAsBytes()));
       }
     }
     if (action == "edit") {

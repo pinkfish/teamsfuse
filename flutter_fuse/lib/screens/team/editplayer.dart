@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,7 @@ class EditPlayerScreen extends StatefulWidget {
 class _EditPlayerScreenState extends State<EditPlayerScreen> {
   PlayerBuilder _player;
   final Validations _validations = Validations();
-  File _imageFile;
+  Uint8List _imageFile;
   bool _changedImage = false;
   bool _autoValidate = false;
   SinglePlayerBloc singlePlayerBloc;
@@ -49,12 +50,13 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
   }
 
   Future<void> _chooseImage() async {
-    var imgFile = await ImagePicker.pickImage(
+    var imgFile = await RepositoryProvider.of<ImagePicker>(context).getImage(
         source: ImageSource.gallery, maxHeight: 200.0, maxWidth: 200.0);
 
     if (imgFile != null) {
+      var data = await imgFile.readAsBytes();
       setState(() {
-        _imageFile = imgFile;
+        _imageFile = data;
         _changedImage = true;
       });
     }
@@ -71,7 +73,7 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
 
     ImageProvider provider;
     if (_imageFile != null) {
-      provider = FileImage(_imageFile);
+      provider = MemoryImage(_imageFile);
     } else if (singlePlayerState.player.photoUrl != null) {
       provider = CachedNetworkImageProvider(singlePlayerState.player.photoUrl);
     } else {

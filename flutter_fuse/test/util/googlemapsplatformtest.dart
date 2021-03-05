@@ -15,7 +15,7 @@ typedef _CreationCallback = void Function(int);
 void setupGoogleMapsMock(MockGoogleMapsFlutterPlatform platform) {
   var done = Set<_CreationCallback>();
   // Used to create the view of the map...
-  when(platform.buildView(any, any, any)).thenAnswer((realInvocation) {
+  when(platform.buildView(any, any)).thenAnswer((realInvocation) {
     // Call the onPlatformViewCreated callback so the controller gets created.
     _CreationCallback onPlatformViewCreatedCb =
         realInvocation.positionalArguments[2];

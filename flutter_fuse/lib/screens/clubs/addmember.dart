@@ -113,6 +113,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                   ListTile(
                     leading: const Icon(Icons.email),
                     title: EnsureVisibleWhenFocused(
+                      focusNode: _nameField,
                       child: TextFormField(
                         decoration: InputDecoration(
                             labelText: Messages.of(context).email,
@@ -122,14 +123,13 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                             validations.validateEmail(context, value),
                         onSaved: (value) => _emailToInvite = value,
                       ),
-                      focusNode: _nameField,
                     ),
                   ),
                   SwitchFormField(
                     icon: Icons.person_add,
-                    child: Text(Messages.of(context).administrator),
                     initialValue: false,
                     onSaved: (value) => _inviteAsAdmin = value,
+                    child: Text(Messages.of(context).administrator),
                   )
                 ],
               ),

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,7 +46,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
   StepState _createStepStage = StepState.disabled;
   StepState _clubStepState = StepState.disabled;
   StepState _playerStepState = StepState.editing;
-  File _imageFileToAdd;
+  Uint8List _imageFileToAdd;
   String _clubUid = ClubPicker.noClub;
   String _playerUid;
   TeamBuilder _teamToAdd;

@@ -1,13 +1,14 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../blocs/singleleagueortournamentprovider.dart';
@@ -49,7 +50,7 @@ class LeagueOrTournamentEditFormState
   final FocusNode _focusNodeShortDescription = FocusNode();
   final FocusNode _focusNodeLongDescription = FocusNode();
   bool _changedImage = false;
-  File _imageFile;
+  Uint8List _imageFile;
   LeagueOrTournamentBuilder _builder;
 
   @override
@@ -73,12 +74,13 @@ class LeagueOrTournamentEditFormState
   }
 
   void _selectImage() async {
-    var imgFile = await ImagePicker.pickImage(
+    var imgFile = await RepositoryProvider.of<ImagePicker>(context).getImage(
         source: ImageSource.gallery, maxHeight: 150.0, maxWidth: 150.0);
 
     if (imgFile != null) {
+      var data = await imgFile.readAsBytes();
       setState(() {
-        _imageFile = imgFile;
+        _imageFile = data;
         _changedImage = true;
       });
     }
@@ -88,11 +90,11 @@ class LeagueOrTournamentEditFormState
     if (!_changedImage) {
       return LeagueImage(leagueOrTournament: widget.leagueOrTournament);
     }
-    return Image.file(_imageFile);
+    return Image.memory(_imageFile);
   }
 
   /// The final file to save, null if not changed.
-  File get imageFile {
+  Uint8List get imageFile {
     if (_changedImage) {
       return _imageFile;
     }

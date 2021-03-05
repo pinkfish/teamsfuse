@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,7 +39,7 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
   final FocusNode _focusNodeName = FocusNode();
   final FocusNode _focusNodeArriveBefore = FocusNode();
   final FocusNode _focusNodeAbout = FocusNode();
-  File _imageFile;
+  Uint8List _imageFile;
   bool _changedImage = false;
   String _clubName;
   String _clubAbout;
@@ -86,17 +87,19 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
   }
 
   /// Get the image file associated with this club.
-  File getImageFile() {
+  Uint8List getImageFile() {
     return _imageFile;
   }
 
   void _selectImage() async {
-    var imgFile = await ImagePicker.pickImage(
+    var imgFile = await RepositoryProvider.of<ImagePicker>(context).getImage(
         source: ImageSource.gallery, maxHeight: 150.0, maxWidth: 150.0);
 
     if (imgFile != null) {
+      var data = await imgFile.readAsBytes();
+
       setState(() {
-        _imageFile = imgFile;
+        _imageFile = data;
         _changedImage = true;
       });
     }
@@ -106,7 +109,7 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
     if (!_changedImage) {
       return ClubImage(clubUid: widget.club.uid);
     }
-    return Image.file(_imageFile);
+    return Image.memory(_imageFile);
   }
 
   @override

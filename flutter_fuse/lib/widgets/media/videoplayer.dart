@@ -100,7 +100,7 @@ class _GameVideoPlayer extends State<GameVideoPlayer> {
       children: [
         Expanded(
           child: Center(
-            child: _controller != null && _controller.value.initialized
+            child: _controller != null && _controller.value.isInitialized
                 ? Stack(
                     children: [
                       AspectRatio(

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,7 +36,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
   StepState createStepStage = StepState.disabled;
 
   LeagueOrTournamentBuilder _league;
-  File _leagueImage;
+  Uint8List _leagueImage;
   AddLeagueOrTournamentBloc addBloc;
 
   @override
@@ -143,7 +143,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
           children: <Widget>[
             ListTile(
               leading: _leagueImage != null
-                  ? Image.file(
+                  ? Image.memory(
                       _leagueImage,
                       width: 50.0,
                       height: 50.0,

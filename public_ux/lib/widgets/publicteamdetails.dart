@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/util/handsandtrophy.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -69,9 +70,7 @@ class PublicTeamDetails extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Center(
-                    child: Image(
-                      image:
-                          ExactAssetImage("assets/images/hands_and_trophy.png"),
+                    child: HandsAndTrophy(
                       width: DefaultTabController.of(context).index == 0
                           ? (screenSize.width < 500)
                               ? 120.0

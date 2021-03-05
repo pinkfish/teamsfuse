@@ -58,7 +58,7 @@ class UserAuthImpl {
         .createUserWithEmailAndPassword(
             email: userData.email, password: userData.password)
         .then((FirebaseUserWrapper user) {
-      UserData newData = new UserData((b) => b
+      UserData newData = UserData((b) => b
         ..profile = profile.toBuilder()
         ..email = userData.email
         ..isEmailVerified = false);
@@ -68,9 +68,9 @@ class UserAuthImpl {
       return ref.setData(profile.toMap()).then((void data) async {
         // With update uid.
         // Create a 'me' user.
-        PlayerBuilder player = new PlayerBuilder();
+        PlayerBuilder player = PlayerBuilder();
         player.name = userData.profile.displayName;
-        PlayerUserInternalBuilder playerUser = new PlayerUserInternalBuilder();
+        PlayerUserInternalBuilder playerUser = PlayerUserInternalBuilder();
         playerUser.relationship = Relationship.Me;
         playerUser.added = true;
         player.usersData[user.uid] = playerUser.build();
@@ -94,7 +94,7 @@ class UserAuthImpl {
       return currentUser();
     }
     print('Throwing exception');
-    throw new ArgumentError("Invalud login");
+    throw ArgumentError("Invalud login");
   }
 
   // To reset the password.
@@ -201,7 +201,7 @@ class UserAuthImpl {
     userProfile.notifyOnlyForGames = false;
     userProfile.uid = input.uid;
 
-    UserData user = new UserData((b) => b
+    UserData user = UserData((b) => b
       ..email = input.email
       ..uid = input.uid
       ..isEmailVerified = input.isEmailVerified

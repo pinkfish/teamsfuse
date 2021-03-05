@@ -33,7 +33,7 @@ class InviteFactory {
         InviteToLeagueTeam ret = InviteToLeagueTeam.fromMap(data);
         return ret;
       default:
-        throw new FormatException();
+        throw FormatException();
     }
   }
 }

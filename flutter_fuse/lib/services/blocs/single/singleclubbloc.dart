@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,7 +25,7 @@ class SingleClubUpdate extends SingleClubEvent {
   final bool includeMembers;
 
   /// The data to update if there is a new image.
-  final File image;
+  final Uint8List image;
 
   /// The constructor of the update.
   SingleClubUpdate(
@@ -48,7 +48,7 @@ class SingleClubLoadInvites extends SingleClubEvent {
 ///
 class SingleClubUpdateImage extends SingleClubEvent {
   /// The image to update for the club.
-  final File image;
+  final Uint8List image;
 
   /// Constructor to update the image.
   SingleClubUpdateImage({@required this.image});
@@ -275,8 +275,7 @@ class SingleClubBloc
       try {
         var club = event.club;
         if (event.image != null) {
-          var clubUri = await db.updateClubImage(
-              state.club, await event.image.readAsBytes());
+          var clubUri = await db.updateClubImage(state.club, await event.image);
           club = club.rebuild((b) => b..photoUrl = clubUri.toString());
         }
         await db.updateClub(club, includeMembers: event.includeMembers);
@@ -293,8 +292,7 @@ class SingleClubBloc
     if (event is SingleClubUpdateImage) {
       yield SingleClubSaving.fromState(state).build();
       try {
-        var clubUri = await db.updateClubImage(
-            state.club, await event.image.readAsBytes());
+        var clubUri = await db.updateClubImage(state.club, await event.image);
 
         yield SingleClubSaveDone.fromState(state).build();
         yield (SingleClubLoaded.fromState(state)

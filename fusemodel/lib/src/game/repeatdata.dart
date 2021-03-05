@@ -55,19 +55,19 @@ abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
   List<TZDateTime> repeatTimes(final TZDateTime start) {
     List<TZDateTime> newDates = <TZDateTime>[];
     // Normalize to 0.
-    TZDateTime startOfWeek = start.subtract(new Duration(days: start.weekday));
+    TZDateTime startOfWeek = start.subtract(Duration(days: start.weekday));
     if (period != RepeatPeriod.None) {
       if (repeatUntil || period == RepeatPeriod.Monthly) {
         print("Interval $repeatInterval");
         for (int i = 0; i < repeatInterval; i++) {
           if (period == RepeatPeriod.Monthly) {
-            newDates.add(new TZDateTime(start.location, start.year,
-                start.month + i, start.day, start.hour, start.minute));
+            newDates.add(TZDateTime(start.location, start.year, start.month + i,
+                start.day, start.hour, start.minute));
           } else {
-            TZDateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
+            TZDateTime newWeek = startOfWeek.add(Duration(days: i * 7));
             for (int dayNum = 0; dayNum < dayRepeats.length; dayNum++) {
               if (dayRepeats[dayNum]) {
-                newDates.add(newWeek.add(new Duration(days: dayNum)));
+                newDates.add(newWeek.add(Duration(days: dayNum)));
               }
             }
           }
@@ -75,16 +75,16 @@ abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
       } else {
         int i = 0;
         int curSpins = 0;
-        TZDateTime end = new TZDateTime(
+        TZDateTime end = TZDateTime(
                 start.location, endRepeat.year, endRepeat.month, endRepeat.day)
-            .add(new Duration(days: 1));
+            .add(Duration(days: 1));
         while (
             startOfWeek.millisecondsSinceEpoch < end.millisecondsSinceEpoch &&
                 curSpins < 100) {
-          TZDateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
+          TZDateTime newWeek = startOfWeek.add(Duration(days: i * 7));
           for (int dayNum = 0; dayNum < dayRepeats.length; dayNum++) {
             if (dayRepeats[dayNum]) {
-              TZDateTime newTime = newWeek.add(new Duration(days: dayNum));
+              TZDateTime newTime = newWeek.add(Duration(days: dayNum));
               if (newTime.millisecondsSinceEpoch < end.millisecondsSinceEpoch) {
                 newDates.add(newTime);
               }

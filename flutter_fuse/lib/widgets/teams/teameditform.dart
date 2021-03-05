@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,7 @@ class TeamEditFormState extends State<TeamEditForm> {
   final FocusNode _focusNodeNotes = FocusNode();
   final FocusNode _focusNodeSeason = FocusNode();
   final FocusNode _focusNodeArriveBefore = FocusNode();
-  File _imageFile;
+  Uint8List _imageFile;
   bool _changedImage = false;
   String _seasonName = "";
   TeamBuilder _builder;
@@ -109,17 +110,18 @@ class TeamEditFormState extends State<TeamEditForm> {
   String get seasonName => _seasonName;
 
   /// The image file to use, so we can save the image out.
-  File getImageFile() {
+  Uint8List getImageFile() {
     return _imageFile;
   }
 
   void _selectImage() async {
-    var imgFile = await ImagePicker.pickImage(
+    var imgFile = await RepositoryProvider.of<ImagePicker>(context).getImage(
         source: ImageSource.gallery, maxHeight: 400.0, maxWidth: 400.0);
 
     if (imgFile != null) {
+      var data = await imgFile.readAsBytes();
       setState(() {
-        _imageFile = imgFile;
+        _imageFile = data;
         _changedImage = true;
       });
     }
@@ -135,7 +137,7 @@ class TeamEditFormState extends State<TeamEditForm> {
         );
       }
     }
-    return Image.file(_imageFile);
+    return Image.memory(_imageFile);
   }
 
   @override

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+import 'sportimage.dart';
 
 ///
 /// Displays an image for the team.
@@ -41,7 +43,7 @@ class TeamImage extends StatelessWidget {
   final Team team;
 
   /// The image itself to use
-  final File teamImage;
+  final Uint8List teamImage;
 
   /// Width of the image
   final double width;
@@ -67,40 +69,30 @@ class TeamImage extends StatelessWidget {
   /// If we should display an icon or not.
   final bool showIcon;
 
-  Widget _getSportWidget(Team team) {
-    switch (team.sport) {
-      case Sport.Basketball:
-        return Image.asset("assets/sports/Sport.Basketball.png");
-      case Sport.Soccer:
-        return Image.asset("assets/sports/Sport.Soccer.png");
-      default:
-        break;
-    }
-    return Image.asset("assets/images/defaultavatar2.png");
-  }
-
   Widget _buildImageBit(Team t) {
-    return ClipOval(
-      child: SizedBox(
-        width: width < height ? width : height,
-        height: width < height ? width : height,
-        child: FittedBox(
-          fit: fit,
-          child: t.photoUrl != null && t.photoUrl.isNotEmpty
-              ? CachedNetworkImage(
-                  imageUrl: t.photoUrl ?? "",
-                  fadeInDuration: Duration(milliseconds: 200),
-                  fadeOutDuration: Duration(milliseconds: 200),
-                  alignment: alignment,
-                  repeat: repeat,
-                  matchTextDirection: matchTextDirection,
-                  placeholder: (context, url) => _getSportWidget(t),
-                  errorWidget: (context, url, e) => _getSportWidget(t),
-                )
-              : _getSportWidget(t),
+    if (t.photoUrl != null && t.photoUrl.isNotEmpty) {
+      return ClipOval(
+        child: SizedBox(
+          width: width < height ? width : height,
+          height: width < height ? width : height,
+          child: FittedBox(
+            fit: fit,
+            child: CachedNetworkImage(
+              imageUrl: t.photoUrl,
+              fadeInDuration: Duration(milliseconds: 200),
+              fadeOutDuration: Duration(milliseconds: 200),
+              alignment: alignment,
+              repeat: repeat,
+              matchTextDirection: matchTextDirection,
+              placeholder: (context, url) => SportImage(),
+              errorWidget: (context, url, e) => SportImage(),
+            ),
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return SportImage();
+    }
   }
 
   @override

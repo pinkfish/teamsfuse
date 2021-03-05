@@ -26,7 +26,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   /// Constructs the database update system implementation.
   DatabaseUpdateModelImpl(
       this._wrapper, this._authenticationBloc, this._analytics) {
-    _authenticationBloc.listen((state) {
+    _authenticationBloc?.listen((state) {
       if (state is AuthenticationLoggedIn) {
         userData = state.user;
       }

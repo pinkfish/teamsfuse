@@ -147,7 +147,7 @@ abstract class Game implements Built<Game, GameBuilder> {
   bool get homegame => sharedData.officialResult.homeTeamLeagueUid == teamUid;
 
   TZDateTime get tzArriveTime =>
-      new TZDateTime.from(arrivalTime, sharedData.location);
+      TZDateTime.from(arrivalTime, sharedData.location);
 
   static const String SEASONUID = 'seasonUid';
   static const String RESULT = 'result';

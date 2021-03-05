@@ -47,9 +47,8 @@ class PublicTeamsFuse extends StatelessWidget {
           create: (context) => AlgoliaSearch(),
         ),
       ],
-      child: MultiBlocProvider(
-        providers: <BlocProvider>[],
-        child: MaterialApp(
+      child: Builder(
+        builder: (context) => MaterialApp(
           localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
             MessagesPublicDelegate(),
             MessagesDelegate(),

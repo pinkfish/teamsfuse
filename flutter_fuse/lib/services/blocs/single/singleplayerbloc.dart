@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
@@ -20,7 +20,7 @@ class SinglePlayerUpdate extends SinglePlayerEvent {
   final PlayerBuilder player;
 
   /// Optional image to set for the player.
-  final File image;
+  final Uint8List image;
 
   /// Create the update request.
   SinglePlayerUpdate({@required this.player, this.image});
@@ -34,7 +34,7 @@ class SinglePlayerUpdate extends SinglePlayerEvent {
 ///
 class SinglePlayerUpdateImage extends SinglePlayerEvent {
   /// The image for the player.
-  final File image;
+  final Uint8List image;
 
   /// Update just just the image.
   SinglePlayerUpdateImage({@required this.image});
@@ -190,8 +190,8 @@ class SinglePlayerBloc
 
       try {
         if (event.image != null) {
-          var url = await db.updatePlayerImage(
-              event.player.uid, await event.image.readAsBytes());
+          var url =
+              await db.updatePlayerImage(event.player.uid, await event.image);
           event.player.photoUrl = url.toString();
         }
         await db.updateFirestorePlayer(event.player.build(), false);

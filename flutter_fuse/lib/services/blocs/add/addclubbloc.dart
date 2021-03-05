@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -20,7 +20,7 @@ class AddClubEventCommit extends AddClubEvent {
   final Club club;
 
   /// The image for the club to add.
-  final File imageFile;
+  final Uint8List imageFile;
 
   /// The add event to write this new club out.
   AddClubEventCommit({@required this.club, @required this.imageFile});
@@ -57,11 +57,8 @@ class AddClubBloc extends Bloc<AddClubEvent, AddItemState> {
             .addClub(wrap, updated.build());
         if (event.imageFile != null) {
           updated.uid = uid;
-          coordinationBloc.databaseUpdateModel.updateClubImage(
-              updated.build(),
-              event.imageFile != null
-                  ? await event.imageFile.readAsBytes()
-                  : null);
+          coordinationBloc.databaseUpdateModel.updateClubImage(updated.build(),
+              event.imageFile != null ? await event.imageFile : null);
         }
         yield AddItemDone(uid: uid);
       } on Exception catch (e, stack) {

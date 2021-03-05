@@ -101,4 +101,9 @@ class Query extends wfs.QueryWrapper {
   wfs.QueryWrapper limit(int num) {
     return new Query(_doc.limit(num));
   }
+
+  @override
+  wfs.QueryWrapper startAt(arg) {
+    _doc.startAt(fieldValues: [arg]);
+  }
 }

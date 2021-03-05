@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
@@ -18,7 +18,7 @@ abstract class SingleProfileEvent extends Equatable {}
 ///
 class SingleProfileUpdate extends SingleProfileEvent {
   final FusedUserProfile profile;
-  final File image;
+  final Uint8List image;
 
   SingleProfileUpdate({@required this.profile, this.image});
 
@@ -132,8 +132,8 @@ class SingleProfileBloc
       try {
         FusedUserProfile profile = event.profile;
         if (event.image != null) {
-          coordinationBloc.databaseUpdateModel.updatePlayerImage(
-              playerBloc.state.me.uid, await event.image.readAsBytes());
+          coordinationBloc.databaseUpdateModel
+              .updatePlayerImage(playerBloc.state.me.uid, await event.image);
           //profile = profile.rebuild((b) b..)
         }
         await coordinationBloc.authenticationBloc.userAuth

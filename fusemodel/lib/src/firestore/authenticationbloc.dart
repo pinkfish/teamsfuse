@@ -354,10 +354,10 @@ class AuthenticationBloc
     if (event is AuthenticationSignupUser) {
       yield AuthenticationLoading();
       AuthenticationSignupUser signup = event;
-      UserData user = new UserData((b) => b
+      UserData user = UserData((b) => b
         ..email = signup.email
         ..password = signup.password);
-      FusedUserProfile profile = new FusedUserProfile((b) => b
+      FusedUserProfile profile = FusedUserProfile((b) => b
         ..displayName = signup.displayName
         ..phoneNumber = signup.phoneNumber
         ..email = signup.email

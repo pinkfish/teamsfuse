@@ -64,7 +64,7 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
       type = GamePeriodType.values
           .firstWhere((GamePeriodType val) => val.toString() == bits[0]);
       periodNumber = getNum(bits[1]);
-      return new GamePeriod((b) => b
+      return GamePeriod((b) => b
         ..type = type
         ..periodNumber = periodNumber);
     } else {
@@ -87,7 +87,7 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
           periodNumber = 0;
           break;
       }
-      return new GamePeriod((b) => b
+      return GamePeriod((b) => b
         ..type = type
         ..periodNumber = periodNumber);
     }
@@ -171,16 +171,15 @@ abstract class GamePeriodTime
   GamePeriodTime._();
   factory GamePeriodTime([updates(GamePeriodTimeBuilder b)]) = _$GamePeriodTime;
 
-  DateTime get currentPeriodStart =>
-      currentPeriodStartInternal != null && currentPeriodStartInternal != 0
-          ? new DateTime.fromMillisecondsSinceEpoch(
-              currentPeriodStartInternal.toInt())
-          : null;
+  DateTime get currentPeriodStart => currentPeriodStartInternal != null &&
+          currentPeriodStartInternal != 0
+      ? DateTime.fromMillisecondsSinceEpoch(currentPeriodStartInternal.toInt())
+      : null;
 
   Duration currentStopwatch() {
     if (currentPeriodStartInternal != null) {
       if (timeCountUp) {
-        return new Duration(
+        return Duration(
             milliseconds: clock.now().millisecondsSinceEpoch -
                 currentPeriodStartInternal +
                 currentOffsetInternal);
@@ -190,9 +189,9 @@ abstract class GamePeriodTime
             currentOffsetInternal;
         if (diff > currentOffsetInternal) {
           // Out of time, show as 0.
-          return new Duration();
+          return Duration();
         }
-        return new Duration(milliseconds: currentOffsetInternal - diff);
+        return Duration(milliseconds: currentOffsetInternal - diff);
       }
     }
 

@@ -19,8 +19,8 @@ import 'winrecord.dart';
 /// Details the games can be filtered on.
 ///
 class FilterDetails {
-  Set<String> teamUids = new Set<String>();
-  Set<String> playerUids = new Set<String>();
+  Set<String> teamUids = Set<String>();
+  Set<String> playerUids = Set<String>();
   GameResult result;
   EventType eventType;
   bool allGames = false;

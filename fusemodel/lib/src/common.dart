@@ -109,11 +109,11 @@ class _EmailStuff {
 }
 
 Map<String, _EmailStuff> _emailProviders = {
-  "gmail.com": new _EmailStuff(plus: true, dot: true),
-  "googlemail.com": new _EmailStuff(plus: true, dot: true, alias: "gmail.com"),
-  "hotmail.com": new _EmailStuff(plus: true, dot: false),
-  "live.com": new _EmailStuff(plus: true, dot: true),
-  "outlook.com": new _EmailStuff(plus: true, dot: false),
+  "gmail.com": _EmailStuff(plus: true, dot: true),
+  "googlemail.com": _EmailStuff(plus: true, dot: true, alias: "gmail.com"),
+  "hotmail.com": _EmailStuff(plus: true, dot: false),
+  "live.com": _EmailStuff(plus: true, dot: true),
+  "outlook.com": _EmailStuff(plus: true, dot: false),
 };
 
 ///

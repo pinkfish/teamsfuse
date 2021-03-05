@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'fusematerialapp.dart';
 import 'services/analytics.dart';
@@ -113,8 +114,6 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
 
   @override
   Widget build(BuildContext context) {
-    final extra = [];
-
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<fluro.FluroRouter>(
@@ -132,6 +131,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         RepositoryProvider<LoggingData>(
             create: (context) => widget._loggingData),
         RepositoryProvider<Notifications>(create: (context) => Notifications()),
+        RepositoryProvider<ImagePicker>(create: (context) => ImagePicker()),
       ],
       child: MultiBlocProvider(
         providers: <BlocProvider>[

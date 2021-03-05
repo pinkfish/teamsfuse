@@ -5,6 +5,7 @@ import 'package:angular_components/content/deferred_content.dart';
 import 'package:angular_components/material_expansionpanel/material_expansionpanel.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:teamfuse/components/games/gamecard-component.dart';
+import 'package:built_collection/built_collection.dart';
 
 @Component(
   selector: 'season-expansionpanel',
@@ -26,7 +27,7 @@ class SeasonExpansionPanelComponent implements OnDestroy, OnInit {
   Team team;
   @Input()
   Season season;
-  StreamSubscription<GameSnapshotEvent> _subscription;
+  StreamSubscription<BuiltList<Game>> _subscription;
   Iterable<Game> games;
   StreamSubscription<Iterable<Game>> _transformedStream;
   DatabaseUpdateModel _db;
@@ -38,7 +39,7 @@ class SeasonExpansionPanelComponent implements OnDestroy, OnInit {
     print('Making panel');
 
     _subscription = _db.getSeasonGames(season).listen((event) {
-      games = event.newGames;
+      games = event;
     });
 
     games = [];

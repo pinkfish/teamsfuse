@@ -1,6 +1,7 @@
 name: teamfuse
 description: A web app that uses AngularDart with lots of fun
 version: 0.0.1
+publish_to: none
 
 environment:
   sdk: ">=1.9.0 <3.0.0"

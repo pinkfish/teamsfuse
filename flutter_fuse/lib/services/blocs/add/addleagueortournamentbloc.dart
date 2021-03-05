@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -16,7 +16,7 @@ abstract class AddLeagueOrTournamentEvent extends Equatable {}
 ///
 class AddLeagueOrTournamentEventCommit extends AddLeagueOrTournamentEvent {
   final LeagueOrTournament leagueOrTournament;
-  final File imageFile;
+  final Uint8List imageFile;
 
   AddLeagueOrTournamentEventCommit(
       {@required this.leagueOrTournament, @required this.imageFile});
