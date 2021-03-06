@@ -129,7 +129,7 @@ void main() {
               testWidget,
             );
 
-            loadedStateBloc.emit(LoadedState.AllLoaded);
+            await loadedStateBloc.emit(LoadedState.AllLoaded);
 
             //await tester.pumpWidget(testWidget);
             await tester.pump(Duration(milliseconds: 600));

@@ -54,6 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginForm() {
+    print("Building login form");
     return SingleChildScrollView(
       controller: scrollController,
       child: Container(
@@ -105,25 +106,31 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
-                    child: RaisedButton(
-                      child: Text(Messages.of(context).login),
-                      color: Theme.of(context).primaryColor,
-                      textColor: Colors.white,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        onSurface: Theme.of(context).primaryColor,
+                        primary: Colors.white,
+                      ),
                       onPressed: _handleSubmitted,
                       key: Key('SUBMIT'),
+                      child: Text(Messages.of(context).login),
                     ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      FlatButton(
-                        textColor: Theme.of(context).accentColor,
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          primary: Theme.of(context).accentColor,
+                        ),
                         key: Key('CREATEACCOUNT'),
                         onPressed: () => _onPressed('/Login/SignUp'),
                         child: Text(Messages.of(context).createaccount),
                       ),
-                      FlatButton(
-                        textColor: Theme.of(context).accentColor,
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          primary: Theme.of(context).accentColor,
+                        ),
                         key: Key('FORGOTPASSWORD'),
                         onPressed: () => _onPressed('/Login/ForgotPassword'),
                         child: Text(Messages.of(context).forgotPassword),

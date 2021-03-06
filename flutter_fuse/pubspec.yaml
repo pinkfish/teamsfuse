@@ -87,7 +87,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   intl_translation: ^0.17.10+1
-  bloc_test: ^7.1.0
   flutter_driver:
     sdk: flutter
   test: any

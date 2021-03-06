@@ -26,8 +26,9 @@ class MockUserAuth extends Mock implements UserAuthImpl {}
 void main() {
   testWidgets('forgot button', (tester) async {
     var loginForm = _LoginFormTest();
-    loginForm.setup(tester);
+    await loginForm.setup(tester);
 
+    debugPrint(loginForm.testWidget.toStringDeep());
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
 
@@ -44,7 +45,7 @@ void main() {
 
   testWidgets('signup button', (tester) async {
     var loginForm = _LoginFormTest();
-    loginForm.setup(tester);
+    await loginForm.setup(tester);
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
@@ -68,7 +69,7 @@ void main() {
 
   testWidgets('login failed', (tester) async {
     var loginForm = _LoginFormTest();
-    loginForm.setup(tester);
+    await loginForm.setup(tester);
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
@@ -105,7 +106,7 @@ void main() {
 
   testWidgets('login success', (tester) async {
     var loginForm = _LoginFormTest();
-    loginForm.setup(tester);
+    await loginForm.setup(tester);
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
@@ -162,6 +163,8 @@ class _LoginFormTest {
 
     when(mockUserAuth.onAuthChanged()).thenAnswer((_) => userController.stream);
     authBloc = AuthenticationBloc(mockUserAuth, mockAnalytics);
+    // Logged out.
+    await userController.add(null);
 
     AsyncHydratedStorage.storageDirectory = Directory('fail');
 
