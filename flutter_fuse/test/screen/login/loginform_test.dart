@@ -15,14 +15,6 @@ import '../../util/loadfonts.dart';
 import '../../util/testable.dart';
 import '../../util/widgetvariant.dart';
 
-class MockDatabaseUpdateModel extends Mock implements DatabaseUpdateModel {}
-
-class MockAnalyticsSubsystem extends Mock implements AnalyticsSubsystem {}
-
-class MockNavigatorObserver extends Mock implements NavigatorObserver {}
-
-class MockUserAuth extends Mock implements UserAuthImpl {}
-
 void main() {
   testWidgets('forgot button', (tester) async {
     var loginForm = _LoginFormTest();

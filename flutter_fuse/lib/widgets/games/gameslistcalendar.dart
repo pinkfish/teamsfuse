@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
+import 'package:timezone/timezone.dart';
 
 import '../../services/blocs.dart';
 import '../games/gamecard.dart';
@@ -14,15 +16,20 @@ typedef UpdateEvents = void Function();
 ///
 class GameListCalendarState {
   /// Constructor.
-  GameListCalendarState(this._gameBloc, this._updateEvents) {
+  GameListCalendarState(this._gameBloc, this._updateEvents, this.location)
+      : startPoint = TZDateTime.from(clock.now(), location),
+        endPoint =
+            TZDateTime.from(clock.now().add(Duration(days: 30)), location) {
     _listening = _gameBloc.listen(_setGames);
   }
 
   /// Start point in the calendar for displaying thing on the screen.
-  DateTime startPoint;
+  TZDateTime startPoint;
 
   /// End point in the calendar for displaying thing on the screen.
-  DateTime endPoint;
+  TZDateTime endPoint;
+
+  Location location;
 
   final UpdateEvents _updateEvents;
   final FilteredGameBloc _gameBloc;
@@ -47,8 +54,8 @@ class GameListCalendarState {
         endPoint == null ||
         start.isBefore(startPoint) ||
         end.isAfter(endPoint)) {
-      startPoint = start;
-      endPoint = end;
+      startPoint = TZDateTime.from(start, location);
+      endPoint = TZDateTime.from(end, location);
       _resubscribe();
     }
 

@@ -5,6 +5,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:timezone/timezone.dart';
 
 import 'fusematerialapp.dart';
 import 'services/analytics.dart';
@@ -117,7 +118,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<fluro.FluroRouter>(
-          create: (context) => AppRouter.createAppRouter(),
+          create: (context) => AppRouter.createAppRouter(local),
         ),
         RepositoryProvider<AnalyticsSubsystem>(
           create: (c) => AnalyticsSubsystemImpl.instance,

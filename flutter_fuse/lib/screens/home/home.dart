@@ -23,6 +23,12 @@ import '../../widgets/util/savingoverlay.dart';
 /// the controls and the loading state of the app currently.
 ///
 class HomeScreen extends StatefulWidget {
+  /// The location for the timezone.
+  final Location location;
+
+  /// Create a home screen.
+  HomeScreen(this.location);
+
   @override
   _HomeScreenState createState() {
     return _HomeScreenState();
@@ -152,6 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: CalendarWidget(
                     initialDate: TZDateTime.from(clock.now(), local),
+                    beginningRangeDate: _calendarEvents.startPoint,
+                    endingRangeDate: _calendarEvents.endPoint,
                     key: _calendarState,
                     getEvents: _calendarEvents.getEvents,
                     buildItem: _calendarEvents.buildWidget,
@@ -211,7 +219,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _calendarEvents = GameListCalendarState(
         BlocProvider.of<FilteredGameBloc>(context),
-        () => _calendarState?.currentState?.updateEvents());
+        () => _calendarState?.currentState?.updateEvents(),
+        widget.location);
     _calendarEvents.loadGames(_details);
     _calendarSub = _calendarEvents.stream.listen((readon) {
       setState(() {});

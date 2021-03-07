@@ -1,5 +1,6 @@
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:fusemodel/fusemodel.dart';
+import 'package:timezone/timezone.dart';
 
 import '../screens/clubs/addclub.dart';
 import '../screens/clubs/addcoach.dart';
@@ -66,12 +67,13 @@ class AppRouter {
   /// Creates the app router to use for the app.  Sets up all the routes
   /// and does stuff.
   ///
-  static fluro.FluroRouter createAppRouter() {
+  static fluro.FluroRouter createAppRouter(Location location) {
     var router = fluro.FluroRouter();
     router.define('/Home',
         handler: fluro.Handler(handlerFunc: (context, vals) => SplashScreen()));
     router.define('/Main/Home',
-        handler: fluro.Handler(handlerFunc: (context, vals) => HomeScreen()));
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) => HomeScreen(location)));
     router.define('/Profile',
         handler: fluro.Handler(
             handlerFunc: (context, vals) => ProfileScreen(
