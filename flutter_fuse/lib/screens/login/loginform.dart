@@ -54,7 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginForm() {
-    print("Building login form");
     return SingleChildScrollView(
       controller: scrollController,
       child: Container(
@@ -108,8 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        onSurface: Theme.of(context).primaryColor,
-                        primary: Colors.white,
+                        primary: Theme.of(context).primaryColor,
                       ),
                       onPressed: _handleSubmitted,
                       key: Key('SUBMIT'),

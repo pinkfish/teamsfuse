@@ -20,7 +20,6 @@ void main() {
     var loginForm = _LoginFormTest();
     await loginForm.setup(tester);
 
-    debugPrint(loginForm.testWidget.toStringDeep());
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
 
