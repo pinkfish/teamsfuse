@@ -70,7 +70,6 @@ void main() {
               ),
             );
 
-            print('Pump');
             await tester.pumpWidget(
               testWidget,
             );
@@ -79,7 +78,6 @@ void main() {
 
             //await tester.pumpWidget(testWidget);
             await tester.pump(Duration(milliseconds: 600));
-            print('Second pump');
 
             expect(find.text('Team Fuse'), findsOneWidget);
 
@@ -89,8 +87,6 @@ void main() {
                   matchesGoldenFile('../../golden/home_uninitialized.png'));
             }
             await tester.pump(Duration(milliseconds: 600));
-
-            print('Fluff');
 
             await allBlocs.close();
           }),

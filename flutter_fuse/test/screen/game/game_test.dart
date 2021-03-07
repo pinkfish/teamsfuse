@@ -307,15 +307,11 @@ void main() {
     opponentController.add([makeTestOpponent()]);
     teamSeasonController.add(BuiltList.of([season]));
 
-    print('froggy');
-
     await tester.pump(Duration(milliseconds: 600));
     await tester.pump(Duration(milliseconds: 600));
     await tester.pump(Duration(milliseconds: 600));
     await tester.pump(Duration(milliseconds: 600));
     await tester.pump(Duration(milliseconds: 600));
-
-    print("Loaded");
 
     // Still loading when there is no team.
     expect(find.text('Fluff World'), findsOneWidget);
@@ -325,17 +321,10 @@ void main() {
           matchesGoldenFile('../../golden/game_details_basketball.png'));
     }
 
-    print("Closing");
-
     await allBlocs.close();
-    print("all blocs");
     seasonController.close();
-    print("all season");
     opponentController.close();
-    print("all op");
     teamSeasonController.close();
-    print("all team");
     teamController.close();
-    print("all everything");
   }, variant: TeamsFuseTestVariant());
 }
