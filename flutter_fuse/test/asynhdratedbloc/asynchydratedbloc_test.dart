@@ -20,49 +20,56 @@ void main() {
   tearDown(() {});
 
   test('serialize/deserialize', () async {
-    var completer = Completer<Map<String, dynamic>>();
-    var fluff = Completer<void>();
+    final completer = Completer<Map<String, dynamic>>();
+    final fluff = Completer<void>();
+
+    when(mockAsyncStorage.read('TestAsyncHydratedBloc}'))
+        .thenAnswer((_) => completer.future);
+    when(mockAsyncStorage.write('TestAsyncHydratedBloc}', {'data': 'red'}))
+        .thenAnswer((_) => fluff.future);
+    when(mockAsyncStorage.write('TestAsyncHydratedBloc}', {'data': 'rabbit'}))
+        .thenAnswer((_) => fluff.future);
+
+    final asyncStuff = TestAsyncHydratedBloc('frogbucket', mockAsyncStorage);
+    expectLater(
+      asyncStuff,
+      emitsInOrder(['red', 'rabbit']),
+    );
+    await completer.complete({'data': 'red'});
+    // Wait for it to load.
+    await asyncStuff.loaded.future;
+
+    await fluff.complete(null);
+    await asyncStuff.add(TestEvent.Rabbit);
+  });
+
+  test('update first', () async {
+    final completer = Completer<Map<String, dynamic>>();
+    final fluff = Completer<void>();
 
     when(mockAsyncStorage.read('TestAsyncHydratedBloc}'))
         .thenAnswer((realInvocation) => completer.future);
     when(mockAsyncStorage.write('TestAsyncHydratedBloc}', {'data': 'red'}))
         .thenAnswer((realInvocation) => fluff.future);
-    when(mockAsyncStorage.write('TestAsyncHydratedBloc}', {'data': 'rabbit'}))
-        .thenAnswer((realInvocation) => fluff.future);
-
-    var asyncStuff = TestAsyncHydratedBloc('frogbucket', mockAsyncStorage);
-    await expectLater(
-      asyncStuff,
-      emitsInOrder(['red', 'rabbit']),
-    );
-
-    completer.complete({'data': 'red'});
-    fluff.complete(null);
-    asyncStuff.add(TestEvent.Rabbit);
-  });
-
-  test('update first', () async {
-    var completer = Completer<Map<String, dynamic>>();
-    var fluff = Completer<void>();
-
-    when(mockAsyncStorage.read('TestAsyncHydratedBloc}'))
-        .thenAnswer((realInvocation) => completer.future);
     when(mockAsyncStorage.write('TestAsyncHydratedBloc}', {'data': 'yellow'}))
         .thenAnswer((realInvocation) => fluff.future);
     when(mockAsyncStorage.write('TestAsyncHydratedBloc}', {'data': 'rabbit'}))
         .thenAnswer((realInvocation) => fluff.future);
 
-    var asyncStuff = TestAsyncHydratedBloc('frogbucket', mockAsyncStorage);
+    final asyncStuff = TestAsyncHydratedBloc('frogbucket', mockAsyncStorage);
     asyncStuff.add(TestEvent.Frog);
-    await expectLater(
+    await asyncStuff.loaded.future;
+
+    expectLater(
       asyncStuff,
       emitsInOrder(['yellow', 'rabbit']),
     );
-    await asyncStuff.first;
 
-    completer.complete({'data': 'red'});
-    fluff.complete(null);
-    asyncStuff.add(TestEvent.Rabbit);
+    await completer.complete({'data': 'red'});
+    await fluff.complete(null);
+    await asyncStuff.add(TestEvent.Rabbit);
+
+    await asyncStuff.first;
   });
 }
 
@@ -72,16 +79,24 @@ enum TestEvent { Frog, Rabbit }
 /// For testing the async stuff.
 ///
 class TestAsyncHydratedBloc extends AsyncHydratedBloc<TestEvent, String> {
+  final loaded = Completer<bool>();
+
   TestAsyncHydratedBloc(String boxName, AsyncStorage asyncStorage)
       : super('', boxName, asyncStorage: asyncStorage);
 
   @override
   String fromJson(Map<String, dynamic> json) {
+    if (!loaded.isCompleted) {
+      loaded.complete(true);
+    }
     return json['data'];
   }
 
   @override
   Stream<String> mapEventToState(TestEvent event) async* {
+    if (!loaded.isCompleted) {
+      loaded.complete(true);
+    }
     if (event == TestEvent.Frog) {
       yield 'yellow';
     }

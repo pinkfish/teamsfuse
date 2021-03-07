@@ -73,6 +73,7 @@ mixin AsyncHydratedMixin<State> on Cubit<State> {
     return _loadedDataCompletor.future;
   }
 
+  /// hydrate the data.
   Future<void> hydrate() async {
     if (storage == null) throw const StorageNotFound();
     try {
