@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_webservice/places.dart';
 import 'package:provider/provider.dart';
 
 import '../../../services/messages.dart';
 import '../providers/place_provider.dart';
 import '../providers/search_provider.dart';
+import '../../webservices/places.dart';
 import 'components/prediction_tile.dart';
 import 'components/rounded_frame.dart';
 import 'controllers/autocomplete_search_controller.dart';

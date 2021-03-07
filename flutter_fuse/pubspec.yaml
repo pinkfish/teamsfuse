@@ -42,13 +42,12 @@ dependencies:
   flutter_native_timezone: ^1.0.9
   google_maps_flutter: ^2.0.1
   geolocator: ^7.0.1
-  google_maps_webservice: ^0.0.19
   google_api_headers: ^0.1.1+2
   fusemodel:
     path: ../fusemodel
   sqflite: any
-  badges: ^1.1.6
-  universal_io: ^1.0.2
+  badges: ^1.2.0
+  universal_io: ^2.0.0
 
   fluro: any
   image_picker: ^0.7.2

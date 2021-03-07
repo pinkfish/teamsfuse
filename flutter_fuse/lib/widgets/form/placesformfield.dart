@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/timezone.dart';
 
 import '../../services/apikeys.dart';
 import '../../services/messages.dart';
 import '../../util/placepicker/google_maps_place_picker.dart';
+import '../../util/webservices/timezone.dart';
 import '../util/inputdropdown.dart';
 
 ///
