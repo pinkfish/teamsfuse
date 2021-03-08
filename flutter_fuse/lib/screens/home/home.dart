@@ -138,7 +138,6 @@ class _HomeScreenState extends State<HomeScreen> {
         cubit: BlocProvider.of<LoadedStateBloc>(context),
         builder: (context, state) {
           var loading = false;
-          print(state);
           switch (state) {
             case LoadedState.Logout:
               loading = true;
