@@ -27,10 +27,15 @@ class AppRouter {
                 vals["id"][0].toString(),
                 vals["id2"][0].toString())));
 
-    router.define("/Search/:query",
+    router.define("/Home",
         handler: fluro.Handler(
             handlerFunc: (context, vals) =>
-                PublicHomeScreen(vals["query"][0].toString())));
+                PublicHomeScreen(PublicMainTab.about.name)));
+
+    router.define("/Home/:tab",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) =>
+                PublicHomeScreen(vals["tab"][0].toString())));
 
     return router;
   }

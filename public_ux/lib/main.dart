@@ -28,7 +28,7 @@ class PublicTeamsFuse extends StatelessWidget {
     final ThemeData theme = ThemeData(
       primarySwatch: Colors.green,
     );
-    final route = "Public/Club/-LFYVrTV145zE21C4O24";
+    final route = "Home";
 
     return MultiRepositoryProvider(
       providers: [
@@ -59,7 +59,7 @@ class PublicTeamsFuse extends StatelessWidget {
           title: "Teams Fuse",
           theme: theme,
           initialRoute: route,
-          home: PublicHomeScreen(""),
+          home: PublicHomeScreen(PublicMainTab.about.name),
           onGenerateRoute: (settings) => _buildRoute(context, settings),
         ),
       ),

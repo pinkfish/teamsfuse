@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:public_ux/services/algolia.dart';
 
+import '../services/algolia.dart';
+import '../services/messagespublic.dart';
 import 'searchbox.dart';
-import 'searchresults.dart';
+import 'searchresult.dart';
 
 ///
 /// Search widget with the box and results.
@@ -47,7 +48,11 @@ class _SearchState extends State<Search> {
         initialQuery: _query,
       ),
       Expanded(
-        child: SearchResults(results: _results),
+        child: _results.isEmpty
+            ? Text(MessagesPublic.of(context).noResults)
+            : _results.map(
+                (r) => SearchResult(result: r),
+              ),
       ),
     ]);
   }

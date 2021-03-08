@@ -138,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
         cubit: BlocProvider.of<LoadedStateBloc>(context),
         builder: (context, state) {
           var loading = false;
+          print(state);
           switch (state) {
             case LoadedState.Logout:
               loading = true;
@@ -158,8 +159,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: CalendarWidget(
                     initialDate: TZDateTime.from(clock.now(), local),
-                    beginningRangeDate: _calendarEvents.startPoint,
-                    endingRangeDate: _calendarEvents.endPoint,
                     key: _calendarState,
                     getEvents: _calendarEvents.getEvents,
                     buildItem: _calendarEvents.buildWidget,

@@ -22,19 +22,19 @@ class MessagesPublic {
       locale: locale);
 
   String get detailsOfflineInformation =>
-      Intl.message("Works offline with no internet",
+      Intl.message("\u2022 Works offline with no internet",
           desc: "Feature description for the app in a list", locale: locale);
   String get detailsMultipleTeamsInformation =>
-      Intl.message("Handles multiple teams and players in one view",
+      Intl.message("\u2022 Handles multiple teams and players in one view",
           desc: "Feature description for the app in a list", locale: locale);
   String get detailsLeagueControlInformation =>
-      Intl.message("League control allowing shared offical results",
+      Intl.message("\u2022 League control allowing shared offical results",
           desc: "Feature description for the app in a list", locale: locale);
   String get detailsNotificationsInformation =>
-      Intl.message("Notifications via mobile and email",
+      Intl.message("\u2022 Notifications via mobile and email",
           desc: "Feature description for the app in a list", locale: locale);
   String get detailsMobileFirstInformation =>
-      Intl.message("Mobile first! Designed for the phone",
+      Intl.message("\u2022 Mobile first! Designed for the phone",
           desc: "Feature description for the app in a list", locale: locale);
 
   String get appDescription => Intl.message(
@@ -56,19 +56,20 @@ class MessagesPublic {
       locale: locale);
 
   String get leagueDetailsResults =>
-      Intl.message("Official results and team results",
+      Intl.message("\u2022 Official results and team results",
           desc: "Feaute of the leagues in the app", locale: locale);
   String get leagueDetailsGameControl =>
-      Intl.message("League controlled game time/place details",
+      Intl.message("\u2022 League controlled game time/place details",
           desc: "Feaute of the leagues in the app", locale: locale);
-  String get leagueDetailsTeamInterface =>
-      Intl.message("Team controlled additional information and roster details",
-          desc: "Feaute of the leagues in the app", locale: locale);
+  String get leagueDetailsTeamInterface => Intl.message(
+      "\u2022 Team controlled additional information and roster details",
+      desc: "Feaute of the leagues in the app",
+      locale: locale);
   String get leagueDetailsLeagueStats =>
-      Intl.message("Team win records and ranking",
+      Intl.message("\u2022 Team win records and ranking",
           desc: "Feaute of the leagues in the app", locale: locale);
   String get leagueDetailsLeagueOlder =>
-      Intl.message("Older season details for comparison",
+      Intl.message("\u2022 Older season details for comparison",
           desc: "Feaute of the leagues in the app", locale: locale);
 
   String get featuresHeader => Intl.message("Features",
@@ -83,20 +84,27 @@ class MessagesPublic {
       locale: locale,
       desc: "Description of the tourament details");
   String get tournamentDetailsResults =>
-      Intl.message("Official results and team results",
+      Intl.message("\u2022 Official results and team results",
           desc: "Feaute of the leagues in the app", locale: locale);
   String get tournamentDetailsTimePlace =>
-      Intl.message("Tournament controlled game time/place details",
-          desc: "Feaute of the leagues in the app", locale: locale);
-  String get tournamentDetailsAdditonalDetails =>
-      Intl.message("Team controlled additional information and roster details",
-          desc: "Feaute of the leagues in the app", locale: locale);
+      Intl.message("\u2022 Tournament controlled game time/place details",
+          desc: "Feature of the leagues in the app", locale: locale);
+  String get tournamentDetailsAdditonalDetails => Intl.message(
+      "\u2022 Team controlled additional information and roster details",
+      desc: "Feaute of the leagues in the app",
+      locale: locale);
   String get tournamentDetailsRanking =>
-      Intl.message("Team win records and ranking",
+      Intl.message("\u2022 Team win records and ranking",
           desc: "Feaute of the leagues in the app", locale: locale);
   String get tournamentDetailsPerTeam =>
-      Intl.message("Multiple tournaments/leagues per team/season",
+      Intl.message("\u2022 Multiple tournaments/leagues per team/season",
           desc: "Feaute of the leagues in the app", locale: locale);
+
+  String get headerAbout => Intl.message("About", desc: "About section header");
+  String get headerTournament =>
+      Intl.message("Tournament", desc: "Tounament section header");
+  String get headerLeague =>
+      Intl.message("League", desc: "League section header");
 
   /// Load the messages for the specific locale.
   static Future<MessagesPublic> load(Locale locale) async {

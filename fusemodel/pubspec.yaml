@@ -16,7 +16,6 @@ dependencies:
   built_value: ^8.0.0
   built_collection: ^5.0.0
   hive: ^2.0.0
-  synchronized: ^3.0.0
   clock: ^1.1.0
 
 dependency_overrides:

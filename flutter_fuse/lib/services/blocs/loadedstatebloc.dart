@@ -20,15 +20,20 @@ class LoadedStateBloc extends Bloc<LoadedEvent, LoadedState> {
 
   LoadedStateBloc({@required this.coordinationBloc})
       : super(LoadedState.Logout) {
-    _coordSub = coordinationBloc.listen((CoordinationState state) {
-      if (state is CoordinationStateLoggedOut) {
-        add(LoadedEvent.Logout);
-      } else if (state is CoordinationStateLoadingFirestore) {
-        add(LoadedEvent.Start);
-      } else if (state is CoordinationStateLoaded) {
-        add(LoadedEvent.ALL);
-      }
+    _coordSub = coordinationBloc.listen((state) {
+      _fixState(state);
     });
+    _fixState(coordinationBloc.state);
+  }
+
+  void _fixState(CoordinationState state) {
+    if (state is CoordinationStateLoggedOut) {
+      add(LoadedEvent.Logout);
+    } else if (state is CoordinationStateLoadingFirestore) {
+      add(LoadedEvent.Start);
+    } else if (state is CoordinationStateLoaded) {
+      add(LoadedEvent.ALL);
+    }
   }
 
   @override

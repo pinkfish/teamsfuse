@@ -17,7 +17,7 @@ import '../widgets/publiccoaches.dart';
 import '../widgets/publicteamdetails.dart';
 
 /// Which of the tabs in the public view are selected.
-enum PublicTab {
+enum PublicClubTab {
   /// The club tab.
   club,
 
@@ -31,15 +31,64 @@ enum PublicTab {
   news,
 }
 
+extension PublicClubTabExtension on PublicClubTab {
+  /// Turn the enum into a nice string with a name.
+  String get name {
+    switch (this) {
+      case PublicClubTab.club:
+        return 'club';
+      case PublicClubTab.team:
+        return 'team';
+      case PublicClubTab.coaches:
+        return 'coaches';
+      case PublicClubTab.news:
+        return 'news';
+      default:
+        return null;
+    }
+  }
+
+  /// Get the index of this enum in the enum.
+  int get sortIndex {
+    switch (this) {
+      case PublicClubTab.club:
+        return 0;
+      case PublicClubTab.team:
+        return 1;
+      case PublicClubTab.coaches:
+        return 2;
+      case PublicClubTab.news:
+        return 3;
+      default:
+        return null;
+    }
+  }
+
+  /// Find the indexof the string.
+  static PublicClubTab fromString(String str) {
+    var check = str.toLowerCase();
+    return PublicClubTab.values.firstWhere(
+      (v) => v.name == check,
+      orElse: () => PublicClubTab.club,
+    );
+  }
+
+  /// Find the indexof the string.
+  static PublicClubTab fromIndex(int idx) {
+    return PublicClubTab.values.firstWhere(
+      (v) => v.sortIndex == idx,
+      orElse: () => PublicClubTab.club,
+    );
+  }
+}
+
 ///
 /// The screen showing all the details of the club.
 ///
 class PublicClubHomeScreen extends StatelessWidget {
   /// Constructor.
   PublicClubHomeScreen(String tab, this.clubUid, this.extraUid)
-      : tabSelected = PublicTab.values.firstWhere(
-            (v) => v.toString().toLowerCase().endsWith(tab.toLowerCase()),
-            orElse: () => PublicTab.club);
+      : tabSelected = PublicClubTabExtension.fromString(tab);
 
   /// Club id to show the details for.
   final String clubUid;
@@ -48,13 +97,12 @@ class PublicClubHomeScreen extends StatelessWidget {
   final String extraUid;
 
   /// The tab currently selected.
-  final PublicTab tabSelected;
+  final PublicClubTab tabSelected;
 
   Widget _buildMediumBody(BuildContext context, SingleClubBloc bloc) {
     return DefaultTabController(
       length: 3,
-      initialIndex:
-          PublicTab.values.indexWhere((element) => element == tabSelected),
+      initialIndex: tabSelected.sortIndex,
       child: Scaffold(
         appBar: _buildAppBar(context, bloc),
         body: BlocBuilder(
@@ -67,8 +115,8 @@ class PublicClubHomeScreen extends StatelessWidget {
               return Text(Messages.of(context).clubDeleted);
             }
             return AnimatedSwitcher(
-              child: _buildStuff(context, singleClubState.club, bloc),
               duration: Duration(milliseconds: 500),
+              child: _buildStuff(context, singleClubState.club, bloc),
             );
           },
         ),
@@ -84,19 +132,19 @@ class PublicClubHomeScreen extends StatelessWidget {
   Widget _buildStuff(
       BuildContext context, Club club, SingleClubBloc singleClubBloc) {
     switch (tabSelected) {
-      case PublicTab.club:
+      case PublicClubTab.club:
         return PublicClub(club);
-      case PublicTab.team:
+      case PublicClubTab.team:
         if (extraUid != null) {
           return PublicTeamDetails(extraUid);
         }
         return PublicClubTeams(club,
             onlyPublic: true,
             onTap: (t) => _navigateTo(context,
-                "/Public/${PublicTab.team.toString().replaceAll('PublicTab.', '')}/$clubUid/${t.uid}"));
-      case PublicTab.coaches:
+                '/Public/${PublicClubTab.team.name}/$clubUid/${t.uid}'));
+      case PublicClubTab.coaches:
         return PublicCoachDetails(singleClubBloc);
-      case PublicTab.news:
+      case PublicClubTab.news:
         return PublicClubNews(singleClubBloc);
     }
     return SizedBox(height: 0);
@@ -137,9 +185,9 @@ class PublicClubHomeScreen extends StatelessWidget {
           ],
           onTap: (idx) => _navigateTo(
               context,
-              "/Public/"
-              "${PublicTab.values[idx].toString().replaceAll('PublicTab.', '')}"
-              "/$clubUid"),
+              '/Public/'
+              '${PublicClubTab.values[idx].name}'
+              '/$clubUid'),
         ),
       ),
     );
@@ -192,35 +240,35 @@ class PublicClubHomeScreen extends StatelessWidget {
               title: Text(Messages.of(context).about),
               onTap: () => _navigateTo(
                   context,
-                  "/Public/"
-                  "${PublicTab.club.toString().replaceAll('PublicTab.', '')}"
-                  "/$clubUid"),
+                  '/Public/'
+                  '${PublicClubTab.club.name}'
+                  '/$clubUid'),
             ),
             ListTile(
               leading: Icon(Icons.people),
               title: Text(Messages.of(context).teams),
               onTap: () => _navigateTo(
                   context,
-                  "/Public/${PublicTab.team.toString().replaceAll('PublicTab.', '')}"
-                  "/$clubUid"),
+                  '/Public/${PublicClubTab.team.name}'
+                  '/$clubUid'),
             ),
             ListTile(
               leading: Icon(Icons.people),
               title: Text(Messages.of(context).coaches),
               onTap: () => Navigator.popAndPushNamed(
                   context,
-                  "/Public/"
-                  "${PublicTab.coaches.toString().replaceAll('PublicTab.', '')}"
-                  "/$clubUid"),
+                  '/Public/'
+                  '${PublicClubTab.coaches.name}'
+                  '/$clubUid'),
             ),
             ListTile(
               leading: Icon(MdiIcons.newspaper),
               title: Text(Messages.of(context).news),
               onTap: () => Navigator.popAndPushNamed(
                   context,
-                  "/Public/"
-                  "${PublicTab.news.toString().replaceAll('PublicTab.', '')}"
-                  "/$clubUid"),
+                  '/Public/'
+                  '${PublicClubTab.news.name}'
+                  '/$clubUid'),
             ),
           ],
         ),

@@ -26,8 +26,8 @@ class AlgoliaResult {
 ///
 class AlgoliaSearch {
   final Algolia _algolia = Algolia.init(
-    applicationId: 'b4f1e771f1fb06628a1c8b8b4ab04bbf',
-    apiKey: 'Y6FMHKGRPD',
+    apiKey: 'b4f1e771f1fb06628a1c8b8b4ab04bbf',
+    applicationId: 'Y6FMHKGRPD',
   );
 
   ///
@@ -37,26 +37,34 @@ class AlgoliaSearch {
     ///
     /// Perform Query
     ///
-    AlgoliaQuery result = _algolia.instance.index('contacts').search(query);
+    final result = _algolia.instance.index('teams').search(query);
 
     // Get Result/Objects
-    AlgoliaQuerySnapshot snap = await result.getObjects();
-    if (snap.empty) {
+    try {
+      final snap = await result.getObjects();
+      if (snap.empty) {
+        return [];
+      }
+      return snap.hits
+          .map<AlgoliaResult>((d) => _makeResult(d))
+          .where((d) => d != null)
+          .toList();
+    } catch (e, stack) {
+      print(e);
+      print(stack);
       return [];
     }
-    return snap.hits
-        .map<AlgoliaResult>((d) => _makeResult(d))
-        .where((d) => d != null);
   }
 
   AlgoliaResult _makeResult(AlgoliaObjectSnapshot result) {
-    if (result.index.startsWith("C")) {
-      return AlgoliaResult(ResultType.club, result.index.substring(1),
-          result.data["name"], result.data);
+    print("Make result ${result.objectID}");
+    if (result.objectID.startsWith('C')) {
+      return AlgoliaResult(ResultType.club, result.objectID.substring(1),
+          result.data['name'], result.data);
     }
-    if (result.index.startsWith("T")) {
-      return AlgoliaResult(ResultType.team, result.index.substring(1),
-          result.data["name"], result.data);
+    if (result.objectID.startsWith('T')) {
+      return AlgoliaResult(ResultType.team, result.objectID.substring(1),
+          result.data['name'], result.data);
     }
     return null;
   }

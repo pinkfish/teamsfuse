@@ -248,6 +248,7 @@ class AuthenticationBloc
   }
 
   AuthenticationState _updateWithUser(UserData user) {
+    print("Update with user $user");
     if (user == null) {
       return AuthenticationLoggedOut();
     } else if (user.isEmailVerified) {
@@ -256,12 +257,6 @@ class AuthenticationBloc
         analyticsSubsystem.setUserProperty(name: 'developer', value: 'true');
       } else {
         analyticsSubsystem.setUserProperty(name: 'developer', value: 'false');
-      }
-
-      if (currentUser != null) {
-        if (user == currentUser) {
-          return null;
-        }
       }
 
       return AuthenticationLoggedIn(user: user);
@@ -290,8 +285,7 @@ class AuthenticationBloc
     }
 
     if (event is _AuthenticationLogIn) {
-      var loggedInEvent = event;
-      yield _updateWithUser(loggedInEvent.user);
+      yield _updateWithUser(event.user);
     }
 
     if (event is AuthenticationLogOut) {
@@ -377,6 +371,7 @@ class AuthenticationBloc
 
   void _authChanged(UserData user) async {
     if (user != null) {
+      print('Sending $user');
       add(_AuthenticationLogIn(user: user));
     } else {
       add(AuthenticationLogOut());
