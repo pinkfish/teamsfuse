@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 ///
@@ -9,15 +10,18 @@ class ApplePlayStore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        await canLaunch(_url)
-            ? await launch(_url)
-            : throw 'Could not launch $_url';
-      },
-      child: Image.asset(
-        'assets/images/apple-store-badge.png',
-        height: 54,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () async {
+          await canLaunch(_url)
+              ? await launch(_url)
+              : throw 'Could not launch $_url';
+        },
+        child: Image.asset(
+          'assets/images/apple-store-badge.png',
+          height: 54,
+        ),
       ),
     );
   }
