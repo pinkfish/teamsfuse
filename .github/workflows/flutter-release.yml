@@ -114,10 +114,17 @@ jobs:
           flutter build ${{ matrix.build }} --debug
         working-directory: flutter_fuse
         continue-on-error: true
+      - run: |
+          flutter packages get
+          flutter build ${{ matrix.build }} --debug
+        working-directory: public_ux
+        continue-on-error: true
       - run: flutter test
         working-directory: fusemodel
       - run: flutter test
         working-directory: flutter_fuse
+      - run: flutter test
+        working-directory: public_ux
       - name: Fastlane Action
         uses: maierj/fastlane-action@v1.4.0
         if: ${{ matrix.os == 'android' || matrix.os == 'ios' }}

@@ -1,32 +1,58 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+///
+/// Widget tests for the public home screen.
+///
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:public_ux/screens/publichome.dart';
 
 import '../util/testable.dart';
 
 void main() {
-  testWidgets('Home screen, show team', (WidgetTester tester) async {
+  testWidgets('Home screen', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    final testWidget = await makeTestableWidget(PublicHomeScreen(""));
+    final testWidget = await makeTestableWidget(PublicHomeScreen(''));
 
     await tester.pumpWidget(testWidget);
 
     await tester.pump(Duration(milliseconds: 600));
 
-    if (Platform.environment['GOLDEN'] != null) {
-      print('Golden!');
-      await expectLater(find.byType(PublicHomeScreen),
-          matchesGoldenFile('../golden/home_uninitialized.png'));
-    }
+    expect(find.text('\u2022 Works offline with no internet'), findsOneWidget);
+  });
 
-    expect(find.text('Team Fuse'), findsOneWidget);
+  testWidgets('Home screen, tournaments', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    final testWidget = await makeTestableWidget(
+        PublicHomeScreen(PublicMainTab.tournament.name));
+
+    await tester.pumpWidget(testWidget);
+
+    await tester.pump(Duration(milliseconds: 600));
+
+    expect(find.text('\u2022 Team win records and ranking'), findsOneWidget);
+  });
+
+  testWidgets('Home screen, leagues', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    final testWidget =
+        await makeTestableWidget(PublicHomeScreen(PublicMainTab.league.name));
+
+    await tester.pumpWidget(testWidget);
+
+    await tester.pump(Duration(milliseconds: 600));
+
+    expect(find.text('\u2022 Team win records and ranking'), findsOneWidget);
+  });
+
+  testGoldens('Home screen, golden', (WidgetTester tester) async {
+    if (Platform.environment['GOLDEN'] != null) {
+      final testWidget =
+          await makeTestableWidget(PublicHomeScreen(PublicMainTab.about.name));
+
+      await tester.pumpWidgetBuilder(testWidget);
+      await expectLater(find.byType(PublicHomeScreen),
+          matchesGoldenFile('../golden/PublicHomeScreen.png'));
+    }
   });
 }

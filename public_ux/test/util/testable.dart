@@ -13,6 +13,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mockito/mockito.dart';
 import 'package:timezone/data/latest.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
+import 'package:public_ux/services/messagespublic.dart';
 
 class MockDatabaseUpdateModel extends Mock implements DatabaseUpdateModel {}
 
@@ -38,6 +39,7 @@ Future<Widget> makeTestableWidget(Widget child,
     child: MaterialApp(
       localizationsDelegates: [
         MessagesTestDelegate(),
+        MessagesPublicTestDelegate(),
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],

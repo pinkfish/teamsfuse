@@ -47,6 +47,8 @@ jobs:
         working-directory: flutter_fuse/lib/services
       - run: flutter test
         working-directory: flutter_fuse
+      - run: flutter test
+        working-directory: public_ux
       - run: |
           flutter build web
           mkdir -p ../firebase/public/flutter

@@ -13,8 +13,10 @@ import '../widgets/publicteamdetails.dart';
 /// Shows the public details of the team.
 ///
 class PublicTeamDetailsScreen extends StatelessWidget {
+  /// The team uid to display
   final String teamUid;
 
+  /// Create the team details for this team.
   PublicTeamDetailsScreen(this.teamUid);
 
   Widget _buildBody(BuildContext context, Team team, BoxConstraints layout) {
@@ -31,7 +33,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
                   MaterialLocalizations.of(context).backButtonTooltip,
                 ),
                 onPressed: () => Navigator.pushNamed(
-                    context, "/Public/Club/" + team.clubUid),
+                    context, '/Public/Club/' + team.clubUid),
               ),
               Expanded(
                 child: ClubTeams(
@@ -39,7 +41,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
                   onlyPublic: true,
                   selected: team,
                   onTap: (t) =>
-                      Navigator.pushNamed(context, "/Public/Team/" + t.uid),
+                      Navigator.pushNamed(context, '/Public/Team/' + t.uid),
                 ),
               ),
             ],
