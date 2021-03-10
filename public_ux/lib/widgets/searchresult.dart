@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../screens/publicclubhome.dart';
+import '../screens/publicteam.dart';
 import '../services/algolia.dart';
 
 ///
@@ -23,10 +24,15 @@ class SearchResult extends StatelessWidget {
           title: Text(result.name),
           leading: Icon(MdiIcons.cardsClub),
           onTap: () =>
-              onTapped('Public/${PublicClubTab.club.name}/${result.uid}'),
+              onTapped('/Club/${PublicClubTab.club.name}/${result.uid}'),
         );
       case ResultType.team:
-        return ListTile(title: Text(result.name), leading: Icon(Icons.people));
+        return ListTile(
+          title: Text(result.name),
+          leading: Icon(Icons.people),
+          onTap: () =>
+              onTapped('/Team/${PublicTeamTab.team.name}/${result.uid}'),
+        );
       default:
         return ListTile(title: Text(result.name), leading: Icon(Icons.help));
     }

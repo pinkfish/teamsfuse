@@ -1,6 +1,8 @@
 import 'package:fluro/fluro.dart' as fluro;
 import '../screens/publicclubhome.dart';
 import '../screens/publichome.dart';
+import '../screens/publicteam.dart';
+import '../screens/publicplayer.dart';
 
 ///
 /// The main router for the app.  Has all the details for routing and routes
@@ -15,17 +17,27 @@ class AppRouter {
     var router = fluro.FluroRouter();
 
     // Public section
-    router.define("/Public/:tab/:id",
+    router.define("/Club/:tab/:id",
         handler: fluro.Handler(
             handlerFunc: (context, vals) => PublicClubHomeScreen(
                 vals["tab"][0].toString(), vals["id"][0].toString(), null)));
 
-    router.define("/Public/:tab/:id/:id2",
+    router.define("/Club/:tab/:id/:id2",
         handler: fluro.Handler(
             handlerFunc: (context, vals) => PublicClubHomeScreen(
                 vals["tab"][0].toString(),
                 vals["id"][0].toString(),
                 vals["id2"][0].toString())));
+
+    router.define("/Team/:tab/:id",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) => PublicTeamDetailsScreen(
+                vals["tab"][0].toString(), vals["id"][0].toString())));
+
+    router.define("/Player/:tab/:teamId/:playerId",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) => PublicPlayerDetailsScreen(
+                vals["teamId"][0].toString(), vals["playerId"][0].toString())));
 
     router.define("/Home",
         handler: fluro.Handler(

@@ -72,6 +72,7 @@ class PublicCoachDetails extends StatelessWidget {
             );
           }
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 10),
               Row(

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/blocs/singleclubprovider.dart';
-import 'package:fusemodel/fusemodel.dart';
-
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'publlicteamtile.dart';
 
 ///
@@ -17,11 +16,11 @@ typedef TeamCallback = void Function(Team team);
 ///
 class PublicClubTeams extends StatelessWidget {
   /// Constructor.
-  PublicClubTeams(this.club,
+  PublicClubTeams(this.clubBloc,
       {this.onlyPublic = false, this.onTap, this.selected});
 
   /// The club to show the teams for.
-  final Club club;
+  final SingleClubBloc clubBloc;
   final bool onlyPublic;
   final TeamCallback onTap;
   final Team selected;
@@ -65,7 +64,7 @@ class PublicClubTeams extends StatelessWidget {
     var teamWidgets = <Widget>[];
     teamWidgets.add(SizedBox(height: 10));
     teamWidgets.add(Text(
-      club.name,
+      singleClubState.club.name,
       style: Theme.of(context).textTheme.headline4,
     ));
     teamWidgets.add(SizedBox(height: 10));
@@ -105,17 +104,14 @@ class PublicClubTeams extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleClubProvider(
-      clubUid: club.uid,
-      builder: (context, singleClubBloc) => BlocBuilder(
-        cubit: singleClubBloc,
-        builder: (context, state) {
-          if (state is SingleClubLoaded && !state.loadedTeams) {
-            singleClubBloc.add(SingleClubLoadTeams(publicLoad: true));
-          }
-          return _buildTeams(context, state);
-        },
-      ),
+    return BlocBuilder(
+      cubit: clubBloc,
+      builder: (context, state) {
+        if (state is SingleClubLoaded && !state.loadedTeams) {
+          clubBloc.add(SingleClubLoadTeams(publicLoad: true));
+        }
+        return _buildTeams(context, state);
+      },
     );
   }
 }

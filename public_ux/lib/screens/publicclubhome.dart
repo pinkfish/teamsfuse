@@ -138,10 +138,10 @@ class PublicClubHomeScreen extends StatelessWidget {
         if (extraUid != null) {
           return PublicTeamDetails(extraUid);
         }
-        return PublicClubTeams(club,
+        return PublicClubTeams(singleClubBloc,
             onlyPublic: true,
-            onTap: (t) => _navigateTo(context,
-                '/Public/${PublicClubTab.team.name}/$clubUid/${t.uid}'));
+            onTap: (t) => _navigateTo(
+                context, '/Club/${PublicClubTab.team.name}/$clubUid/${t.uid}'));
       case PublicClubTab.coaches:
         return PublicCoachDetails(singleClubBloc);
       case PublicClubTab.news:
@@ -249,7 +249,7 @@ class PublicClubHomeScreen extends StatelessWidget {
               title: Text(Messages.of(context).teams),
               onTap: () => _navigateTo(
                   context,
-                  '/Public/${PublicClubTab.team.name}'
+                  '/Club/${PublicClubTab.team.name}'
                   '/$clubUid'),
             ),
             ListTile(
@@ -257,7 +257,7 @@ class PublicClubHomeScreen extends StatelessWidget {
               title: Text(Messages.of(context).coaches),
               onTap: () => Navigator.popAndPushNamed(
                   context,
-                  '/Public/'
+                  '/Club/'
                   '${PublicClubTab.coaches.name}'
                   '/$clubUid'),
             ),
@@ -266,7 +266,7 @@ class PublicClubHomeScreen extends StatelessWidget {
               title: Text(Messages.of(context).news),
               onTap: () => Navigator.popAndPushNamed(
                   context,
-                  '/Public/'
+                  '/Club/'
                   '${PublicClubTab.news.name}'
                   '/$clubUid'),
             ),
