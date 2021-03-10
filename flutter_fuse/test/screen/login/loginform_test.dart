@@ -11,7 +11,6 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:mockito/mockito.dart';
 import 'dart:io' show Platform;
 
-import '../../util/loadfonts.dart';
 import '../../util/testable.dart';
 import '../../util/widgetvariant.dart';
 
@@ -150,8 +149,6 @@ class _LoginFormTest {
   final screen = LoginScreen();
 
   void setup(WidgetTester tester) async {
-    await loadFonts();
-
     when(mockUserAuth.onAuthChanged()).thenAnswer((_) => userController.stream);
     authBloc = AuthenticationBloc(mockUserAuth, mockAnalytics);
     // Logged out.

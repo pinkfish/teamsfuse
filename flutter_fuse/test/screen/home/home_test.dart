@@ -10,7 +10,6 @@ import 'package:mockito/mockito.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart';
 
-import '../../util/loadfonts.dart';
 import '../../util/testable.dart';
 import '../../util/widgetvariant.dart';
 
@@ -19,8 +18,6 @@ void main() {
       'uninitialized',
       (tester) async =>
           withClock(Clock.fixed(DateTime(2020, 09, 01)), () async {
-            await loadFonts();
-
             final allBlocs = AllBlocs();
             await tz.initializeTimeZones();
             var laLoc = getLocation('America/Los_Angeles');

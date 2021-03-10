@@ -5,25 +5,28 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:public_ux/screens/publichome.dart';
 
+import '../util/testable.dart';
+
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Home screen, show team', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(PublicHomeScreen(""));
+    final testWidget = await makeTestableWidget(PublicHomeScreen(""));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(testWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.pump(Duration(milliseconds: 600));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    if (Platform.environment['GOLDEN'] != null) {
+      print('Golden!');
+      await expectLater(find.byType(PublicHomeScreen),
+          matchesGoldenFile('../golden/home_uninitialized.png'));
+    }
+
+    expect(find.text('Team Fuse'), findsOneWidget);
   });
 }

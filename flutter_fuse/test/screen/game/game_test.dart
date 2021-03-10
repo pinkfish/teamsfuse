@@ -13,7 +13,6 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:mockito/mockito.dart';
 
 import '../../util/fakeplatformcontroller.dart';
-import '../../util/loadfonts.dart';
 import '../../util/testable.dart';
 import '../../util/testdata.dart';
 import '../../util/widgetvariant.dart';
@@ -33,7 +32,6 @@ void main() {
 
   testWidgets('uninitialized', (tester) async {
     resetMockitoState();
-    await loadFonts();
 
     final mockDb = MockDatabaseUpdateModel();
     final mockAnalytics = MockAnalyticsSubsystem();
@@ -67,8 +65,6 @@ void main() {
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('deleted', (tester) async {
-    await loadFonts();
-
     final mockDb = MockDatabaseUpdateModel();
     final mockAnalytics = MockAnalyticsSubsystem();
     final gameController = StreamController<Game>();
@@ -103,8 +99,6 @@ void main() {
 
   testWidgets('loaded', (tester) async {
     setupStorage();
-
-    await loadFonts();
 
     final teamController = StreamController<Team>();
     final seasonController = StreamController<Season>();

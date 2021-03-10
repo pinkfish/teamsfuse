@@ -7,7 +7,6 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../util/loadfonts.dart';
 import '../util/testable.dart';
 
 void main() {
@@ -28,7 +27,6 @@ void main() {
     expect(find.byIcon(MdiIcons.genderMale), findsOneWidget);
   });
   testWidgets('Gender icon female', (tester) async {
-    await loadFonts();
     // Build our app and trigger a frame.
     await tester.pumpWidget(
       await makeTestableWidget(
