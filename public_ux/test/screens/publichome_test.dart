@@ -10,6 +10,10 @@ import 'package:public_ux/screens/publichome.dart';
 import '../util/testable.dart';
 
 void main() {
+  setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+  });
+
   testWidgets('Home screen', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     final testWidget = await makeTestableWidget(PublicHomeScreen(''));

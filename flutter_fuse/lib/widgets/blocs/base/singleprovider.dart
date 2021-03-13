@@ -10,7 +10,11 @@ abstract class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
     extends StatefulWidget {
   /// Constructor for the single bloc provider.
   SingleBlocProvider(
-      {this.builder, this.keyUid, this.creator, this.prefix = ''});
+      {this.builder,
+      this.keyUid,
+      this.creator,
+      this.prefix = '',
+      this.alwaysCreate = false});
 
   /// the function to create the provider.
   final T Function(BuildContext context, String uid) creator;
@@ -24,6 +28,10 @@ abstract class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
   /// Prefix to the uid so they don't get mixed up between namespaces;
   final String prefix;
 
+  /// If we should always create the bloc and not cache it.
+  final bool alwaysCreate;
+
+  /// If the bloc is equal to the other bloc.
   bool isBlocEqual(Bloc bloc);
 
   @override
@@ -58,6 +66,10 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
   }
 
   void _updateSingleBloc() {
+    if (widget.alwaysCreate) {
+      _singleBloc = _singleBloc ?? widget.creator(context, widget.keyUid);
+      return;
+    }
     var totalKey = (widget.prefix ?? '') + widget.keyUid;
     if (!blocs.containsKey(totalKey) || blocs[totalKey] == null) {
       try {
@@ -82,15 +94,17 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
   @override
   void dispose() {
     super.dispose();
-    var totalKey = (widget.prefix ?? '') + widget.keyUid;
-    if (blocs.containsKey(totalKey)) {
-      /*
-      blocs[totalKey].ref--;
-      if (blocs[totalKey].ref <= 0) {
-        var state = blocs.remove(totalKey);
-        state.bloc.close();
+    if (widget.alwaysCreate) {
+      _singleBloc.close();
+    } else {
+      var totalKey = (widget.prefix ?? '') + widget.keyUid;
+      if (blocs.containsKey(totalKey)) {
+        blocs[totalKey].ref--;
+        if (blocs[totalKey].ref <= 0) {
+          var state = blocs.remove(totalKey);
+          state.bloc.close();
+        }
       }
-       */
     }
   }
 

@@ -80,7 +80,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
 
   /// Create the team details for this team.
   PublicTeamDetailsScreen(String tab, this.teamUid)
-      : tabSelected = PublicTeamTab.fromString(tab);
+      : tabSelected = PublicTeamTabExtension.fromString(tab);
 
   Widget _buildBody(BuildContext context, Team team, BoxConstraints layout) {
     return Row(

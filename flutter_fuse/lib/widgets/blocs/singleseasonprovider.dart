@@ -17,16 +17,19 @@ typedef SingleSeasonProviderBuilder = Widget Function(
 ///
 class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
   /// Constructor.
-  SingleSeasonProvider({String seasonUid, SingleSeasonProviderBuilder builder})
+  SingleSeasonProvider(
+      {String seasonUid,
+      SingleSeasonProviderBuilder builder,
+      bool alwaysCreate = false})
       : super(
             keyUid: seasonUid,
             creator: _createBloc,
             builder: builder,
-            prefix: 'season');
+            prefix: 'season',
+            alwaysCreate: alwaysCreate);
 
   @override
   bool isBlocEqual(Bloc bloc) {
-    var myBloc = bloc as SingleSeasonBloc;
     return (bloc is SingleSeasonBloc && bloc.seasonUid == keyUid);
   }
 

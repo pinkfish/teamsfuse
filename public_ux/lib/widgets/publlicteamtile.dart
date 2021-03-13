@@ -42,6 +42,7 @@ class PublicTeamTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleTeamProvider(
       teamUid: teamUid,
+      alwaysCreate: true,
       builder: (c, singleTeamBloc) => BlocBuilder(
         cubit: singleTeamBloc,
         builder: (context, teamState) {

@@ -17,12 +17,16 @@ typedef SingleClubProviderBuilder = Widget Function(
 ///
 class SingleClubProvider extends SingleBlocProvider<SingleClubBloc> {
   /// Constructor.
-  SingleClubProvider({String clubUid, SingleClubProviderBuilder builder})
+  SingleClubProvider(
+      {String clubUid,
+      SingleClubProviderBuilder builder,
+      bool alwaysCreate = false})
       : super(
             keyUid: clubUid,
             creator: _createBloc,
             builder: builder,
-            prefix: 'club');
+            prefix: 'club',
+            alwaysCreate: alwaysCreate);
 
   @override
   bool isBlocEqual(Bloc bloc) {

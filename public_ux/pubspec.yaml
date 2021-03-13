@@ -64,6 +64,7 @@ flutter:
   assets:
     - assets/images/banner.jpg
     - assets/images/abstractsport.png
+    - assets/images/defaultavatar.png
     - assets/images/defaultavatar2.png
     - assets/timezone/2018c.tzf
     - assets/sports/Sport.Basketball.png

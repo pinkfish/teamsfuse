@@ -315,6 +315,7 @@ class SingleTeamBloc
       Club theClub;
 
       /// See if we need to load the club.
+      print("Loading club $event");
       if (event.newTeam.clubUid != null) {
         try {
           theClub = await db.getClubData(clubUid: event.newTeam.clubUid).first;
@@ -326,6 +327,7 @@ class SingleTeamBloc
           }
         }
       }
+      print("Done loading club $event");
       yield (SingleTeamLoaded.fromState(state)
             ..team = event.newTeam.toBuilder()
             ..club = theClub?.toBuilder())

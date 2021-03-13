@@ -17,12 +17,16 @@ typedef SingleTeamProviderBuilder = Widget Function(
 ///
 class SingleTeamProvider extends SingleBlocProvider<SingleTeamBloc> {
   /// Constructor.
-  SingleTeamProvider({String teamUid, SingleTeamProviderBuilder builder})
+  SingleTeamProvider(
+      {String teamUid,
+      SingleTeamProviderBuilder builder,
+      bool alwaysCreate = false})
       : super(
             keyUid: teamUid,
             creator: _createBloc,
             builder: builder,
-            prefix: 'team');
+            prefix: 'team',
+            alwaysCreate: alwaysCreate);
 
   @override
   bool isBlocEqual(Bloc bloc) {
