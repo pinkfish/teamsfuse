@@ -773,6 +773,24 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
+  Stream<Player> getMePlayer(String userUid) async* {
+    final query = _wrapper.collection(PLAYERS_COLLECTION).where(
+        '${Player.usersField}.$userUid.relationship',
+        isEqualTo: Relationship.Me.name);
+    final data = await query.getDocuments();
+    if (data.documents.isNotEmpty) {
+      yield Player.fromMap(data.documents.first.data);
+    } else {
+      yield null;
+    }
+    await for (final doc in query.snapshots()) {
+      if (doc.documents.isNotEmpty) {
+        yield Player.fromMap(data.documents.first.data);
+      }
+    }
+  }
+
+  @override
   Stream<Iterable<Season>> getPlayerSeasons(String playerUid) async* {
     var ref = _wrapper
         .collection(SEASONS_COLLECTION)

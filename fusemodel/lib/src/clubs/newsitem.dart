@@ -31,7 +31,7 @@ abstract class NewsItem implements Built<NewsItem, NewsItemBuilder> {
   /// The uid of the club to lookup.
   String get clubUid;
 
-  /// Nme of the user that posted the item
+  /// Name of the user that posted the item
   String get postedByName;
 
   /// Uid of the person that posted the item.

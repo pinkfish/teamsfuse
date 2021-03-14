@@ -231,6 +231,8 @@ abstract class DatabaseUpdateModel {
 
   Future<Uri> updatePlayerImage(String playerUid, Uint8List imgFile);
 
+  Stream<Player> getMePlayer(String userUid);
+
   // Send an invite to a user for this season and team.
   Future<String> inviteUserToPlayer(
       {@required String playerUid,

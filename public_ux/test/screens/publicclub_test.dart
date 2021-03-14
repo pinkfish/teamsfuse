@@ -5,7 +5,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:built_collection/built_collection.dart';
-import 'package:flutter/material.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
@@ -66,6 +66,15 @@ void main() {
         ..uid = 'rabbit'
         ..photoUrl = ''
         ..name = 'Bunny Wunny')
+      .build();
+  final testNewsItem = (NewsItemBuilder()
+        ..uid = 'news'
+        ..subject = 'More fluff'
+        ..body = 'More fluff was found'
+        ..clubUid = 'club'
+        ..postedByName = 'Big Fluff'
+        ..postedByUid = 'user'
+        ..timeCreated = Timestamp.fromDateTime(DateTime(2021, 10, 9, 12, 3)))
       .build();
 
   testWidgets(
@@ -190,20 +199,11 @@ void main() {
       await tester.pump();
 
       // Loading at this point.
-      if (Platform.environment['GOLDEN'] != null) {
-        await expectLater(find.byWidget(testWidget),
-            matchesGoldenFile('../golden/PublicClubHomeScreen_team_1.png'));
-      }
       expect(find.text('Loading...'), findsNWidgets(2));
 
       // Some bits should be loaded here, the title at least.
       await tester.pump(Duration(milliseconds: 600));
       await tester.pump();
-
-      if (Platform.environment['GOLDEN'] != null) {
-        await expectLater(find.byWidget(testWidget),
-            matchesGoldenFile('../golden/PublicClubHomeScreen_team_2.png'));
-      }
 
       expect(find.text('Fluff'), findsOneWidget);
       expect(find.text('Loading...'), findsNWidgets(2));
@@ -217,6 +217,7 @@ void main() {
       }
 
       expect(find.text('Waffle'), findsOneWidget);
+      expect(find.text('42'), findsOneWidget);
 
       await basicData.close();
     },
@@ -225,38 +226,58 @@ void main() {
 
   testWidgets(
     'Club news',
-    (WidgetTester tester) async {
-      final clubController = StreamController<Club>();
-      final basicData = BasicData();
-      basicData.addController(clubController);
+    (WidgetTester tester) async => withClock(
+      Clock.fixed(DateTime(2020, 09, 01)),
+      () async {
+        final clubController = StreamGenerator<Club>(testClub);
+        final teamController = StreamGenerator<Team>(testTeam);
+        final seasonController = StreamGenerator<Season>(testSeason);
+        final playersController = StreamGenerator<Player>(testPlayer);
+        final newsItemsController =
+            StreamGenerator<BuiltList<NewsItem>>(BuiltList.of([testNewsItem]));
+        final singeNewsItemsController =
+            StreamGenerator<NewsItem>(testNewsItem);
+        final basicData = BasicData();
 
-      final club = (ClubBuilder()
-            ..name = 'Fluff'
-            ..uid = 'club'
-            ..isPublic = true
-            ..about = 'This club is all about fluff'
-            ..sport = Sport.Basketball
-            ..arriveBeforeGame = 0
-            ..photoUrl = '')
-          .build();
+        when(basicData.mockDb.getTeamDetails(teamUid: anyNamed('teamUid')))
+            .thenAnswer((_) => teamController.stream());
+        when(basicData.mockDb.getClubData(clubUid: anyNamed('clubUid')))
+            .thenAnswer((_) => clubController.stream());
+        when(basicData.mockDb.getSingleSeason('season'))
+            .thenAnswer((_) => seasonController.stream());
+        when(basicData.mockDb.getPlayerDetails('rabbit'))
+            .thenAnswer((_) => playersController.stream());
+        when(basicData.mockDb.getClubNews('club',
+                start: anyNamed('start'), limit: anyNamed('limit')))
+            .thenAnswer((_) => newsItemsController.stream());
+        when(basicData.mockDb.getSingleClubNews('club', 'news'))
+            .thenAnswer((_) => singeNewsItemsController.stream());
 
-      when(basicData.mockDb.getClubData(clubUid: anyNamed('clubUid')))
-          .thenAnswer((_) => clubController.stream);
+        // Build our app and trigger a frame.
+        final testWidget = await makeTestableWidget(
+            PublicClubHomeScreen(PublicClubTab.news.name, 'club', ''));
 
-      // Build our app and trigger a frame.
-      final testWidget = await makeTestableWidget(
-          PublicClubHomeScreen(PublicClubTab.news.name, 'club', ''));
+        await tester.pumpWidget(basicData.injectBlocs(testWidget));
 
-      await tester.pumpWidget(basicData.injectBlocs(testWidget));
-      clubController.add(club);
+        await tester.pump(Duration(milliseconds: 600));
+        await tester.pump();
+        await tester.pump();
+        await tester.pump();
+        await tester.pump();
 
-      await tester.pump(Duration(milliseconds: 600));
-      await tester.pump();
+        if (Platform.environment['GOLDEN'] != null) {
+          await expectLater(find.byWidget(testWidget),
+              matchesGoldenFile('../golden/PublicClubHomeScreen_news.png'));
+        }
 
-      expect(find.text('Fluff'), findsNWidgets(2));
+        expect(find.text('Fluff'), findsNWidgets(2));
+        expect(find.text('More fluff'), findsOneWidget);
+        expect(find.text('By User Profile'), findsOneWidget);
+        expect(find.text('More fluff was found'), findsOneWidget);
 
-      await basicData.close();
-    },
+        await basicData.close();
+      },
+    ),
     variant: TeamsFuseTestVariant(),
   );
 

@@ -97,11 +97,25 @@ class BasicData {
   AuthenticationBloc authBloc;
   final List<StreamController> _controllers = [];
 
+  final FusedUserProfile testProfile = (FusedUserProfileBuilder()
+        ..uid = 'user'
+        ..displayName = 'User Profile'
+        ..email = 'test@test.com'
+        ..emailUpcomingGame = true
+        ..emailOnUpdates = true
+        ..notifyOnlyForGames = true)
+      .build();
+  StreamGenerator<FusedUserProfile> profileStream;
+
   BasicData() {
     setupStorage();
     when(mockUserAuth.onAuthChanged()).thenAnswer((_) => userController.stream);
+
     authBloc = AuthenticationBloc(mockUserAuth, mockAnalytics);
     _controllers.add(userController);
+    profileStream = StreamGenerator<FusedUserProfile>(testProfile);
+    when(mockUserAuth.getProfileStream('user'))
+        .thenAnswer((_) => profileStream.stream());
   }
 
   void addController(StreamController cont) {

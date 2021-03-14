@@ -386,7 +386,8 @@ class SingleClubBloc
     if (event is _SingleClubNewsItemAdded) {
       if (event.start == null) {
         yield (SingleClubLoaded.fromState(state)
-              ..newsItems = event.newsItems.toBuilder())
+              ..newsItems = event.newsItems.toBuilder()
+              ..loadedNewsItems = true)
             .build();
       } else {
         num idx = event.start.millisecondsSinceEpoch;

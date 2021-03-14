@@ -32,15 +32,16 @@ class PublicClubNews extends StatelessWidget {
     return BlocBuilder(
       cubit: bloc,
       builder: (context, state) {
-        if (!state.loadedNewsItem) {
+        if (!state.loadedNewsItems) {
           bloc.add(SingleClubLoadNewsItems());
         }
-        if (state is SingleClubUninitialized || !state.loadedCoaches) {
+        if (state is SingleClubUninitialized || !state.loadedNewsItems) {
           return Text(
             Messages.of(context).loading,
             style: Theme.of(context).textTheme.headline4,
           );
         }
+        print('loaded news in club ${state.loadedNewsItems}');
         if (state is SingleClubDeleted) {
           return Text(
             Messages.of(context).clubDeleted,

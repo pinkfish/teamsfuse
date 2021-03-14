@@ -36,18 +36,21 @@ class SingleProfileBlocStateType extends EnumClass {
 abstract class SingleProfileState {
   @nullable
   FusedUserProfile get profile;
-  BuiltList<Player> get players;
-  bool get loadedPlayers;
+  @nullable
+  Player get mePlayer;
+  bool get loadedMePlayer;
 
   SingleProfileBlocStateType get type;
 
   static SingleProfileStateBuilder fromState(
       SingleProfileState state, SingleProfileStateBuilder builder) {
-    return builder..profile = state.profile?.toBuilder();
+    return builder
+      ..profile = state.profile?.toBuilder()
+      ..mePlayer = state.mePlayer?.toBuilder();
   }
 
   static void initializeStateBuilder(SingleProfileStateBuilder b) =>
-      b..loadedPlayers = false;
+      b..loadedMePlayer = false;
 
   Map<String, dynamic> toMap();
 }
@@ -150,8 +153,7 @@ abstract class SingleProfileDeleted
     SingleProfileState.initializeStateBuilder(b);
 
     b.type = SingleProfileBlocStateType.Deleted;
-    b.loadedPlayers = false;
-    b.players = ListBuilder();
+    b.loadedMePlayer = false;
   }
 
   @override

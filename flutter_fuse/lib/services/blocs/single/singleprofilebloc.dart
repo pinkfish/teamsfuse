@@ -4,12 +4,11 @@ import 'dart:typed_data';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
-import '../coordinationbloc.dart';
-import '../playerbloc.dart';
 
 abstract class SingleProfileEvent extends Equatable {}
 
@@ -27,9 +26,9 @@ class SingleProfileUpdate extends SingleProfileEvent {
 }
 
 ///
-/// Loads the players for this user.
+/// Loads the me player for this user.
 ///
-class SingleProfileLoadPlayers extends SingleProfileEvent {
+class SingleProfileLoadMePlayer extends SingleProfileEvent {
   @override
   List<Object> get props => [];
 }
@@ -43,13 +42,13 @@ class _SingleProfileNewProfile extends SingleProfileEvent {
   List<Object> get props => [profile];
 }
 
-class _SingleProfileNewPlayers extends SingleProfileEvent {
-  final BuiltList<Player> players;
+class _SingleProfileNewMePlayer extends SingleProfileEvent {
+  final Player player;
 
-  _SingleProfileNewPlayers({@required this.players});
+  _SingleProfileNewMePlayer({@required this.player});
 
   @override
-  List<Object> get props => [players];
+  List<Object> get props => [player];
 }
 
 class _SingleProfileDeleted extends SingleProfileEvent {
@@ -64,21 +63,21 @@ class _SingleProfileDeleted extends SingleProfileEvent {
 ///
 class SingleProfileBloc
     extends AsyncHydratedBloc<SingleProfileEvent, SingleProfileState> {
-  final CoordinationBloc coordinationBloc;
-  final PlayerBloc playerBloc;
+  final UserAuthImpl userAuth;
+  final DatabaseUpdateModel db;
   final String profileUid;
   final AnalyticsSubsystem crashes;
 
   StreamSubscription<FusedUserProfile> _profileSub;
-  StreamSubscription<Iterable<Player>> _playerSub;
+  StreamSubscription<Player> _playerSub;
 
   SingleProfileBloc(
-      {@required this.coordinationBloc,
+      {@required this.userAuth,
+      @required this.db,
       @required this.profileUid,
-      @required this.playerBloc,
       @required this.crashes})
       : super(SingleProfileUninitialized(), profileUid) {
-    _profileSub = coordinationBloc.authenticationBloc.userAuth
+    _profileSub = userAuth
         .getProfileStream(profileUid)
         .listen((FusedUserProfile profile) {
       if (profile == null) {
@@ -105,21 +104,19 @@ class SingleProfileBloc
       }
     }
 
-    if (event is SingleProfileLoadPlayers) {
-      _playerSub = coordinationBloc.databaseUpdateModel
-          .getPlayers()
-          .listen((Iterable<Player> players) {
-        if (players.isNotEmpty) {
-          add(_SingleProfileNewPlayers(players: players));
+    if (event is SingleProfileLoadMePlayer) {
+      _playerSub = db.getMePlayer(profileUid).listen((Player player) {
+        if (player != null) {
+          add(_SingleProfileNewMePlayer(player: player));
         }
       });
     }
 
     // Setup the new players
-    if (event is _SingleProfileNewPlayers) {
+    if (event is _SingleProfileNewMePlayer) {
       yield (SingleProfileLoaded.fromState(state)
-            ..players = event.players.toBuilder()
-            ..loadedPlayers = true)
+            ..mePlayer = event.player.toBuilder()
+            ..loadedMePlayer = true)
           .build();
     }
 
@@ -132,12 +129,12 @@ class SingleProfileBloc
       try {
         var profile = event.profile;
         if (event.image != null) {
-          await coordinationBloc.databaseUpdateModel
-              .updatePlayerImage(playerBloc.state.me.uid, event.image);
+          // Find the me player.
+          final player = await db.getMePlayer(db.currentUser.uid).first;
+          await db.updatePlayerImage(player.uid, event.image);
           //profile = profile.rebuild((b) b..)
         }
-        await coordinationBloc.authenticationBloc.userAuth
-            .updateProfile(profileUid, profile);
+        await userAuth.updateProfile(profileUid, profile);
         yield (SingleProfileSaveDone.fromState(state)
               ..profile = profile.toBuilder())
             .build();

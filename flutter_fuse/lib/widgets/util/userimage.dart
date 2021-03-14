@@ -38,8 +38,8 @@ class UserImage extends StatelessWidget {
         child: BlocBuilder(
           cubit: bloc,
           builder: (context, state) {
-            if (state is SingleProfileLoaded && !state.loadedPlayers) {
-              bloc.add(SingleProfileLoadPlayers());
+            if (state is SingleProfileLoaded && !state.loadedMePlayer) {
+              bloc.add(SingleProfileLoadMePlayer());
             }
 
             return AnimatedCrossFade(
@@ -52,9 +52,9 @@ class UserImage extends StatelessWidget {
               firstChild: Text(
                 state.profile?.initials() ?? '..',
               ),
-              secondChild: state.loadedPlayers && state.players.length > 0
+              secondChild: state.loadedMePlayer && state.players.length > 0
                   ? CachedNetworkImage(
-                      imageUrl: state.players.first.photoUrl,
+                      imageUrl: state.mePlayer.photoUrl,
                     )
                   : Text(''),
             );

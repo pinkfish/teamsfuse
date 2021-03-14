@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
@@ -28,9 +29,10 @@ class SingleProfileProvider extends SingleBlocProvider<SingleProfileBloc> {
 
   static SingleProfileBloc _createBloc(BuildContext context, String uid) {
     return SingleProfileBloc(
-        coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
-        profileUid: uid,
-        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
-        playerBloc: BlocProvider.of<PlayerBloc>(context));
+      userAuth: RepositoryProvider.of<UserAuthImpl>(context),
+      db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+      profileUid: uid,
+      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+    );
   }
 }

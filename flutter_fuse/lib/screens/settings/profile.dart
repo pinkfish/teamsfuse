@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/firestore.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -99,9 +100,10 @@ class ProfileScreen extends StatelessWidget {
 
     for (var user in player.player.users.values) {
       var bloc = SingleProfileBloc(
-          coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
+          userAuth: RepositoryProvider.of<UserAuthImpl>(context),
+          crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
           profileUid: user.userUid,
-          playerBloc: BlocProvider.of<PlayerBloc>(context));
+          db: RepositoryProvider.of<DatabaseUpdateModel>(context));
       ret.add(
         // Use a provider to cleanup the bloc.
         BlocProvider(
