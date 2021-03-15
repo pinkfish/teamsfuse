@@ -120,7 +120,9 @@ class SingleClubCoachBloc
       try {
         var clubCoach = event.coach;
         await db.updateClubCoach(
-            clubCoach, event.image != null ? event.image : null);
+          clubCoach,
+          event?.image,
+        );
         yield SingleClubCoachSaveDone.fromState(state).build();
         yield (SingleClubCoachLoaded.fromState(state)
               ..coach = event.coach.toBuilder())

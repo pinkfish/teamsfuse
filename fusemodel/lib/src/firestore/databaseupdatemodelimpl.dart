@@ -107,7 +107,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       await tx.set(mainRef, gameBuilder.build().toMap());
       for (var i = 0; i < dates.length; i++) {
         var time = dates.elementAt(i);
-        if (game.sharedData.time != time.microsecondsSinceEpoch) {
+        if (game.sharedData.time.microsecondsSinceEpoch !=
+            time.microsecondsSinceEpoch) {
           await tx.set(refShared[i], game.sharedData.toMap());
           gameBuilder.sharedDataUid = refShared[i].documentID;
           // Add the game.
@@ -2208,6 +2209,34 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
+  Stream<BuiltList<MediaInfo>> getMediaForSeason({String seasonUid}) async* {
+    var q = _wrapper
+        .collection(MEDIA_COLLECTION)
+        .where('seasonUid', isEqualTo: seasonUid);
+    var snap = await q.getDocuments();
+    yield BuiltList.of(snap.documents
+        .map((snap) => MediaInfo.fromMap(_addUid(snap.documentID, snap.data))));
+    await for (var snap in q.snapshots()) {
+      yield BuiltList.of(snap.documents.map(
+          (snap) => MediaInfo.fromMap(_addUid(snap.documentID, snap.data))));
+    }
+  }
+
+  @override
+  Stream<BuiltList<MediaInfo>> getMediaForPlayer({String playerUid}) async* {
+    var q = _wrapper
+        .collection(MEDIA_COLLECTION)
+        .where('playerUid', isEqualTo: playerUid);
+    var snap = await q.getDocuments();
+    yield BuiltList.of(snap.documents
+        .map((snap) => MediaInfo.fromMap(_addUid(snap.documentID, snap.data))));
+    await for (var snap in q.snapshots()) {
+      yield BuiltList.of(snap.documents.map(
+          (snap) => MediaInfo.fromMap(_addUid(snap.documentID, snap.data))));
+    }
+  }
+
+  @override
   Stream<MediaInfo> getMediaInfo({String mediaInfoUid}) async* {
     var ref = _wrapper.collection(MEDIA_COLLECTION).document(mediaInfoUid);
     var doc = await ref.get();
@@ -2295,6 +2324,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
               ..jerseyNumber = jerseyNumber
               ..currentlyPlaying = true).toMap()
       });
+      return;
     });
   }
 
@@ -2321,6 +2351,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
               ..jerseyNumber = jerseyNumber
               ..currentlyPlaying = true).toMap()
       });
+      return;
     });
   }
 

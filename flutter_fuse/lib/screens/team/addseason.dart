@@ -88,7 +88,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
               labelText: Messages.of(context).newseasonhint,
             ),
             validator: (s) {
-              var ret = _validations.validateDisplayName(context, s);
+              return _validations.validateDisplayName(context, s);
             },
             initialValue: '',
             keyboardType: TextInputType.text,
@@ -124,7 +124,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
                       _seasonSelect = singleTeamBloc.state.getSeason(seasonUid);
                     },
                     validator: (s) {
-                      var ret = _importPlayers && s == SeasonFormField.none
+                      return _importPlayers && s == SeasonFormField.none
                           ? Messages.of(context).seasonrequired
                           : null;
                     },

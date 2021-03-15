@@ -99,10 +99,11 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
         team.users = MapBuilder(entries);
 
         var uid = await coordinationBloc.databaseUpdateModel.addFirestoreTeam(
-            team.build(),
-            null,
-            season,
-            event.teamImage == null ? null : event.teamImage);
+          team.build(),
+          null,
+          season,
+          event?.teamImage,
+        );
 
         yield AddItemDone(uid: uid);
       } catch (e, stack) {

@@ -599,7 +599,7 @@ class GameStatsScreen extends StatelessWidget {
                                     (state.gameEvents.isEmpty ||
                                         state.gameEvents.last.type ==
                                             GameEventType.PeriodEnd)) ||
-                                state.game?.result.currentPeriod ==
+                                state.game?.result?.currentPeriod ==
                                     GamePeriod.notStarted) {
                               return BlocBuilder(
                                 cubit: singleSeasonBloc,

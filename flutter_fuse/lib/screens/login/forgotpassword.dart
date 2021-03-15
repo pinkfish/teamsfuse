@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
-import '../../services/blocs.dart';
 
 import '../../services/messages.dart';
 import '../../services/validations.dart';
@@ -33,7 +32,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   void showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _handleSubmitted() {
@@ -75,10 +74,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 Container(
                   margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                   child: RaisedButton(
-                      child: Text(Messages.of(context).forgotPassword),
-                      color: Theme.of(context).primaryColor,
-                      key: Key('SUBMIT'),
-                      onPressed: _handleSubmitted),
+                    color: Theme.of(context).primaryColor,
+                    key: Key('SUBMIT'),
+                    onPressed: _handleSubmitted,
+                    child: Text(Messages.of(context).forgotPassword),
+                  ),
                 ),
               ],
             ),

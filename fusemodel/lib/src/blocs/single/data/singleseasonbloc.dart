@@ -11,20 +11,34 @@ part 'singleseasonbloc.g.dart';
 /// The type of the season bloc state.
 ///
 class SingleSeasonBlocStateType extends EnumClass {
+  /// Serialized for the state type.
   static Serializer<SingleSeasonBlocStateType> get serializer =>
       _$singleSeasonBlocStateTypeSerializer;
 
+  /// The uninitialized bloc state.
   static const SingleSeasonBlocStateType Uninitialized = _$uninitialized;
+
+  /// The loaded bloc state.
   static const SingleSeasonBlocStateType Loaded = _$loaded;
+
+  /// The season is deleted.
   static const SingleSeasonBlocStateType Deleted = _$deleted;
+
+  /// If the save failed for this season.
   static const SingleSeasonBlocStateType SaveFailed = _$saveFailed;
+
+  /// If the save is in progress for this season.
   static const SingleSeasonBlocStateType Saving = _$saving;
+
+  /// If the save is done for the season.
   static const SingleSeasonBlocStateType SaveDone = _$saveDone;
 
   const SingleSeasonBlocStateType._(String name) : super(name);
 
+  /// The values, all the enum types, for the season bloc type.
   static BuiltSet<SingleSeasonBlocStateType> get values => _$values;
 
+  /// Getthe season bloc type for the specified name.
   static SingleSeasonBlocStateType valueOf(String name) => _$valueOf(name);
 }
 
@@ -34,24 +48,42 @@ class SingleSeasonBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class SingleSeasonState {
+  /// The season information.
   @nullable
   Season get season;
+
+  /// The games associated with the season.
   BuiltList<Game> get games;
+
+  /// If the games are loaded.
   bool get loadedGames;
 
+  /// The loaded media.
+  BuiltList<MediaInfo> get media;
+
+  /// If the media is loaded.
+  bool get loadedMedia;
+
+  /// The type of the season bloc.
   SingleSeasonBlocStateType get type;
 
+  /// Create a season bloc from the state.
   static SingleSeasonStateBuilder fromState(
       SingleSeasonState state, SingleSeasonStateBuilder builder) {
     return builder
       ..season = state.season?.toBuilder()
       ..loadedGames = state.loadedGames
+      ..loadedMedia = state.loadedMedia
+      ..media = state.media.toBuilder()
       ..games = state.games.toBuilder();
   }
 
-  static void initializeStateBuilder(SingleSeasonStateBuilder b) =>
-      b..loadedGames = false;
+  /// Initialize the builder from the state.
+  static void initializeStateBuilder(SingleSeasonStateBuilder b) => b
+    ..loadedGames = false
+    ..loadedMedia = false;
 
+  /// Create the serialized data from the state.
   Map<String, dynamic> toMap();
 }
 
@@ -63,10 +95,13 @@ abstract class SingleSeasonLoaded
         SingleSeasonState,
         Built<SingleSeasonLoaded, SingleSeasonLoadedBuilder> {
   SingleSeasonLoaded._();
+
+  /// The single season loaded data.
   factory SingleSeasonLoaded(
           [void Function(SingleSeasonLoadedBuilder) updates]) =
       _$SingleSeasonLoaded;
 
+  /// Create the loaded builder from the state.
   static SingleSeasonLoadedBuilder fromState(SingleSeasonState state) {
     return SingleSeasonState.fromState(state, SingleSeasonLoadedBuilder());
   }
@@ -83,10 +118,12 @@ abstract class SingleSeasonLoaded
     return serializers.serializeWith(SingleSeasonLoaded.serializer, this);
   }
 
+  /// Serialize the state from the bloc data.
   static SingleSeasonLoaded fromMap(Map<String, dynamic> jsonData) {
     return serializers.deserializeWith(SingleSeasonLoaded.serializer, jsonData);
   }
 
+  /// The serializer for the bloc type.
   static Serializer<SingleSeasonLoaded> get serializer =>
       _$singleSeasonLoadedSerializer;
 }

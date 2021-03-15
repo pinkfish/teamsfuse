@@ -231,7 +231,7 @@ class SinglePlayerBloc
       yield (SinglePlayerLoaded.fromState(state)
             ..player = state.player.toBuilder()
             ..invites = ListBuilder(event.invites)
-            ..invitesLoaded = true)
+            ..loadedInvites = true)
           .build();
     }
 
@@ -239,7 +239,7 @@ class SinglePlayerBloc
       yield (SinglePlayerLoaded.fromState(state)
             ..player = state.player.toBuilder()
             ..seasons = ListBuilder(event.seasons)
-            ..seasonsLoaded = true)
+            ..loadedSeasons = true)
           .build();
     }
 

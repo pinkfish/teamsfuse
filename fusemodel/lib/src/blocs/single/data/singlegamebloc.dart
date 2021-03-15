@@ -11,15 +11,29 @@ part 'singlegamebloc.g.dart';
 /// The type of the game bloc state.
 ///
 class SingleGameBlocStateType extends EnumClass {
+  /// The serializer for the enum class.
   static Serializer<SingleGameBlocStateType> get serializer =>
       _$singleGameBlocStateTypeSerializer;
 
+  /// The game bloc is uninitialized.
   static const SingleGameBlocStateType Uninitialized = _$uninitialized;
+
+  /// The game bloc is loaded.
   static const SingleGameBlocStateType Loaded = _$loaded;
+
+  /// The game bloc is deleted.
   static const SingleGameBlocStateType Deleted = _$deleted;
+
+  /// The game save failed.
   static const SingleGameBlocStateType SaveFailed = _$saveFailed;
+
+  /// The game is saving.
   static const SingleGameBlocStateType Saving = _$saving;
+
+  /// The game saving is done.
   static const SingleGameBlocStateType SaveDone = _$saveDone;
+
+  /// If there was a game change that happened.
   static const SingleGameBlocStateType SingleGameChange = _$singleGameChange;
 
   const SingleGameBlocStateType._(String name) : super(name);
@@ -45,29 +59,50 @@ class PlayerSummaryWithOpponent {
 ///
 @BuiltValue(instantiable: false)
 abstract class SingleGameState {
+  /// The game that is loaded.
   @nullable
   Game get game;
+
+  /// The game log associated with the name.
   @BuiltValueField(serialize: false)
   BuiltList<GameLog> get gameLog;
+
+  /// The logs associated with the game
   @BuiltValueField(serialize: false)
   bool get loadedLogs;
+
+  /// The events associated with the events.
   @BuiltValueField(serialize: false)
   BuiltList<GameEvent> get gameEvents;
+
+  /// The events are loaded.
   @BuiltValueField(serialize: false)
   bool get loadedEvents;
+
+  /// The list of media for the game.
   @BuiltValueField(serialize: false)
   BuiltList<MediaInfo> get media;
+
+  /// If the media is loaded.
   @BuiltValueField(serialize: false)
   bool get loadedMedia;
+
+  /// The players associated with the game.
   @BuiltValueField(serialize: false)
   BuiltMap<String, Player> get players;
+
+  /// If the playerss are loaded.
   @BuiltValueField(serialize: false)
   bool get loadedPlayers;
+
+  /// If the opponent players are loaded.
   @BuiltValueField(serialize: false)
   bool get loadedOpponentPlayers;
 
+  /// The type of the game bloc.
   SingleGameBlocStateType get type;
 
+  /// Create a builder from the current state.
   static SingleGameStateBuilder fromState(
       SingleGameState state, SingleGameStateBuilder builder) {
     return builder
@@ -81,6 +116,7 @@ abstract class SingleGameState {
       ..media = state.media.toBuilder();
   }
 
+  /// Initialize the builder with the defaults.
   static void initializeStateBuilder(SingleGameStateBuilder b) => b
     ..loadedLogs = false
     ..loadedEvents = false
@@ -88,6 +124,7 @@ abstract class SingleGameState {
     ..loadedOpponentPlayers = false
     ..loadedPlayers = false;
 
+  /// Create a map from the state, serialize it.
   Map<String, dynamic> toMap();
 }
 

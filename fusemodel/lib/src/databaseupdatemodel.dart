@@ -107,8 +107,14 @@ abstract class DatabaseUpdateModel {
       {@required String gameUid, @required String gameEventUid});
 
   // Media
-  /// Loads all the media for this game.
+  /// Loads all the media for this season.
   Stream<BuiltList<MediaInfo>> getMediaForGame({@required String gameUid});
+
+  /// Loads all the media for this season.
+  Stream<BuiltList<MediaInfo>> getMediaForSeason({@required String seasonUid});
+
+  /// Loads all the media for this player.
+  Stream<BuiltList<MediaInfo>> getMediaForPlayer({@required String playerUid});
 
   /// Gets all the updates for this speific media info blob.
   Stream<MediaInfo> getMediaInfo({@required String mediaInfoUid});

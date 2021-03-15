@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../../services/blocs.dart';
-
 import '../../services/analytics.dart';
 import '../../services/messages.dart';
 import '../../services/notifications.dart';

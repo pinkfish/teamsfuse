@@ -34,11 +34,7 @@ class _InviteListScreenState extends State<InviteListScreen> {
   }
 
   void _deleteInvite(Invite invite) async {
-    var result = await deleteInviteDialog(context, invite);
-  }
-
-  void _addInviteToTeam(Invite invite) {
-    Navigator.pushNamed(context, 'AcceptInviteToTeam/${invite.uid}');
+    await deleteInviteDialog(context, invite);
   }
 
   void _addInviteToPlayer(Invite invite) {

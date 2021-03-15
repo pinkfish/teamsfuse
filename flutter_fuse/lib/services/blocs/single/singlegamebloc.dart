@@ -2,15 +2,16 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
-import 'package:flutter/foundation.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
 
 /// The base class for al the single game events.
-abstract class SingleGameEvent {}
+abstract class SingleGameEvent extends Equatable {}
 
 ///
 /// Updates the game (writes it out to firebase.
@@ -24,6 +25,9 @@ class SingleGameUpdate extends SingleGameEvent {
 
   /// Update the game with new data.
   SingleGameUpdate({@required this.game, this.updateShared = false});
+
+  @override
+  List<Object> get props => [game, updateShared];
 }
 
 ///
@@ -32,7 +36,11 @@ class SingleGameUpdate extends SingleGameEvent {
 class SingleGameUpdateSharedData extends SingleGameEvent {
   final GameSharedData sharedData;
 
-  SingleGameUpdateSharedData({@required this.sharedData});
+  SingleGameUpdateSharedData({
+    @required this.sharedData,
+  });
+  @override
+  List<Object> get props => [sharedData];
 }
 
 ///
@@ -41,58 +49,80 @@ class SingleGameUpdateSharedData extends SingleGameEvent {
 class SingleGameAddGameLog extends SingleGameEvent {
   final GameLog log;
 
-  SingleGameAddGameLog({@required this.log});
+  SingleGameAddGameLog({
+    @required this.log,
+  });
+  @override
+  List<Object> get props => [log];
 }
 
 ///
 /// Loads the gane log for this game.
 ///
 class SingleGameLoadGameLog extends SingleGameEvent {
-  SingleGameLoadGameLog();
+  @override
+  List<Object> get props => [];
 }
 
 ///
 /// Delete this game from the world.
 ///
 class SingleGameDelete extends SingleGameEvent {
-  SingleGameDelete();
+  @override
+  List<Object> get props => [];
 }
 
 ///
 /// Updated the attendence for the player.
 ///s
 class SingleGameUpdateAttendance extends SingleGameEvent {
+  /// The player uid for the player to update.
   final String playerUid;
+
+  /// The new attendence details.
   final Attendance attendance;
 
-  SingleGameUpdateAttendance(
-      {@required this.playerUid, @required this.attendance});
+  SingleGameUpdateAttendance({
+    @required this.playerUid,
+    @required this.attendance,
+  });
+  @override
+  List<Object> get props => [playerUid, attendance];
 }
 
 ///
 /// Update the result for this game.
 ///s
 class SingleGameUpdateResult extends SingleGameEvent {
+  /// The result for this game.
   final GameResultDetails result;
 
-  SingleGameUpdateResult({@required this.result});
+  SingleGameUpdateResult({
+    @required this.result,
+  });
+  @override
+  List<Object> get props => [result];
 }
 
 ///
 /// Update the offical result for this game.
 ///s
 class SingleGameUpdateOfficalResult extends SingleGameEvent {
+  /// The new offical game results.
   final GameOfficialResults result;
 
-  SingleGameUpdateOfficalResult({@required this.result});
+  SingleGameUpdateOfficalResult({
+    @required this.result,
+  });
+
+  @override
+  List<Object> get props => [result];
 }
 
 ///
 /// Load the game eventsa
 ///
 class SingleGameLoadEvents extends SingleGameEvent {
-  SingleGameLoadEvents();
-
   @override
   List<Object> get props => [];
 }
@@ -101,8 +131,6 @@ class SingleGameLoadEvents extends SingleGameEvent {
 /// Load the game media
 ///
 class SingleGameLoadMedia extends SingleGameEvent {
-  SingleGameLoadMedia();
-
   @override
   List<Object> get props => [];
 }
@@ -139,7 +167,10 @@ class SingleGameAddGuestPlayer extends SingleGameEvent {
   final String jerseyNumber;
 
   /// Create the guest player.
-  SingleGameAddGuestPlayer(this.playerName, this.jerseyNumber);
+  SingleGameAddGuestPlayer(
+    this.playerName,
+    this.jerseyNumber,
+  );
 
   List<Object> get props => [playerName, jerseyNumber];
 }
@@ -155,9 +186,10 @@ class SingleGameAddOpponentPlayer extends SingleGameEvent {
   final String jerseyNumber;
 
   /// Create the guest player.
-  SingleGameAddOpponentPlayer(
-      {this.opponentPlayerName, @required this.jerseyNumber})
-      : assert(jerseyNumber != null);
+  SingleGameAddOpponentPlayer({
+    this.opponentPlayerName,
+    @required this.jerseyNumber,
+  }) : assert(jerseyNumber != null);
 
   List<Object> get props => [opponentPlayerName, jerseyNumber];
 }
@@ -173,13 +205,24 @@ class _SingleGameNewGame extends SingleGameEvent {
   final Game newGame;
 
   _SingleGameNewGame({@required this.newGame});
+
+  @override
+  List<Object> get props => [newGame];
 }
 
-class _SingleGameDeleted extends SingleGameEvent {}
+class _SingleGameDeleted extends SingleGameEvent {
+  @override
+  List<Object> get props => [];
+}
 
 class _SingleGameNewLogs extends SingleGameEvent {
+  /// The updated logs.
   final BuiltList<GameLog> logs;
+
   _SingleGameNewLogs({@required this.logs});
+
+  @override
+  List<Object> get props => [logs];
 }
 
 class _SingleGameNewEvents extends SingleGameEvent {

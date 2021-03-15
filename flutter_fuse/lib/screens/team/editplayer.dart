@@ -44,8 +44,10 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
   void initState() {
     super.initState();
     singlePlayerBloc = SinglePlayerBloc(
-        playerUid: widget.playerUid,
-        db: RepositoryProvider.of<DatabaseUpdateModel>(context));
+      playerUid: widget.playerUid,
+      db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+    );
   }
 
   Future<void> _chooseImage() async {

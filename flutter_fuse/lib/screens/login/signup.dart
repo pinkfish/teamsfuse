@@ -134,7 +134,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       children: <Widget>[
                         Form(
                           key: _formKey,
-                          autovalidate: _autovalidate,
+                          autovalidateMode: _autovalidate
+                              ? AutovalidateMode.always
+                              : AutovalidateMode.disabled,
                           child: Column(
                             children: <Widget>[
                               EnsureVisibleWhenFocused(
@@ -239,12 +241,13 @@ class _SignupScreenState extends State<SignupScreen> {
                                 margin:
                                     EdgeInsets.only(top: 20.0, bottom: 20.0),
                                 child: RaisedButton(
-                                    child: Text(
-                                        Messages.of(context).createaccount),
-                                    color: Theme.of(context).primaryColor,
-                                    textColor: Colors.white,
-                                    key: Key('SUBMIT'),
-                                    onPressed: _handleSubmitted),
+                                  color: Theme.of(context).primaryColor,
+                                  textColor: Colors.white,
+                                  key: Key('SUBMIT'),
+                                  onPressed: _handleSubmitted,
+                                  child:
+                                      Text(Messages.of(context).createaccount),
+                                ),
                               ),
                             ],
                           ),

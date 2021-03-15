@@ -71,7 +71,7 @@ class _EditSeasonScreenState extends State<EditSeasonScreen> {
               labelText: Messages.of(context).newseasonhint,
             ),
             validator: (s) {
-              var ret = _validations.validateDisplayName(context, s);
+              return _validations.validateDisplayName(context, s);
             },
             initialValue: '',
             keyboardType: TextInputType.text,

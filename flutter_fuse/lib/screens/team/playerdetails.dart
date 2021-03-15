@@ -300,7 +300,7 @@ class PlayerDetailsScreen extends StatelessWidget {
           );
         }
       }
-      if (!singlePlayerState.invitesLoaded &&
+      if (!singlePlayerState.loadedInvites &&
           singlePlayerState.invites.isNotEmpty) {
         ret.add(Column(
           children: singlePlayerState.invites.map((invite) {

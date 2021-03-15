@@ -34,37 +34,61 @@ class SinglePlayerBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class SinglePlayerState {
+  /// The player associated with this when loaded.
   @nullable
   Player get player;
+
+  /// If this is the me player.
   bool get mePlayer;
+
+  /// The type of the bloc state.
   SinglePlayerBlocStateType get type;
 
   // Local only data.
+  /// The invites are loaded.
   @BuiltValueField(serialize: false)
-  bool get invitesLoaded;
+  bool get loadedInvites;
+
+  /// The loasded invites.
   @BuiltValueField(serialize: false)
   BuiltList<InviteToPlayer> get invites;
+
+  /// If the seasons are loaded.
   @BuiltValueField(serialize: false)
-  bool get seasonsLoaded;
+  bool get loadedSeasons;
+
+  /// The loaded seasons.
   @BuiltValueField(serialize: false)
   BuiltList<Season> get seasons;
 
+  /// The loaded media.
+  BuiltList<MediaInfo> get media;
+
+  /// If the media is loaded.
+  bool get loadedMedia;
+
+  /// Create the state buider from the previous state.
   static SinglePlayerStateBuilder fromState(
       SinglePlayerState state, SinglePlayerStateBuilder builder) {
     return builder
       ..player = state.player?.toBuilder()
       ..mePlayer = state.mePlayer
       ..invites = state.invites.toBuilder()
-      ..invitesLoaded = state.invitesLoaded
-      ..seasonsLoaded = state.seasonsLoaded
+      ..loadedInvites = state.loadedInvites
+      ..loadedSeasons = state.loadedSeasons
+      ..loadedMedia = state.loadedMedia
+      ..media = state.media.toBuilder()
       ..seasons = state.seasons.toBuilder();
   }
 
+  /// Initialize the builder from the base state.
   static void initializeStateBuilder(SinglePlayerStateBuilder b) => b
-    ..invitesLoaded = false
-    ..seasonsLoaded = false
+    ..loadedInvites = false
+    ..loadedSeasons = false
+    ..loadedMedia = false
     ..mePlayer = false;
 
+  /// Seriaize the data from the bloc state.
   Map<String, dynamic> toMap();
 }
 
@@ -76,10 +100,13 @@ abstract class SinglePlayerLoaded
         SinglePlayerState,
         Built<SinglePlayerLoaded, SinglePlayerLoadedBuilder> {
   SinglePlayerLoaded._();
+
+  /// The loaded state from the bloc.
   factory SinglePlayerLoaded(
           [void Function(SinglePlayerLoadedBuilder) updates]) =
       _$SinglePlayerLoaded;
 
+  /// Create the builder from the state.
   static SinglePlayerLoadedBuilder fromState(SinglePlayerState state) {
     return SinglePlayerState.fromState(state, SinglePlayerLoadedBuilder());
   }
@@ -96,10 +123,12 @@ abstract class SinglePlayerLoaded
     return serializers.serializeWith(SinglePlayerLoaded.serializer, this);
   }
 
+  /// Create the bloc from the seriaized data.
   static SinglePlayerLoaded fromMap(Map<String, dynamic> jsonData) {
     return serializers.deserializeWith(SinglePlayerLoaded.serializer, jsonData);
   }
 
+  /// The serializer for the bloc state.
   static Serializer<SinglePlayerLoaded> get serializer =>
       _$singlePlayerLoadedSerializer;
 }
