@@ -57,7 +57,6 @@ class AlgoliaSearch {
   }
 
   AlgoliaResult _makeResult(AlgoliaObjectSnapshot result) {
-    print("Make result ${result.objectID}");
     if (result.objectID.startsWith('C')) {
       return AlgoliaResult(ResultType.club, result.objectID.substring(1),
           result.data['name'], result.data);

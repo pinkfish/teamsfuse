@@ -285,7 +285,6 @@ class GameCard extends StatelessWidget {
       SingleSeasonState seasonState) {
     var game = gameState.game;
     var buttons = <Widget>[];
-    //print('Trying ${game.teamUid}');
     /*
     Opponent op;
     // Use the opponent from the main list before the league one if it is

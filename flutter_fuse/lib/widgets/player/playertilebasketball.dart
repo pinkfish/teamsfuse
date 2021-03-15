@@ -135,8 +135,6 @@ class PlayerTileBasketball extends StatelessWidget {
               );
             }
             if (singlePlayerState is SinglePlayerLoaded) {
-              print(
-                  'Loaded ${singlePlayerState.player.playerType} ${singlePlayerBloc.playerUid}');
               return _loadedData(
                   context, singlePlayerState.player, jerseyNumber);
             }

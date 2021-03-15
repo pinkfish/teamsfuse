@@ -86,6 +86,7 @@ class SingleProfileBloc
         add(_SingleProfileNewProfile(profile: profile));
       }
     });
+    _profileSub.onError(crashes.recordException);
   }
 
   @override
@@ -110,6 +111,7 @@ class SingleProfileBloc
           add(_SingleProfileNewMePlayer(player: player));
         }
       });
+      _playerSub.onError(crashes.recordException);
     }
 
     // Setup the new players

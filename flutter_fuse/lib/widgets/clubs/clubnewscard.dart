@@ -5,7 +5,6 @@ import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 import '../blocs/singlenewsprovider.dart';
-import '../util/byusername.dart';
 import '../util/userimage.dart';
 
 ///
@@ -75,7 +74,10 @@ class ClubNewsCard extends StatelessWidget {
                 Row(
                   children: [
                     UserImage(newsState.newsItem.postedByUid),
-                    ByUserNameComponent(userId: newsState.newsItem.postedByUid),
+                    Text(
+                      Messages.of(context)
+                          .invitedBy(newsState.newsItem.postedByName),
+                    ),
                     SizedBox(width: 20),
                   ],
                 ),

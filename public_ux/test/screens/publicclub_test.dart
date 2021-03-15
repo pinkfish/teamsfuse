@@ -67,6 +67,11 @@ void main() {
         ..photoUrl = ''
         ..name = 'Bunny Wunny')
       .build();
+  final testMePlayer = (PlayerBuilder()
+        ..uid = 'user'
+        ..photoUrl = ''
+        ..name = 'More big fluff')
+      .build();
   final testNewsItem = (NewsItemBuilder()
         ..uid = 'news'
         ..subject = 'More fluff'
@@ -237,6 +242,8 @@ void main() {
             StreamGenerator<BuiltList<NewsItem>>(BuiltList.of([testNewsItem]));
         final singeNewsItemsController =
             StreamGenerator<NewsItem>(testNewsItem);
+        final mePlayerController = StreamGenerator<Player>(testMePlayer);
+
         final basicData = BasicData();
 
         when(basicData.mockDb.getTeamDetails(teamUid: anyNamed('teamUid')))
@@ -252,6 +259,8 @@ void main() {
             .thenAnswer((_) => newsItemsController.stream());
         when(basicData.mockDb.getSingleClubNews('club', 'news'))
             .thenAnswer((_) => singeNewsItemsController.stream());
+        when(basicData.mockDb.getMePlayer('user'))
+            .thenAnswer((_) => mePlayerController.stream());
 
         // Build our app and trigger a frame.
         final testWidget = await makeTestableWidget(
@@ -272,7 +281,7 @@ void main() {
 
         expect(find.text('Fluff'), findsNWidgets(2));
         expect(find.text('More fluff'), findsOneWidget);
-        expect(find.text('By User Profile'), findsOneWidget);
+        expect(find.text('By Big Fluff'), findsOneWidget);
         expect(find.text('More fluff was found'), findsOneWidget);
 
         await basicData.close();

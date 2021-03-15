@@ -44,15 +44,14 @@ class UserImage extends StatelessWidget {
 
             return AnimatedCrossFade(
               duration: Duration(seconds: 3),
-              crossFadeState: state.loadedPlayers &&
-                      state.players.length > 0 &&
-                      state.players.first.photoUrl.isNotEmpty
-                  ? CrossFadeState.showSecond
-                  : CrossFadeState.showFirst,
+              crossFadeState:
+                  state.loadedMePlayer && state.mePlayer.photoUrl.isNotEmpty
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
               firstChild: Text(
                 state.profile?.initials() ?? '..',
               ),
-              secondChild: state.loadedMePlayer && state.players.length > 0
+              secondChild: state.loadedMePlayer
                   ? CachedNetworkImage(
                       imageUrl: state.mePlayer.photoUrl,
                     )

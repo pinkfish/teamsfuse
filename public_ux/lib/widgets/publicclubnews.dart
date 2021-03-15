@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fusemodel/fusemodel.dart';
-
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/clubs/clubimage.dart';
 import 'package:flutter_fuse/widgets/clubs/clubnewscard.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 ///
 /// Shows the news articles for the club.
@@ -41,7 +40,6 @@ class PublicClubNews extends StatelessWidget {
             style: Theme.of(context).textTheme.headline4,
           );
         }
-        print('loaded news in club ${state.loadedNewsItems}');
         if (state is SingleClubDeleted) {
           return Text(
             Messages.of(context).clubDeleted,
