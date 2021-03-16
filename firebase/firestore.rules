@@ -249,9 +249,11 @@ service cloud.firestore {
     }
 
     match /Players/{player} {
-      allow update, delete: if isSignedIn() &&
-          (isEmpty(existingData(), 'users') || existingData().users[request.auth.uid].added) &&
-          isPlayerCorrect();
+      allow delete: if isSignedIn() &&
+          (isEmpty(existingData(), 'users') || existingData().users[request.auth.uid].added);
+      allow update: if isSignedIn() &&
+        (isEmpty(existingData(), 'users') || existingData().users[request.auth.uid].added) &&
+        isPlayerCorrect();
       allow create: if isSignedIn() && isUidCorrect() && isPlayerCorrect();
       allow read: if isSignedIn() || isPublicVisible();
     }

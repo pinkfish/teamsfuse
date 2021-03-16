@@ -9,9 +9,10 @@ import 'package:meta/meta.dart';
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
 
-abstract class PlayerEvent extends Equatable {}
+/// The Player event base for all the player events.
+abstract class _PlayerEvent extends Equatable {}
 
-class _PlayerFirestore extends PlayerEvent {
+class _PlayerFirestore extends _PlayerEvent {
   _PlayerFirestore();
 
   @override
@@ -23,22 +24,12 @@ class _PlayerFirestore extends PlayerEvent {
   List<Object> get props => [];
 }
 
-class _PlayerLoadedExtra extends PlayerEvent {
-  final String playerUid;
-  final Player player;
-
-  _PlayerLoadedExtra({@required this.playerUid, @required this.player});
-
-  @override
-  List<Object> get props => [playerUid, player];
-}
-
-class _PlayerLoggedOut extends PlayerEvent {
+class _PlayerLoggedOut extends _PlayerEvent {
   @override
   List<Object> get props => [];
 }
 
-class _PlayerNewPlayersLoaded extends PlayerEvent {
+class _PlayerNewPlayersLoaded extends _PlayerEvent {
   final BuiltMap<String, Player> players;
   final Set<String> deleted;
   final Player me;
@@ -54,7 +45,7 @@ class _PlayerNewPlayersLoaded extends PlayerEvent {
 /// Player bloc handles the player flow.  Loading all the players from
 /// firestore.
 ///
-class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
+class PlayerBloc extends HydratedBloc<_PlayerEvent, PlayerState> {
   final CoordinationBloc coordinationBloc;
   final AnalyticsSubsystem crashes;
 
@@ -107,6 +98,7 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
       if (player.users[uid].relationship == Relationship.Me) {
         if (foundMe) {
           if (player.users.length <= 1) {
+            print('Deleting ${player.uid}');
             coordinationBloc.databaseUpdateModel.deletePlayer(player.uid);
           }
         }
@@ -121,10 +113,10 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
       players.remove(id);
     });
     if (!foundMe && !_createdMePlayer) {
-      var playerUser = PlayerUserInternal((b) => b
+      final playerUser = PlayerUserInternal((b) => b
         ..added = true
         ..relationship = Relationship.Me);
-      var player = PlayerBuilder()
+      final player = PlayerBuilder()
         ..uid = ''
         ..playerType = PlayerType.player;
       player.usersData[coordinationBloc.authenticationBloc.currentUser.uid] =
@@ -148,7 +140,7 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
   }
 
   @override
-  Stream<PlayerState> mapEventToState(PlayerEvent event) async* {
+  Stream<PlayerState> mapEventToState(_PlayerEvent event) async* {
     if (event is _PlayerFirestore) {
       // Load from firestore.
       _playerSnapshot = coordinationBloc.databaseUpdateModel
@@ -174,12 +166,6 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
           .build();
       coordinationBloc
           .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Player));
-    }
-
-    if (event is _PlayerLoadedExtra) {
-      var extras = state.extraPlayers.toBuilder();
-      extras[event.playerUid] = event.player;
-      yield (PlayerLoaded.fromState(state)..extraPlayers = extras).build();
     }
   }
 

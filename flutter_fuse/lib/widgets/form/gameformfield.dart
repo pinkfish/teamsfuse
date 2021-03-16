@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:intl/intl.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -126,9 +127,11 @@ class GameFormFieldState extends FormFieldState<String> {
           child: Row(
             children: [
               Text(DateFormat.yMMMd().format(game.sharedData.tzTime)),
+              SizedBox(width: 5),
               GameTitle(
                 game,
                 null,
+                overflow: TextOverflow.fade,
               ),
             ],
           ),

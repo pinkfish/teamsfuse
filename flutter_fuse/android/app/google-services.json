@@ -29,6 +29,10 @@
             "package_name": "com.teamfuse.flutterfuse",
             "certificate_hash": "72b400f32e4b94e30b12bed5b37c4202863d9eae"
           }
+        },
+        {
+          "client_id": "400199897683-jgld270hqofu9ahijd3tj4volvan370d.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
@@ -39,6 +43,10 @@
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
+            {
+              "client_id": "400199897683-jgld270hqofu9ahijd3tj4volvan370d.apps.googleusercontent.com",
+              "client_type": 3
+            },
             {
               "client_id": "400199897683-97h3ll2bi5j2q41bln4hu17ahmt2c427.apps.googleusercontent.com",
               "client_type": 2,

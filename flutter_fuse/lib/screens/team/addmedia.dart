@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:exif/exif.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/blocs.dart';
@@ -37,7 +40,7 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
   String _curGameUid;
   String _playerUid;
   String _description;
-  Uint8List _imageData;
+  PickedFile _imageFile;
 
   AddMediaBloc _addMediaBloc;
 
@@ -65,8 +68,13 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
   }
 
   Future<void> _handleSubmit(Season season) async {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState.validate() && _imageFile != null) {
       _formKey.currentState.save();
+
+      final bytes = await _imageFile.readAsBytes();
+      final exif = await readExifFromBytes(bytes);
+      DateTime start;
+      if (exif['Image DateTime'] != null) {}
 
       // Send the invite, cloud functions will handle the email
       // part of this.
@@ -77,11 +85,36 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
         playerUid: _playerUid,
         mediaType: MediaType.image,
         description: _description,
-        imageFile: _imageData,
+        imageFile: bytes,
+        startAt: start,
       ));
     } else {
       autovalidate = AutovalidateMode.always;
       _showInSnackBar(Messages.of(context).formerror);
+    }
+  }
+
+  Widget _showImage() {
+    if (_imageFile == null) {
+      return Icon(
+        Icons.help,
+        size: 200,
+      );
+    }
+    return Image.file(
+      File(_imageFile.path),
+      height: 200,
+      width: 200,
+    );
+  }
+
+  void _pickImage() async {
+    final picker = RepositoryProvider.of<ImagePicker>(context);
+    final img = await picker.getImage();
+    if (img != null) {
+      setState(() {
+        _imageFile = img;
+      });
     }
   }
 
@@ -94,6 +127,7 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
         child: GameFormField(
           initialValue: _curGameUid,
           seasonBloc: singleSeasonBloc,
+          includeNone: true,
           onSaved: (value) {
             _curGameUid = value;
           },
@@ -120,6 +154,12 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
         onSaved: (value) {
           _description = value;
         },
+      ),
+    );
+    rows.add(
+      IconButton(
+        icon: _showImage(),
+        onPressed: _pickImage,
       ),
     );
 
