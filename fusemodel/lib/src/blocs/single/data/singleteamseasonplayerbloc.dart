@@ -36,18 +36,24 @@ class SingleTeamSeasonPlayerBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class SingleTeamSeasonPlayerState {
+  /// The season player that is loaded.
   @nullable
   SeasonPlayer get seasonPlayer;
+
+  /// The type of the bloc.
   SingleTeamSeasonPlayerBlocStateType get type;
 
+  /// Create the state from the builder.
   static SingleTeamSeasonPlayerStateBuilder fromState(
       SingleTeamSeasonPlayerState state,
       SingleTeamSeasonPlayerStateBuilder builder) {
     return builder..seasonPlayer = state.seasonPlayer?.toBuilder();
   }
 
+  /// initialize the builder.
   static void initializeStateBuilder(SingleTeamSeasonPlayerStateBuilder b) => b;
 
+  /// Creates the serialization to a map.
   Map<String, dynamic> toMap();
 }
 

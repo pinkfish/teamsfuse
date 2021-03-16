@@ -2175,13 +2175,30 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<String> addMedia({MediaInfo media}) async {
-    var ref = _wrapper.collection(MEDIA_COLLECTION).document();
-    var p = media.rebuild((b) => b..uid = ref.documentID);
-    var data = p.toMap();
-    data['uploadTime'] = _wrapper.fieldValueServerTimestamp;
-    await ref.setData(data);
-    _analytics.logEvent(name: 'AddMedia');
+  Future<String> addMedia({MediaInfo media, Uint8List imageFile}) async {
+    final ref = _wrapper.collection(MEDIA_COLLECTION).document();
+    final storageRef =
+        _wrapper.storageRef().child('media_${ref.documentID}.img');
+    final task = storageRef.putFile(imageFile);
+    final snapshot = (await task.future);
+    final photoUrl = snapshot.downloadUrl;
+
+    try {
+      await _wrapper.runTransaction((t) async {
+        // Write the data up to storage.
+        final p = media.rebuild((b) => b
+          ..uid = ref.documentID
+          ..url = photoUrl);
+        final data = p.toMap();
+        data['uploadTime'] = _wrapper.fieldValueServerTimestamp;
+        await t.set(ref, data);
+        _analytics.logEvent(name: 'addMedia');
+        return;
+      });
+    } catch (e) {
+      await storageRef.delete();
+      rethrow;
+    }
     return ref.documentID;
   }
 

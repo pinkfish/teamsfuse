@@ -120,7 +120,8 @@ abstract class DatabaseUpdateModel {
   Stream<MediaInfo> getMediaInfo({@required String mediaInfoUid});
 
   /// Adds the game event into the database
-  Future<String> addMedia({@required MediaInfo media});
+  Future<String> addMedia(
+      {@required MediaInfo media, @required Uint8List imageFile});
 
   /// Updates the game player in the database.
   Future<void> updateGamePlayerData(

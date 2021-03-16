@@ -3310,6 +3310,26 @@ class Messages {
   String get subButton => Intl.message('SUB',
       desc: 'Text on a substitution button', locale: locale);
 
+  String get gameSelect => Intl.message(
+        'Select game',
+        desc: 'Select the game in the drop drown.',
+        locale: locale,
+      );
+  String get addGame => Intl.message(
+        'Add game',
+        desc: 'Add the game to the system.',
+        locale: locale,
+      );
+  String get noGames => Intl.message(
+        'No games',
+        desc: 'No games to display',
+        locale: locale,
+      );
+  String get addMediaItem => Intl.message(
+        'Add Media',
+        desc: 'Popup menu item to add media to a team',
+      );
+
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {
     var name =

@@ -65,6 +65,11 @@ class _TeamScreenState extends State<TeamScreen> {
           .add(SingleTeamArchive(archive: !singleTeamBloc.state.team.archived));
     } else if (choice == 'edit') {
       await Navigator.pushNamed(context, 'EditTeam/${widget.teamUid}');
+    } else if (choice == 'media') {
+      await Navigator.pushNamed(
+          context,
+          '/Team/Media/${widget.teamUid}/'
+          '${singleTeamBloc.state.team.currentSeason}');
     }
   }
 
@@ -85,15 +90,24 @@ class _TeamScreenState extends State<TeamScreen> {
           var actions = <Widget>[];
           if (state.isAdmin() && _tabIndex == 0) {
             actions.add(
+              IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () => Navigator.pushNamed(
+                  context,
+                  'EditTeam/${widget.teamUid}',
+                ),
+              ),
+            );
+            actions.add(
               PopupMenuButton<String>(
                 onSelected: (str) => _select(str, singleTeamBloc),
                 itemBuilder: (context) {
                   return <PopupMenuItem<String>>[
                     PopupMenuItem<String>(
-                      value: 'edit',
+                      value: 'media',
                       child: ListTile(
-                        leading: Icon(Icons.edit),
-                        title: Text(Messages.of(context).editbuttontext),
+                        leading: Icon(Icons.image),
+                        title: Text(Messages.of(context).addMediaItem),
                       ),
                     ),
                     PopupMenuItem<String>(

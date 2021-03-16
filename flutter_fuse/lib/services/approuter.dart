@@ -1,4 +1,5 @@
 import 'package:fluro/fluro.dart' as fluro;
+import 'package:flutter_fuse/screens/team/addmedia.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
@@ -12,6 +13,7 @@ import '../screens/clubs/editcoach.dart';
 import '../screens/clubs/editnewsitem.dart';
 import '../screens/game/addevent.dart';
 import '../screens/game/addgame.dart';
+import '../screens/team/addmedia.dart';
 import '../screens/game/addtraining.dart';
 import '../screens/game/editgame.dart';
 import '../screens/game/gamedetails.dart';
@@ -138,30 +140,49 @@ class AppRouter {
     router.define('/AllTeams',
         handler:
             fluro.Handler(handlerFunc: (context, vals) => TeamHomeScreen()));
-    router.define('/EditTeam/:id',
-        handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                EditTeamScreen(vals['id'][0].toString())));
-    router.define('/TeamSettings/:id',
-        handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                TeamSettingsScreen(vals['id'][0].toString())));
-    router.define('/TeamAddAdmin/:id',
-        handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AddAdminScreen(vals['id'][0].toString())));
-    router.define('/TeamClub/:id',
-        handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                ClubSettingsScreen(vals['id'][0].toString())));
-    router.define('/AddSeason/:id',
-        handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AddSeasonScreen(vals['id'][0].toString())));
-    router.define('/Season/Edit/:id',
-        handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                EditSeasonScreen(vals['id'][0].toString())));
+    router.define(
+      '/EditTeam/:id',
+      handler: fluro.Handler(
+          handlerFunc: (context, vals) =>
+              EditTeamScreen(vals['id'][0].toString())),
+    );
+    router.define(
+      '/TeamSettings/:id',
+      handler: fluro.Handler(
+          handlerFunc: (context, vals) =>
+              TeamSettingsScreen(vals['id'][0].toString())),
+    );
+    router.define(
+      '/TeamAddAdmin/:id',
+      handler: fluro.Handler(
+          handlerFunc: (context, vals) =>
+              AddAdminScreen(vals['id'][0].toString())),
+    );
+    router.define(
+      '/TeamClub/:id',
+      handler: fluro.Handler(
+          handlerFunc: (context, vals) =>
+              ClubSettingsScreen(vals['id'][0].toString())),
+    );
+    router.define(
+      '/Team/Media/:teamId/:seasonId',
+      handler: fluro.Handler(
+        handlerFunc: (context, vals) => AddMediaScreen(
+            vals['teamId'][0].toString(), vals['seasonId'][0].toString()),
+      ),
+    );
+    router.define(
+      '/AddSeason/:id',
+      handler: fluro.Handler(
+          handlerFunc: (context, vals) =>
+              AddSeasonScreen(vals['id'][0].toString())),
+    );
+    router.define(
+      '/Season/Edit/:id',
+      handler: fluro.Handler(
+          handlerFunc: (context, vals) =>
+              EditSeasonScreen(vals['id'][0].toString())),
+    );
     router.define('/Season/View/:id',
         handler: fluro.Handler(
             handlerFunc: (context, vals) =>

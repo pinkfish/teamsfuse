@@ -13,6 +13,7 @@ import '../../widgets/util/savingoverlay.dart';
 class AddAdminScreen extends StatefulWidget {
   /// Constructor
   AddAdminScreen(this._teamUid);
+
   final String _teamUid;
 
   @override
@@ -24,7 +25,7 @@ class AddAdminScreen extends StatefulWidget {
 class _AddAdminScreenState extends State<AddAdminScreen> {
   final Validations _validations = Validations();
   final List<String> _emailNames = <String>[];
-  bool autovalidate = false;
+  AutovalidateMode autovalidate = AutovalidateMode.disabled;
 
   AddInviteBloc addInviteBloc;
 
@@ -32,7 +33,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(value),
       ),
@@ -63,7 +64,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
             teamName: teamBloc.state.getTeam(widget._teamUid).name));
       }
     } else {
-      autovalidate = true;
+      autovalidate = AutovalidateMode.always;
       _showInSnackBar(Messages.of(context).formerror);
     }
   }
@@ -109,7 +110,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
 
     return SingleChildScrollView(
       child: Form(
-        autovalidate: autovalidate,
+        autovalidateMode: autovalidate,
         key: _formKey,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

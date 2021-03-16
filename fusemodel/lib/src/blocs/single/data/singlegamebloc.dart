@@ -47,9 +47,13 @@ class SingleGameBlocStateType extends EnumClass {
 /// The summary with the opponent flag.
 ///
 class PlayerSummaryWithOpponent {
+  /// The game player summary to find.
   final GamePlayerSummary summary;
+
+  /// If this is for an opponent.
   final bool opponent;
 
+  /// Creates the player summary.
   PlayerSummaryWithOpponent(this.opponent, this.summary);
 }
 
@@ -108,12 +112,14 @@ abstract class SingleGameState {
     return builder
       ..game = state.game?.toBuilder()
       ..gameLog = state.gameLog.toBuilder()
-      ..loadedLogs = state.loadedLogs
       ..gameEvents = state.gameEvents.toBuilder()
+      ..media = state.media.toBuilder()
+      ..players = state.players.toBuilder()
+      ..loadedLogs = state.loadedLogs
       ..loadedEvents = state.loadedEvents
       ..loadedMedia = state.loadedMedia
-      ..loadedOpponentPlayers = state.loadedOpponentPlayers
-      ..media = state.media.toBuilder();
+      ..loadedPlayers = state.loadedPlayers
+      ..loadedOpponentPlayers = state.loadedOpponentPlayers;
   }
 
   /// Initialize the builder with the defaults.

@@ -1,5 +1,6 @@
 part of firestore_wrapper;
 
+/// The handler for the transaction now.
 typedef TransactionHandler = Future<Map<String, dynamic>> Function(
     TransactionWrapper transaction);
 

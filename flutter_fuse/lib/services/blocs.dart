@@ -4,6 +4,7 @@ export 'blocs/add/addgamebloc.dart';
 export 'blocs/add/addinvitebloc.dart';
 export 'blocs/add/additemstate.dart';
 export 'blocs/add/addleagueortournamentbloc.dart';
+export 'blocs/add/addmediabloc.dart';
 export 'blocs/add/addmessagebloc.dart';
 export 'blocs/add/addnewsitembloc.dart';
 export 'blocs/add/addplayerbloc.dart';

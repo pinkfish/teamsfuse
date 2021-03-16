@@ -7,13 +7,26 @@ import 'package:timezone/timezone.dart';
 
 import '../../services/messages.dart';
 
+///
+/// Create the game title as a simple item for the list.
+///
 class GameTitle extends StatelessWidget {
+  /// The game to make the title of.
   final Game game;
+
+  /// The league or team associated with this.
   final LeagueOrTournamentTeam leagueTeam;
+
+  /// The style to display.
   final TextStyle style;
+
+  /// The scale factor.
   final double textScaleFactor;
+
+  /// What to do with the overflow.
   final TextOverflow overflow;
 
+  /// Creates a game title.
   GameTitle(this.game, this.leagueTeam,
       {this.style = const TextStyle(fontWeight: FontWeight.bold),
       this.overflow = TextOverflow.clip,

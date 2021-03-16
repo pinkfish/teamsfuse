@@ -71,9 +71,9 @@ abstract class SingleSeasonState {
   static SingleSeasonStateBuilder fromState(
       SingleSeasonState state, SingleSeasonStateBuilder builder) {
     return builder
-      ..season = state.season?.toBuilder()
       ..loadedGames = state.loadedGames
       ..loadedMedia = state.loadedMedia
+      ..season = state.season?.toBuilder()
       ..media = state.media.toBuilder()
       ..games = state.games.toBuilder();
   }

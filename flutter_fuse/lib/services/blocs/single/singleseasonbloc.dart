@@ -30,6 +30,14 @@ class SingleSeasonLoadGames extends SingleSeasonEvent {
   List<Object> get props => [];
 }
 
+///
+/// Loads all the media for this season.
+///
+class SingleSeasonLoadMedia extends SingleSeasonEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class _SingleNewTeamSeason extends SingleSeasonEvent {
   final Season newSeason;
 
@@ -55,6 +63,15 @@ class _SingleSeasonLoadedGames extends SingleSeasonEvent {
   List<Object> get props => [games];
 }
 
+class _SingleSeasonLoadedMedia extends SingleSeasonEvent {
+  final BuiltList<MediaInfo> media;
+
+  _SingleSeasonLoadedMedia({@required this.media});
+
+  @override
+  List<Object> get props => [media];
+}
+
 ///
 /// Bloc to handle updates and state of a specific team.
 ///
@@ -67,6 +84,7 @@ class SingleSeasonBloc
 
   StreamSubscription<Season> _seasonSub;
   StreamSubscription<BuiltList<Game>> _gameSub;
+  StreamSubscription<BuiltList<MediaInfo>> _mediaSub;
 
   // Create the bloc and do exciting things with it.
   SingleSeasonBloc(
@@ -144,6 +162,23 @@ class SingleSeasonBloc
           _gameSub.onError(crashes.recordException);
         }
       }
+    }
+
+    if (event is SingleSeasonLoadMedia) {
+      if (_mediaSub == null) {
+        _mediaSub =
+            db.getMediaForSeason(seasonUid: state.season.uid).listen((media) {
+          add(_SingleSeasonLoadedMedia(media: media));
+        });
+        _gameSub.onError(crashes.recordException);
+      }
+    }
+
+    if (event is _SingleSeasonLoadedMedia) {
+      yield (SingleSeasonLoaded.fromState(state)
+            ..media = event.media.toBuilder()
+            ..loadedMedia = true)
+          .build();
     }
 
     if (event is _SingleSeasonLoadedGames) {
