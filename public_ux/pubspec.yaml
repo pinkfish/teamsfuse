@@ -12,11 +12,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-  intl: ^0.17.0-nullsafety.2
-  material_design_icons_flutter: ^4.0.5855
+  intl: ^0.17.0
+  material_design_icons_flutter: ^4.0.5955
 
   cupertino_icons: ^1.0.2
-  algolia: ^1.0.0+1
+  algolia: ^1.0.1
   flutter_markdown: ^0.6.0
   fusemodel:
     path: ../fusemodel
