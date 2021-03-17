@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-03-07T05:37:26.670982",
+  "@@last_modified": "2021-03-17T01:33:13.179751",
   "About": "About",
   "@About": {
     "type": "text",
@@ -3087,6 +3087,24 @@
   "SUB": "SUB",
   "@SUB": {
     "description": "Text on a substitution button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Select game": "Select game",
+  "@Select game": {
+    "description": "Select the game in the drop drown.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Add game": "Add game",
+  "@Add game": {
+    "description": "Add the game to the system.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Add Media": "Add Media",
+  "@Add Media": {
+    "description": "Popup menu item to add media to a team",
     "type": "text",
     "placeholders": {}
   }
