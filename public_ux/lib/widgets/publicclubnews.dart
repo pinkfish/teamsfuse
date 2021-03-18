@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/clubs/clubimage.dart';
 import 'package:flutter_fuse/widgets/clubs/clubnewscard.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -49,27 +48,6 @@ class PublicClubNews extends StatelessWidget {
         return Column(
           children: [
             SizedBox(height: 10),
-            Row(
-              children: [
-                ClubImage(
-                  clubUid: state.club.uid,
-                  width: 100,
-                  height: 100,
-                ),
-                Text(
-                  state.club.name,
-                  style: Theme.of(context).textTheme.headline4,
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            Text(
-              Messages.of(context).news,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6
-                  .copyWith(color: Colors.green),
-            ),
             state.newsItems.isEmpty
                 ? Text(Messages.of(context).noNews,
                     style: Theme.of(context).textTheme.headline4)

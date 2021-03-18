@@ -185,7 +185,7 @@ class PublicClubHomeScreen extends StatelessWidget {
           ],
           onTap: (idx) => _navigateTo(
               context,
-              '/Public/'
+              '/Club/'
               '${PublicClubTab.values[idx].name}'
               '/$clubUid'),
         ),
@@ -240,7 +240,7 @@ class PublicClubHomeScreen extends StatelessWidget {
               title: Text(Messages.of(context).about),
               onTap: () => _navigateTo(
                   context,
-                  '/Public/'
+                  '/Club/'
                   '${PublicClubTab.club.name}'
                   '/$clubUid'),
             ),

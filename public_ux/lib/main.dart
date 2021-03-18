@@ -25,10 +25,11 @@ class PublicTeamsFuse extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = ThemeData(
+    final theme = ThemeData(
       primarySwatch: Colors.green,
     );
-    final route = "Home";
+    final route = 'Home';
+    final wrapper = Firestore();
 
     return MultiRepositoryProvider(
       providers: [
@@ -38,9 +39,12 @@ class PublicTeamsFuse extends StatelessWidget {
         RepositoryProvider<AnalyticsSubsystem>(
           create: (c) => AnalyticsSubsystemImpl.instance,
         ),
+        RepositoryProvider<UserAuthImpl>(
+          create: (c) => UserAuthImpl(wrapper),
+        ),
         RepositoryProvider<DatabaseUpdateModel>(
             create: (context) => DatabaseUpdateModelImpl(
-                Firestore(), null, AnalyticsSubsystemImpl.instance)),
+                wrapper, null, AnalyticsSubsystemImpl.instance)),
         RepositoryProvider<BaseCacheManager>(
             create: (context) => DefaultCacheManager()),
         RepositoryProvider<AlgoliaSearch>(
@@ -56,7 +60,7 @@ class PublicTeamsFuse extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          title: "Teams Fuse",
+          title: 'Teams Fuse',
           theme: theme,
           initialRoute: route,
           home: PublicHomeScreen(PublicMainTab.about.name),
