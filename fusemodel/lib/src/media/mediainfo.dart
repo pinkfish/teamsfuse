@@ -52,7 +52,13 @@ abstract class MediaInfo implements Built<MediaInfo, MediaInfoBuilder> {
   /// The main url associated with this piece of media.
   Uri get url;
 
+  /// If the data is public.
+  bool get isPublic;
+
   MediaInfo._();
+
+  /// Defaults for the state.  Always default to no games loaded.
+  static void _initializeBuilder(MediaInfoBuilder b) => b..isPublic = false;
 
   /// The MediaInfo associated factory.
   factory MediaInfo([Function(MediaInfoBuilder b) updates]) = _$MediaInfo;

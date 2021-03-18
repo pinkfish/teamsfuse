@@ -105,6 +105,7 @@ class MessagesPublic {
       Intl.message('Tournament', desc: 'Tounament section header');
   String get headerLeague =>
       Intl.message('League', desc: 'League section header');
+  String get media => Intl.message('Media', desc: 'Media section header');
 
   /// Load the messages for the specific locale.
   static Future<MessagesPublic> load(Locale locale) async {
