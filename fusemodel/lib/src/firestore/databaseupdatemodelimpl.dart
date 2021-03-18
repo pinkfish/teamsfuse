@@ -2216,6 +2216,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var q = _wrapper
         .collection(MEDIA_COLLECTION)
         .where('gameUid', isEqualTo: gameUid);
+    if (currentUser == null) {
+      q = q.where('isPublic', isEqualTo: true);
+    }
     var snap = await q.getDocuments();
     yield BuiltList.of(snap.documents
         .map((snap) => MediaInfo.fromMap(_addUid(snap.documentID, snap.data))));
@@ -2230,6 +2233,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var q = _wrapper
         .collection(MEDIA_COLLECTION)
         .where('seasonUid', isEqualTo: seasonUid);
+    if (currentUser == null) {
+      q = q.where('isPublic', isEqualTo: true);
+    }
     var snap = await q.getDocuments();
     yield BuiltList.of(snap.documents
         .map((snap) => MediaInfo.fromMap(_addUid(snap.documentID, snap.data))));
@@ -2244,6 +2250,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var q = _wrapper
         .collection(MEDIA_COLLECTION)
         .where('playerUid', isEqualTo: playerUid);
+    if (currentUser == null) {
+      q = q.where('isPublic', isEqualTo: true);
+    }
     var snap = await q.getDocuments();
     yield BuiltList.of(snap.documents
         .map((snap) => MediaInfo.fromMap(_addUid(snap.documentID, snap.data))));
