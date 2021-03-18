@@ -263,5 +263,12 @@ service cloud.firestore {
       allow update, delete: if isSignedIn();
       allow create: if false;
     }
-  }
+
+    match /Media/{media} {
+      allow read: if isSignedIn() || existingData().isPublic == true;
+      allow update, delete: if isSignedIn();
+      allow create: if isSignedIn() && isUidCorrect();
+    }
+
+}
 }

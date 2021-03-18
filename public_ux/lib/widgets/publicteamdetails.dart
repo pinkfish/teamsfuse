@@ -16,6 +16,8 @@ import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../services/messagespublic.dart';
+
 ///
 /// Shows the public details of the team and the current season (only showing
 /// the one season).
@@ -62,7 +64,7 @@ class PublicTeamDetails extends StatelessWidget {
     var screenSize = MediaQuery.of(context).size;
 
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: SingleTeamProvider(
         teamUid: teamuid,
         builder: (context, bloc) => BlocBuilder(
@@ -92,7 +94,7 @@ class PublicTeamDetails extends StatelessWidget {
               return LoadingWidget();
             }
 
-            var team = teamState.team;
+            final team = teamState.team;
             return SingleSeasonProvider(
               seasonUid: team.currentSeason,
               builder: (context, singleSeasonBloc) => Column(
@@ -144,6 +146,10 @@ class PublicTeamDetails extends StatelessWidget {
                               icon: Icon(Icons.people),
                             ),
                             Tab(
+                              text: MessagesPublic.of(context).media,
+                              icon: Icon(MdiIcons.image),
+                            ),
+                            Tab(
                               text: Messages.of(context).games,
                               icon: Icon(MdiIcons.basketball),
                             ),
@@ -169,8 +175,18 @@ class PublicTeamDetails extends StatelessWidget {
                                 return SeasonPlayerList(
                                   season: seasonState.season,
                                   orientation: Orientation.landscape,
+                                  onTap: (pl) => Navigator.pushNamed(
+                                      context,
+                                      '/Public/Player/$teamuid/'
+                                      '${team.currentSeason}/${pl.playerUid}'),
                                 );
                               },
+                            ),
+                            LayoutBuilder(
+                              builder: (context, constraints) => SeasonImages(
+                                seasonUid: team.currentSeason,
+                                height: constraints.maxHeight,
+                              ),
                             ),
                             SingleChildScrollView(
                               child: TeamResultsBySeason(

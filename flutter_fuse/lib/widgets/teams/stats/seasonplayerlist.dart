@@ -4,6 +4,7 @@ import 'package:fusemodel/fusemodel.dart';
 
 import '../../player/playername.dart';
 
+/// Called when the player is tapped on.
 typedef PlayerTapFunction = void Function(SeasonPlayer player);
 
 ///
