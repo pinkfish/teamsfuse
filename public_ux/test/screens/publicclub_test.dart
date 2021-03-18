@@ -136,11 +136,13 @@ void main() {
   testWidgets(
     'Club coaches',
     (WidgetTester tester) async {
-      final coachesController =  StreamGenerator<BuiltList<Coach>>(BuiltList.of([   testCoach,
+      final coachesController = StreamGenerator<BuiltList<Coach>>(BuiltList.of([
+        testCoach,
       ]));
-      final clubController =  StreamGenerator<Club>(testClub);
+      final clubController = StreamGenerator<Club>(testClub);
       final coachController = StreamGenerator<Coach>(testCoach);
-      final mediaController = StreamGenerator<BuiltList<MediaInfo>>(BuiltList.of([]));
+      final mediaController =
+          StreamGenerator<BuiltList<MediaInfo>>(BuiltList.of([]));
       final seasonController = StreamGenerator<Season>(testSeason);
       final basicData = BasicData();
 
@@ -150,8 +152,10 @@ void main() {
           .thenAnswer((_) => coachesController.stream());
       when(basicData.mockDb.getClubData(clubUid: anyNamed('clubUid')))
           .thenAnswer((_) => clubController.stream());
-      when(basicData.mockDb.getSingleSeason('season')).thenAnswer((_)=>seasonController.stream());
-      when(basicData.mockDb.getMediaForSeason(seasonUid: anyNamed('seasonUid'))).thenAnswer((_)=> mediaController.stream());
+      when(basicData.mockDb.getSingleSeason('season'))
+          .thenAnswer((_) => seasonController.stream());
+      when(basicData.mockDb.getMediaForSeason(seasonUid: anyNamed('seasonUid')))
+          .thenAnswer((_) => mediaController.stream());
 
       // Build our app and trigger a frame.
       final testWidget = await makeTestableWidget(
@@ -181,7 +185,8 @@ void main() {
       final seasonController = StreamGenerator<Season>(testSeason);
       final playersController = StreamGenerator<Player>(testPlayer);
       final basicData = BasicData();
-      final mediaController = StreamGenerator<BuiltList<MediaInfo>>(BuiltList.of([]));
+      final mediaController =
+          StreamGenerator<BuiltList<MediaInfo>>(BuiltList.of([]));
 
       when(basicData.mockDb.getTeamDetails(teamUid: anyNamed('teamUid')))
           .thenAnswer((_) => teamController.stream());
@@ -191,7 +196,8 @@ void main() {
           .thenAnswer((_) => seasonController.stream());
       when(basicData.mockDb.getPlayerDetails('rabbit'))
           .thenAnswer((_) => playersController.stream());
-when(basicData.mockDb.getMediaForSeason(seasonUid: anyNamed('seasonUid'))).thenAnswer((_)=> mediaController.stream());
+      when(basicData.mockDb.getMediaForSeason(seasonUid: anyNamed('seasonUid')))
+          .thenAnswer((_) => mediaController.stream());
       // Build our app and trigger a frame.
       final testWidget = await makeTestableWidget(
           PublicClubHomeScreen(PublicClubTab.team.name, 'club', 'team'));
@@ -222,8 +228,9 @@ when(basicData.mockDb.getMediaForSeason(seasonUid: anyNamed('seasonUid'))).thenA
 
       await basicData.close();
     },
-    variant: TeamsFuseTestVariant()
-      , skip: true,  );
+    variant: TeamsFuseTestVariant(),
+    skip: true,
+  );
 
   testWidgets(
     'Club news',
@@ -284,6 +291,7 @@ when(basicData.mockDb.getMediaForSeason(seasonUid: anyNamed('seasonUid'))).thenA
       },
     ),
     variant: TeamsFuseTestVariant(),
+    skip: true,
   );
 
   testGoldens(

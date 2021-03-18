@@ -101,7 +101,7 @@ class PublicClubHomeScreen extends StatelessWidget {
 
   Widget _buildMediumBody(BuildContext context, SingleClubBloc bloc) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       initialIndex: tabSelected.sortIndex,
       child: Scaffold(
         appBar: _buildAppBar(context, bloc),

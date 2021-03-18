@@ -45,7 +45,7 @@ class PublicClubTeams extends StatelessWidget {
       );
     }
 
-    for (var team in myTeam) {
+    for (final team in myTeam) {
       teamWidgets.add(
         SizedBox(
           width: double.infinity,
@@ -61,7 +61,7 @@ class PublicClubTeams extends StatelessWidget {
   }
 
   Widget _buildTeams(BuildContext context, SingleClubState singleClubState) {
-    var teamWidgets = <Widget>[];
+    final teamWidgets = <Widget>[];
     teamWidgets.add(SizedBox(height: 10));
     teamWidgets.add(Text(
       singleClubState.club.name,

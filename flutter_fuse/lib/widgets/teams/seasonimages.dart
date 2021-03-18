@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -37,26 +38,28 @@ class SeasonImages extends StatelessWidget {
               inner = Text(Messages.of(context).noMedia);
             } else {
               inner = CarouselSlider(
-                options: CarouselOptions(height: 400.0),
-                items: singleSeasonState.media.map((i) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Container(
-                        width: height,
-                        margin: EdgeInsets.symmetric(horizontal: 5.0),
-                        decoration: BoxDecoration(color: Colors.amber),
-                        child: CachedNetworkImage(
-                          imageUrl: singleSeasonState.media.url,
-                          errorWidget: (c, str, e) => Icon(Icons.error),
-                          placeholder: (c, str) => CircularProgressIndicator(),
-                          width: height,
-                          height: height,
-                          fit: BoxFit.scaleDown,
+                options: CarouselOptions(
+                  autoPlay: false,
+                  height: height,
+                  enlargeCenterPage: false,
+                  aspectRatio: 1.0,
+                  enlargeStrategy: CenterPageEnlargeStrategy.height,
+                ),
+                items: singleSeasonState.media
+                    .map<Widget>(
+                      (MediaInfo info) => Container(
+                        child: Center(
+                          child: CachedNetworkImage(
+                            imageUrl: info.url.toString(),
+                            errorWidget: (c, str, e) => Icon(Icons.error),
+                            placeholder: (c, str) =>
+                                CircularProgressIndicator(),
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      );
-                    },
-                  );
-                }).toList(),
+                      ),
+                    )
+                    .toList(),
               );
             }
           }

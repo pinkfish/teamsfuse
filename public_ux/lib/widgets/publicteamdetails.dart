@@ -40,9 +40,10 @@ class PublicTeamDetails extends StatelessWidget {
         if (seasonState is SingleSeasonUninitialized) {
           return LoadingWidget();
         }
-        var season = seasonState.season;
+        final season = seasonState.season;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
           children: [
             Text(
               "${season.name} W:${season.record.win} L:${season.record.loss} T:${season.record.tie}",
@@ -61,7 +62,7 @@ class PublicTeamDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
+    final screenSize = MediaQuery.of(context).size;
 
     return DefaultTabController(
       length: 4,
