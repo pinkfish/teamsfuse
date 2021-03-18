@@ -1,21 +1,16 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:exif/exif.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
-import '../../services/validations.dart';
 import '../../widgets/blocs/singleseasonprovider.dart';
-import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/form/gameformfield.dart';
-import '../../widgets/form/roleinteamformfield.dart';
-import '../../widgets/util/ensurevisiblewhenfocused.dart';
+import '../../widgets/form/seasonplayerformfield.dart';
 import '../../widgets/util/savingoverlay.dart';
 
 ///
@@ -35,10 +30,9 @@ class AddMediaScreen extends StatefulWidget {
 }
 
 class _AddMediaScreenState extends State<AddMediaScreen> {
-  final Validations _validations = Validations();
   AutovalidateMode autovalidate = AutovalidateMode.disabled;
   String _curGameUid;
-  String _playerUid;
+String _curPlayerUid;
   String _description;
   PickedFile _imageFile;
 
@@ -53,6 +47,7 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
   void initState() {
     super.initState();
     _curGameUid = GameFormField.none;
+_curPlayerUid = SeasonPlayerFormField.none;
     _addMediaBloc = AddMediaBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
@@ -74,7 +69,11 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
       final bytes = await _imageFile.readAsBytes();
       final exif = await readExifFromBytes(bytes);
       DateTime start;
-      if (exif['Image DateTime'] != null) {}
+      if (exif['Image DateTime'] != null) {
+        print(exif['Image DateTime']);
+        print('bong');
+      }
+      print(exif);
 
       // Send the invite, cloud functions will handle the email
       // part of this.
@@ -82,7 +81,7 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
         seasonUid: widget._seasonUid,
         teamUid: widget._teamUid,
         gameUid: _curGameUid,
-        playerUid: _playerUid,
+        playerUid: _curPlayerUid,
         mediaType: MediaType.image,
         description: _description,
         imageFile: bytes,
@@ -110,7 +109,7 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
 
   void _pickImage() async {
     final picker = RepositoryProvider.of<ImagePicker>(context);
-    final img = await picker.getImage();
+    final img = await picker.getImage(source: ImageSource.gallery,maxHeight:1024, maxWidth:1024,);
     if (img != null) {
       setState(() {
         _imageFile = img;
@@ -136,19 +135,28 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
     );
 
     rows.add(
+      DropdownButtonHideUnderline(
+        child: SeasonPlayerFormField(
+          initialValue: _curPlayerUid ?? 'none',
+          seasonBloc: singleSeasonBloc,
+          includeNone: true,
+          onSaved: (value) {
+            _curPlayerUid = value;
+          },
+        ),
+      ),
+    );
+
+    rows.add(
       TextFormField(
         initialValue: '',
         decoration: InputDecoration(
             icon: const Icon(Icons.text_fields),
             labelText: messages.description,
             hintText: messages.description),
-        validator: (value) {
-          // Allow no email, or an email for an invite.
-          if (value.isEmpty) {
-            return null;
-          }
-          return _validations.validateEmail(context, value);
-        },
+
+        minLines: 3,
+        maxLines:5,
         focusNode: _descriptionFocusNode,
         keyboardType: TextInputType.emailAddress,
         onSaved: (value) {
@@ -157,9 +165,11 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
       ),
     );
     rows.add(
-      IconButton(
-        icon: _showImage(),
-        onPressed: _pickImage,
+
+      GestureDetector(child: SizedBox(height: 100, child:
+
+        _showImage(),
+      ),onTap: _pickImage,
       ),
     );
 
@@ -171,11 +181,10 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Scrollbar(
-              child: SingleChildScrollView(
+          SingleChildScrollView(
                 child: Column(children: rows),
               ),
-            ),
+
             BlocBuilder(
               cubit: singleSeasonBloc,
               builder: (context, seasonState) {

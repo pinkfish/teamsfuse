@@ -2178,7 +2178,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<String> addMedia({MediaInfo media, Uint8List imageFile}) async {
     final ref = _wrapper.collection(MEDIA_COLLECTION).document();
     final storageRef =
-        _wrapper.storageRef().child('media_${ref.documentID}.img');
+        _wrapper.storageRef().child('media/media_${ref.documentID}.img');
     final task = storageRef.putFile(imageFile);
     final snapshot = (await task.future);
     final photoUrl = snapshot.downloadUrl;

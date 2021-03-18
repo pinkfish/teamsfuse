@@ -87,9 +87,13 @@ class AddMediaBloc extends Bloc<AddMediaEvent, AddItemState> {
       try {
         final media = MediaInfo((b) => b
           ..uid = ''
+          ..startAt=event.startAt??DateTime.now().toUtc()
           ..gameUid = event.gameUid
           ..seasonUid = event.seasonUid
+          ..description = event.description
           ..teamUid = event.teamUid
+          ..type = event.mediaType
+          ..url=Uri.directory('')
           ..length = Duration(seconds: 0));
         final uid = await db.addMedia(media: media, imageFile: event.imageFile);
         yield AddItemDone(uid: uid);
