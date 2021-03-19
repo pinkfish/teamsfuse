@@ -93,7 +93,7 @@ void main() {
           .thenAnswer((_) => clubController.stream);
       // Build our app and trigger a frame.
       final testWidget =
-          await makeTestableWidget(PublicClubHomeScreen('', 'club', ''));
+          await makeTestableWidget(PublicClubHomeScreen('', 'club'));
 
       await tester.pumpWidget(basicData.injectBlocs(testWidget));
 
@@ -118,7 +118,7 @@ void main() {
 
       // Build our app and trigger a frame.
       final testWidget = await makeTestableWidget(
-          PublicClubHomeScreen(PublicClubTab.club.name, 'club', ''));
+          PublicClubHomeScreen(PublicClubTab.club.name, 'club'));
 
       await tester.pumpWidget(basicData.injectBlocs(testWidget));
       clubController.add(testClub);
@@ -159,7 +159,7 @@ void main() {
 
       // Build our app and trigger a frame.
       final testWidget = await makeTestableWidget(
-          PublicClubHomeScreen(PublicClubTab.coaches.name, 'club', ''));
+          PublicClubHomeScreen(PublicClubTab.coaches.name, 'club'));
 
       await tester.pumpWidget(basicData.injectBlocs(testWidget));
 
@@ -200,7 +200,7 @@ void main() {
           .thenAnswer((_) => mediaController.stream());
       // Build our app and trigger a frame.
       final testWidget = await makeTestableWidget(
-          PublicClubHomeScreen(PublicClubTab.team.name, 'club', 'team'));
+          PublicClubHomeScreen(PublicClubTab.team.name, 'club'));
 
       await tester.pumpWidget(basicData.injectBlocs(testWidget));
       await tester.pump();
@@ -267,7 +267,7 @@ void main() {
 
         // Build our app and trigger a frame.
         final testWidget = await makeTestableWidget(
-            PublicClubHomeScreen(PublicClubTab.news.name, 'club', ''));
+            PublicClubHomeScreen(PublicClubTab.news.name, 'club'));
 
         await tester.pumpWidget(basicData.injectBlocs(testWidget));
 
@@ -307,7 +307,7 @@ void main() {
 
         // Build our app and trigger a frame.
         final testWidget = await makeTestableWidget(
-            PublicClubHomeScreen(PublicClubTab.club.name, 'club', ''));
+            PublicClubHomeScreen(PublicClubTab.club.name, 'club'));
 
         final injected = basicData.injectBlocs(testWidget);
         await tester.pumpWidget(injected);
