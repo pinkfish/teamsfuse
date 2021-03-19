@@ -34,10 +34,10 @@ class AppRouter {
             handlerFunc: (context, vals) => PublicTeamDetailsScreen(
                 vals["tab"][0].toString(), vals["id"][0].toString())));
 
-    router.define("/Player/:tab/:teamId/:playerId",
+    router.define("/Player/:tab/:playerId",
         handler: fluro.Handler(
             handlerFunc: (context, vals) => PublicPlayerDetailsScreen(
-                vals["teamId"][0].toString(), vals["playerId"][0].toString())));
+                vals["tab"][0].toString(), vals["playerId"][0].toString())));
 
     router.define("/Home",
         handler: fluro.Handler(

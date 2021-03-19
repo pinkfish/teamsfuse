@@ -17,6 +17,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../services/messagespublic.dart';
+import '../screens/publicplayer.dart';
 
 ///
 /// Shows the public details of the team and the current season (only showing
@@ -178,8 +179,8 @@ class PublicTeamDetails extends StatelessWidget {
                                   orientation: Orientation.landscape,
                                   onTap: (pl) => Navigator.pushNamed(
                                       context,
-                                      '/Public/Player/$teamuid/'
-                                      '${team.currentSeason}/${pl.playerUid}'),
+                                      '/Player/${PublicPlayerTab.details.name}/'
+                                      '${pl.playerUid}'),
                                 );
                               },
                             ),
