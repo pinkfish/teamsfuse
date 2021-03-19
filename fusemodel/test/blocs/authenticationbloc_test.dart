@@ -34,7 +34,7 @@ void main() {
 
   test('dispose does not emit new states', () {
     expectLater(
-      authenticationBloc,
+      authenticationBloc.stream,
       emitsInOrder([]),
     );
     authenticationBloc.close();
@@ -52,7 +52,7 @@ void main() {
       when(userAuth.currentUser()).thenAnswer((_) => null);
 
       expectLater(
-        authenticationBloc,
+        authenticationBloc.stream,
         emitsInOrder(expectedResponse),
       );
 
@@ -72,7 +72,7 @@ void main() {
       when(userAuth.currentUser()).thenAnswer((_) => Future.value(userData));
 
       expectLater(
-        authenticationBloc,
+        authenticationBloc.stream,
         emitsInOrder(expectedResponse),
       );
 
