@@ -35,7 +35,7 @@ class SeasonPlayerFormField extends FormField<String> {
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
 
             return BlocBuilder(
-              cubit: seasonBloc,
+              bloc: seasonBloc,
               builder: (context, singleSeasonState) {
                 if (singleSeasonState is SingleSeasonLoaded &&
                     !singleSeasonState.loadedGames) {

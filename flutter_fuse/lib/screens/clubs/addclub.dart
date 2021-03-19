@@ -154,7 +154,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
   Widget _buildBody() {
     var messages = Messages.of(context);
     return BlocBuilder(
-      cubit: _clubBloc,
+      bloc: _clubBloc,
       builder: (context, state) => SavingOverlay(
         saving: state is AddItemSaving,
         child: Stepper(
@@ -198,7 +198,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      cubit: _clubBloc,
+      bloc: _clubBloc,
       listener: (context, state) {
         if (state is AddItemDone) {
           Navigator.pop(context);

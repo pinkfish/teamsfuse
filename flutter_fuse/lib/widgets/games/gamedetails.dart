@@ -156,7 +156,7 @@ class _GameDetailsState extends State<GameDetails> {
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      cubit: widget.gameBloc,
+      bloc: widget.gameBloc,
       listener: (context, state) {
         if (state is SingleGameDeleted) {
           Navigator.pop(context);
@@ -165,7 +165,7 @@ class _GameDetailsState extends State<GameDetails> {
         if (state is SingleGameSaveFailed) {}
       },
       child: BlocBuilder(
-        cubit: widget.gameBloc,
+        bloc: widget.gameBloc,
         builder: (context, state) {
           if (state is SingleGameDeleted || state is SingleGameUninitialized) {
             return CircularProgressIndicator();

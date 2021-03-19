@@ -112,7 +112,7 @@ class TeamDetails extends StatelessWidget {
     return SingleTeamProvider(
       teamUid: teamuid,
       builder: (context, bloc) => BlocBuilder(
-        cubit: bloc,
+        bloc: bloc,
         builder: (context, teamState) {
           if (teamState is SingleTeamLoaded && !teamState.loadedSeasons) {
             bloc.add(SingleTeamLoadSeasons());

@@ -36,7 +36,7 @@ class UserImage extends StatelessWidget {
         backgroundColor: backgroundColor,
         radius: radius,
         child: BlocBuilder(
-          cubit: bloc,
+          bloc: bloc,
           builder: (context, state) {
             if (state is SingleProfileLoaded && !state.loadedMePlayer) {
               bloc.add(SingleProfileLoadMePlayer());

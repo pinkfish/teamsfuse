@@ -47,7 +47,7 @@ class ClubImage extends StatelessWidget {
     return SingleClubProvider(
       clubUid: clubUid,
       builder: (context, bloc) => BlocBuilder(
-        cubit: bloc,
+        bloc: bloc,
         builder: (context, state) {
           Widget img;
           if (state is SingleClubUninitialized ||

@@ -100,7 +100,7 @@ class PublicClubTeams extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      cubit: clubBloc,
+      bloc: clubBloc,
       builder: (context, state) {
         if (state is SingleClubLoaded && !state.loadedTeams) {
           clubBloc.add(SingleClubLoadTeams(publicLoad: true));

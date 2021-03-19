@@ -87,14 +87,14 @@ class LeagueTeamImage extends StatelessWidget {
     Widget blocBuilder = SingleLeagueOrTournamentTeamProvider(
       leagueTeamUid: leagueOrTeamUid,
       builder: (context, bloc) => BlocListener(
-        cubit: bloc,
+        bloc: bloc,
         listener: (context, state) {
           if (state is SingleLeagueOrTournamentTeamLoaded) {
             bloc.add(SingleLeagueOrTournamentTeamLoadPublicTeam());
           }
         },
         child: BlocBuilder(
-          cubit: bloc,
+          bloc: bloc,
           builder: (context, leagueState) {
             Widget inner;
             if (leagueState is SingleLeagueOrTournamentTeamDeleted ||

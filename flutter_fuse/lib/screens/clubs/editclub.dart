@@ -68,7 +68,7 @@ class _EditClubScreenState extends State<EditClubScreen> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         body: BlocConsumer(
-          cubit: singleClubBloc,
+          bloc: singleClubBloc,
           listener: (context, state) {
             if (state is SingleClubDeleted) {
               Navigator.pop(context);

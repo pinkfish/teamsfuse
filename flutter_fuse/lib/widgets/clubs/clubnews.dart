@@ -45,7 +45,7 @@ class ClubNewsItems extends StatelessWidget {
         clubUid: clubUid,
         builder: (context, singleClubBloc) => SingleChildScrollView(
           child: BlocBuilder(
-            cubit: singleClubBloc,
+            bloc: singleClubBloc,
             builder: (context, clubState) {
               BuiltList<NewsItem> newsItems;
               if (clubState is SingleClubUninitialized) {

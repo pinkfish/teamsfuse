@@ -144,7 +144,7 @@ class PlayerDetailsScreen extends StatelessWidget {
             content: Scrollbar(
               child: SingleChildScrollView(
                 child: BlocBuilder(
-                    cubit: bloc,
+                    bloc: bloc,
                     builder: (context, state) {
                       var arr = <Widget>[];
 
@@ -240,7 +240,7 @@ class PlayerDetailsScreen extends StatelessWidget {
             SingleProfileProvider(
               userUid: userUid,
               builder: (context, singleUserBloc) => BlocBuilder(
-                cubit: singleUserBloc,
+                bloc: singleUserBloc,
                 builder: (context, userState) {
                   if (userState is SingleProfileUninitialized) {
                     return Text(messages.loading);
@@ -380,9 +380,9 @@ class PlayerDetailsScreen extends StatelessWidget {
           seasonUid: seasonUid,
           playerUid: playerUid,
           builder: (context, seasonPlayerBloc) => BlocBuilder(
-            cubit: singleTeamBloc,
+            bloc: singleTeamBloc,
             builder: (context, teamState) => BlocConsumer(
-              cubit: singlePlayerBloc,
+              bloc: singlePlayerBloc,
               listener: (context, singlePlayerState) {
                 if (singlePlayerState is SinglePlayerLoaded) {
                   singlePlayerBloc.add(SinglePlayerLoadInvites());
@@ -392,7 +392,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                 }
               },
               builder: (context, singlePlayerState) => BlocConsumer(
-                cubit: seasonPlayerBloc,
+                bloc: seasonPlayerBloc,
                 listener: (context, playerState) {
                   if (playerState is SingleTeamSeasonPlayerDeleted) {
                     Navigator.pop(context);

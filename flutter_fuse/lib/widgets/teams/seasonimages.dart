@@ -26,7 +26,7 @@ class SeasonImages extends StatelessWidget {
     return SingleSeasonProvider(
       seasonUid: seasonUid,
       builder: (c, singleSeasonBloc) => BlocBuilder(
-        cubit: singleSeasonBloc,
+        bloc: singleSeasonBloc,
         builder: (c, singleSeasonState) {
           Widget inner;
 

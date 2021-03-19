@@ -33,7 +33,7 @@ class LeagueOrTournamentSeasonName extends StatelessWidget {
     return SingleLeagueOrTournamentSeasonProvider(
       leagueSeasonUid: leagueOrTournmentSeasonUid,
       builder: (context, bloc) => BlocBuilder(
-        cubit: bloc,
+        bloc: bloc,
         builder: (context, state) {
           Widget inner;
           if (state is SingleLeagueOrTournamentSeasonDeleted) {

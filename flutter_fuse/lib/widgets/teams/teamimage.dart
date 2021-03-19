@@ -103,7 +103,7 @@ class TeamImage extends StatelessWidget {
     return SingleTeamProvider(
       teamUid: teamUid,
       builder: (context, singleTeamBloc) => BlocBuilder(
-        cubit: singleTeamBloc,
+        bloc: singleTeamBloc,
         builder: (context, teamState) {
           Widget inner;
           if (teamState is SingleTeamUninitialized) {

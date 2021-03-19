@@ -419,7 +419,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      cubit: widget.game,
+      bloc: widget.game,
       listener: (context, state) {
         if (state is SingleGameDeleted) {
           // Go back where we came from.
@@ -429,7 +429,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         }
       },
       child: BlocBuilder(
-        cubit: widget.game,
+        bloc: widget.game,
         builder: (context, state) {
           if (state is SingleGameDeleted) {
             return CircularProgressIndicator();

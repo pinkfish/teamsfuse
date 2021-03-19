@@ -53,7 +53,7 @@ class SeasonDropDown extends StatelessWidget {
     return SingleTeamProvider(
       teamUid: teamUid,
       builder: (context, singleTeamBloc) => BlocBuilder(
-        cubit: singleTeamBloc,
+        bloc: singleTeamBloc,
         builder: (BuildContext context, SingleTeamState state) {
           if (state is SingleTeamLoaded && !state.loadedSeasons) {
             singleTeamBloc.add(SingleTeamLoadSeasons());

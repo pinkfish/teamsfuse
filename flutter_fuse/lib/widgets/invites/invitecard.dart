@@ -13,7 +13,7 @@ class InviteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     var bloc = BlocProvider.of<InviteBloc>(context);
     return BlocBuilder(
-      cubit: bloc,
+      bloc: bloc,
       builder: (context, state) {
         if (bloc.state.invites.length > 0) {
           Widget card = Card(

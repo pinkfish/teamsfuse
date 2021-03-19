@@ -97,7 +97,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return SingleProfileProvider(
       userUid: authBloc.currentUser.uid,
       builder: (context, profileBloc) => BlocListener(
-        cubit: profileBloc,
+        bloc: profileBloc,
         listener: (context, profileState) {
           if (profileState is SingleProfileSaveDone ||
               profileState is SingleProfileDeleted) {
@@ -124,7 +124,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ],
             ),
             body: BlocBuilder(
-              cubit: profileBloc,
+              bloc: profileBloc,
               builder: (context, profileState) {
                 if (profileState is SingleProfileUninitialized) {
                   return LoadingWidget();

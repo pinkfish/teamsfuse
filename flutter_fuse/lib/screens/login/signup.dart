@@ -78,7 +78,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
     return Scaffold(
       body: BlocConsumer(
-        cubit: BlocProvider.of<AuthenticationBloc>(context),
+        bloc: BlocProvider.of<AuthenticationBloc>(context),
         listener: (context, state) {
           if (state is AuthenticationFailed) {
             showInSnackBar(Messages.of(context).errorcreatinguser);

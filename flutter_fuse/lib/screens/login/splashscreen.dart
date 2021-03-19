@@ -96,7 +96,7 @@ class SplashScreen extends StatelessWidget {
     var _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
 
     return BlocBuilder(
-      cubit: _authenticationBloc,
+      bloc: _authenticationBloc,
       builder: (context, state) {
         _checkState(context, state);
         return _loadingScreen(context);

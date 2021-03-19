@@ -19,7 +19,7 @@ class PublicHeader extends StatelessWidget {
     return SingleClubProvider(
       clubUid: clubUid,
       builder: (context, singleClubBloc) => BlocBuilder(
-        cubit: singleClubBloc,
+        bloc: singleClubBloc,
         builder: (context, singleClubState) {
           if (singleClubState is SingleClubUninitialized) {
             return Text("Loading the club details");

@@ -22,7 +22,7 @@ class ClubTile extends StatelessWidget {
       clubUid: clubUid,
       builder: (context, singleClubBloc) => LayoutBuilder(
         builder: (context, layout) => BlocBuilder(
-          cubit: singleClubBloc,
+          bloc: singleClubBloc,
           builder: (context, clubState) {
             if (clubState is SingleClubUninitialized) {
               return Card(

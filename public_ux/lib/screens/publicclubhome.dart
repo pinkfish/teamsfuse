@@ -104,7 +104,7 @@ class PublicClubHomeScreen extends StatelessWidget {
       child: Scaffold(
         appBar: _buildAppBar(context, bloc),
         body: BlocBuilder(
-          cubit: bloc,
+          bloc: bloc,
           builder: (context, singleClubState) {
             if (singleClubState is SingleClubUninitialized) {
               return Text(Messages.of(context).loading);
@@ -149,7 +149,7 @@ class PublicClubHomeScreen extends StatelessWidget {
     return AppBar(
       leading: ClubImage(clubUid: clubUid),
       title: BlocBuilder(
-        cubit: singleClubBloc,
+        bloc: singleClubBloc,
         builder: (context, state) {
           if (state is SingleClubUninitialized) {
             return Text(Messages.of(context).loading);
@@ -192,7 +192,7 @@ class PublicClubHomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: BlocBuilder(
-          cubit: singleClubBloc,
+          bloc: singleClubBloc,
           builder: (context, state) {
             if (state is SingleClubUninitialized) {
               return Text(Messages.of(context).loading);
@@ -220,7 +220,7 @@ class PublicClubHomeScreen extends StatelessWidget {
                 color: Colors.blue,
               ),
               child: BlocBuilder(
-                  cubit: singleClubBloc,
+                  bloc: singleClubBloc,
                   builder: (context, state) {
                     if (state is SingleClubUninitialized) {
                       return Text(Messages.of(context).loading);
@@ -246,7 +246,7 @@ class PublicClubHomeScreen extends StatelessWidget {
                   '/$clubUid'),
             ),
             ListTile(
-              leading: Icon(Icons.people),
+              leading: Icon(MdiIcons.accountGroup),
               title: Text(Messages.of(context).teams),
               onTap: () => _navigateTo(
                   context,
@@ -254,7 +254,7 @@ class PublicClubHomeScreen extends StatelessWidget {
                   '/$clubUid'),
             ),
             ListTile(
-              leading: Icon(Icons.people),
+              leading: Icon(Icons.person),
               title: Text(Messages.of(context).coaches),
               onTap: () => Navigator.popAndPushNamed(
                   context,
@@ -275,7 +275,7 @@ class PublicClubHomeScreen extends StatelessWidget {
         ),
       ),
       body: BlocBuilder(
-        cubit: singleClubBloc,
+        bloc: singleClubBloc,
         builder: (context, singleClubState) {
           if (singleClubState is SingleClubUninitialized) {
             return Text(Messages.of(context).loading);

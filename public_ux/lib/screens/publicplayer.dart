@@ -94,7 +94,7 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
       child: Scaffold(
         appBar: _buildAppBar(context, bloc),
         body: BlocBuilder(
-          cubit: bloc,
+          bloc: bloc,
           builder: (context, singlePlayerState) {
             if (singlePlayerState is SinglePlayerUninitialized) {
               return Text(Messages.of(context).loading);
@@ -134,7 +134,7 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
     return AppBar(
       leading: PlayerImage(playerUid: playerUid),
       title: BlocBuilder(
-        cubit: singlePlayerBloc,
+        bloc: singlePlayerBloc,
         builder: (context, state) {
           if (state is SinglePlayerUninitialized) {
             return Text(Messages.of(context).loading);
@@ -177,7 +177,7 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: BlocBuilder(
-          cubit: singlePlayerBloc,
+          bloc: singlePlayerBloc,
           builder: (context, state) {
             if (state is SinglePlayerUninitialized) {
               return Text(Messages.of(context).loading);
@@ -199,7 +199,7 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
                 color: Colors.blue,
               ),
               child: BlocBuilder(
-                  cubit: singlePlayerBloc,
+                  bloc: singlePlayerBloc,
                   builder: (context, state) {
                     if (state is SinglePlayerUninitialized) {
                       return Text(Messages.of(context).loading);
@@ -245,7 +245,7 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
         ),
       ),
       body: BlocBuilder(
-        cubit: singlePlayerBloc,
+        bloc: singlePlayerBloc,
         builder: (context, singlePlayerState) {
           if (singlePlayerState is SinglePlayerUninitialized) {
             return Text(Messages.of(context).loading);

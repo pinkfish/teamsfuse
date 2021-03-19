@@ -432,7 +432,7 @@ class GameCard extends StatelessWidget {
       subtitle: SingleTeamProvider(
         teamUid: game.teamUid,
         builder: (context, teamBloc) => BlocBuilder(
-            cubit: teamBloc,
+            bloc: teamBloc,
             builder: (context, state) {
               for (var play in players) {
                 subtitle.add(
@@ -481,7 +481,7 @@ class GameCard extends StatelessWidget {
 
   Widget _buildFromnState(BuildContext context, SingleGameBloc gameBloc) {
     return BlocBuilder(
-      cubit: gameBloc,
+      bloc: gameBloc,
       builder: (context, state) {
         if (state is SingleGameDeleted) {
           return SizedBox();
@@ -502,11 +502,11 @@ class GameCard extends StatelessWidget {
           return SingleLeagueOrTournamentTeamProvider(
             leagueTeamUid: game.leagueOpponentUid,
             builder: (context, leagueTeamBloc) => BlocBuilder(
-              cubit: leagueTeamBloc,
+              bloc: leagueTeamBloc,
               builder: (context, teamState) => SingleSeasonProvider(
                 seasonUid: game.seasonUid,
                 builder: (contrext, seasonBloc) => BlocBuilder(
-                  cubit: seasonBloc,
+                  bloc: seasonBloc,
                   builder: (context, seasonState) {
                     return _buildMain(context, state, gameBloc,
                         teamState.leagueOrTournamentTeam, seasonState);
@@ -519,7 +519,7 @@ class GameCard extends StatelessWidget {
         return SingleSeasonProvider(
           seasonUid: game.seasonUid,
           builder: (contrext, seasonBloc) => BlocBuilder(
-            cubit: seasonBloc,
+            bloc: seasonBloc,
             builder: (context, seasonState) =>
                 _buildMain(context, state, gameBloc, null, seasonState),
           ),

@@ -33,7 +33,7 @@ class PublicTeamDetails extends StatelessWidget {
   Widget _buildCurrentSeason(BuildContext context, SingleTeamState team,
       SingleSeasonBloc singleSeasonBloc) {
     return BlocBuilder(
-      cubit: singleSeasonBloc,
+      bloc: singleSeasonBloc,
       builder: (context, seasonState) {
         if (seasonState is SingleSeasonDeleted) {
           return DeletedWidget();
@@ -65,7 +65,7 @@ class PublicTeamDetails extends StatelessWidget {
     final screenSize = MediaQuery.of(context).size;
 
     return BlocBuilder(
-      cubit: singleTeamBloc,
+      bloc: singleTeamBloc,
       builder: (context, teamState) {
         if (teamState is SingleTeamDeleted) {
           return Column(

@@ -158,7 +158,7 @@ class _ShowMessageScreenState extends State<ShowMessageScreen> {
         body: BlocProvider(
           create: (context) => bloc,
           child: BlocListener(
-            cubit: bloc,
+            bloc: bloc,
             listener: (context, state) {
               if (state is SingleMessageDeleted) {
                 Navigator.pop(context);
@@ -167,7 +167,7 @@ class _ShowMessageScreenState extends State<ShowMessageScreen> {
               if (state is SingleMessageSaveFailed) {}
             },
             child: BlocBuilder(
-                cubit: bloc,
+                bloc: bloc,
                 builder: (context, state) {
                   if (state is SingleMessageUninitialized) {
                     return LoadingWidget();

@@ -99,7 +99,7 @@ class ClubMembers extends StatelessWidget {
         BlocProvider(
           create: (context) => bloc,
           child: BlocBuilder(
-            cubit: bloc,
+            bloc: bloc,
             builder: (context, state) => _buildFromFuture(
                 context, state, true, adminUid, singleClubBloc),
           ),
@@ -116,7 +116,7 @@ class ClubMembers extends StatelessWidget {
         BlocProvider(
           create: (context) => bloc,
           child: BlocBuilder(
-            cubit: bloc,
+            bloc: bloc,
             builder: (context, state) => _buildFromFuture(
                 context, state, false, memberUid, singleClubBloc),
           ),
@@ -131,7 +131,7 @@ class ClubMembers extends StatelessWidget {
     return SingleClubProvider(
       clubUid: club.uid,
       builder: (context, singleClubBloc) => BlocBuilder(
-        cubit: singleClubBloc,
+        bloc: singleClubBloc,
         builder: (context, clubState) => SavingOverlay(
           saving: clubState is SingleClubSaving ||
               clubState is SingleClubUninitialized,

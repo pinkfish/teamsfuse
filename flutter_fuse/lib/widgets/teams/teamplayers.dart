@@ -60,7 +60,7 @@ class _TeamPlayersState extends State<TeamPlayers> {
     return SingleTeamProvider(
       teamUid: widget._teamUid,
       builder: (context, bloc) => BlocBuilder(
-        cubit: bloc,
+        bloc: bloc,
         builder: (context, teamState) {
           if (teamState is SingleTeamDeleted ||
               teamState is SingleTeamUninitialized) {

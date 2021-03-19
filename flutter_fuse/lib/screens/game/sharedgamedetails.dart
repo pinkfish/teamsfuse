@@ -45,14 +45,14 @@ class _SharedGameDetailsScreenState extends State<SharedGameDetailsScreen> {
     return SingleSharedGameProvider(
       sharedGameUid: widget.sharedGameUid,
       builder: (context, sharedGameBloc) => BlocListener(
-        cubit: sharedGameBloc,
+        bloc: sharedGameBloc,
         listener: (context, sharedGameState) {
           if (sharedGameState is SingleSharedGameDeleted) {
             Navigator.pop(context);
           }
         },
         child: BlocBuilder(
-          cubit: sharedGameBloc,
+          bloc: sharedGameBloc,
           builder: (context, sharedGameState) {
             var actions = <Widget>[];
             FloatingActionButton fab;

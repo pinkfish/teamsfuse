@@ -30,7 +30,7 @@ class SeasonName extends StatelessWidget {
       child: Builder(
         builder: (BuildContext context) {
           return BlocBuilder(
-            cubit: BlocProvider.of<SingleSeasonBloc>(context),
+            bloc: BlocProvider.of<SingleSeasonBloc>(context),
             builder: (BuildContext context, SingleSeasonState state) {
               if (_nameCache.containsKey(seasonUid) &&
                   !(state is SingleSeasonLoaded)) {

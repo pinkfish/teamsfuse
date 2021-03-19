@@ -52,7 +52,7 @@ class PlayerTileBasketball extends StatelessWidget {
       return SingleGameProvider(
         gameUid: gameUid,
         builder: (context, singleGameBloc) => BlocBuilder(
-            cubit: singleGameBloc,
+            bloc: singleGameBloc,
             builder: (context, gameState) {
               var jerseyNumber = 'U';
               if (gameState is SingleGameLoaded) {
@@ -66,7 +66,7 @@ class PlayerTileBasketball extends StatelessWidget {
       return SingleSeasonProvider(
         seasonUid: seasonUid,
         builder: (context, singleSeasonBloc) => BlocBuilder(
-            cubit: singleSeasonBloc,
+            bloc: singleSeasonBloc,
             builder: (context, seasonState) {
               var jerseyNumber = 'U';
               if (seasonState is SingleSeasonLoaded) {
@@ -85,7 +85,7 @@ class PlayerTileBasketball extends StatelessWidget {
       builder: (context, singlePlayerBloc) => AnimatedSwitcher(
         duration: Duration(milliseconds: 500),
         child: BlocBuilder(
-          cubit: singlePlayerBloc,
+          bloc: singlePlayerBloc,
           builder: (context, singlePlayerState) {
             if (singlePlayerState is SinglePlayerDeleted) {
               if (compactDisplay) {

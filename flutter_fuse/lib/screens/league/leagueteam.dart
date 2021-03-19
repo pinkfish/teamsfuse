@@ -34,7 +34,7 @@ class LeagueTeamScreen extends StatelessWidget {
     return SingleLeagueOrTournamentTeamProvider(
       leagueTeamUid: leagueTeamUid,
       builder: (context, bloc) => BlocConsumer(
-        cubit: bloc,
+        bloc: bloc,
         listener: (context, state) {
           if (state is SingleLeagueOrTournamentTeamDeleted) {
             Navigator.pop(context);
@@ -50,7 +50,7 @@ class LeagueTeamScreen extends StatelessWidget {
               SingleLeagueOrTournamentProvider(
                 leagueUid: state.leagueOrTournamentTeam.leagueOrTournamentUid,
                 builder: (context, leagueBloc) => BlocBuilder(
-                  cubit: leagueBloc,
+                  bloc: leagueBloc,
                   builder: (context, leagueState) {
                     if (leagueState is SingleLeagueOrTournamentLoaded &&
                         leagueState.league.isAdmin()) {

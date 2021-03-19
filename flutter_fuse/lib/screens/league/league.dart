@@ -55,7 +55,7 @@ class LeagueScreen extends StatelessWidget {
     return SingleLeagueOrTournamentProvider(
       leagueUid: leagueUid,
       builder: (context, bloc) => BlocBuilder(
-          cubit: bloc,
+          bloc: bloc,
           builder: (context, state) {
             FloatingActionButton fab;
             var actions = <Widget>[];

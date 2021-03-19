@@ -218,7 +218,7 @@ class _InviteListScreenState extends State<InviteListScreen> {
       body: Scrollbar(
         child: SingleChildScrollView(
           child: BlocListener(
-            cubit: inviteBloc,
+            bloc: inviteBloc,
             listener: (context, state) {
               if (state is SingleInviteDeleted) {
                 Navigator.pop(context);
@@ -230,7 +230,7 @@ class _InviteListScreenState extends State<InviteListScreen> {
               }
             },
             child: BlocBuilder(
-                cubit: inviteBloc,
+                bloc: inviteBloc,
                 builder: (context, state) {
                   return SavingOverlay(
                     saving: state is SingleInviteSaving,

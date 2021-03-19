@@ -22,7 +22,7 @@ class TeamSettingsScreen extends StatelessWidget {
         title: SingleTeamProvider(
           teamUid: teamUid,
           builder: (context, bloc) => BlocBuilder(
-            cubit: bloc,
+            bloc: bloc,
             builder: (context, teamState) => Text(
               Messages.of(context).titleWith(teamState.team.name),
             ),

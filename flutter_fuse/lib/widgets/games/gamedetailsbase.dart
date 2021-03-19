@@ -313,7 +313,7 @@ class GameDetailsBase extends StatelessWidget {
           if (game.trackAttendance) {
             body.add(
               BlocBuilder(
-                  cubit: BlocProvider.of<PlayerBloc>(context),
+                  bloc: BlocProvider.of<PlayerBloc>(context),
                   builder: (context, playerState) =>
                       _buildAttendence(game, season, playerState)),
             );
@@ -390,7 +390,7 @@ class GameDetailsBase extends StatelessWidget {
               .isAfter(clock.now().subtract(const Duration(hours: 1)))) {
         body.add(
           BlocBuilder(
-            cubit: BlocProvider.of<PlayerBloc>(context),
+            bloc: BlocProvider.of<PlayerBloc>(context),
             builder: (context, playerState) =>
                 _buildAttendence(game, season, playerState),
           ),
@@ -528,14 +528,14 @@ class GameDetailsBase extends StatelessWidget {
     return SingleTeamProvider(
       teamUid: game.teamUid,
       builder: (context, bloc) => BlocListener(
-        cubit: bloc,
+        bloc: bloc,
         listener: (context, state) {
           if (state is SingleTeamLoaded) {
             bloc.add(SingleTeamLoadOpponents());
           }
         },
         child: BlocBuilder(
-            cubit: bloc,
+            bloc: bloc,
             builder: (context, teamState) {
               if (!teamState.loadedOpponents) {
                 bloc.add(SingleTeamLoadOpponents());

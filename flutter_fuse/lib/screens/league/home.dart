@@ -44,7 +44,7 @@ class LeagueHomeScreen extends StatelessWidget {
             height: 3.0,
           ),
           BlocBuilder(
-            cubit: BlocProvider.of<LeagueOrTournamentBloc>(context),
+            bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
             builder: (context, state) {
               Iterable<LeagueOrTournament> league = state
                   .leagueOrTournaments.values
@@ -75,7 +75,7 @@ class LeagueHomeScreen extends StatelessWidget {
             height: 3.0,
           ),
           BlocBuilder(
-            cubit: BlocProvider.of<LeagueOrTournamentBloc>(context),
+            bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
             builder: (context, state) {
               var tournament = state.leagueOrTournaments.values
                   .where((l) => l.type == LeagueOrTournamentType.Tournament);

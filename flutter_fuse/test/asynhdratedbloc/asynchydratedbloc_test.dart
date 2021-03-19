@@ -31,16 +31,12 @@ void main() {
         .thenAnswer((_) => fluff.future);
 
     final asyncStuff = TestAsyncHydratedBloc('frogbucket', mockAsyncStorage);
-    expectLater(
-      asyncStuff,
-      emitsInOrder(['red', 'rabbit']),
-    );
-    await completer.complete({'data': 'red'});
-    // Wait for it to load.
+    expect(asyncStuff.state, '');
+    completer.complete({'data': 'red'});
     await asyncStuff.loaded.future;
-
-    await fluff.complete(null);
-    await asyncStuff.add(TestEvent.Rabbit);
+    expect(asyncStuff.state, 'red');
+    asyncStuff.add(TestEvent.Rabbit);
+    expect(asyncStuff.state, 'rabbit');
   });
 
   test('update first', () async {
@@ -57,19 +53,15 @@ void main() {
         .thenAnswer((realInvocation) => fluff.future);
 
     final asyncStuff = TestAsyncHydratedBloc('frogbucket', mockAsyncStorage);
+    expect(asyncStuff.state, '');
     asyncStuff.add(TestEvent.Frog);
     await asyncStuff.loaded.future;
+    expect(asyncStuff.state, 'yellow');
 
-    expectLater(
-      asyncStuff,
-      emitsInOrder(['yellow', 'rabbit']),
-    );
-
-    await completer.complete({'data': 'red'});
-    await fluff.complete(null);
-    await asyncStuff.add(TestEvent.Rabbit);
-
-    await asyncStuff.first;
+    completer.complete({'data': 'red'});
+    fluff.complete(null);
+    asyncStuff.add(TestEvent.Rabbit);
+    expect(asyncStuff.state, 'rabbit');
   });
 }
 
@@ -94,6 +86,7 @@ class TestAsyncHydratedBloc extends AsyncHydratedBloc<TestEvent, String> {
 
   @override
   Stream<String> mapEventToState(TestEvent event) async* {
+    print('vent $event');
     if (!loaded.isCompleted) {
       loaded.complete(true);
     }
@@ -103,6 +96,7 @@ class TestAsyncHydratedBloc extends AsyncHydratedBloc<TestEvent, String> {
     if (event == TestEvent.Rabbit) {
       yield 'rabbit';
     }
+    print('end $event');
   }
 
   @override

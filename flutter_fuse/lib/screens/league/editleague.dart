@@ -81,7 +81,7 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
           title: Text(messages.title),
         ),
         body: BlocListener(
-          cubit: bloc,
+          bloc: bloc,
           listener: (context, state) {
             if (state is SingleLeagueOrTournamentDeleted) {
               Navigator.pop(context);
@@ -90,7 +90,7 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
             }
           },
           child: BlocBuilder(
-            cubit: bloc,
+            bloc: bloc,
             builder: (context, state) {
               return SavingOverlay(
                 saving: state is SingleLeagueOrTournamentSaving,

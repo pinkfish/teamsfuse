@@ -31,7 +31,7 @@ class CoachTile extends StatelessWidget {
       clubUid: clubUid,
       builder: (context, singleCoachBloc) => LayoutBuilder(
         builder: (context, layout) => BlocBuilder(
-          cubit: singleCoachBloc,
+          bloc: singleCoachBloc,
           builder: (context, coachState) {
             if (coachState is SingleClubCoachUninitialized) {
               return Card(

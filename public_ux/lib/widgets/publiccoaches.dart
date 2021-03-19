@@ -54,7 +54,7 @@ class PublicCoachDetails extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return BlocBuilder(
-        cubit: bloc,
+        bloc: bloc,
         builder: (context, state) {
           if (!state.loadedCoaches) {
             bloc.add(SingleClubLoadCoaches());

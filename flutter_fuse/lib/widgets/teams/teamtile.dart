@@ -44,7 +44,7 @@ class TeamTile extends StatelessWidget {
     return SingleTeamProvider(
       teamUid: teamUid,
       builder: (c, singleTeamBloc) => BlocBuilder(
-        cubit: singleTeamBloc,
+        bloc: singleTeamBloc,
         builder: (context, teamState) {
           if (teamState is SingleTeamDeleted) {
             return ListTile(
@@ -72,7 +72,7 @@ class TeamTile extends StatelessWidget {
                     showIcon: showIconForTeam,
                   ),
                   title: BlocBuilder(
-                    cubit: seasonBloc,
+                    bloc: seasonBloc,
                     builder: (context, seasonState) {
                       var seasonName = '';
                       if (seasonState is SingleSeasonLoaded) {
@@ -116,7 +116,7 @@ class TeamTile extends StatelessWidget {
                   isThreeLine: false,
                   dense: true,
                   subtitle: BlocBuilder(
-                    cubit: seasonBloc,
+                    bloc: seasonBloc,
                     builder: (context, seasonState) {
                       if (seasonState is SingleSeasonLoaded) {
                         return Text(seasonState.season.record != null

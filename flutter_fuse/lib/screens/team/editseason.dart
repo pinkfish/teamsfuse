@@ -102,7 +102,7 @@ class _EditSeasonScreenState extends State<EditSeasonScreen> {
     return SingleSeasonProvider(
       seasonUid: widget.seasonUid,
       builder: (context, singleSeasonBloc) => BlocListener(
-        cubit: singleSeasonBloc,
+        bloc: singleSeasonBloc,
         listener: (context, state) {
           if (state is SingleSeasonDeleted) {
             Navigator.pop(context);
@@ -116,7 +116,7 @@ class _EditSeasonScreenState extends State<EditSeasonScreen> {
           backgroundColor: Colors.grey.shade100,
           resizeToAvoidBottomInset: true,
           body: BlocBuilder(
-            cubit: singleSeasonBloc,
+            bloc: singleSeasonBloc,
             builder: (context, seasonState) =>
                 seasonState is SingleSeasonUninitialized
                     ? LoadingWidget()

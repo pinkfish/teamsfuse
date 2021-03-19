@@ -26,7 +26,7 @@ class GameEventList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      cubit: BlocProvider.of<SingleGameBloc>(context),
+      bloc: BlocProvider.of<SingleGameBloc>(context),
       builder: (BuildContext context, SingleGameState state) {
         if (!state.loadedEvents) {
           BlocProvider.of<SingleGameBloc>(context).add(SingleGameLoadEvents());

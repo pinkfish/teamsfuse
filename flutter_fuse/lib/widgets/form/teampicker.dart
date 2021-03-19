@@ -80,7 +80,7 @@ class TeamPicker extends StatelessWidget {
                           color: Theme.of(context).disabledColor, height: 3.0),
                     )
                   : BlocBuilder(
-                      cubit: BlocProvider.of<TeamBloc>(context),
+                      bloc: BlocProvider.of<TeamBloc>(context),
                       builder: (context, state) {
                         return DropdownButton<String>(
                           key: Key('TEAM'),

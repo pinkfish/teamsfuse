@@ -63,7 +63,7 @@ class _AcceptInviteToLeagueScreenState
       body: Scrollbar(
         child: SingleChildScrollView(
           child: BlocBuilder(
-            cubit: _singleInviteBloc,
+            bloc: _singleInviteBloc,
             builder: (context, state) {
               if (state is SingleInviteDeleted) {
                 // Deleted.

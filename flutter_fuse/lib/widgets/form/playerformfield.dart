@@ -34,7 +34,7 @@ class PlayerFormField extends FormField<String> {
                   errorText: field.errorText,
                 ),
                 child: BlocBuilder(
-                    cubit: BlocProvider.of<PlayerBloc>(state.context),
+                    bloc: BlocProvider.of<PlayerBloc>(state.context),
                     builder: (context, playerState) {
                       return DropdownButton<String>(
                         hint: Text(Messages.of(state.context).playerselecthint),

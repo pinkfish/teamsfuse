@@ -33,7 +33,7 @@ class PlayerName extends StatelessWidget {
     return SinglePlayerProvider(
       playerUid: playerUid,
       builder: (context, bloc) => BlocBuilder(
-        cubit: bloc,
+        bloc: bloc,
         builder: (context, playerState) {
           var play = playerState.player;
 

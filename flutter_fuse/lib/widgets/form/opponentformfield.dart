@@ -32,7 +32,7 @@ class OpponentFormField extends FormField<String> {
             var effectiveDecoration = (decoration ?? const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             return BlocBuilder(
-                cubit: teamBloc,
+                bloc: teamBloc,
                 builder: (context, singleTeamState) {
                   if (singleTeamState is SingleTeamLoaded &&
                       !singleTeamState.loadedOpponents) {

@@ -30,11 +30,11 @@ class PublicSeasonPlayers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      cubit: singleTeamBloc,
+      bloc: singleTeamBloc,
       builder: (c, singleTeamState) => SingleSeasonProvider(
         seasonUid: singleTeamState.team.currentSeason,
         builder: (c, singleSeasonBloc) => BlocBuilder(
-          cubit: singleSeasonBloc,
+          bloc: singleSeasonBloc,
           builder: (context, seasonState) {
             if (seasonState is SingleSeasonDeleted) {
               return DeletedWidget();

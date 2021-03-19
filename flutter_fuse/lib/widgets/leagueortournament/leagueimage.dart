@@ -102,7 +102,7 @@ class LeagueImage extends StatelessWidget {
       child: SingleLeagueOrTournamentProvider(
         leagueUid: _leagueOrTournamentUid,
         builder: (context, singleLeagueOrTournamentBloc) => BlocBuilder(
-          cubit: singleLeagueOrTournamentBloc,
+          bloc: singleLeagueOrTournamentBloc,
           builder: (context, SingleLeagueOrTournamentState leagueState) {
             Widget inner;
             if (leagueState is SingleLeagueOrTournamentUninitialized) {

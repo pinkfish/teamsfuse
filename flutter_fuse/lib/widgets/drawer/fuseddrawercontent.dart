@@ -49,7 +49,7 @@ class FusedDrawerContent extends StatelessWidget {
               ),
             ),
             subtitle: BlocBuilder(
-                cubit: BlocProvider.of<TeamBloc>(context),
+                bloc: BlocProvider.of<TeamBloc>(context),
                 builder: (build, state) {
                   //if (snap.hasData) {
                   return Text(
@@ -114,13 +114,13 @@ class FusedDrawerContent extends StatelessWidget {
     var children = <Widget>[
       FusedDrawerHeader(),
       BlocBuilder(
-        cubit: BlocProvider.of<ClubBloc>(context),
+        bloc: BlocProvider.of<ClubBloc>(context),
         builder: (context, state) {
           return _buildClubSection(context, state);
         },
       ),
       BlocBuilder(
-        cubit: BlocProvider.of<TeamBloc>(context),
+        bloc: BlocProvider.of<TeamBloc>(context),
         builder: (context, state) {
           return _buildTeamSection(context, state);
         },

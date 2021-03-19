@@ -77,14 +77,14 @@ class EditResultDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      cubit: _game,
+      bloc: _game,
       listener: (context, state) {
         if (state is SingleGameDeleted) {
           Navigator.pop(context);
         }
       },
       child: BlocBuilder(
-        cubit: _game,
+        bloc: _game,
         builder: (context, state) {
           if (state is SingleGameDeleted) {
             return CircularProgressIndicator();
@@ -92,7 +92,7 @@ class EditResultDialog extends StatelessWidget {
           return SingleTeamProvider(
             teamUid: state.game.teamUid,
             builder: (context, teamBloc) => BlocBuilder(
-              cubit: teamBloc,
+              bloc: teamBloc,
               builder: (context, teamState) => _buildGame(context, state.game,
                   teamState.team, teamState.opponents[state.game.opponentUid]),
             ),

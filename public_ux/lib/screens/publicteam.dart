@@ -94,7 +94,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
       child: Scaffold(
         appBar: _buildAppBar(context, bloc),
         body: BlocBuilder(
-          cubit: bloc,
+          bloc: bloc,
           builder: (context, singleTeamState) {
             if (singleTeamState is SingleTeamUninitialized) {
               return Text(Messages.of(context).loading);
@@ -134,7 +134,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
     return AppBar(
       leading: TeamImage(teamUid: teamUid),
       title: BlocBuilder(
-        cubit: singleTeamBloc,
+        bloc: singleTeamBloc,
         builder: (context, state) {
           if (state is SingleTeamUninitialized) {
             return Text(Messages.of(context).loading);
@@ -181,7 +181,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: BlocBuilder(
-          cubit: singleTeamBloc,
+          bloc: singleTeamBloc,
           builder: (context, state) {
             if (state is SingleTeamUninitialized) {
               return Text(Messages.of(context).loading);
@@ -212,7 +212,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
                 color: Colors.blue,
               ),
               child: BlocBuilder(
-                  cubit: singleTeamBloc,
+                  bloc: singleTeamBloc,
                   builder: (context, state) {
                     if (state is SingleTeamUninitialized) {
                       return Text(Messages.of(context).loading);
@@ -258,7 +258,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
         ),
       ),
       body: BlocBuilder(
-        cubit: singleTeamBloc,
+        bloc: singleTeamBloc,
         builder: (context, singleTeamState) {
           if (singleTeamState is SingleTeamUninitialized) {
             return Text(Messages.of(context).loading);

@@ -56,7 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: SingleProfileProvider(
         userUid: authenticationBloc.currentUser.uid,
         builder: (context, singleProfileBloc) => BlocListener(
-          cubit: singleProfileBloc,
+          bloc: singleProfileBloc,
           listener: (context, singleProfileState) {
             if (singleProfileState is SingleProfileSaveDone ||
                 singleProfileState is SingleProfileDeleted) {
@@ -64,7 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             }
           },
           child: BlocBuilder(
-            cubit: singleProfileBloc,
+            bloc: singleProfileBloc,
             builder: (vontext, singleProfileState) {
               if (singleProfileState is SingleProfileUninitialized) {
                 return SavingOverlay(

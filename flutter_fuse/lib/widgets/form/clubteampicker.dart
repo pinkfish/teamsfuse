@@ -112,7 +112,7 @@ class _ClubTeamPickerState extends State<ClubTeamPicker> {
       return _buildDecorator(inner);
     } else {
       return BlocBuilder(
-        cubit: widget.clubBloc,
+        bloc: widget.clubBloc,
         builder: (context, state) {
           Widget inner;
 

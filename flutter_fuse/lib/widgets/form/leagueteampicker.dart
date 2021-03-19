@@ -85,7 +85,7 @@ class _TournamentOrLeagueTeamPickerState
             : null,
       ),
       child: BlocBuilder(
-        cubit: widget.leagueOrTournamentDivisonBloc,
+        bloc: widget.leagueOrTournamentDivisonBloc,
         builder: (context, state) {
           widget.leagueOrTournamentDivisonBloc
               .add(SingleLeagueOrTournamentDivisonLoadTeams());

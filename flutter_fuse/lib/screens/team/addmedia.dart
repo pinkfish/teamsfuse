@@ -110,10 +110,11 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
   void _pickImage() async {
     final picker = RepositoryProvider.of<ImagePicker>(context);
     final img = await picker.getImage(
-        source: ImageSource.gallery,
-        maxHeight: 1024,
-        maxWidth: 1024,
-        imageQuality: 95,);
+      source: ImageSource.gallery,
+      maxHeight: 1024,
+      maxWidth: 1024,
+      imageQuality: 95,
+    );
     if (img != null) {
       setState(() {
         _imageFile = img;
@@ -189,7 +190,7 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
               child: Column(children: rows),
             ),
             BlocBuilder(
-              cubit: singleSeasonBloc,
+              bloc: singleSeasonBloc,
               builder: (context, seasonState) {
                 if (seasonState is SingleSeasonUninitialized) {
                   return TextButton(
@@ -229,7 +230,7 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
           title: Text(Messages.of(context).addMediaItem),
         ),
         body: BlocListener(
-          cubit: _addMediaBloc,
+          bloc: _addMediaBloc,
           listener: (context, state) {
             if (state is AddItemDone) {
               Navigator.pop(context);
@@ -239,7 +240,7 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
             }
           },
           child: BlocBuilder(
-            cubit: _addMediaBloc,
+            bloc: _addMediaBloc,
             builder: (context, state) => SavingOverlay(
               saving: state is AddItemSaving,
               child: SingleSeasonProvider(

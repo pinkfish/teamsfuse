@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       BlocBuilder(
-          cubit: BlocProvider.of<MessagesBloc>(context),
+          bloc: BlocProvider.of<MessagesBloc>(context),
           builder: (context, state) {
             return Badge(
                 badgeContent: Text(
@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     actions.add(BlocBuilder(
-      cubit: BlocProvider.of<LoadedStateBloc>(context),
+      bloc: BlocProvider.of<LoadedStateBloc>(context),
       builder: (context, state) {
         switch (state) {
           case LoadedState.Logout:
@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: actions,
       ),
       body: BlocBuilder(
-        cubit: BlocProvider.of<LoadedStateBloc>(context),
+        bloc: BlocProvider.of<LoadedStateBloc>(context),
         builder: (context, state) {
           var loading = false;
           switch (state) {
@@ -172,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       floatingActionButton: BlocBuilder(
-          cubit: BlocProvider.of<TeamBloc>(context),
+          bloc: BlocProvider.of<TeamBloc>(context),
           builder: (context, state) {
             return FabDialer(
               disabled: state.allTeamUids.length == 0,

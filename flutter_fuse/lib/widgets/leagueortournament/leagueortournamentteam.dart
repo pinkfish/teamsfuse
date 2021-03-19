@@ -45,7 +45,7 @@ class _LeagueOrTournamentTeamDetailsState
       child: SingleLeagueOrTournamentTeamProvider(
         leagueTeamUid: widget.leagueOrTournamentTeamUid,
         builder: (context, bloc) => BlocBuilder(
-            cubit: bloc,
+            bloc: bloc,
             builder: (context, SingleLeagueOrTournamentTeamState teamState) {
               if (teamState is SingleLeagueOrTournamentTeamUninitialized ||
                   teamState is SingleLeagueOrTournamentTeamDeleted) {
@@ -64,7 +64,7 @@ class _LeagueOrTournamentTeamDetailsState
                 leagueUid:
                     teamState.leagueOrTournamentTeam.leagueOrTournamentUid,
                 builder: (context, leagueBloc) => BlocBuilder(
-                  cubit: leagueBloc,
+                  bloc: leagueBloc,
                   builder: (context, leagueState) => Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.start,

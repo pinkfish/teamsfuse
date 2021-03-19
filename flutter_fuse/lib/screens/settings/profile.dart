@@ -109,7 +109,7 @@ class ProfileScreen extends StatelessWidget {
         BlocProvider(
           create: (context) => bloc,
           child: BlocBuilder(
-            cubit: bloc,
+            bloc: bloc,
             builder: (context, userState) {
               if (userState is SingleProfileUninitialized ||
                   userState is SingleProfileDeleted) {
@@ -198,7 +198,7 @@ class ProfileScreen extends StatelessWidget {
           SinglePlayerProvider(
             playerUid: player.uid,
             builder: (context, playerBloc) => BlocBuilder(
-              cubit: playerBloc,
+              bloc: playerBloc,
               builder: (context, playerState) {
                 if (playerState is SinglePlayerUninitialized) {
                   return LoadingWidget();
@@ -351,7 +351,7 @@ class ProfileScreen extends StatelessWidget {
       body: Scrollbar(
         child: SingleChildScrollView(
           child: BlocBuilder(
-            cubit: BlocProvider.of<PlayerBloc>(context),
+            bloc: BlocProvider.of<PlayerBloc>(context),
             builder: (context, state) {
               if (state is PlayerUninitialized) {
                 return Text(Messages.of(context).formerror);

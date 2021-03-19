@@ -29,7 +29,7 @@ class TeamResultsByOpponent extends StatelessWidget {
     return SingleOpponentProvider(
       opponentUid: opponentUid,
       builder: (context, teamBloc) => BlocListener(
-        cubit: teamBloc,
+        bloc: teamBloc,
         listener: (context, state) {
           teamBloc.add(SingleOpponentLoadGames());
           if (state is SingleTeamDeleted) {
@@ -37,7 +37,7 @@ class TeamResultsByOpponent extends StatelessWidget {
           }
         },
         child: BlocBuilder(
-          cubit: teamBloc,
+          bloc: teamBloc,
           builder: (context, state) {
             if (state is SingleOpponentDeleted) {
               return Center(
@@ -94,7 +94,7 @@ class TeamResultsByOpponent extends StatelessWidget {
                     SingleGameProvider(
                       gameUid: game.uid,
                       builder: (context, gameBloc) => BlocBuilder(
-                        cubit: gameBloc,
+                        bloc: gameBloc,
                         builder: (context, state) {
                           return GameCard(gameUid: state.game.uid);
                         },
@@ -140,14 +140,14 @@ class TeamResultsBySeason extends StatelessWidget {
     return SingleSeasonProvider(
       seasonUid: seasonUid,
       builder: (context, seasonBloc) => BlocListener(
-        cubit: seasonBloc,
+        bloc: seasonBloc,
         listener: (context, state) {
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
           }
         },
         child: BlocBuilder(
-          cubit: seasonBloc,
+          bloc: seasonBloc,
           builder: (context, state) {
             if (state is SingleOpponentDeleted) {
               return Center(
@@ -206,7 +206,7 @@ class TeamResultsBySeason extends StatelessWidget {
                     SingleGameProvider(
                       gameUid: game.uid,
                       builder: (context, gameBloc) => BlocBuilder(
-                        cubit: gameBloc,
+                        bloc: gameBloc,
                         builder: (context, state) {
                           if (state is SingleGameLoaded) {
                             return GameCard(gameUid: state.game.uid);

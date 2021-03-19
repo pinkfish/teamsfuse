@@ -151,7 +151,7 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
     return SingleClubProvider(
       clubUid: widget.clubUid,
       builder: (context, singleClubBloc) => BlocBuilder(
-        cubit: _newsItemBloc,
+        bloc: _newsItemBloc,
         builder: (context, state) => SavingOverlay(
           saving: state is AddItemSaving,
           child: Stepper(
@@ -173,7 +173,7 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
                 state: _detailsStepState,
                 isActive: true,
                 content: BlocBuilder(
-                    cubit: singleClubBloc,
+                    bloc: singleClubBloc,
                     builder: (context, singleClubState) {
                       if (singleClubState is SingleClubUninitialized) {
                         return Text(Messages.of(context).loading);
@@ -204,7 +204,7 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      cubit: _newsItemBloc,
+      bloc: _newsItemBloc,
       listener: (context, state) {
         if (state is AddItemDone) {
           Navigator.pop(context);

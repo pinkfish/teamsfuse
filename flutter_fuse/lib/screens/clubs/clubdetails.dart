@@ -90,7 +90,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
     return SingleClubProvider(
       clubUid: widget.clubUid,
       builder: (context, singleClubBloc) => BlocConsumer(
-        cubit: singleClubBloc,
+        bloc: singleClubBloc,
         listener: (context, state) {
           if (state is SingleClubDeleted) {
             Navigator.pop(context);

@@ -177,7 +177,7 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
         ],
       ),
       body: BlocConsumer(
-        cubit: singlePlayerBloc,
+        bloc: singlePlayerBloc,
         listener: (contex, playerState) {
           if (playerState is SinglePlayerLoaded) {
             _player = playerState.player.toBuilder();

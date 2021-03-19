@@ -439,7 +439,7 @@ class GameStatsScreen extends StatelessWidget {
   Widget _buildSubButtons(BuildContext context, Orientation orientation,
       BoxConstraints boxConstraints, SingleGameBloc singleGameBloc) {
     return BlocBuilder(
-        cubit: singleGameBloc,
+        bloc: singleGameBloc,
         builder: (BuildContext context, SingleGameState state) {
           if (state is SingleGameUninitialized) {
             return LoadingWidget();
@@ -536,7 +536,7 @@ class GameStatsScreen extends StatelessWidget {
                   ),
                 ],
                 child: BlocBuilder(
-                  cubit: singleGameBloc,
+                  bloc: singleGameBloc,
                   builder: (context, singleGameState) => SavingOverlay(
                     saving: singleGameState is SingleGameSaving,
                     child: OrientationBuilder(
@@ -545,7 +545,7 @@ class GameStatsScreen extends StatelessWidget {
                               AnimatedSwitcher(
                         duration: Duration(milliseconds: 500),
                         child: BlocBuilder(
-                          cubit: singleGameBloc,
+                          bloc: singleGameBloc,
                           builder:
                               (BuildContext context, SingleGameState state) {
                             // Preload the undo set if it is not yet loaded.
@@ -602,7 +602,7 @@ class GameStatsScreen extends StatelessWidget {
                                 state.game?.result?.currentPeriod ==
                                     GamePeriod.notStarted) {
                               return BlocBuilder(
-                                cubit: singleSeasonBloc,
+                                bloc: singleSeasonBloc,
                                 builder: (BuildContext context,
                                     SingleSeasonState seasonState) {
                                   if (seasonState
@@ -795,7 +795,7 @@ class _GameStateSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      cubit: singleGameBloc,
+      bloc: singleGameBloc,
       builder: (BuildContext context, SingleGameState state) {
         if (state is SingleGameUninitialized) {
           return Scaffold(
@@ -904,7 +904,7 @@ class _GameStateSection extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               BlocBuilder(
-                                  cubit: singleTeamBloc,
+                                  bloc: singleTeamBloc,
                                   builder: (BuildContext context,
                                       SingleTeamState teamState) {
                                     if (teamState is SingleTeamUninitialized ||

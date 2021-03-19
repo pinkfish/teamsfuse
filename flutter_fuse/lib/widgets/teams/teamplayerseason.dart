@@ -67,7 +67,7 @@ class TeamPlayersSeason extends StatelessWidget {
     return SingleSeasonProvider(
       seasonUid: _seasonUid,
       builder: (context, seasonBloc) => BlocBuilder(
-        cubit: seasonBloc,
+        bloc: seasonBloc,
         builder: (context, seasonState) {
           if (seasonState is SingleSeasonUninitialized ||
               seasonState is SingleSeasonDeleted) {
@@ -89,7 +89,7 @@ class TeamPlayersSeason extends StatelessWidget {
     return SingleTeamProvider(
       teamUid: _teamUid,
       builder: (context, bloc) => BlocBuilder(
-        cubit: bloc,
+        bloc: bloc,
         builder: (context, teamState) {
           if (teamState is SingleTeamUninitialized) {
             return CircularProgressIndicator();

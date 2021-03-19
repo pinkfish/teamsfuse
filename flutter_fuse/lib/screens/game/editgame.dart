@@ -69,7 +69,7 @@ class _EditGameScreenState extends State<EditGameScreen> {
     return SingleGameProvider(
       gameUid: widget.gameuid,
       builder: (context, gameBloc) => BlocListener(
-        cubit: gameBloc,
+        bloc: gameBloc,
         listener: (context, state) {
           if (state is SingleGameSaveFailed) {
             _showInSnackBar(Messages.of(context).formerror);
@@ -86,7 +86,7 @@ class _EditGameScreenState extends State<EditGameScreen> {
           body: Container(
             padding: EdgeInsets.all(16.0),
             child: BlocBuilder(
-                cubit: gameBloc,
+                bloc: gameBloc,
                 builder: (context, gameState) {
                   Widget form;
                   if (gameState is SingleGameUninitialized) {

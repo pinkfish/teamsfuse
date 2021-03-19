@@ -30,7 +30,7 @@ class LeagueOrTournamentTeamName extends StatelessWidget {
     return SingleLeagueOrTournamentTeamProvider(
       leagueTeamUid: leagueOrTournmentTeamUid,
       builder: (context, bloc) => BlocBuilder(
-        cubit: bloc,
+        bloc: bloc,
         builder: (context, state) {
           Widget inner;
           if (state is SingleLeagueOrTournamentTeamUninitialized) {

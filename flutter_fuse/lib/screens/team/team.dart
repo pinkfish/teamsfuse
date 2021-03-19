@@ -78,7 +78,7 @@ class _TeamScreenState extends State<TeamScreen> {
     return SingleTeamProvider(
       teamUid: widget.teamUid,
       builder: (contextl, singleTeamBloc) => BlocBuilder(
-        cubit: singleTeamBloc,
+        bloc: singleTeamBloc,
         builder: (context, state) {
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);

@@ -56,7 +56,7 @@ class _LeagueOrTournamentDivisonDetailsState
     return SingleLeagueOrTournamentDivisonProvider(
       leagueDivisonUid: divisonState.divison.uid,
       builder: (context, bloc) => BlocBuilder(
-        cubit: bloc,
+        bloc: bloc,
         builder: (context, SingleLeagueOrTournamentDivisonState divisonState) {
           if (!divisonState.loadedGames) {
             bloc.add(SingleLeagueOrTournamentDivisonLoadGames());
@@ -180,7 +180,7 @@ class _LeagueOrTournamentDivisonDetailsState
     return SingleLeagueOrTournamentDivisonProvider(
       leagueDivisonUid: widget.leagueOrTournamentDivisonUid,
       builder: (context, divisonBloc) => BlocBuilder(
-        cubit: divisonBloc,
+        bloc: divisonBloc,
         builder: (context, SingleLeagueOrTournamentDivisonState divisonState) {
           if (divisonState is SingleLeagueOrTournamentDivisonUninitialized ||
               divisonState is SingleLeagueOrTournamentDivisonDeleted) {
@@ -233,7 +233,7 @@ class _LeagueOrTournamentDivisonDetailsState
                       child: SingleLeagueOrTournamentProvider(
                         leagueUid: divisonState.divison.leagueOrTournamentUid,
                         builder: (context, leagueBloc) => BlocBuilder(
-                          cubit: leagueBloc,
+                          bloc: leagueBloc,
                           builder: (context, leagueState) =>
                               _buildGamesList(divisonState, leagueState),
                         ),

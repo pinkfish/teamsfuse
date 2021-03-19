@@ -238,9 +238,9 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
               ),
             ),
             BlocBuilder(
-              cubit: singleTeamBloc,
+              bloc: singleTeamBloc,
               builder: (context, teamState) => BlocBuilder(
-                cubit: singleSeasonBloc,
+                bloc: singleSeasonBloc,
                 builder: (context, seasonBloc) {
                   if (teamState is SingleTeamUninitialized ||
                       seasonBloc is SingleSeasonUninitialized) {
@@ -278,7 +278,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
           title: Text(Messages.of(context).addPlayer),
         ),
         body: BlocListener(
-          cubit: addInviteBloc,
+          bloc: addInviteBloc,
           listener: (context, state) {
             if (state is AddItemDone) {
               Navigator.pop(context);
@@ -288,7 +288,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
             }
           },
           child: BlocBuilder(
-            cubit: addInviteBloc,
+            bloc: addInviteBloc,
             builder: (context, state) => SavingOverlay(
               saving: state is AddItemSaving,
               child: SingleTeamProvider(

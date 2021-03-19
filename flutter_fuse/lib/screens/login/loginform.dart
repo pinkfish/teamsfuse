@@ -148,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocConsumer(
-        cubit: BlocProvider.of<AuthenticationBloc>(context),
+        bloc: BlocProvider.of<AuthenticationBloc>(context),
         listener: (context, state) {
           if (state is AuthenticationLoggedIn) {
             Navigator.pushNamedAndRemoveUntil(context, '/Home', (d) => false);

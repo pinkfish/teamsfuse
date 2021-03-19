@@ -36,7 +36,7 @@ class SeasonFormField extends FormField<String> {
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             if (teamBloc != null) {
               return BlocBuilder(
-                cubit: teamBloc,
+                bloc: teamBloc,
                 builder: (context, singleTeamState) {
                   if (singleTeamState is SingleTeamLoaded &&
                       !singleTeamState.loadedSeasons) {
@@ -70,7 +70,7 @@ class SeasonFormField extends FormField<String> {
               return SingleTeamProvider(
                 teamUid: team.uid,
                 builder: (context, singleTeamBloc) => BlocBuilder(
-                    cubit: singleTeamBloc,
+                    bloc: singleTeamBloc,
                     builder: (context, singleTeamState) {
                       if (singleTeamState is SingleTeamLoaded &&
                           !singleTeamState.loadedSeasons) {

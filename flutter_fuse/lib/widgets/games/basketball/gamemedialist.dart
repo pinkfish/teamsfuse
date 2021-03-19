@@ -15,7 +15,7 @@ class GameMediaList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      cubit: BlocProvider.of<SingleGameBloc>(context),
+      bloc: BlocProvider.of<SingleGameBloc>(context),
       builder: (BuildContext context, SingleGameState state) {
         Widget stuff;
 

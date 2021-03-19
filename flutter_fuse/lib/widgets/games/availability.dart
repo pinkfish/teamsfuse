@@ -75,11 +75,11 @@ class Availaility extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      cubit: _game,
+      bloc: _game,
       builder: (context, gameState) => SingleTeamProvider(
         teamUid: gameState.game.teamUid,
         builder: (context, teamBloc) => BlocBuilder(
-          cubit: teamBloc,
+          bloc: teamBloc,
           builder: (context, teamState) {
             return ListBody(
               children:

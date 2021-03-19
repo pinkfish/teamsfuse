@@ -31,7 +31,7 @@ class MessageList extends StatelessWidget {
     return SingleMessageProvider(
       messageId: mess.messageId,
       builder: (context, singleMessageBloc) => BlocBuilder(
-        cubit: singleMessageBloc,
+        bloc: singleMessageBloc,
         builder: (context, SingleMessageState singleMessageState) {
           if (singleMessageState is SingleMessageUninitialized) {
             return ListTile(
@@ -104,7 +104,7 @@ class MessageList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      cubit: BlocProvider.of<MessagesBloc>(context),
+      bloc: BlocProvider.of<MessagesBloc>(context),
       builder: (context, MessagesBlocState state) {
         if (state.unreadMessages.isEmpty && state.recentMessages.isEmpty) {
           return Center(

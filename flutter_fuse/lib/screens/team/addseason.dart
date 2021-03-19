@@ -156,7 +156,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
       child: SingleTeamProvider(
         teamUid: widget.teamUid,
         builder: (contrext, singleTeamBloc) => BlocListener(
-          cubit: singleTeamBloc,
+          bloc: singleTeamBloc,
           listener: (context, state) {
             if (state is SingleTeamLoaded) {
               _seasonSelect ??= state.getSeason(state.team.currentSeason);
@@ -173,7 +173,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
             backgroundColor: Colors.grey.shade100,
             resizeToAvoidBottomInset: true,
             body: BlocListener(
-              cubit: addSeasonBloc,
+              bloc: addSeasonBloc,
               listener: (context, addState) {
                 if (addState is AddItemDone) {
                   Navigator.pop(context);
@@ -183,7 +183,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
                 }
               },
               child: BlocBuilder(
-                cubit: addSeasonBloc,
+                bloc: addSeasonBloc,
                 builder: (context, addState) => SavingOverlay(
                   saving: addState is AddItemSaving,
                   child: SingleChildScrollView(

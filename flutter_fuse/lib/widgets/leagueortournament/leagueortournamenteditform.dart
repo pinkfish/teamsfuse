@@ -127,7 +127,7 @@ class LeagueOrTournamentEditFormState
         child: SingleLeagueOrTournamentProvider(
           leagueUid: widget.leagueOrTournament.uid,
           builder: (context, leagueBloc) => BlocListener(
-            cubit: leagueBloc,
+            bloc: leagueBloc,
             listener: (context, state) {
               if (state is SingleLeagueOrTournamentDeleted) {
                 Navigator.pop(context);
@@ -139,7 +139,7 @@ class LeagueOrTournamentEditFormState
               }
             },
             child: BlocBuilder(
-              cubit: leagueBloc,
+              bloc: leagueBloc,
               builder: (context, state) {
                 return Form(
                   key: _formKey,

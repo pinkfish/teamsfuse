@@ -254,7 +254,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                 : SingleClubProvider(
                     clubUid: _clubUid,
                     builder: (context, singleClubBloc) => BlocBuilder(
-                      cubit: singleClubBloc,
+                      bloc: singleClubBloc,
                       builder: (context, clubState) {
                         ListTile(
                           leading: const Icon(MdiIcons.group),
@@ -303,7 +303,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
       return SingleClubProvider(
         clubUid: _clubUid,
         builder: (context, singleClubBloc) => BlocBuilder(
-            cubit: singleClubBloc,
+            bloc: singleClubBloc,
             builder: (context, singleClubState) {
               if (singleClubState is SingleClubDeleted) {
                 return DeletedWidget();
@@ -334,7 +334,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
     return BlocProvider(
       create: (contex) => _addTeamBloc,
       child: BlocListener(
-        cubit: _addTeamBloc,
+        bloc: _addTeamBloc,
         listener: (context, addState) {
           if (addState is AddItemDone) {
             Navigator.pop(context);
@@ -344,7 +344,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
           }
         },
         child: BlocBuilder(
-          cubit: _addTeamBloc,
+          bloc: _addTeamBloc,
           builder: (context, addState) => SavingOverlay(
             saving: addState is AddItemSaving,
             child: StepperAlwaysVisible(

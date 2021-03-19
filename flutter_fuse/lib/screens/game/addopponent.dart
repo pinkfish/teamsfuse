@@ -66,7 +66,7 @@ class _AddOpponentState extends State<AddOpponent> {
           ],
         ),
         body: BlocConsumer(
-          cubit: bloc,
+          bloc: bloc,
           listener: (context, state) {
             if (state is SingleTeamSaveDone) {
               Navigator.pop(context, state.savedUid);

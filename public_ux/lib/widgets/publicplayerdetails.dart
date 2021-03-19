@@ -95,12 +95,11 @@ class PublicPlayerDetails extends StatelessWidget {
             ButtonBar(
               children: [
                 TextButton(
-                child: Text(Messages.of(context).teamButton),
-                onPressed: () => Navigator.pushNamed(context,
-                    '/Team/${PublicTeamTab.team.name}/${season.teamUid}'),
-              ),
-
-    ],
+                  child: Text(Messages.of(context).teamButton),
+                  onPressed: () => Navigator.pushNamed(context,
+                      '/Team/${PublicTeamTab.team.name}/${season.teamUid}'),
+                ),
+              ],
             ),
           ],
         ),
@@ -111,7 +110,7 @@ class PublicPlayerDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      cubit: bloc,
+      bloc: bloc,
       builder: (context, singlePlayerState) {
         final seasons = <Widget>[];
         if (!singlePlayerState.loadedSeasons) {

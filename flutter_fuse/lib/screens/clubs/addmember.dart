@@ -74,7 +74,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
 
   Widget _buildBody(SingleClubBloc bloc) {
     return BlocConsumer(
-      cubit: bloc,
+      bloc: bloc,
       listener: (context, state) {
         if (state is SingleClubSaveFailed) {
           _showInSnackBar(Messages.of(context).formerror);

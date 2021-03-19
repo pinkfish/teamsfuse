@@ -75,7 +75,7 @@ class _EditNewsItemScreenState extends State<EditNewsItemScreen> {
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           body: BlocConsumer(
-              cubit: singleClubBloc,
+              bloc: singleClubBloc,
               listener: (context, clubState) {
                 if (clubState is SingleClubDeleted) {
                   Navigator.pop(context);
@@ -88,7 +88,7 @@ class _EditNewsItemScreenState extends State<EditNewsItemScreen> {
                 }
 
                 return BlocConsumer(
-                  cubit: singleNewsItemBloc,
+                  bloc: singleNewsItemBloc,
                   listener: (context, state) {
                     if (state is SingleNewsItemDeleted) {
                       Navigator.pop(context);

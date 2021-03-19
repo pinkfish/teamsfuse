@@ -30,7 +30,7 @@ class LeagueOrTournamentName extends StatelessWidget {
     return SingleLeagueOrTournamentDivisonProvider(
       leagueDivisonUid: leagueOrTournamentDivisonUid,
       builder: (context, data) => BlocBuilder(
-        cubit: data,
+        bloc: data,
         builder: (context, state) {
           Widget inner;
           if (state is SingleLeagueOrTournamentDivisonDeleted) {
@@ -61,7 +61,7 @@ class LeagueOrTournamentName extends StatelessWidget {
     return SingleLeagueOrTournamentProvider(
       leagueUid: leagueOrTournamentUid,
       builder: (context, singleLeagueOrTournmanetBloc) => BlocBuilder(
-        cubit: singleLeagueOrTournmanetBloc,
+        bloc: singleLeagueOrTournmanetBloc,
         builder: (context, state) {
           Widget inner;
 

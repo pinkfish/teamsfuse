@@ -24,7 +24,7 @@ class ClubCoaches extends StatelessWidget {
       clubUid: clubUid,
       builder: (context, singleClubBloc) => SingleChildScrollView(
         child: BlocBuilder(
-          cubit: singleClubBloc,
+          bloc: singleClubBloc,
           builder: (context, clubState) {
             BuiltList<Coach> coaches;
             if (clubState is SingleClubUninitialized) {

@@ -109,7 +109,7 @@ class GameTitle extends StatelessWidget {
       opponentUid: _opponentUid(game),
       teamUid: game.teamUid,
       builder: (context, opBloc) => BlocBuilder(
-        cubit: opBloc,
+        bloc: opBloc,
         builder: (context, opState) => AnimatedSwitcher(
           duration: const Duration(milliseconds: 500),
           child: Text(

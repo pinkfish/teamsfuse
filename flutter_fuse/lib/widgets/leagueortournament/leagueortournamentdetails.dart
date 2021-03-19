@@ -39,7 +39,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
     return SingleLeagueOrTournamentSeasonProvider(
       leagueSeasonUid: season.uid,
       builder: (context, seasonBloc) => BlocBuilder(
-        cubit: seasonBloc,
+        bloc: seasonBloc,
         builder: (context, seasonState) {
           if (!seasonState.loadedDivisons) {
             seasonBloc.add(SingleLeagueOrTournamentSeasonLoadDivisions());
@@ -217,7 +217,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
           SingleLeagueOrTournamentProvider(
             leagueUid: widget.leagueOrTournamentUid,
             builder: (context, leagueBloc) => BlocConsumer(
-              cubit: leagueBloc,
+              bloc: leagueBloc,
               listener: (context, state) {
                 if (state is SingleLeagueOrTournamentDeleted) {
                   Navigator.pop(context);

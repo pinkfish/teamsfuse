@@ -44,7 +44,7 @@ class PublicTeamTile extends StatelessWidget {
       teamUid: teamUid,
       alwaysCreate: true,
       builder: (c, singleTeamBloc) => BlocBuilder(
-        cubit: singleTeamBloc,
+        bloc: singleTeamBloc,
         builder: (context, teamState) {
           if (teamState is SingleTeamDeleted) {
             return ListTile(
@@ -92,7 +92,7 @@ class PublicTeamTile extends StatelessWidget {
                           SingleSeasonProvider(
                             seasonUid: teamState.team.currentSeason,
                             builder: (context, seasonBloc) => BlocBuilder(
-                              cubit: seasonBloc,
+                              bloc: seasonBloc,
                               builder: (context, seasonState) {
                                 if (seasonState is SingleSeasonLoaded) {
                                   return Text(

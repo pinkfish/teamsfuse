@@ -66,7 +66,7 @@ class ClubNewsCard extends StatelessWidget {
       newsItemUid: newsItemUid,
       builder: (context, singleNewsBloc) => Card(
         child: BlocBuilder(
-          cubit: singleNewsBloc,
+          bloc: singleNewsBloc,
           builder: (context, newsState) {
             if (newsState is SingleNewsItemUninitialized) {
               return Text(Messages.of(context).loading);

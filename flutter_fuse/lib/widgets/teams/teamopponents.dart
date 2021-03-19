@@ -121,7 +121,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                 initiallyExpanded: false,
                 children: <Widget>[
                   BlocBuilder(
-                      cubit: opBloc,
+                      bloc: opBloc,
                       builder: (context, state) {
                         if (!state.loadedGames) {
                           opBloc.add(SingleOpponentLoadGames());
@@ -202,7 +202,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
               initiallyExpanded: false,
               children: <Widget>[
                 BlocBuilder(
-                  cubit: opBloc,
+                  bloc: opBloc,
                   builder: (context, state) {
                     if (state is SingleOpponentDeleted) {
                       return Center(
@@ -271,7 +271,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
     return SingleTeamProvider(
       teamUid: widget.teamUid,
       builder: (context, teamBloc) => BlocConsumer(
-        cubit: teamBloc,
+        bloc: teamBloc,
         listener: (context, state) {
           if (state is SingleTeamLoaded) {
             _seasonUid = state.team.currentSeason;

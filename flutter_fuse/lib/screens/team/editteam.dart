@@ -59,7 +59,7 @@ class _EditTeamScreenState extends State<EditTeamScreen> {
     return SingleTeamProvider(
       teamUid: widget.teamUid,
       builder: (context, singleTeamBloc) => BlocListener(
-        cubit: singleTeamBloc,
+        bloc: singleTeamBloc,
         listener: (context, state) {
           if (state is SingleTeamDeleted) {
             Navigator.pop(context, widget.teamUid);
@@ -72,7 +72,7 @@ class _EditTeamScreenState extends State<EditTeamScreen> {
           }
         },
         child: BlocBuilder(
-          cubit: singleTeamBloc,
+          bloc: singleTeamBloc,
           builder: (context, teamState) => Scaffold(
             key: _scaffoldKey,
             appBar: AppBar(

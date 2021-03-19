@@ -54,7 +54,7 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
     return SingleGameProvider(
       gameUid: widget.gameUid,
       builder: (context, gameBloc) => BlocConsumer(
-        cubit: gameBloc,
+        bloc: gameBloc,
         listener: (context, gameState) {
           if (gameState is SingleGameDeleted) {
             Navigator.pop(context);
@@ -69,7 +69,7 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
           return SingleTeamProvider(
             teamUid: gameState.game.teamUid,
             builder: (c, teamBloc) => BlocConsumer(
-              cubit: teamBloc,
+              bloc: teamBloc,
               listener: (context, state) {
                 if (state is SingleTeamLoaded) {
                   teamBloc.add(SingleTeamLoadOpponents());

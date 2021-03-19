@@ -28,7 +28,7 @@ class PublicClubNews extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      cubit: bloc,
+      bloc: bloc,
       builder: (context, state) {
         if (!state.loadedNewsItems) {
           bloc.add(SingleClubLoadNewsItems());

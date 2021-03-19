@@ -176,7 +176,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
         ),
         body: Builder(
           builder: (context) => BlocListener(
-            cubit: BlocProvider.of<AddLeagueOrTournamentBloc>(context),
+            bloc: BlocProvider.of<AddLeagueOrTournamentBloc>(context),
             listener: (context, state) {
               if (state is AddItemSaveFailed) {
                 showDialog<bool>(
@@ -193,7 +193,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
               }
             },
             child: BlocBuilder(
-              cubit: BlocProvider.of<AddLeagueOrTournamentBloc>(context),
+              bloc: BlocProvider.of<AddLeagueOrTournamentBloc>(context),
               builder: (context, state) {
                 return SavingOverlay(
                   saving: state is AddItemSaving,

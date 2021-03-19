@@ -157,7 +157,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             children: <Widget>[
               LoginHeader(),
               BlocConsumer(
-                  cubit: BlocProvider.of<AuthenticationBloc>(context),
+                  bloc: BlocProvider.of<AuthenticationBloc>(context),
                   listener: (context, state) {
                     if (state is AuthenticationFailed) {
                       showInSnackBar(state.error.toString());

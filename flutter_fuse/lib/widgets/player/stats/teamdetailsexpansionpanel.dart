@@ -105,7 +105,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
     var teams = teamSeason.keys.toList();
     if (widget.showGraphs) {
       return BlocBuilder(
-        cubit: seasonBlocs[graphSeasonUid],
+        bloc: seasonBlocs[graphSeasonUid],
         builder: (BuildContext context, SingleSeasonState state) => Padding(
           padding: EdgeInsets.only(left: 5.0, right: 5.0, bottom: 5.0),
           child: TeamPlayerGraphs(
@@ -140,7 +140,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
             isExpanded: expandedPanels.contains(teamUid),
             headerBuilder: (BuildContext context, bool isExpanded) {
               return BlocBuilder(
-                cubit: teamBlocs[teamUid],
+                bloc: teamBlocs[teamUid],
                 builder: (BuildContext context, SingleTeamState state) {
                   if (state is SingleTeamUninitialized) {
                     return Text(Messages.of(context).loading);
@@ -161,7 +161,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
             body: AnimatedSwitcher(
               duration: Duration(milliseconds: 500),
               child: BlocConsumer(
-                cubit: teamBlocs[teamUid],
+                bloc: teamBlocs[teamUid],
                 builder: (BuildContext context, SingleTeamState state) {
                   if (state is SingleTeamUninitialized ||
                       state is SingleTeamDeleted) {
@@ -171,7 +171,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
                   return MultiBlocListener(
                     listeners: seasons
                         .map((String s) => BlocListener(
-                              cubit: seasonBlocs[s],
+                              bloc: seasonBlocs[s],
                               listener: (BuildContext context,
                                   SingleSeasonState state) {
                                 if (state is SingleSeasonLoaded &&

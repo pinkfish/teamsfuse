@@ -52,7 +52,7 @@ class CoachImage extends StatelessWidget {
       clubUid: clubUid,
       coachUid: coachUid,
       builder: (context, bloc) => BlocBuilder(
-        cubit: bloc,
+        bloc: bloc,
         builder: (context, state) {
           Widget img;
           if (state is SingleClubCoachUninitialized ||

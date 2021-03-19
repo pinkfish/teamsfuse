@@ -94,7 +94,7 @@ class ClubTeams extends StatelessWidget {
     return SingleClubProvider(
       clubUid: clubUid,
       builder: (context, singleClubBloc) => BlocBuilder(
-        cubit: singleClubBloc,
+        bloc: singleClubBloc,
         builder: (context, state) {
           if (!state.loadedTeams) {
             singleClubBloc.add(SingleClubLoadTeams(publicLoad: onlyPublic));

@@ -40,7 +40,7 @@ class PlayerImage extends StatelessWidget {
           child: SinglePlayerProvider(
             playerUid: playerUid,
             builder: (context, bloc) => BlocBuilder(
-                cubit: bloc,
+                bloc: bloc,
                 builder: (BuildContext context, SinglePlayerState state) {
                   ImageProvider image;
                   if (state is SinglePlayerUninitialized ||

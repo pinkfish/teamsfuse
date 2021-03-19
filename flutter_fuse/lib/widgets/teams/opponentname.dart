@@ -40,7 +40,7 @@ class OpponentName extends StatelessWidget {
       opponentUid: opponentUid,
       teamUid: teamUid,
       builder: (context, bloc) => BlocBuilder(
-        cubit: bloc,
+        bloc: bloc,
         builder: (context, opponentState) {
           var op = opponentState.opponent;
 

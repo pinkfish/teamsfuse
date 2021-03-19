@@ -80,7 +80,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
             ],
           ),
           body: BlocListener(
-            cubit: addInviteBloc,
+            bloc: addInviteBloc,
             listener: (c, addState) {
               if (addState is AddItemDone) {
                 Navigator.pop(context);
@@ -90,9 +90,9 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
               }
             },
             child: BlocBuilder(
-              cubit: addInviteBloc,
+              bloc: addInviteBloc,
               builder: (c, addState) => BlocBuilder(
-                cubit: playerBloc,
+                bloc: playerBloc,
                 builder: (context, state) {
                   if (state is SinglePlayerLoaded) {
                     return Scrollbar(

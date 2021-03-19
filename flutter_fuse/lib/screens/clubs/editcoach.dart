@@ -76,7 +76,7 @@ class _EditCoachScreenState extends State<EditCoachScreen> {
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           body: BlocConsumer(
-              cubit: singleClubBloc,
+              bloc: singleClubBloc,
               listener: (context, clubState) {
                 if (clubState is SingleClubDeleted) {
                   Navigator.pop(context);
@@ -89,7 +89,7 @@ class _EditCoachScreenState extends State<EditCoachScreen> {
                 }
 
                 return BlocConsumer(
-                  cubit: singleCoachBloc,
+                  bloc: singleCoachBloc,
                   listener: (context, state) {
                     if (state is SingleClubCoachDeleted) {
                       Navigator.pop(context);

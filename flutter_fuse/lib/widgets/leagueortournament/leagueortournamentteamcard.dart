@@ -29,7 +29,7 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
       child: SingleLeagueOrTournamentDivisonProvider(
         leagueDivisonUid: team.leagueOrTournamentDivisonUid,
         builder: (context, divisonBloc) => BlocBuilder(
-            cubit: divisonBloc,
+            bloc: divisonBloc,
             builder: (context, divisonState) {
               if (divisonBloc != SingleLeagueOrTournamentDivisonUninitialized) {
                 if (team.record.containsKey(divisonState.divison.uid)) {
