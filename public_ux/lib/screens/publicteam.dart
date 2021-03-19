@@ -111,7 +111,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: PublicTeamDetails(team.uid),
+          child: SizedBox(height: 0), //PublicTeamDetails(team.uid),
         ),
       ],
     );
