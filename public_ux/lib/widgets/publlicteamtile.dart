@@ -64,12 +64,15 @@ class PublicTeamTile extends StatelessWidget {
                 padding: EdgeInsets.all(10.0),
                 child: Row(
                   children: [
-                    TeamImage(
-                      width: 100.0,
-                      height: 100.0,
-                      teamUid: teamState.team.uid,
-                      alignment: Alignment.centerLeft,
-                      showIcon: showIconForTeam,
+                    Hero(
+                      tag: 'team$teamUid',
+                      child: TeamImage(
+                        width: 100.0,
+                        height: 100.0,
+                        teamUid: teamState.team.uid,
+                        alignment: Alignment.centerLeft,
+                        showIcon: showIconForTeam,
+                      ),
                     ),
                     SizedBox(width: 10.0),
                     Expanded(

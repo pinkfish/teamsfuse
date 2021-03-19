@@ -136,7 +136,7 @@ class PublicClubHomeScreen extends StatelessWidget {
         return PublicClub(club);
       case PublicClubTab.team:
         if (extraUid != null) {
-          return PublicTeamDetails(extraUid);
+          //return PublicTeamDetails(extraUid);
         }
         return PublicClubTeams(singleClubBloc,
             onlyPublic: true,

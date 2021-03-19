@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/blocs/single/singleseasonbloc.dart';
+import 'package:flutter_fuse/services/blocs/single/singleteambloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/blocs/singleseasonprovider.dart';
 import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
@@ -25,10 +26,10 @@ import '../screens/publicplayer.dart';
 ///
 class PublicTeamDetails extends StatelessWidget {
   /// Constructor.
-  PublicTeamDetails(this.teamuid);
+  PublicTeamDetails(this.singleTeamBloc);
 
   /// The teamUid to show the details for.
-  final String teamuid;
+  final SingleTeamBloc singleTeamBloc;
 
   Widget _buildCurrentSeason(BuildContext context, SingleTeamState team,
       SingleSeasonBloc singleSeasonBloc) {
@@ -67,45 +68,45 @@ class PublicTeamDetails extends StatelessWidget {
 
     return DefaultTabController(
       length: 4,
-      child: SingleTeamProvider(
-        teamUid: teamuid,
-        builder: (context, bloc) => BlocBuilder(
-          cubit: bloc,
-          builder: (context, teamState) {
-            if (teamState is SingleTeamDeleted) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Center(
-                    child: HandsAndTrophy(
-                      width: DefaultTabController.of(context).index == 0
-                          ? (screenSize.width < 500)
-                              ? 120.0
-                              : (screenSize.width / 4) + 12.0
-                          : 0.0,
-                      height: screenSize.height / 4 + 20,
-                    ),
+      child: BlocBuilder(
+        cubit: singleTeamBloc,
+        builder: (context, teamState) {
+          if (teamState is SingleTeamDeleted) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Center(
+                  child: HandsAndTrophy(
+                    width: DefaultTabController.of(context).index == 0
+                        ? (screenSize.width < 500)
+                            ? 120.0
+                            : (screenSize.width / 4) + 12.0
+                        : 0.0,
+                    height: screenSize.height / 4 + 20,
                   ),
-                  ListTile(title: Text(Messages.of(context).unknown)),
-                  DeletedWidget(),
-                ],
-              );
-            }
-            if (teamState is SingleTeamUninitialized) {
-              return LoadingWidget();
-            }
+                ),
+                ListTile(title: Text(Messages.of(context).unknown)),
+                DeletedWidget(),
+              ],
+            );
+          }
+          if (teamState is SingleTeamUninitialized) {
+            return LoadingWidget();
+          }
 
-            final team = teamState.team;
-            return SingleSeasonProvider(
-              seasonUid: team.currentSeason,
-              builder: (context, singleSeasonBloc) => Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(5.0),
+          final team = teamState.team;
+          return SingleSeasonProvider(
+            seasonUid: team.currentSeason,
+            builder: (context, singleSeasonBloc) => Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(5.0),
+                      child: Hero(
+                        tag: 'team${singleTeamBloc.teamUid}',
                         child: TeamImage(
                           teamUid: team.uid,
                           showIcon: false,
@@ -115,100 +116,100 @@ class PublicTeamDetails extends StatelessWidget {
                           height: screenSize.height / 4 + 20,
                         ),
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Text(team.name,
-                                  style: Theme.of(context).textTheme.headline4),
-                              Text("${team.sport}(${team.league}, ) ",
-                                  style: Theme.of(context).textTheme.headline5),
-                              _buildCurrentSeason(
-                                  context, teamState, singleSeasonBloc),
-                            ],
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(team.name,
+                                style: Theme.of(context).textTheme.headline4),
+                            Text("${team.sport}(${team.league}, ) ",
+                                style: Theme.of(context).textTheme.headline5),
+                            _buildCurrentSeason(
+                                context, teamState, singleSeasonBloc),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GenderIcon(team.gender),
+                  ],
+                ),
+                Expanded(
+                    child: Column(
+                  children: [
+                    _ColoredTabBar(
+                      color: Colors.grey.shade200,
+                      tabBar: TabBar(
+                        labelColor: Colors.black,
+                        tabs: [
+                          Tab(
+                            text: Messages.of(context).player,
+                            icon: Icon(Icons.people),
                           ),
-                        ),
+                          Tab(
+                            text: MessagesPublic.of(context).media,
+                            icon: Icon(MdiIcons.image),
+                          ),
+                          Tab(
+                            text: Messages.of(context).games,
+                            icon: Icon(MdiIcons.basketball),
+                          ),
+                          Tab(
+                            text: Messages.of(context).stats,
+                            icon: Icon(MdiIcons.graph),
+                          )
+                        ],
                       ),
-                      GenderIcon(team.gender),
-                    ],
-                  ),
-                  Expanded(
-                      child: Column(
-                    children: [
-                      _ColoredTabBar(
-                        color: Colors.grey.shade200,
-                        tabBar: TabBar(
-                          labelColor: Colors.black,
-                          tabs: [
-                            Tab(
-                              text: Messages.of(context).player,
-                              icon: Icon(Icons.people),
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          BlocBuilder(
+                            cubit: singleSeasonBloc,
+                            builder: (context, seasonState) {
+                              if (seasonState is SingleSeasonDeleted) {
+                                return DeletedWidget();
+                              }
+                              if (seasonState is SingleSeasonUninitialized) {
+                                return LoadingWidget();
+                              }
+                              return SeasonPlayerList(
+                                season: seasonState.season,
+                                orientation: Orientation.landscape,
+                                onTap: (pl) => Navigator.pushNamed(
+                                    context,
+                                    '/Player/${PublicPlayerTab.details.name}/'
+                                    '${pl.playerUid}'),
+                              );
+                            },
+                          ),
+                          LayoutBuilder(
+                            builder: (context, constraints) => SeasonImages(
+                              seasonUid: team.currentSeason,
+                              height: constraints.maxHeight,
                             ),
-                            Tab(
-                              text: MessagesPublic.of(context).media,
-                              icon: Icon(MdiIcons.image),
-                            ),
-                            Tab(
-                              text: Messages.of(context).games,
-                              icon: Icon(MdiIcons.basketball),
-                            ),
-                            Tab(
-                              text: Messages.of(context).stats,
-                              icon: Icon(MdiIcons.graph),
-                            )
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: TabBarView(
-                          children: [
-                            BlocBuilder(
-                              cubit: singleSeasonBloc,
-                              builder: (context, seasonState) {
-                                if (seasonState is SingleSeasonDeleted) {
-                                  return DeletedWidget();
-                                }
-                                if (seasonState is SingleSeasonUninitialized) {
-                                  return LoadingWidget();
-                                }
-                                return SeasonPlayerList(
-                                  season: seasonState.season,
-                                  orientation: Orientation.landscape,
-                                  onTap: (pl) => Navigator.pushNamed(
-                                      context,
-                                      '/Player/${PublicPlayerTab.details.name}/'
-                                      '${pl.playerUid}'),
-                                );
-                              },
-                            ),
-                            LayoutBuilder(
-                              builder: (context, constraints) => SeasonImages(
-                                seasonUid: team.currentSeason,
-                                height: constraints.maxHeight,
-                              ),
-                            ),
-                            SingleChildScrollView(
-                              child: TeamResultsBySeason(
-                                teamUid: team.uid,
-                                seasonUid: team.currentSeason,
-                              ),
-                            ),
-                            TeamStatsWidget(
+                          ),
+                          SingleChildScrollView(
+                            child: TeamResultsBySeason(
                               teamUid: team.uid,
+                              seasonUid: team.currentSeason,
                             ),
-                          ],
-                        ),
+                          ),
+                          TeamStatsWidget(
+                            teamUid: team.uid,
+                          ),
+                        ],
                       ),
-                    ],
-                  ))
-                ],
-              ),
-            );
-          },
-        ),
+                    ),
+                  ],
+                ))
+              ],
+            ),
+          );
+        },
       ),
     );
   }
