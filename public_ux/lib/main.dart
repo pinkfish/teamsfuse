@@ -29,6 +29,7 @@ class PublicTeamsFuse extends StatelessWidget {
       primarySwatch: Colors.green,
     );
     final route = "Home";
+    final wrapper = Firestore();
 
     return MultiRepositoryProvider(
       providers: [
@@ -40,9 +41,11 @@ class PublicTeamsFuse extends StatelessWidget {
         ),
         RepositoryProvider<DatabaseUpdateModel>(
             create: (context) => DatabaseUpdateModelImpl(
-                Firestore(), null, AnalyticsSubsystemImpl.instance)),
+                wrapper, null, AnalyticsSubsystemImpl.instance)),
         RepositoryProvider<BaseCacheManager>(
             create: (context) => DefaultCacheManager()),
+        RepositoryProvider<UserAuthImpl>(
+            create: (context) => UserAuthImpl(wrapper)),
         RepositoryProvider<AlgoliaSearch>(
           create: (context) => AlgoliaSearch(),
         ),
