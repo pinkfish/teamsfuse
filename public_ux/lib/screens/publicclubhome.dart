@@ -15,6 +15,7 @@ import '../widgets/publicclubnews.dart';
 import '../widgets/publicclubteams.dart';
 import '../widgets/publiccoaches.dart';
 import '../widgets/publicteamdetails.dart';
+import 'publicteam.dart';
 
 /// Which of the tabs in the public view are selected.
 enum PublicClubTab {
@@ -87,14 +88,11 @@ extension PublicClubTabExtension on PublicClubTab {
 ///
 class PublicClubHomeScreen extends StatelessWidget {
   /// Constructor.
-  PublicClubHomeScreen(String tab, this.clubUid, this.extraUid)
+  PublicClubHomeScreen(String tab, this.clubUid)
       : tabSelected = PublicClubTabExtension.fromString(tab);
 
   /// Club id to show the details for.
   final String clubUid;
-
-  /// Team/player id to show the details for.
-  final String extraUid;
 
   /// The tab currently selected.
   final PublicClubTab tabSelected;
@@ -135,13 +133,10 @@ class PublicClubHomeScreen extends StatelessWidget {
       case PublicClubTab.club:
         return PublicClub(club);
       case PublicClubTab.team:
-        if (extraUid != null) {
-          //return PublicTeamDetails(extraUid);
-        }
         return PublicClubTeams(singleClubBloc,
             onlyPublic: true,
             onTap: (t) => _navigateTo(
-                context, '/Club/${PublicClubTab.team.name}/$clubUid/${t.uid}'));
+                context, '/Team/${PublicTeamTab.team.name}/${t.uid}'));
       case PublicClubTab.coaches:
         return PublicCoachDetails(singleClubBloc);
       case PublicClubTab.news:

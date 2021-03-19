@@ -20,14 +20,7 @@ class AppRouter {
     router.define("/Club/:tab/:id",
         handler: fluro.Handler(
             handlerFunc: (context, vals) => PublicClubHomeScreen(
-                vals["tab"][0].toString(), vals["id"][0].toString(), null)));
-
-    router.define("/Club/:tab/:id/:id2",
-        handler: fluro.Handler(
-            handlerFunc: (context, vals) => PublicClubHomeScreen(
-                vals["tab"][0].toString(),
-                vals["id"][0].toString(),
-                vals["id2"][0].toString())));
+                vals["tab"][0].toString(), vals["id"][0].toString(),)));
 
     router.define("/Team/:tab/:id",
         handler: fluro.Handler(

@@ -85,7 +85,7 @@ class PublicTeamTile extends StatelessWidget {
                               text: teamState.team.name,
                               style: Theme.of(context).textTheme.headline5,
                               children: <TextSpan>[
-                                TextSpan(text: "  "),
+                                TextSpan(text: '  '),
                               ],
                             ),
                           ),
@@ -99,7 +99,7 @@ class PublicTeamTile extends StatelessWidget {
                                     seasonState.season.record != null
                                         ? Messages.of(context).winRecord(
                                             seasonState.season.record)
-                                        : "",
+                                        : '',
                                     style:
                                         Theme.of(context).textTheme.subtitle1,
                                   );
@@ -131,7 +131,7 @@ class PublicTeamTile extends StatelessWidget {
                     Navigator.pop(context);
                   }
                   RepositoryProvider.of<fluro.FluroRouter>(context).navigateTo(
-                      context, "Team/${teamState.team.uid}",
+                      context, 'Team/${teamState.team.uid}',
                       transition: fluro.TransitionType.inFromRight);
                 },
           );

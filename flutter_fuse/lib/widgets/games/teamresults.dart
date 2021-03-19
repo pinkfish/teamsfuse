@@ -149,13 +149,13 @@ class TeamResultsBySeason extends StatelessWidget {
         child: BlocBuilder(
           cubit: seasonBloc,
           builder: (context, state) {
-            seasonBloc.add(SingleSeasonLoadGames());
             if (state is SingleOpponentDeleted) {
               return Center(
                 child: Text(Messages.of(context).teamdeleted),
               );
             }
             if (!state.loadedGames) {
+              seasonBloc.add(SingleSeasonLoadGames());
               return Center(
                 child: Text(Messages.of(context).loading),
               );
