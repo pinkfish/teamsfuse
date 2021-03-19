@@ -139,7 +139,7 @@ service cloud.firestore {
     }
 
     match /GamesShared/{sharedGame} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow write: if isSignedIn();
              allow create: if isSignedIn() && isUidCorrect() ;
     }

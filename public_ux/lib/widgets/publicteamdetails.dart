@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/blocs/single/singleseasonbloc.dart';
 import 'package:flutter_fuse/services/blocs/single/singleteambloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/blocs/singleseasonprovider.dart';
+import 'package:flutter_fuse/widgets/clubs/clubimage.dart';
 import 'package:flutter_fuse/widgets/clubs/clubname.dart';
 import 'package:flutter_fuse/widgets/games/teamresults.dart';
 import 'package:flutter_fuse/widgets/player/gendericon.dart';
@@ -92,6 +94,8 @@ class PublicTeamDetails extends StatelessWidget {
         return SingleSeasonProvider(
           seasonUid: team.currentSeason,
           builder: (context, singleSeasonBloc) => Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,29 +121,59 @@ class PublicTeamDetails extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Text(team.name,
-                              style: Theme.of(context).textTheme.headline4),
-                          SizedBox(height: 5),
                           Row(
                             children: [
-                              Text('${team.sport}(${team.league}, ) ',
-                                  style: Theme.of(context).textTheme.headline5),
-                              team.clubUid != null
-                                  ? ClubName(
-                                      clubUid: team.clubUid,
-                                      style:
-                                          Theme.of(context).textTheme.headline5)
-                                  : SizedBox(width: 0),
+                              Text(team.name,
+                                  style: Theme.of(context).textTheme.headline4),
+                              SizedBox(width:5),
+                              Expanded(child:Align(
+                                alignment: Alignment.centerRight,
+                                child: GenderIcon(team.gender, size:30,),
+                              ),),
                             ],
                           ),
-                          SizedBox(height: 5),
+                          SizedBox(height: 20),
+                          Row(
+                            children: [
+                              ...(team.clubUid != null
+                                  ? <Widget>[
+                                      ClubImage(
+                                        clubUid: team.clubUid,
+                                        width: 30,
+                                        height: 30,
+                                      ),
+                                      ClubName(
+                                        clubUid: team.clubUid,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline5,
+                                      ),
+                                    ]
+                                  : <Widget>[
+                                      SizedBox(width: 0),
+                                    ]),
+                              SizedBox(width: 5),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    '${team.sport}(${team.league}) ',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        .copyWith(fontStyle: FontStyle.italic),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
                           _buildCurrentSeason(
                               context, teamState, singleSeasonBloc),
                         ],
                       ),
                     ),
                   ),
-                  GenderIcon(team.gender),
                 ],
               ),
               SingleChildScrollView(
