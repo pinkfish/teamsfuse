@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,7 +12,6 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:timezone/timezone.dart';
-import 'package:universal_io/io.dart';
 import 'package:clock/clock.dart';
 
 import 'flutterfuseapp.dart';
@@ -27,15 +27,20 @@ void main() async {
   await Firebase.initializeApp();
 
   // Trace as the first thing in the system.
-  var trace = AnalyticsSubsystemImpl.instance.newTrace('startup');
+  final trace = AnalyticsSubsystemImpl.instance.newTrace('startup');
   trace.start();
 
   Bloc.observer = _SimpleBlocDelegate();
-
-  // Load up the data for the hydrated bloc stuff.
-  HydratedBloc.storage = await HydratedStorage.build();
+  var storageDirectory = Directory('');
   if (!kIsWeb) {
-    AsyncHydratedStorage.storageDirectory = await getTemporaryDirectory();
+    final sd = await getTemporaryDirectory();
+    AsyncHydratedStorage.storageDirectory = Directory(sd.path);
+    // Load up the data for the hydrated bloc stuff.
+    HydratedBloc.storage = await HydratedStorage.build(
+      storageDirectory: storageDirectory,
+    );
+  } else {
+    HydratedBloc.storage = _EmptyHydratedStorage();
   }
 
   String currentTimeZone;
@@ -45,12 +50,12 @@ void main() async {
       loadedData = data;
       return data;
     }),
-    Platform.isAndroid || Platform.isIOS
+    !kIsWeb
         ? FlutterNativeTimezone.getLocalTimezone()
             .then<String>((str) => currentTimeZone = str)
         : Future.value(true)
   ]);
-  if (!Platform.isAndroid && !Platform.isIOS) {
+  if (kIsWeb) {
     var dt = clock.now();
     currentTimeZone = dt.timeZoneName;
   }
@@ -65,6 +70,9 @@ void main() async {
     setLocalLocation(getLocation(currentTimeZone));
   } else if (currentTimeZone == 'Mountain Standard Time') {
     currentTimeZone = 'America/Detroit';
+    setLocalLocation(getLocation(currentTimeZone));
+  } else if (currentTimeZone == 'Coordinated Universal Time') {
+    currentTimeZone = 'Europe/London';
     setLocalLocation(getLocation(currentTimeZone));
   } else {
     setLocalLocation(getLocation(currentTimeZone));
@@ -110,4 +118,20 @@ class _SimpleBlocDelegate extends BlocObserver {
         'event: ${transition.event.runtimeType.toString()} '
         'nextState: ${transition.nextState.runtimeType.toString()}');
   }
+}
+
+// my_hydrated_storage.dart
+
+class _EmptyHydratedStorage implements Storage {
+  @override
+  dynamic read(String key) {}
+
+  @override
+  Future<void> write(String key, dynamic value) async {}
+
+  @override
+  Future<void> delete(String key) async {}
+
+  @override
+  Future<void> clear() async {}
 }
