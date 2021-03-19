@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-03-17T01:33:13.179751",
+  "@@last_modified": "2021-03-19T21:33:09.978289",
   "About": "About",
   "@About": {
     "type": "text",
@@ -3105,6 +3105,18 @@
   "Add Media": "Add Media",
   "@Add Media": {
     "description": "Popup menu item to add media to a team",
+    "type": "text",
+    "placeholders": {}
+  },
+  "TEAM": "TEAM",
+  "@TEAM": {
+    "description": "Button to show the team",
+    "type": "text",
+    "placeholders": {}
+  },
+  "CLUB": "CLUB",
+  "@CLUB": {
+    "description": "Button to show the club",
     "type": "text",
     "placeholders": {}
   }
