@@ -40,16 +40,23 @@ abstract class SingleTeamState with SingleTeamStateMixin {
   @override
   @nullable
   Club get club;
+  /// The invites to the team as an admin
   BuiltList<InviteAsAdmin> get invitesAsAdmin;
   @override
   BuiltList<Season> get fullSeason;
+  /// The opponents for the team
   BuiltMap<String, Opponent> get opponents;
+  /// If the invites are loaded.
   bool get loadedInvites;
+  /// If the opponents are loaded.
   bool get loadedOpponents;
+  /// If the seasons are loaded.
   bool get loadedSeasons;
 
+  /// The type of the team bloc state.
   SingleTeamBlocStateType get type;
 
+  /// Create a new team state and fill in the basic pieces.
   static SingleTeamStateBuilder fromState(
       SingleTeamState state, SingleTeamStateBuilder builder) {
     return builder
@@ -63,21 +70,29 @@ abstract class SingleTeamState with SingleTeamStateMixin {
       ..loadedOpponents = state.loadedOpponents;
   }
 
+  /// Initialize the state with the basic setup bits.
   static void initializeStateBuilder(SingleTeamStateBuilder b) => b
     ..loadedSeasons = false
     ..loadedInvites = false
     ..loadedOpponents = false;
 
+  /// Serialize this state.
   Map<String, dynamic> toMap();
 }
 
+///
+/// The mixin for handling the team state.
+///
 abstract class SingleTeamStateMixin {
+  /// The team currently in the state.
   Team get team;
+  /// All the seasons associated with the team,
   BuiltList<Season> get fullSeason;
+  /// The club associated with the team.
   Club get club;
 
   ///
-  /// Gets the specified sweason.
+  /// Gets the specified season.
   ///
   Season getSeason(String uid) {
     return fullSeason.firstWhere((Season s) => s.uid == uid,

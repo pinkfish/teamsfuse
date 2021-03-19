@@ -16,6 +16,8 @@ import 'package:flutter_fuse/widgets/util/handsandtrophy.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:public_ux/screens/publicclubhome.dart';
+import 'package:public_ux/widgets/publicseasonplayers.dart';
 
 ///
 /// Shows the public details of the team and the current season (only showing
@@ -125,11 +127,16 @@ class PublicTeamDetails extends StatelessWidget {
                             children: [
                               Text(team.name,
                                   style: Theme.of(context).textTheme.headline4),
-                              SizedBox(width:5),
-                              Expanded(child:Align(
-                                alignment: Alignment.centerRight,
-                                child: GenderIcon(team.gender, size:30,),
-                              ),),
+                              SizedBox(width: 5),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: GenderIcon(
+                                    team.gender,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                           SizedBox(height: 20),
@@ -170,17 +177,26 @@ class PublicTeamDetails extends StatelessWidget {
                           SizedBox(height: 10),
                           _buildCurrentSeason(
                               context, teamState, singleSeasonBloc),
+                          ButtonBar(
+                            children: [
+                              TextButton(
+                                child: Text(Messages.of(context).clubButton),
+                                onPressed: () => Navigator.pushNamed(
+                                    context,
+                                    '/Club/'
+                                    '${PublicClubTab.club}/'
+                                    '${teamState.team.clubUid}'),
+                              )
+                            ],
+                          ),
                         ],
                       ),
                     ),
                   ),
                 ],
               ),
-              SingleChildScrollView(
-                child: TeamResultsBySeason(
-                  teamUid: team.uid,
-                  seasonUid: team.currentSeason,
-                ),
+              PublicSeasonPlayers(
+                singleTeamBloc,
               ),
             ],
           ),

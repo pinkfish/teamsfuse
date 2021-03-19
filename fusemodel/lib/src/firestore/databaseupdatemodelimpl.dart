@@ -795,8 +795,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<Iterable<Season>> getPlayerSeasons(String playerUid) async* {
     var ref = _wrapper
         .collection(SEASONS_COLLECTION)
-        .where('${Season.PLAYERS}.$playerUid.$ADDED', isEqualTo: true)
-        .where('${Season.USER}.${userData.uid}.$ADDED', isEqualTo: true);
+        .where('${Season.PLAYERS}.$playerUid.$ADDED', isEqualTo: true);
+    if (userData != null) {
+      ref = ref
+          .where('${Season.USER}.${userData.uid}.$ADDED', isEqualTo: true);
+    } else {
+      ref = ref.where('isPublic', isEqualTo: true);
+    }
     var wrap = await ref.getDocuments();
     yield wrap.documents.map((snap) => Season.fromMap(snap.data));
     await for (var doc in ref.snapshots()) {

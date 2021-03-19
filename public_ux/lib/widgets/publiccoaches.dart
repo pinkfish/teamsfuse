@@ -75,25 +75,11 @@ class PublicCoachDetails extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 10),
-              Row(
-                children: [
-                  ClubImage(
-                    clubUid: state.club.uid,
-                    width: 100,
-                    height: 100,
-                  ),
-                  Text(
-                    state.club.name,
-                    style: Theme.of(context).textTheme.headline4,
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
               Text(
                 Messages.of(context).coaches,
                 style: Theme.of(context)
                     .textTheme
-                    .headline6
+                    .headline4
                     .copyWith(color: Colors.green),
               ),
               state.coaches.isEmpty

@@ -99,6 +99,7 @@ abstract class SingleClubState {
       ..loadedInvites = state.loadedInvites
       ..loadedCoaches = state.loadedCoaches
       ..loadedNewsItems = state.loadedNewsItems
+      ..loadedTeams = state.loadedTeams
       ..newsItems = state.newsItems.toBuilder()
       ..coaches = state.coaches.toBuilder();
   }

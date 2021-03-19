@@ -85,9 +85,17 @@ class SinglePlayerLoadProfile extends SinglePlayerEvent {
 }
 
 ///
-/// Loads the teams for this user from firebase.
+/// Loads the seasons for this player from firebase.
 ///
 class SinglePlayerLoadSeasons extends SinglePlayerEvent {
+  @override
+  List<Object> get props => [];
+}
+
+///
+/// Loads the media for this player from firebase.
+///
+class SinglePlayerLoadMedia extends SinglePlayerEvent {
   @override
   List<Object> get props => [];
 }
@@ -126,6 +134,15 @@ class _SinglePlayerSeasonsAdded extends SinglePlayerEvent {
   List<Object> get props => [seasons];
 }
 
+class _SinglePlayerMediaAdded extends SinglePlayerEvent {
+  final BuiltList<MediaInfo> media;
+
+  _SinglePlayerMediaAdded({@required this.media});
+
+  @override
+  List<Object> get props => [media];
+}
+
 ///
 /// Bloc to handle updates and state of a specific Player.
 ///
@@ -143,6 +160,7 @@ class SinglePlayerBloc
   StreamSubscription<Player> _playerSub;
   StreamSubscription<Iterable<InviteToPlayer>> _inviteSub;
   StreamSubscription<Iterable<Season>> _seasonSub;
+  StreamSubscription<BuiltList<MediaInfo>> _mediaSub;
 
   /// Create the single player bloc to load the data for the player.
   SinglePlayerBloc(
@@ -243,6 +261,13 @@ class SinglePlayerBloc
           .build();
     }
 
+    if (event is _SinglePlayerMediaAdded) {
+      yield (SinglePlayerLoaded.fromState(state)
+            ..media = ListBuilder(event.media)
+            ..loadedMedia = true)
+          .build();
+    }
+
     if (event is SinglePlayerLoadInvites) {
       if (_inviteSub == null) {
         _inviteSub = db
@@ -259,6 +284,15 @@ class SinglePlayerBloc
           add(_SinglePlayerSeasonsAdded(seasons: seasons));
         });
         _seasonSub.onError((e, stack) => crashes.recordException(e, stack));
+      }
+    }
+    if (event is SinglePlayerLoadMedia) {
+      if (_mediaSub == null) {
+        _mediaSub =
+            db.getMediaForPlayer(playerUid: state.player.uid).listen((media) {
+          add(_SinglePlayerMediaAdded(media: media));
+        });
+        _mediaSub.onError((e, stack) => crashes.recordException(e, stack));
       }
     }
   }

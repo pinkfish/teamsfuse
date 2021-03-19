@@ -86,7 +86,8 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
   PublicPlayerDetailsScreen(String tab, this.playerUid)
       : tabSelected = PublicPlayerTabExtension.fromString(tab);
 
-  Widget _buildMediumBody(BuildContext context, SinglePlayerBloc bloc) {
+  Widget _buildMediumBody(
+      BuildContext context, SinglePlayerBloc bloc, PublicPlayerSize size) {
     return DefaultTabController(
       length: 3,
       initialIndex: tabSelected.sortIndex,
@@ -103,7 +104,7 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
             }
             return AnimatedSwitcher(
               duration: Duration(milliseconds: 500),
-              child: _buildStuff(context, singlePlayerState.player, bloc),
+              child: _buildStuff(context, bloc, size),
             );
           },
         ),
@@ -116,11 +117,11 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
         .navigateTo(context, newRoute, transition: fluro.TransitionType.fadeIn);
   }
 
-  Widget _buildStuff(
-      BuildContext context, Player player, SinglePlayerBloc singlePlayerBloc) {
+  Widget _buildStuff(BuildContext context, SinglePlayerBloc singlePlayerBloc,
+      PublicPlayerSize size) {
     switch (tabSelected) {
       case PublicPlayerTab.details:
-        return PublicPlayerDetails(singlePlayerBloc);
+        return PublicPlayerDetails(singlePlayerBloc, size);
       case PublicPlayerTab.media:
         return SizedBox(height: 0);
       case PublicPlayerTab.stats:
@@ -252,8 +253,7 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
           if (singlePlayerState is SinglePlayerDeleted) {
             return Text(Messages.of(context).clubDeleted);
           }
-          return _buildStuff(
-              context, singlePlayerState.player, singlePlayerState);
+          return _buildStuff(context, singlePlayerBloc, PublicPlayerSize.small);
         },
       ),
     );
@@ -265,9 +265,10 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
       playerUid: playerUid,
       builder: (context, singlePlayerBloc) => Scaffold(
         body: ResponsiveWidget(
-          largeScreen: (context) => _buildMediumBody(context, singlePlayerBloc),
-          mediumScreen: (context) =>
-              _buildMediumBody(context, singlePlayerBloc),
+          largeScreen: (context) => _buildMediumBody(
+              context, singlePlayerBloc, PublicPlayerSize.large),
+          mediumScreen: (context) => _buildMediumBody(
+              context, singlePlayerBloc, PublicPlayerSize.large),
           smallScreen: (context) => _buildSmallBody(context, singlePlayerBloc),
         ),
       ),

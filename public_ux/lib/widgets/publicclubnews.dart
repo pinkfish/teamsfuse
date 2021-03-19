@@ -48,6 +48,14 @@ class PublicClubNews extends StatelessWidget {
         return Column(
           children: [
             SizedBox(height: 10),
+            Text(
+              Messages.of(context).news,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline4
+                  .copyWith(color: Colors.green),
+            ),
+            SizedBox(height: 10),
             state.newsItems.isEmpty
                 ? Text(Messages.of(context).noNews,
                     style: Theme.of(context).textTheme.headline4)

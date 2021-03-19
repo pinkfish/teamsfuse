@@ -200,8 +200,14 @@ class PublicClubHomeScreen extends StatelessWidget {
             if (state is SingleClubDeleted) {
               return Text(Messages.of(context).clubDeleted);
             }
-            return Text(state.club.name,
-                style: Theme.of(context).textTheme.headline4);
+            return Row(
+              children: [
+                ClubImage(clubUid: state.club.uid, width: 40, height: 40),
+                SizedBox(width: 30),
+                Text(state.club.name,
+                    style: Theme.of(context).textTheme.headline4),
+              ],
+            );
           },
         ),
       ),

@@ -32,7 +32,7 @@ class PublicSeasonPlayers extends StatelessWidget {
     return BlocBuilder(
       cubit: singleTeamBloc,
       builder: (c, singleTeamState) => SingleSeasonProvider(
-        seasonUid: singleTeamState.team.uid,
+        seasonUid: singleTeamState.team.currentSeason,
         builder: (c, singleSeasonBloc) => BlocBuilder(
           cubit: singleSeasonBloc,
           builder: (context, seasonState) {

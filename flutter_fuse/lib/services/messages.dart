@@ -3330,6 +3330,16 @@ class Messages {
         desc: 'Popup menu item to add media to a team',
       );
 
+  String get teamButton => Intl.message(
+    'TEAM',
+    desc: 'Button to show the team',
+  );
+
+  String get clubButton => Intl.message(
+    'CLUB',
+    desc: 'Button to show the club',
+  );
+
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {
     var name =

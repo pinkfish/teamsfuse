@@ -64,14 +64,9 @@ class PublicClubTeams extends StatelessWidget {
     final teamWidgets = <Widget>[];
     teamWidgets.add(SizedBox(height: 10));
     teamWidgets.add(Text(
-      singleClubState.club.name,
-      style: Theme.of(context).textTheme.headline4,
-    ));
-    teamWidgets.add(SizedBox(height: 10));
-    teamWidgets.add(Text(
       Messages.of(context).teams,
       style:
-          Theme.of(context).textTheme.headline6.copyWith(color: Colors.green),
+          Theme.of(context).textTheme.headline4.copyWith(color: Colors.green),
     ));
     teamWidgets.add(SizedBox(height: 10));
     if (singleClubState is SingleClubLoaded) {

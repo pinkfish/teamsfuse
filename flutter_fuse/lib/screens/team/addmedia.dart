@@ -32,7 +32,7 @@ class AddMediaScreen extends StatefulWidget {
 class _AddMediaScreenState extends State<AddMediaScreen> {
   AutovalidateMode autovalidate = AutovalidateMode.disabled;
   String _curGameUid;
-String _curPlayerUid;
+  String _curPlayerUid;
   String _description;
   PickedFile _imageFile;
 
@@ -47,7 +47,7 @@ String _curPlayerUid;
   void initState() {
     super.initState();
     _curGameUid = GameFormField.none;
-_curPlayerUid = SeasonPlayerFormField.none;
+    _curPlayerUid = SeasonPlayerFormField.none;
     _addMediaBloc = AddMediaBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
@@ -109,7 +109,11 @@ _curPlayerUid = SeasonPlayerFormField.none;
 
   void _pickImage() async {
     final picker = RepositoryProvider.of<ImagePicker>(context);
-    final img = await picker.getImage(source: ImageSource.gallery,maxHeight:1024, maxWidth:1024,);
+    final img = await picker.getImage(
+        source: ImageSource.gallery,
+        maxHeight: 1024,
+        maxWidth: 1024,
+        imageQuality: 95,);
     if (img != null) {
       setState(() {
         _imageFile = img;
@@ -154,9 +158,8 @@ _curPlayerUid = SeasonPlayerFormField.none;
             icon: const Icon(Icons.text_fields),
             labelText: messages.description,
             hintText: messages.description),
-
         minLines: 3,
-        maxLines:5,
+        maxLines: 5,
         focusNode: _descriptionFocusNode,
         keyboardType: TextInputType.emailAddress,
         onSaved: (value) {
@@ -165,11 +168,12 @@ _curPlayerUid = SeasonPlayerFormField.none;
       ),
     );
     rows.add(
-
-      GestureDetector(child: SizedBox(height: 100, child:
-
-        _showImage(),
-      ),onTap: _pickImage,
+      GestureDetector(
+        child: SizedBox(
+          height: 100,
+          child: _showImage(),
+        ),
+        onTap: _pickImage,
       ),
     );
 
@@ -181,10 +185,9 @@ _curPlayerUid = SeasonPlayerFormField.none;
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-          SingleChildScrollView(
-                child: Column(children: rows),
-              ),
-
+            SingleChildScrollView(
+              child: Column(children: rows),
+            ),
             BlocBuilder(
               cubit: singleSeasonBloc,
               builder: (context, seasonState) {

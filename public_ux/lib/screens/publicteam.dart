@@ -59,7 +59,7 @@ extension PublicTeamTabExtension on PublicTeamTab {
   static PublicTeamTab fromString(String str) {
     var check = str.toLowerCase();
     return PublicTeamTab.values.firstWhere(
-          (v) => v.name == check,
+      (v) => v.name == check,
       orElse: () => PublicTeamTab.team,
     );
   }
@@ -67,7 +67,7 @@ extension PublicTeamTabExtension on PublicTeamTab {
   /// Find the indexof the string.
   static PublicTeamTab fromIndex(int idx) {
     return PublicTeamTab.values.firstWhere(
-          (v) => v.sortIndex == idx,
+      (v) => v.sortIndex == idx,
       orElse: () => PublicTeamTab.team,
     );
   }
@@ -97,14 +97,10 @@ class PublicTeamDetailsScreen extends StatelessWidget {
           cubit: bloc,
           builder: (context, singleTeamState) {
             if (singleTeamState is SingleTeamUninitialized) {
-              return Text(Messages
-                  .of(context)
-                  .loading);
+              return Text(Messages.of(context).loading);
             }
             if (singleTeamState is SingleTeamDeleted) {
-              return Text(Messages
-                  .of(context)
-                  .clubDeleted);
+              return Text(Messages.of(context).clubDeleted);
             }
             return AnimatedSwitcher(
               duration: Duration(milliseconds: 500),
@@ -121,8 +117,8 @@ class PublicTeamDetailsScreen extends StatelessWidget {
         .navigateTo(context, newRoute, transition: fluro.TransitionType.fadeIn);
   }
 
-  Widget _buildStuff(BuildContext context, Team team,
-      SingleTeamBloc singleTeamBloc) {
+  Widget _buildStuff(
+      BuildContext context, Team team, SingleTeamBloc singleTeamBloc) {
     switch (tabSelected) {
       case PublicTeamTab.team:
         return PublicTeamDetails(singleTeamBloc);
@@ -141,14 +137,10 @@ class PublicTeamDetailsScreen extends StatelessWidget {
         cubit: singleTeamBloc,
         builder: (context, state) {
           if (state is SingleTeamUninitialized) {
-            return Text(Messages
-                .of(context)
-                .loading);
+            return Text(Messages.of(context).loading);
           }
           if (state is SingleTeamDeleted) {
-            return Text(Messages
-                .of(context)
-                .clubDeleted);
+            return Text(Messages.of(context).clubDeleted);
           }
           return Text(state.team.name);
         },
@@ -164,22 +156,22 @@ class PublicTeamDetailsScreen extends StatelessWidget {
           tabs: [
             Tab(
               icon: Icon(MdiIcons.basketball),
-              text: Messages
-                  .of(context)
-                  .about,),
-            Tab(icon: Icon(Icons.people), text: Messages
-                .of(context)
-                .players,),
-            Tab(icon: Icon(MdiIcons.graph), text: Messages
-                .of(context)
-                .stats,),
+              text: Messages.of(context).about,
+            ),
+            Tab(
+              icon: Icon(Icons.people),
+              text: Messages.of(context).players,
+            ),
+            Tab(
+              icon: Icon(MdiIcons.graph),
+              text: Messages.of(context).stats,
+            ),
           ],
-          onTap: (idx) =>
-              _navigateTo(
-                  context,
-                  '/Team/'
-                      '${PublicTeamTab.values[idx].name}'
-                      '/$teamUid'),
+          onTap: (idx) => _navigateTo(
+              context,
+              '/Team/'
+              '${PublicTeamTab.values[idx].name}'
+              '/$teamUid'),
         ),
       ),
     );
@@ -192,20 +184,22 @@ class PublicTeamDetailsScreen extends StatelessWidget {
           cubit: singleTeamBloc,
           builder: (context, state) {
             if (state is SingleTeamUninitialized) {
-              return Text(Messages
-                  .of(context)
-                  .loading);
+              return Text(Messages.of(context).loading);
             }
             if (state is SingleTeamDeleted) {
-              return Text(Messages
-                  .of(context)
-                  .clubDeleted);
+              return Text(Messages.of(context).clubDeleted);
             }
-            return Text(state.team.name,
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .headline4);
+            return Row(
+              children: [
+                TeamImage(
+                  teamUid: state.team.uid,
+                  width: 30,
+                  height: 30,
+                ),
+                Text(state.team.name,
+                    style: Theme.of(context).textTheme.headline4),
+              ],
+            );
           },
         ),
       ),
@@ -221,19 +215,14 @@ class PublicTeamDetailsScreen extends StatelessWidget {
                   cubit: singleTeamBloc,
                   builder: (context, state) {
                     if (state is SingleTeamUninitialized) {
-                      return Text(Messages
-                          .of(context)
-                          .loading);
+                      return Text(Messages.of(context).loading);
                     }
                     return Column(
                       children: [
                         TeamImage(teamUid: teamUid, width: 100, height: 100),
                         Text(
                           state.team.name,
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .headline5,
+                          style: Theme.of(context).textTheme.headline5,
                         ),
                       ],
                     );
@@ -241,38 +230,29 @@ class PublicTeamDetailsScreen extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(MdiIcons.basketball),
-              title: Text(Messages
-                  .of(context)
-                  .about),
-              onTap: () =>
-                  _navigateTo(
-                      context,
-                      '/Team/'
-                          '${PublicTeamTab.team.name}'
-                          '/$teamUid'),
+              title: Text(Messages.of(context).about),
+              onTap: () => _navigateTo(
+                  context,
+                  '/Team/'
+                  '${PublicTeamTab.team.name}'
+                  '/$teamUid'),
             ),
             ListTile(
               leading: Icon(Icons.people),
-              title: Text(Messages
-                  .of(context)
-                  .players),
-              onTap: () =>
-                  _navigateTo(
-                      context,
-                      '/Team/${PublicTeamTab.players.name}'
-                          '/$teamUid'),
+              title: Text(Messages.of(context).players),
+              onTap: () => _navigateTo(
+                  context,
+                  '/Team/${PublicTeamTab.players.name}'
+                  '/$teamUid'),
             ),
             ListTile(
               leading: Icon(MdiIcons.graph),
-              title: Text(Messages
-                  .of(context)
-                  .stats),
-              onTap: () =>
-                  Navigator.popAndPushNamed(
-                      context,
-                      '/Team/'
-                          '${PublicTeamTab.stats.name}'
-                          '/$teamUid'),
+              title: Text(Messages.of(context).stats),
+              onTap: () => Navigator.popAndPushNamed(
+                  context,
+                  '/Team/'
+                  '${PublicTeamTab.stats.name}'
+                  '/$teamUid'),
             ),
           ],
         ),
@@ -281,14 +261,10 @@ class PublicTeamDetailsScreen extends StatelessWidget {
         cubit: singleTeamBloc,
         builder: (context, singleTeamState) {
           if (singleTeamState is SingleTeamUninitialized) {
-            return Text(Messages
-                .of(context)
-                .loading);
+            return Text(Messages.of(context).loading);
           }
           if (singleTeamState is SingleTeamDeleted) {
-            return Text(Messages
-                .of(context)
-                .clubDeleted);
+            return Text(Messages.of(context).clubDeleted);
           }
           return _buildStuff(context, singleTeamState.team, singleTeamBloc);
         },
@@ -296,20 +272,15 @@ class PublicTeamDetailsScreen extends StatelessWidget {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return SingleTeamProvider(
       teamUid: teamUid,
-      builder: (context, singleTeamBloc) =>
-          ResponsiveWidget(
-            largeScreen: (context) => _buildMediumBody(context, singleTeamBloc),
-            mediumScreen: (context) =>
-                _buildMediumBody(context, singleTeamBloc),
-            smallScreen: (context) => _buildSmallBody(context, singleTeamBloc),
-          ),
-
-
+      builder: (context, singleTeamBloc) => ResponsiveWidget(
+        largeScreen: (context) => _buildMediumBody(context, singleTeamBloc),
+        mediumScreen: (context) => _buildMediumBody(context, singleTeamBloc),
+        smallScreen: (context) => _buildSmallBody(context, singleTeamBloc),
+      ),
     );
   }
 }
