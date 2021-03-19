@@ -93,7 +93,6 @@ class AsyncHydratedStorage implements AsyncStorage {
   @override
   Future<dynamic> read(String key) async {
     return _lock.synchronized(() async {
-      print("read...");
       return _box.isOpen ? _box.get(key) : null;
     });
   }
