@@ -421,12 +421,10 @@ describe('TeamsFuse rules', function () {
 
     it('get game requires season user', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        console.log('a');
         await db
             .collection('Teams')
             .doc('team')
             .set({ uid: 'team', admins: { alice: true }, isPublic: true });
-        console.log('aa');
         await firebase.assertSucceeds(
             db
                 .collection('Seasons')
@@ -441,7 +439,6 @@ describe('TeamsFuse rules', function () {
                     teamUid: 'team',
                 }),
         );
-        console.log('ab');
         await firebase.assertSucceeds(
             db
                 .collection('Teams')
@@ -452,7 +449,6 @@ describe('TeamsFuse rules', function () {
                     admins: { alice: true },
                 }),
         );
-        console.log('ac');
 
         const gameRef = db.collection('Games').doc('game');
         const sharedGameRef = db.collection('GamesShared').doc('sharedGame');
@@ -472,7 +468,6 @@ describe('TeamsFuse rules', function () {
                 return;
             }),
         );
-        console.log('ad');
         await firebase.assertSucceeds(db.collection('Games').doc('game').get());
         // Make sure we can update the game too.
         await firebase.assertSucceeds(
@@ -481,7 +476,6 @@ describe('TeamsFuse rules', function () {
                 uid: 'game',
             }),
         );
-        console.log('Raobert');
         const dbRobert = authedApp({ uid: 'robert', email_verified: true });
         await firebase.assertFails(dbRobert.collection('Games').doc('game').get());
         await firebase.assertFails(
@@ -500,14 +494,12 @@ describe('TeamsFuse rules', function () {
                     },
                 }),
         );
-        console.log('Other');
         const dbOther = authedApp({ uid: 'other', email_verified: true });
         await firebase.assertFails(
             dbOther.collection('Games').doc('game').update({
                 time: 12345,
             }),
         );
-        console.log('Add Player');
         await firebase.assertSucceeds(
             dbOther
                 .collection('Games')
@@ -519,7 +511,6 @@ describe('TeamsFuse rules', function () {
                     },
                 }),
         );
-        console.log('Delete Player - fail');
         await firebase.assertFails(
             dbOther
                 .collection('Games')
@@ -531,7 +522,6 @@ describe('TeamsFuse rules', function () {
                 }),
         );
         // Admin can delete a player.
-        console.log('Delete Player');
         await firebase.assertSucceeds(
             db
                 .collection('Games')
