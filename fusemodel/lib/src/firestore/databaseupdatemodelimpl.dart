@@ -797,8 +797,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(SEASONS_COLLECTION)
         .where('${Season.PLAYERS}.$playerUid.$ADDED', isEqualTo: true);
     if (userData != null) {
-      ref = ref
-          .where('${Season.USER}.${userData.uid}.$ADDED', isEqualTo: true);
+      ref = ref.where('${Season.USER}.${userData.uid}.$ADDED', isEqualTo: true);
     } else {
       ref = ref.where('isPublic', isEqualTo: true);
     }
@@ -1057,7 +1056,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       await t.update(document.reference, updatedInvite.toMap());
       return document.documentID;
     } else {
+      if (data.email == null || data.email.isEmpty) {
+        return '';
+      }
       var docRef = _wrapper.collection(INVITE_COLLECTION).document();
+
       var invite = InviteToPlayer((b) => b
         ..playerUid = playerUid
         ..uid = docRef.documentID
@@ -1117,6 +1120,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         });
       }
 
+      // Only do this if the email is not empty.
       docId = await _buildInviteToSeason(
           t,
           playerUid,

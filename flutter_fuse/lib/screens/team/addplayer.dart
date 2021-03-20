@@ -214,7 +214,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
           initialValue: '',
           decoration: InputDecoration(
             icon: const Icon(MdiIcons.tshirtCrew),
-            labelText: messages.roleselect,
+            labelText: messages.jersyNumber,
           ),
           onSaved: (val) {
             _jerseyNumber = val;

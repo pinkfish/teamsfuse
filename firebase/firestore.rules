@@ -129,7 +129,7 @@ service cloud.firestore {
          isUserOrAdmin(get(/databases/$(database)/documents/Seasons/$(existingData().seasonUid)).data);
       allow update, delete: if isSignedIn() &&
            (isOpponentOrGuestPlayerAdded() ||
-         isAdmin(get(/databases/$(database)/documents/Teams/$(existingData().teamUid)).data));
+         c(get(/databases/$(database)/documents/Teams/$(existingData().teamUid)).data));
       allow list: if isSignedIn();
       // Only allow a create if the shared data exists and the team exists.
       allow create: if isSignedIn() && isUidCorrect() &&
@@ -207,11 +207,12 @@ service cloud.firestore {
         (resource.data.users[request.auth.uid].added) ||
         isPublicVisible());
       allow update: if isSignedIn() &&
-        incomingData().players.keys().size() > 0;
-      allow delete: if isSignedIn();
+        incomingData().players.keys().size() > 0 && isUserOrAdmin(existingData());
+      allow delete: if isSignedIn() &&
+         isAdmin(get(/databases/$(database)/documents/Teams/$(incomingData().teamUid)).data);
       allow list: if isSignedIn();
       allow create: if isSignedIn() && isUidCorrect() &&
-         request.auth.uid in getAfter(/databases/$(database)/documents/Teams/$(incomingData().teamUid)).data.admins &&
+         isAdmin(getAfter(/databases/$(database)/documents/Teams/$(incomingData().teamUid)).data) &&
          incomingData().players.keys().size() > 0;
     }
 
@@ -224,9 +225,9 @@ service cloud.firestore {
         (existingData().users[request.auth.uid].added ||
         request.auth.uid in existingData().admins)) ||
         isPublicVisible();
-      allow write: if isSignedIn();
-      allow create: if isSignedIn() && isUidCorrect() &&
-        request.auth.uid in request.auth.uid in incomingData().admins;
+      allow write: if isSignedIn() && isAdmin(existingData());
+      allow create: if isSignedIn() && isUidCorrect() && isAdmin(incomingData());
+      allow delete: if isSignedIn() && isUidCorrect() && isAdmin(incomingData());
     }
 
     // Main users table
