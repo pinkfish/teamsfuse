@@ -254,9 +254,10 @@ service cloud.firestore {
           (isEmpty(existingData(), 'users') || existingData().users[request.auth.uid].added);
       allow update: if isSignedIn() &&
         (isEmpty(existingData(), 'users') || existingData().users[request.auth.uid].added) &&
-        (isPlayerCorrect(incomingData()) ||
-            (incomingData().photoUrl != null && incomingData().size() == 1)
-            );
+        (
+             (incomingData().photoUrl != null && incomingData().size() == 1) ||
+            isPlayerCorrect(incomingData())
+        );
       allow create: if isSignedIn() && isUidCorrect() && isPlayerCorrect(incomingData());
       allow read: if isSignedIn() || isPublicVisible();
     }
