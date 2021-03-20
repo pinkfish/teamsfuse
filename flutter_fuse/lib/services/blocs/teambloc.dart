@@ -93,7 +93,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
       : super(TeamUninitialized()) {
     coordinationBloc
         .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Team));
-    _coordSub = coordinationBloc.listen((CoordinationState coordState) {
+    _coordSub = coordinationBloc.stream.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
         add(_TeamLoggedOut());
@@ -104,7 +104,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
     if (coordinationBloc.state is CoordinationStateLoadingFirestore) {
       _startLoadingFirestore(coordinationBloc.state);
     }
-    _clubSub = clubBloc.listen((ClubState state) {
+    _clubSub = clubBloc.stream.listen((ClubState state) {
       if (state is ClubLoaded) {
         add(_NewClubTeams(teams: state.teams));
       }

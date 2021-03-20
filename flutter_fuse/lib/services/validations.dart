@@ -102,5 +102,6 @@ class Validations {
     if (place.name.isEmpty && place.address.isEmpty) {
       return Messages.of(context).needToSelectPlace;
     }
+    return null;
   }
 }

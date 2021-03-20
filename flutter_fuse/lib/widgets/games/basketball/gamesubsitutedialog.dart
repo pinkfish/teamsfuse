@@ -87,11 +87,11 @@ class _GamePlayerSubsitutionDialogState
         onTap: (p) => setState(() => _currentTab = p),
         items: [
           BottomNavigationBarItem(
-            title: Text('Incoming'),
+            label: 'Incoming',
             icon: Icon(Icons.person_add),
           ),
           BottomNavigationBarItem(
-            title: Text('Outgoing'),
+            label: 'Outgoing',
             icon: Icon(MdiIcons.accountRemoveOutline),
           ),
         ],

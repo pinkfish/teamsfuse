@@ -12,7 +12,7 @@ import '../player/playername.dart';
 class SeasonPlayerFormField extends FormField<String> {
   /// Constructor.
   SeasonPlayerFormField({
-    SingleSeasonBloc seasonBloc,
+    @required SingleSeasonBloc seasonBloc,
     Key key,
     String initialValue = none,
     bool enabled = true,

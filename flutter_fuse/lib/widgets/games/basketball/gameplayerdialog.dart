@@ -56,7 +56,7 @@ class GamePlayerDialog extends StatelessWidget {
         ButtonBar(
           children: [
             ...extraButtons != null ? extraButtons(context) : [],
-            FlatButton(
+            TextButton(
               onPressed: () => Navigator.pop(context, null),
               child: Text(
                 MaterialLocalizations.of(context).cancelButtonLabel,

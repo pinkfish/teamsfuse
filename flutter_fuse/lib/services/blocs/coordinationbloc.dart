@@ -151,7 +151,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
       @required this.analytics,
       @required this.databaseUpdateModel})
       : super(CoordinationStateUninitialized(BuiltSet())) {
-    authenticationBloc.listen((AuthenticationState authState) {
+    authenticationBloc.stream.listen((AuthenticationState authState) {
       if (authState is AuthenticationLoggedIn) {
         loadingTrace = analytics.newTrace('fullLoadTrace');
         start = clock.now();

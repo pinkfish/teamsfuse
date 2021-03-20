@@ -38,7 +38,7 @@ class _EditSeasonScreenState extends State<EditSeasonScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(value),
       ),

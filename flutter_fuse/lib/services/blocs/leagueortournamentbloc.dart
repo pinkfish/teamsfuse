@@ -59,7 +59,7 @@ class LeagueOrTournamentBloc
     coordinationBloc.add(
         CoordinationEventTrackLoading(toLoad: BlocsToLoad.LeagueOrTournament));
 
-    _coordSub = coordinationBloc.listen((CoordinationState coordState) {
+    _coordSub = coordinationBloc.stream.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
         add(_LeagueOrTournamentEventLogout());

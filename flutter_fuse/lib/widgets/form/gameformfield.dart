@@ -13,7 +13,7 @@ import '../games/gametitle.dart';
 class GameFormField extends FormField<String> {
   /// Constructor.
   GameFormField({
-    SingleSeasonBloc seasonBloc,
+    @required SingleSeasonBloc seasonBloc,
     Key key,
     String initialValue = none,
     bool enabled = true,

@@ -56,7 +56,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
   }) : super(SeasonUninitialized()) {
     coordinationBloc
         .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Season));
-    _coordSub = coordinationBloc.listen((CoordinationState coordState) {
+    _coordSub = coordinationBloc.stream.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
         add(_SeasonLoggedOut());

@@ -44,7 +44,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(value),
       ),
@@ -135,7 +135,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
           ),
           ButtonBar(
             children: [
-              FlatButton(
+              TextButton(
                 onPressed: _handleSubmit,
                 //color: Theme.of(context).buttonTheme.colorScheme.primary,
                 child: Text(

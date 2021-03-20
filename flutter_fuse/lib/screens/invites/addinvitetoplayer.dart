@@ -65,7 +65,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
             title: Text(messages.followPlayer(
                 playerBloc.state?.player?.name ?? messages.loading)),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 onPressed: () {
                   _savePressed(playerBloc.state);
                 },

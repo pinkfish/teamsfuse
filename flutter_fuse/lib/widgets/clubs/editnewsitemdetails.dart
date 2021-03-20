@@ -78,8 +78,6 @@ class EditNewsItemDetailsFormState extends State<EditNewsItemDetailsForm> {
       return Text('Invalid state');
     }
 
-    var screenSize = MediaQuery.of(context).size;
-
     var fields = <Widget>[
       EnsureVisibleWhenFocused(
         focusNode: _focusNodeSubject,

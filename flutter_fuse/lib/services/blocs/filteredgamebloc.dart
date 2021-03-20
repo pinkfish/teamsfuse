@@ -124,7 +124,7 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
       @required this.teamBloc,
       @required this.seasonBloc})
       : super(FilteredGameUninitialized()) {
-    _gameSub = gameBloc.listen((GameState gameState) {
+    _gameSub = gameBloc.stream.listen((GameState gameState) {
       if (gameState is GameLoaded) {
         add(_FilteredGameEventGamesLoaded(loaded: gameState));
       } else {

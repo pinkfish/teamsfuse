@@ -73,7 +73,8 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
       @required this.crashes,
       @required this.databaseUpdateModel})
       : super(InviteUninitialized()) {
-    _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
+    _coordSub =
+        coordinationBloc.stream.listen((CoordinationState coordinationState) {
       if (coordinationState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
 

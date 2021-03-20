@@ -93,12 +93,12 @@ class _AcceptInviteToLeagueScreenState
                           textColor: Colors.white,
                           child: Text(messages.joinleague),
                         ),
-                        FlatButton(
+                        TextButton(
                           onPressed: () => Navigator.pushNamed(context,
                               '/League/Main/${inviteToLeagueAsAdmin.leagueUid}'),
                           child: Text(messages.openbutton),
                         ),
-                        FlatButton(
+                        TextButton(
                           onPressed: () =>
                               showDeleteInvite(context, _singleInviteBloc),
                           child: Icon(Icons.delete),

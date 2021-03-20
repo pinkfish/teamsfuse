@@ -90,11 +90,11 @@ class _AcceptInviteToLeagueTeamScreenState
               ),
             ),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 onPressed: () => Navigator.pop(context, true),
                 child: Text(MaterialLocalizations.of(context).okButtonLabel),
               ),
-              FlatButton(
+              TextButton(
                 onPressed: () => Navigator.pop(context, false),
                 child:
                     Text(MaterialLocalizations.of(context).cancelButtonLabel),
@@ -238,12 +238,12 @@ class _AcceptInviteToLeagueTeamScreenState
                                   textColor: Colors.white,
                                   child: Text(messages.addTeamButton),
                                 ),
-                                FlatButton(
+                                TextButton(
                                   onPressed: () => Navigator.pushNamed(context,
                                       '/League/Main/${inviteToLeagueTeam.leagueUid}'),
                                   child: Text(messages.openbutton),
                                 ),
-                                FlatButton(
+                                TextButton(
                                   onPressed: () => showDeleteInvite(
                                       context, _singleInviteBloc),
                                   child: Icon(Icons.delete),

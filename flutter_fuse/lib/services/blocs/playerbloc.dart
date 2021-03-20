@@ -59,7 +59,7 @@ class PlayerBloc extends HydratedBloc<_PlayerEvent, PlayerState> {
       : super(PlayerUninitialized()) {
     coordinationBloc
         .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Player));
-    _authSub = coordinationBloc.listen((CoordinationState coordState) {
+    _authSub = coordinationBloc.stream.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
         add(_PlayerLoggedOut());

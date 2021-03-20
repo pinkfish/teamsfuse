@@ -123,6 +123,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                         children: <Widget>[
                           Text(messages.verifyExplanation(state.user.email)),
                           Container(
+                            margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                             child: RaisedButton(
                               color: Theme.of(context).primaryColor,
                               textColor: Colors.white,
@@ -130,7 +131,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                               onPressed: _handleSubmitted,
                               child: Text(messages.resendverify),
                             ),
-                            margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                           ),
                         ],
                       ),

@@ -52,7 +52,7 @@ class ProfileBloc extends HydratedBloc<ProfileEvent, ProfileBlocState> {
     @required this.authenticationBloc,
     @required this.crashes,
   }) : super(ProfileBlocUninitialized()) {
-    _authSub = authenticationBloc.listen((state) {
+    _authSub = authenticationBloc.stream.listen((state) {
       if (state is AuthenticationLoggedOut) {
         add(_ProfileLoggedOut());
       } else if (state is AuthenticationLoggedIn) {

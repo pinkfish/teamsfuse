@@ -68,7 +68,8 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
     coordinationBloc
         .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Messages));
 
-    _coordState = coordinationBloc.listen((CoordinationState coordState) {
+    _coordState =
+        coordinationBloc.stream.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
         add(_MessagesEventLogout());
@@ -168,7 +169,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
   }
 
   @override
-  fromJson(Map<String, dynamic> json) {
+  MessagesBlocState fromJson(Map<String, dynamic> json) {
     if (json == null || !json.containsKey('type')) {
       return MessagesUninitialized();
     }

@@ -70,7 +70,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
   /// Create the club bloc.
   ClubBloc({@required this.coordinationBloc, @required this.crashes})
       : super(ClubUninitialized()) {
-    _coordSub = coordinationBloc.listen((var coordinationState) {
+    _coordSub = coordinationBloc.stream.listen((var coordinationState) {
       if (coordinationState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
         add(_ClubEventLogout());

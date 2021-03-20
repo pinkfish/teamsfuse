@@ -81,7 +81,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _sendMessage() {

@@ -153,6 +153,7 @@ class SingleGameUpdatePlayer extends SingleGameEvent {
 /// Loads the players for the game.
 ///
 class SingleGameLoadPlayers extends SingleGameEvent {
+  @override
   List<Object> get props => [];
 }
 
@@ -172,6 +173,7 @@ class SingleGameAddGuestPlayer extends SingleGameEvent {
     this.jerseyNumber,
   );
 
+  @override
   List<Object> get props => [playerName, jerseyNumber];
 }
 
@@ -191,6 +193,7 @@ class SingleGameAddOpponentPlayer extends SingleGameEvent {
     @required this.jerseyNumber,
   }) : assert(jerseyNumber != null);
 
+  @override
   List<Object> get props => [opponentPlayerName, jerseyNumber];
 }
 
@@ -198,6 +201,7 @@ class SingleGameAddOpponentPlayer extends SingleGameEvent {
 /// Loads the players for the opponent.
 ///
 class SingleGameLoadOpponentPlayers extends SingleGameEvent {
+  @override
   List<Object> get props => [];
 }
 

@@ -20,7 +20,7 @@ class LoadedStateBloc extends Bloc<LoadedEvent, LoadedState> {
 
   LoadedStateBloc({@required this.coordinationBloc})
       : super(LoadedState.Logout) {
-    _coordSub = coordinationBloc.listen((state) {
+    _coordSub = coordinationBloc.stream.listen((state) {
       _fixState(state);
     });
     _fixState(coordinationBloc.state);

@@ -102,7 +102,7 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
                               textColor: Colors.white,
                               child: Text(messages.addInvite),
                             ),
-                            FlatButton(
+                            TextButton(
                               onPressed: () =>
                                   showDeleteInvite(context, _singleInviteBloc),
                               child: Text(messages.deleteinvite),

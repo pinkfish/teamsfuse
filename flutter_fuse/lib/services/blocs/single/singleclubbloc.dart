@@ -144,7 +144,7 @@ class SingleClubLoadNewsItems extends SingleClubEvent {
   List<Object> get props => [startAt];
 
   /// The time at which we should start loading the news items.
-  DateTime startAt;
+  final DateTime startAt;
 
   /// Create a new club nees item thing.
   SingleClubLoadNewsItems({this.startAt});

@@ -87,7 +87,7 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
 /// Shows the details of the player.
 ///
 class PlayerDetailsScreen extends StatelessWidget {
-  /// Constrcutor.
+  /// Constructor.
   PlayerDetailsScreen(this.teamUid, this.seasonUid, this.playerUid);
 
   /// The teamUid to get the player details for.
@@ -234,8 +234,8 @@ class PlayerDetailsScreen extends StatelessWidget {
           Text(Messages.of(context).invitedToTeam),
         );
       } else {
-        for (var userUid in singlePlayerState.player.users.keys) {
-          var player = singlePlayerState.player.users[userUid];
+        for (final userUid in singlePlayerState.player.users.keys) {
+          final player = singlePlayerState.player.users[userUid];
           ret.add(
             SingleProfileProvider(
               userUid: userUid,
@@ -364,7 +364,7 @@ class PlayerDetailsScreen extends StatelessWidget {
         context, 'AddInviteToPlayer/${state.seasonPlayer.playerUid}');
   }
 
-  void _editPlayer(BuildContext context, String playrrUid) {
+  void _editPlayer(BuildContext context, String playerUid) {
     Navigator.pushNamed(context, 'EditPlayer/$playerUid');
   }
 
@@ -428,18 +428,10 @@ class PlayerDetailsScreen extends StatelessWidget {
                       singlePlayerState.player.users.containsKey(userUid)) {
                     // I am a member of this player, can edit them!
                     actions.add(
-                      PopupMenuButton<String>(
-                        onSelected: (str) => _editPlayer(
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () => _editPlayer(
                             context, seasonPlayerState.seasonPlayer.playerUid),
-                        itemBuilder: (context) => <PopupMenuItem<String>>[
-                          PopupMenuItem<String>(
-                            value: 'edit',
-                            child: ListTile(
-                              title: Text(Messages.of(context).editbuttontext),
-                              leading: Icon(Icons.edit),
-                            ),
-                          ),
-                        ],
                       ),
                     );
                   }

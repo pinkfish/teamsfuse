@@ -71,7 +71,10 @@ class LoggingData extends LoggingDataBase {
     }
     _tags['locale'] = Platform.localeName;
     _packageInfo = PackageInfo(
-        version: 'unknown', packageName: 'unknown', buildNumber: 'unknown');
+        appName: 'TeamsFuse',
+        version: 'unknown',
+        packageName: 'unknown',
+        buildNumber: 'unknown');
     PackageInfo.fromPlatform().then((info) {
       _tags['buildNumber'] = info.buildNumber;
       _tags['packageName'] = info.packageName;

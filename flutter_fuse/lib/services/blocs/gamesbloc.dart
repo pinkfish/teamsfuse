@@ -70,7 +70,7 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
     if (teamBloc.state is TeamLoaded) {
       _onTeamsUpdates(teamBloc.state.allTeamUids, true);
     }
-    _teamSub = teamBloc.listen((TeamState state) {
+    _teamSub = teamBloc.stream.listen((TeamState state) {
       if (state is TeamLoaded) {
         _start = _start ?? clock.now().subtract(Duration(days: 60)).toUtc();
         _end = _end ?? clock.now().add(Duration(days: 240)).toUtc();

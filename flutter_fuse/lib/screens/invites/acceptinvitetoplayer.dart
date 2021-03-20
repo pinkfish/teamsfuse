@@ -79,7 +79,7 @@ class _AcceptInviteToPlayerScreenState
             },
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               onPressed: () {
                 _savePressed();
               },
@@ -148,7 +148,7 @@ class _AcceptInviteToPlayerScreenState
                                       onPressed: _savePressed,
                                       child: Text(messages.addPlayerButton),
                                     ),
-                                    FlatButton(
+                                    TextButton(
                                       onPressed: () => showDeleteInvite(
                                           context, _singleInviteBloc),
                                       child: Text(messages.deleteinvite),
