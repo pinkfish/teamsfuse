@@ -79,6 +79,7 @@ abstract class Player implements Built<Player, PlayerBuilder> {
 
   /// Url to get the photo from
   @nullable
+  @BuiltValueField(wireName: photoUrlField)
   String get photoUrl;
 
   /// The users that are associated with this player.
@@ -109,6 +110,9 @@ abstract class Player implements Built<Player, PlayerBuilder> {
 
   /// The name of the field to serialize for the user data.
   static const String usersField = 'users';
+
+  /// The name of the field to serialize for the photoUrl data.
+  static const String photoUrlField = 'photoUrl';
 
   /// Serialize the player.
   Map<String, dynamic> toMap({bool includeUsers = false}) {

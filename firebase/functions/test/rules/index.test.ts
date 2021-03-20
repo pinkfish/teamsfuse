@@ -133,6 +133,17 @@ describe('TeamsFuse rules', function () {
                 .set({ users: { alice: { added: true } }, uid: 'frog', playerType: 'player' }),
         );
     });
+    it('create player update photoUrl', async () => {
+        const db = authedApp({ uid: 'alice', email_verified: true });
+        await firebase.assertSucceeds(
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ users: { alice: { added: true } }, uid: 'frog', playerType: 'player' }),
+        );
+        await firebase.assertSucceeds(db.collection('Players').doc('frog').update({ photoUrl: 'player' }));
+    });
+
     it('create player user + opponent', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
         await firebase.assertFails(

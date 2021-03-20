@@ -162,6 +162,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     if (state is AuthenticationFailed) {
                       showInSnackBar(state.error.toString());
                     }
+                    // Did the forgot password flow.
+                    if (state is AuthenticationDone) {
+                      Navigator.pushNamed(context, '/Login/Home');
+                    }
                   },
                   builder: (context, state) {
                     var loading = state is AuthenticationLoading;

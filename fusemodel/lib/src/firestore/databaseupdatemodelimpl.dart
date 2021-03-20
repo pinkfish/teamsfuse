@@ -764,7 +764,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var snapshot = (await task.future);
     var photoUrl = snapshot.downloadUrl.toString();
     var data = <String, String>{};
-    data[PHOTOURL] = photoUrl;
+    data[Player.photoUrlField] = photoUrl;
     await _wrapper
         .collection(PLAYERS_COLLECTION)
         .document(playerUid)

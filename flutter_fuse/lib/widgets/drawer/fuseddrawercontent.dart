@@ -49,11 +49,12 @@ class FusedDrawerContent extends StatelessWidget {
               ),
             ),
             subtitle: BlocBuilder(
-                bloc: BlocProvider.of<TeamBloc>(context),
+                bloc: BlocProvider.of<ClubBloc>(context),
                 builder: (build, state) {
                   //if (snap.hasData) {
                   return Text(
-                    Messages.of(context).teamNumbers(state.playerTeams.length),
+                    Messages.of(context)
+                        .teamNumbers(state.teams[club.uid].length),
                   );
                   /*}
                   //if (club.cachedTeams != null) {

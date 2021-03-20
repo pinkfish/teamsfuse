@@ -63,11 +63,11 @@ service cloud.firestore {
       return property in data && data[property].keys().size() > 0;
     }
 
-    function isPlayerCorrect() {
-      return incomingData() != null &&
-         ((isNotEmpty(incomingData(), 'users') && isNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid') && incomingData().playerType == 'player') ||
-          (isEmpty(incomingData(), 'users')  && isNotNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNotNull(incomingData(), 'teamUid') && incomingData().playerType == 'opponent') ||
-           (isEmpty(incomingData(), 'users') && isNull(incomingData(), 'opponentUid') && isNotNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid') && incomingData().playerType == 'guest'));
+    function isPlayerCorrect(data) {
+      return data != null &&
+         ((isNotEmpty(data, 'users') && isNull(data, 'opponentUid') && isNull(data, 'gameUid') && isNull(data, 'teamUid') && data.playerType == 'player') ||
+          (isEmpty(data, 'users')  && isNotNull(data, 'opponentUid') && isNull(data, 'gameUid') && isNotNull(data, 'teamUid') && data.playerType == 'opponent') ||
+           (isEmpty(data, 'users') && isNull(data, 'opponentUid') && isNotNull(data, 'gameUid') && isNull(data, 'teamUid') && data.playerType == 'guest'));
     }
 
     function isPublicVisible() {
@@ -254,8 +254,10 @@ service cloud.firestore {
           (isEmpty(existingData(), 'users') || existingData().users[request.auth.uid].added);
       allow update: if isSignedIn() &&
         (isEmpty(existingData(), 'users') || existingData().users[request.auth.uid].added) &&
-        isPlayerCorrect();
-      allow create: if isSignedIn() && isUidCorrect() && isPlayerCorrect();
+        (isPlayerCorrect(incomingData()) ||
+            (incomingData().photoUrl != null && incomingData().size() == 1)
+            );
+      allow create: if isSignedIn() && isUidCorrect() && isPlayerCorrect(incomingData());
       allow read: if isSignedIn() || isPublicVisible();
     }
 
