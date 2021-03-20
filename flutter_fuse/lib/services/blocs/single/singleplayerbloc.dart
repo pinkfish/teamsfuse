@@ -208,7 +208,7 @@ class SinglePlayerBloc
 
       try {
         if (event.image != null) {
-          var url = await db.updatePlayerImage(event.player.uid, event.image);
+          final url = await db.updatePlayerImage(event.player.uid, event.image);
           event.player.photoUrl = url.toString();
         }
         await db.updateFirestorePlayer(event.player.build(), false);

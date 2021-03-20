@@ -348,7 +348,8 @@ class SingleTeamBloc
       } else {
         try {
           if (event.image != null) {
-            await db.updateTeamImage(teamUid, event.image);
+            final newUri = await db.updateTeamImage(teamUid, event.image);
+            event.team.photoUrl = newUri.toString();
           }
           await db.updateFirestoreTeam(event.team.build());
           yield (SingleTeamSaveDone.fromState(state)..savedUid = event.team.uid)

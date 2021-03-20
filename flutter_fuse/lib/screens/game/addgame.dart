@@ -191,7 +191,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
       ..uniform = ''
       ..notes = ''
       ..result = result
-      ..trackAttendance = team.trackAttendenceInternal);
+      ..trackAttendance = team.trackAttendanceInternal);
     setState(() {});
   }
 

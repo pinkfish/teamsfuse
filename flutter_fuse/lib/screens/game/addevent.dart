@@ -205,7 +205,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         ..uid = ''
         ..teamUid = _team.uid
         ..seasonUid = _team.currentSeason
-        ..trackAttendance = _team.trackAttendenceInternal
+        ..trackAttendance = _team.trackAttendanceInternal
         ..arrivalTime =
             start.subtract(Duration(minutes: _team.arriveEarlyInternal.toInt()))
         ..result = result
@@ -226,7 +226,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         ..sharedData.time = start.toUtc()
         ..sharedData.endTime = _initGame.sharedData.time
         ..seasonUid = team.currentSeason
-        ..trackAttendance = team.trackAttendenceInternal);
+        ..trackAttendance = team.trackAttendanceInternal);
     });
   }
 

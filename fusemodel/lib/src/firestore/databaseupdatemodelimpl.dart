@@ -514,7 +514,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     await _wrapper
         .collection(TEAMS_COLLECTION)
         .document(teamUid)
-        .updateData({PHOTOURL: photoUrl.toString()});
+        .updateData({Team.photoUrlField: photoUrl.toString()});
     _analytics.logEvent(name: 'updateTeamImage');
     return photoUrl;
   }
@@ -523,15 +523,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<void> deleteAdmin(Team team, String uid) {
     var ref = _wrapper.collection(TEAMS_COLLECTION).document(team.uid);
     _analytics.logEvent(name: 'deleteAdmin');
-    return ref.updateData(<String, dynamic>{'${Team.ADMINS}.$uid': false});
+    return ref.updateData(<String, dynamic>{'${Team.adminsField}.$uid': false});
   }
 
   @override
   Future<String> addAdmin(String teamUid, String uid) async {
     var ref = _wrapper.collection(TEAMS_COLLECTION).document(teamUid);
     await ref.updateData(<String, dynamic>{
-      '${Team.ADMINS}.$uid.added': true,
-      '${Team.ADMINS}.$uid.admin': true,
+      '${Team.adminsField}.$uid.added': true,
+      '${Team.adminsField}.$uid.admin': true,
     });
     _analytics.logEvent(name: 'addAdmin');
     return ref.documentID;
@@ -1221,13 +1221,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<Team>> getClubTeams(Club club, bool isPublic) async* {
     var query = _wrapper
         .collection(TEAMS_COLLECTION)
-        .where(Team.CLUBUID, isEqualTo: club.uid);
+        .where(Team.clubUidField, isEqualTo: club.uid);
     if (isPublic) {
-      query = query.where(Team.ISPUBLIC, isEqualTo: true);
+      query = query.where(Team.isPublicField, isEqualTo: true);
     } else {
       // Only get teams we can see.
-      query =
-          query.where('${Team.USER}.${userData.uid}.$ADDED', isEqualTo: true);
+      query = query.where('${Team.userField}.${userData.uid}.$ADDED',
+          isEqualTo: true);
     }
     var wrap = await query.getDocuments();
     var teams = <Team>[];
@@ -2079,7 +2079,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<Team>> getTeamAdmins() async* {
     var teamCollection = _wrapper
         .collection(TEAMS_COLLECTION)
-        .where('${Team.ADMINS}.${userData.uid}.$ADDED', isEqualTo: true);
+        .where('${Team.adminsField}.${userData.uid}.$ADDED', isEqualTo: true);
 
     var wrap = await teamCollection.getDocuments();
     yield BuiltList(
@@ -2094,7 +2094,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<Iterable<Team>> getTeams() async* {
     var teamCollection = _wrapper
         .collection(TEAMS_COLLECTION)
-        .where('${Team.USER}.${userData.uid}.$ADDED', isEqualTo: true);
+        .where('${Team.userField}.${userData.uid}.$ADDED', isEqualTo: true);
 
     var wrap = await teamCollection.getDocuments();
     yield wrap.documents.map((snap) => Team.fromMap(userData.uid, snap.data));

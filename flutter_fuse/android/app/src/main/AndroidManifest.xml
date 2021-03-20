@@ -27,7 +27,7 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
-            !-- Specify that the launch screen should continue being displayed -->
+            <!-- Specify that the launch screen should continue being displayed -->
             <!-- until Flutter renders its first frame. -->
             <meta-data
                     android:name="io.flutter.embedding.android.SplashScreenDrawable"

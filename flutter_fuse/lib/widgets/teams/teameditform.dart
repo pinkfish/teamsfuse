@@ -127,7 +127,7 @@ class TeamEditFormState extends State<TeamEditForm> {
     }
   }
 
-  Widget _buildImage() {
+  Widget _buildImage(double size) {
     if (!_changedImage) {
       if (_builder.uid == null) {
         return Icon(Icons.upload_file);
@@ -137,7 +137,16 @@ class TeamEditFormState extends State<TeamEditForm> {
         );
       }
     }
-    return Image.memory(_imageFile);
+    return ClipOval(
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: Image.memory(_imageFile),
+        ),
+      ),
+    );
   }
 
   @override
@@ -196,7 +205,9 @@ class TeamEditFormState extends State<TeamEditForm> {
           onPressed: _selectImage,
           iconSize:
               (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
-          icon: _buildImage(),
+          icon: _buildImage(
+            (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
+          ),
         ),
         EnsureVisibleWhenFocused(
           focusNode: _focusNodeName,
