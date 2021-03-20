@@ -49,6 +49,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   LoadedStateBloc _loadedStateBloc;
   SeasonBloc _seasonBloc;
   DatabaseUpdateModel _databaseUpdateModel;
+  UserAuthImpl _userAuthImpl;
 
   final ThemeData _theme = ThemeData(
     primarySwatch: Colors.green,
@@ -62,9 +63,9 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   @override
   void initState() {
     super.initState();
-    var userAuthImpl = UserAuthImpl(widget._firestore);
+    _userAuthImpl = UserAuthImpl(widget._firestore);
     _authenticationBloc =
-        AuthenticationBloc(userAuthImpl, AnalyticsSubsystemImpl.instance);
+        AuthenticationBloc(_userAuthImpl, AnalyticsSubsystemImpl.instance);
     _databaseUpdateModel = DatabaseUpdateModelImpl(
         Firestore(), _authenticationBloc, AnalyticsSubsystemImpl.instance);
     _coordinationBloc = CoordinationBloc(
@@ -122,6 +123,9 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         ),
         RepositoryProvider<AnalyticsSubsystem>(
           create: (c) => AnalyticsSubsystemImpl.instance,
+        ),
+        RepositoryProvider<UserAuthImpl>(
+          create: (c) => _userAuthImpl,
         ),
         RepositoryProvider<DatabaseUpdateModel>(
             create: (context) => _databaseUpdateModel),
