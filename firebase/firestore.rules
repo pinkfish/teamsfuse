@@ -129,7 +129,7 @@ service cloud.firestore {
          isUserOrAdmin(get(/databases/$(database)/documents/Seasons/$(existingData().seasonUid)).data);
       allow update, delete: if isSignedIn() &&
            (isOpponentOrGuestPlayerAdded() ||
-         c(get(/databases/$(database)/documents/Teams/$(existingData().teamUid)).data));
+         isAdmin(get(/databases/$(database)/documents/Teams/$(existingData().teamUid)).data));
       allow list: if isSignedIn();
       // Only allow a create if the shared data exists and the team exists.
       allow create: if isSignedIn() && isUidCorrect() &&
@@ -212,8 +212,8 @@ service cloud.firestore {
          isAdmin(get(/databases/$(database)/documents/Teams/$(incomingData().teamUid)).data);
       allow list: if isSignedIn();
       allow create: if isSignedIn() && isUidCorrect() &&
-         isAdmin(getAfter(/databases/$(database)/documents/Teams/$(incomingData().teamUid)).data) &&
-         incomingData().players.keys().size() > 0;
+        isAdmin(getAfter(/databases/$(database)/documents/Teams/$(incomingData().teamUid)).data) &&
+        incomingData().players.keys().size() > 0;
     }
 
     match /Teams/{team} {
@@ -225,9 +225,9 @@ service cloud.firestore {
         (existingData().users[request.auth.uid].added ||
         request.auth.uid in existingData().admins)) ||
         isPublicVisible();
-      allow write: if isSignedIn() && isAdmin(existingData());
+      allow update: if isSignedIn() && isAdmin(existingData());
       allow create: if isSignedIn() && isUidCorrect() && isAdmin(incomingData());
-      allow delete: if isSignedIn() && isUidCorrect() && isAdmin(incomingData());
+      allow delete: if isSignedIn() && isAdmin(existingData());
     }
 
     // Main users table

@@ -256,7 +256,7 @@ describe('TeamsFuse rules', function () {
         await db
             .collection('Teams')
             .doc('frog')
-            .set({ admins: { alice: { added: true } } });
+            .set({ uid: 'frog', admins: { alice: { added: true } } });
         await firebase.assertSucceeds(db.collection('Teams').doc('frog').get());
         const dbRobert = authedApp({ uid: 'robert' });
         await firebase.assertFails(dbRobert.collection('Teams').doc('frog').get());
@@ -271,6 +271,7 @@ describe('TeamsFuse rules', function () {
                 isPublic: true,
                 players: { fluff: { added: true } },
                 teamUid: 'team',
+                uid: 'frogpublic',
             });
         await firebase.assertSucceeds(db.collection('Teams').doc('frogpublic').get());
         const dbRobert = authedApp({ uid: 'robert' });
@@ -334,7 +335,13 @@ describe('TeamsFuse rules', function () {
         await db
             .collection('Teams')
             .doc('frogpublic')
-            .set({ uid: 'frogpublic', users: { robert: { added: true } }, isPublic: true, clubUid: 'clubby' });
+            .set({
+                uid: 'frogpublic',
+                users: { robert: { added: true } },
+                isPublic: true,
+                clubUid: 'clubby',
+                admins: { robert: true },
+            });
         await db
             .collection('Clubs')
             .doc('clubby')
@@ -403,10 +410,12 @@ describe('TeamsFuse rules', function () {
 
     it('get game requires season user', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
+        console.log('a');
         await db
             .collection('Teams')
             .doc('team')
-            .set({ uid: 'alice', admins: { alice: true }, isPublic: true });
+            .set({ uid: 'team', admins: { alice: true }, isPublic: true });
+        console.log('aa');
         await firebase.assertSucceeds(
             db
                 .collection('Seasons')
@@ -421,16 +430,18 @@ describe('TeamsFuse rules', function () {
                     teamUid: 'team',
                 }),
         );
+        console.log('ab');
         await firebase.assertSucceeds(
             db
                 .collection('Teams')
                 .doc('team')
                 .set({
                     seasonUid: 'season',
-                    uid: 'sharedGame',
-                    admins: ['alice'],
+                    uid: 'team',
+                    admins: { alice: true },
                 }),
         );
+        console.log('ac');
 
         const gameRef = db.collection('Games').doc('game');
         const sharedGameRef = db.collection('GamesShared').doc('sharedGame');
@@ -450,11 +461,13 @@ describe('TeamsFuse rules', function () {
                 return;
             }),
         );
+        console.log('ad');
         await firebase.assertSucceeds(db.collection('Games').doc('game').get());
         // Make sure we can update the game too.
         await firebase.assertSucceeds(
             db.collection('Games').doc('game').update({
                 time: 1234,
+                uid: 'game',
             }),
         );
         console.log('Raobert');
@@ -525,7 +538,7 @@ describe('TeamsFuse rules', function () {
         await db
             .collection('Teams')
             .doc('team')
-            .set({ uid: 'alice', admins: { alice: true }, isPublic: true });
+            .set({ uid: 'team', admins: { alice: true }, isPublic: true });
         await firebase.assertSucceeds(
             db
                 .collection('Seasons')
@@ -539,14 +552,15 @@ describe('TeamsFuse rules', function () {
                     teamUid: 'team',
                 }),
         );
+
         await firebase.assertSucceeds(
             db
                 .collection('Teams')
                 .doc('team')
                 .set({
                     seasonUid: 'season',
-                    uid: 'sharedGame',
-                    admins: ['alice'],
+                    uid: 'team',
+                    admins: { alice: true },
                 }),
         );
 

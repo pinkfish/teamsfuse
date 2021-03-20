@@ -507,7 +507,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<Uri> updateTeamImage(String teamUid, Uint8List imgFile) async {
-    var ref = _wrapper.storageRef().child('team_$teamUid.img');
+    var ref = _wrapper.storageRef().child('team/team_$teamUid.img');
     var task = ref.putFile(imgFile);
     var snapshot = await task.future;
     var photoUrl = snapshot.downloadUrl;
@@ -759,7 +759,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<Uri> updatePlayerImage(String playerUid, Uint8List imgFile) async {
-    var ref = _wrapper.storageRef().child('player_$playerUid.img');
+    var ref = _wrapper.storageRef().child('player/player_$playerUid.img');
     var task = ref.putFile(imgFile);
     var snapshot = (await task.future);
     var photoUrl = snapshot.downloadUrl.toString();
@@ -1303,7 +1303,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<Uri> updateClubImage(Club club, Uint8List imgFile) async {
-    var ref = _wrapper.storageRef().child('club_${club.uid}.img');
+    var ref = _wrapper.storageRef().child('club/club_${club.uid}.img');
     var task = ref.putFile(imgFile);
     var snapshot = (await task.future);
     var photoUrl = snapshot.downloadUrl.toString();
@@ -1369,8 +1369,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<Coach> addClubCoach(Coach coach, Uint8List imageData) async {
-    var imageRef =
-        _wrapper.storageRef().child('coach_${coach.clubUid}_${coach.uid}.img');
+    var imageRef = _wrapper
+        .storageRef()
+        .child('coach/coach_${coach.clubUid}_${coach.uid}.img');
     if (imageData != null) {
       var task = imageRef.putFile(imageData);
       await task.future;
@@ -1401,7 +1402,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (imageData != null) {
       var imageRef = _wrapper
           .storageRef()
-          .child('coach_${coach.clubUid}_${coach.uid}.img');
+          .child('coach/coach_${coach.clubUid}_${coach.uid}.img');
       var task = imageRef.putFile(imageData);
       await task.future;
       String downloadUrl = await imageRef.getDownloadURL();
@@ -1749,7 +1750,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<Uri> updateLeagueImage(
       LeagueOrTournament league, Uint8List imgFile) async {
-    var ref = _wrapper.storageRef().child('league_${league.uid}.jpg');
+    var ref = _wrapper.storageRef().child('league/league_${league.uid}.jpg');
     var task = ref.putFile(imgFile);
     var snapshot = (await task.future);
     var photoUrl = snapshot.downloadUrl.toString();
