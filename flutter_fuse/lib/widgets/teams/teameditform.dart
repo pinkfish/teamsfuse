@@ -294,12 +294,12 @@ class TeamEditFormState extends State<TeamEditForm> {
           ),
         ),
         SwitchFormField(
-          initialValue: _builder.trackAttendenceInternal ?? true,
+          initialValue: _builder.trackAttendanceInternal ?? true,
           icon: MdiIcons.trafficLight,
           enabled:
               widget.club != null ? widget.club.trackAttendence != null : true,
           label: Messages.of(context).trackattendence(Tristate.Yes),
-          onSaved: (value) => _builder.trackAttendenceInternal = value,
+          onSaved: (value) => _builder.trackAttendanceInternal = value,
         ),
       ]);
       if (widget.club != null) {

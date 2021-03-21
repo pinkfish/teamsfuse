@@ -41,7 +41,7 @@ Team makeTestTeam(
   return Team((b) => b
     ..uid = teamUid
     ..name = 'Fluff World'
-    ..trackAttendenceInternal = false
+    ..trackAttendanceInternal = false
     ..league = ''
     ..currentSeason = seasonUid
     ..arriveEarlyInternal = 10

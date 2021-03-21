@@ -286,7 +286,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
             ListTile(
               leading: const Icon(MdiIcons.trafficLight),
               title: Text(Messages.of(context).trackattendence(
-                  _teamToAdd.trackAttendenceInternal
+                  _teamToAdd.trackAttendanceInternal
                       ? Tristate.Yes
                       : Tristate.No)),
             )
