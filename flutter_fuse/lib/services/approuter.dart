@@ -1,5 +1,6 @@
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter_fuse/screens/team/addmedia.dart';
+import 'package:flutter_fuse/screens/team/editseasonplayer.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
@@ -197,6 +198,12 @@ class AppRouter {
                 vals['team'][0].toString(),
                 vals['season'][0].toString(),
                 vals['player'][0].toString())));
+    router.define('/Season/Player/:season/:player',
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) => EditSeasonPlayerScreen(
+                seasonUid: vals['season'][0].toString(),
+                playerUid: vals['player'][0].toString())));
+
     router.define('/EditGame/:id',
         handler: fluro.Handler(
             handlerFunc: (context, vals) =>

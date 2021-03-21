@@ -231,7 +231,7 @@ class Messages {
   String get blocksTitle =>
       Intl.message('Blk', desc: 'Blocks abbreviation', locale: locale);
 
-  String get changerole {
+  String get changeRoleButton {
     return Intl.message('CHANGE ROLE',
         desc: 'Button to change the role of the member of the team',
         locale: locale);

@@ -16,73 +16,6 @@ import '../../widgets/player/playername.dart';
 import '../../widgets/util/loading.dart';
 import '../../widgets/util/savingoverlay.dart';
 
-class _RoleInTeamAlertDialog extends StatefulWidget {
-  _RoleInTeamAlertDialog(this.initialRole);
-
-  final RoleInTeam initialRole;
-
-  @override
-  _RoleInTeamAlertDialogState createState() {
-    return _RoleInTeamAlertDialogState();
-  }
-}
-
-class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
-  RoleInTeam _myRole;
-
-  @override
-  void initState() {
-    super.initState();
-    _myRole = widget.initialRole;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var messages = Messages.of(context);
-
-    var widgets = <DropdownMenuItem<RoleInTeam>>[];
-    for (var role in RoleInTeam.values) {
-      widgets.add(
-        DropdownMenuItem<RoleInTeam>(
-          value: role,
-          child: Text(
-            messages.roleInGame(role),
-          ),
-        ),
-      );
-    }
-
-    return AlertDialog(
-      title: Text(messages.roleselect),
-      content: DropdownButton<RoleInTeam>(
-        items: widgets,
-        value: _myRole,
-        onChanged: (role) {
-          setState(() {
-            _myRole = role;
-          });
-        },
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            // Do the delete.
-            Navigator.of(context).pop(_myRole);
-          },
-          child: Text(MaterialLocalizations.of(context).okButtonLabel),
-        ),
-        TextButton(
-          onPressed: () {
-            // Do the delete.
-            Navigator.of(context).pop(null);
-          },
-          child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
-        ),
-      ],
-    );
-  }
-}
-
 ///
 /// Shows the details of the player.
 ///
@@ -100,21 +33,6 @@ class PlayerDetailsScreen extends StatelessWidget {
   final String playerUid;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  void _changeRole(BuildContext context, SingleTeamSeasonPlayerBloc bloc,
-      SingleTeamSeasonPlayerState state) async {
-    var player = state.seasonPlayer;
-    var role = await showDialog(
-      context: context,
-      builder: (context) {
-        return _RoleInTeamAlertDialog(player.role);
-      },
-    );
-    if (role != null) {
-      bloc.add(SingleTeamSeasonPlayerUpdate(
-          player: player.rebuild((b) => b..role = role)));
-    }
-  }
 
   void _showInSnackBar(BuildContext context, String value) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -331,31 +249,43 @@ class PlayerDetailsScreen extends StatelessWidget {
     }
 
     if (!(teamState is SingleTeamUninitialized) && teamState.isAdmin()) {
-      ret.add(
-        Row(
-          children: <Widget>[
-            TextButton(
-              onPressed: () => _changeRole(context, playerBloc, playerState),
-              style: TextButton.styleFrom(
-                primary: theme.accentColor,
+      SingleChildScrollView(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(children: ret),
               ),
-              child: Text(messages.changerole),
             ),
-            TextButton(
-              onPressed: () =>
-                  _removeFromTeam(context, playerState, playerBloc),
-              style: TextButton.styleFrom(
-                primary: theme.accentColor,
-              ),
-              child: Text(messages.deleteplayer),
+            ButtonBar(
+              children: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pushNamed(
+                      context, '/Season/Player/$seasonUid/$playerUid'),
+                  style: TextButton.styleFrom(
+                    primary: theme.accentColor,
+                  ),
+                  child: Text(messages.changeRoleButton),
+                ),
+                TextButton(
+                  onPressed: () =>
+                      _removeFromTeam(context, playerState, playerBloc),
+                  style: TextButton.styleFrom(
+                    primary: theme.accentColor,
+                  ),
+                  child: Text(messages.deleteplayer),
+                ),
+              ],
             ),
           ],
         ),
       );
     }
 
-    return Column(
-      children: ret,
+    return SingleChildScrollView(
+      child: Column(
+        children: ret,
+      ),
     );
   }
 
@@ -453,10 +383,8 @@ class PlayerDetailsScreen extends StatelessWidget {
                           seasonPlayerState is SingleTeamSeasonPlayerSaving ||
                               singlePlayerState is SinglePlayerSaving,
                       child: Scrollbar(
-                        child: SingleChildScrollView(
-                          child: _buildPlayerDetails(context, seasonPlayerState,
-                              teamState, seasonPlayerBloc, singlePlayerState),
-                        ),
+                        child: _buildPlayerDetails(context, seasonPlayerState,
+                            teamState, seasonPlayerBloc, singlePlayerState),
                       ),
                     ),
                   );
