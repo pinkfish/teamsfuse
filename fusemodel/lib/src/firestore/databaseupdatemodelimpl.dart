@@ -1002,12 +1002,17 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<void> updateRoleInTeamForSeason(
-      String seasonUid, SeasonPlayer player, RoleInTeam role) async {
+  Future<void> updateSeasonPlayerForSeason(
+      String seasonUid, SeasonPlayer player) async {
     var data = <String, dynamic>{};
 
-    data['${Season.playersField}.${player.playerUid}.${SeasonPlayer.ROLE}'] =
-        role.toString();
+    data['${Season.playersField}.${player.playerUid}.${SeasonPlayer.roleField}'] =
+        player.role.toString();
+    data['${Season.playersField}.${player.playerUid}.${SeasonPlayer.jerseyNumberField}'] =
+        player.jerseyNumber;
+    data['${Season.playersField}.${player.playerUid}.${SeasonPlayer.isPublicField}'] =
+        player.isPublic;
+
     await _wrapper
         .collection(SEASONS_COLLECTION)
         .document(seasonUid)

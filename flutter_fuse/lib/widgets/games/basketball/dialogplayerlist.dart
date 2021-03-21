@@ -48,7 +48,6 @@ class DialogPlayerList extends StatelessWidget {
             child: PlayerTileBasketball(
               playerUid: playerUid,
               gameUid: game.uid,
-              editButton: false,
               scale: scale,
               shape: ContinuousRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0),

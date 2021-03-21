@@ -164,7 +164,7 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
       appBar: AppBar(
         title: Text(Messages.of(context).title),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             onPressed: _saveData,
             child: Text(
               Messages.of(context).saveButtonText,
@@ -199,7 +199,9 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
             child: Scrollbar(
               child: SingleChildScrollView(
                 child: Form(
-                  autovalidate: _autoValidate,
+                  autovalidateMode: _autoValidate
+                      ? AutovalidateMode.always
+                      : AutovalidateMode.onUserInteraction,
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

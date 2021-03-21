@@ -38,7 +38,6 @@ class GamePlayerList extends StatelessWidget {
               gameUid: game.uid,
               compactDisplay: compactDisplay,
               playerUid: playerUid,
-              editButton: false,
               color: selectedPlayer == playerUid
                   ? Theme.of(context).splashColor
                   : LocalUtilities.isDark(context)

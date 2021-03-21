@@ -271,8 +271,9 @@ abstract class DatabaseUpdateModel {
 
   Future<void> removePlayerFromSeason(String seasonUid, String playerUid);
 
-  Future<void> updateRoleInTeamForSeason(
-      String seasonUid, SeasonPlayer player, RoleInTeam role);
+  /// Update the seqson player pieces for the season.
+  Future<void> updateSeasonPlayerForSeason(
+      String seasonUid, SeasonPlayer player);
 
   Stream<BuiltList<Game>> getSeasonGames(Season season);
 

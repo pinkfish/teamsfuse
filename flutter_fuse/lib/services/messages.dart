@@ -3080,8 +3080,8 @@ class Messages {
   }
 
   String gameSummary(GamePlayerSummary summary) {
-    return gameSummaryExpanded(summary.fullData.points, summary.fullData.blocks,
-        summary.fullData.steals);
+    return seasonSummaryExpanded(summary.fullData.points,
+        summary.fullData.blocks, summary.fullData.steals);
   }
 
   String seasonSummaryExpanded(int points, int blocks, int steals) {

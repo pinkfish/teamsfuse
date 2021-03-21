@@ -35,6 +35,9 @@ class TeamPlayersSeason extends StatelessWidget {
                   playerUid: player.playerUid,
                   seasonUid: _seasonUid,
                   showChips: true,
+                  // Edit for the season parts of the player.
+                  onEdit: (playerUid) => Navigator.pushNamed(
+                      context, '/Season/Player/$_seasonUid/$playerUid'),
                 )
               : ListTile(
                   leading: PlayerImage(playerUid: player.playerUid),

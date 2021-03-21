@@ -31,34 +31,57 @@ class RoleInTeam extends EnumClass {
 ///
 abstract class SeasonPlayer
     implements Built<SeasonPlayer, SeasonPlayerBuilder> {
+  /// The uid for the player.
   String get playerUid;
-  @BuiltValueField(wireName: ROLE)
+
+  /// The role the player has in the season/
+  @BuiltValueField(wireName: roleField)
   RoleInTeam get role;
+
+  /// The jersey number for the player in the season/
+  @BuiltValueField(wireName: jerseyNumberField)
   String get jerseyNumber;
-  String get position;
+  //String get position;
+  /// The summary for the data associated with the season
   SeasonPlayerSummary get summary;
+
+  /// If th4 user is public.
+  @BuiltValueField(wireName: isPublicField)
   bool get isPublic;
+
+  /// Overqall added flag.
   bool get added;
 
   SeasonPlayer._();
+
+  /// Factory to make the season player.
   factory SeasonPlayer([Function(SeasonPlayerBuilder b) updates]) =
       _$SeasonPlayer;
 
   static void _initializeBuilder(SeasonPlayerBuilder b) => b
     ..jerseyNumber = ''
-    ..position = ''
     ..isPublic = false
     ..added = true;
 
+  /// Serialize the season player.
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(SeasonPlayer.serializer, this);
   }
 
-  static const String ROLE = 'role';
+  /// The role in season field name.
+  static const String roleField = 'role';
 
+  /// The jersey number field name.
+  static const String jerseyNumberField = 'jerseyNumber';
+
+  /// The isPublic field name.
+  static const String isPublicField = 'isPublic';
+
+  /// Create the season player from the serialized data.
   static SeasonPlayer fromMap(Map<String, dynamic> jsonData) {
     return dataSerializers.deserializeWith(SeasonPlayer.serializer, jsonData);
   }
 
+  /// The serializer for the data.
   static Serializer<SeasonPlayer> get serializer => _$seasonPlayerSerializer;
 }

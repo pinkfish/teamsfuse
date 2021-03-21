@@ -122,8 +122,10 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
     if (event is SingleTeamSeasonPlayerUpdate) {
       yield SingleTeamSeasonPlayerSaving.fromState(state).build();
       try {
-        await db.updateRoleInTeamForSeason(
-            seasonUid, event.player, event.player.role);
+        await db.updateSeasonPlayerForSeason(
+          seasonUid,
+          event.player,
+        );
       } catch (e, stack) {
         yield (SingleTeamSeasonPlayerSaveFailed.fromState(state)
               ..error = RemoteError(e.message, stack.toString()))

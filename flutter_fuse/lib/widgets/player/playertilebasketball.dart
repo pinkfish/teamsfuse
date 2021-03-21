@@ -32,7 +32,7 @@ class PlayerTileBasketball extends StatelessWidget {
   final PlayerCallbackFunc onTap;
 
   /// Edit bbutton, if we should display it.
-  final bool editButton;
+  final PlayerCallbackFunc onEdit;
 
   /// The color of the bar.
   final Color color;
@@ -61,7 +61,7 @@ class PlayerTileBasketball extends StatelessWidget {
       this.gameUid,
       this.seasonUid,
       this.onTap,
-      this.editButton = true,
+      this.onEdit,
       this.color,
       this.contentColor,
       this.shape,
@@ -323,11 +323,10 @@ class PlayerTileBasketball extends StatelessWidget {
                       : SizedBox(height: 0),
             ],
           ),
-          trailing: editButton
+          trailing: onEdit != null
               ? IconButton(
                   icon: Icon(Icons.edit),
-                  onPressed: () => Navigator.pushNamed(
-                      context, '/Player/Edit/' + loadedPlayer.uid),
+                  onPressed: () => onEdit(loadedPlayer.uid),
                 )
               : null,
         );
