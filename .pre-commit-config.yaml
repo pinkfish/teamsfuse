@@ -1,15 +1,16 @@
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.3.0
-  hooks:
-    - id: check-yaml
-    - id: end-of-file-fixer
-    - id: trailing-whitespace
-- repo: https://github.com/pre-commit/mirrors-prettier
-  rev: "" # Use the sha or tag you want to point at
-  hooks:
-    - id: prettier
-      exclude: "^firebase/(dartangular|public)/.*"
-- repo: https://github.com/Cretezy/flutter-format-pre-commit
-  rev: "master"
-  hooks:
-    - id: flutter-format
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "" # Use the sha or tag you want to point at
+    hooks:
+      - id: prettier
+        exclude: "^firebase/(dartangular|public)/.*"
+  - repo: https://github.com/Cretezy/flutter-format-pre-commit
+    rev: "master"
+    hooks:
+      - id: flutter-format
