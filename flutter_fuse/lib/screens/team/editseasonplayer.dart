@@ -131,7 +131,9 @@ class _EditSeasonPlayerScreenState extends State<EditSeasonPlayerScreen> {
               icon: const Icon(Icons.email),
             ),
             initialValue: '',
-            validator: (value) => _validations.validateEmail(context, value),
+            validator: (value) => value.isNotEmpty
+                ? _validations.validateEmail(context, value)
+                : null,
             onSaved: (email) => _email = email,
           ),
         );

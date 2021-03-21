@@ -109,6 +109,8 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
       yield SingleTeamSeasonPlayerSaving.fromState(state).build();
       try {
         await db.removePlayerFromSeason(seasonUid, playerUid);
+        yield SingleTeamSeasonPlayerSaveDone.fromState(state).build();
+        yield SingleTeamSeasonPlayerLoaded.fromState(state).build();
       } catch (e, stack) {
         yield (SingleTeamSeasonPlayerSaveFailed.fromState(state)
               ..error = RemoteError(e.message, stack.toString()))
@@ -126,6 +128,8 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
           seasonUid,
           event.player,
         );
+        yield SingleTeamSeasonPlayerSaveDone.fromState(state).build();
+        yield SingleTeamSeasonPlayerLoaded.fromState(state).build();
       } catch (e, stack) {
         yield (SingleTeamSeasonPlayerSaveFailed.fromState(state)
               ..error = RemoteError(e.message, stack.toString()))
