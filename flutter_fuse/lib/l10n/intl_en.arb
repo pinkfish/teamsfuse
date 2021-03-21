@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-03-19T21:33:09.978289",
+  "@@last_modified": "2021-03-21T07:18:40.537461",
   "About": "About",
   "@About": {
     "type": "text",
@@ -116,8 +116,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "PLAYER": "PLAYER",
-  "@PLAYER": {
+  "ADD PLAYER": "ADD PLAYER",
+  "@ADD PLAYER": {
     "description": "Text on a add player button",
     "type": "text",
     "placeholders": {}
@@ -3117,6 +3117,18 @@
   "CLUB": "CLUB",
   "@CLUB": {
     "description": "Button to show the club",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Guest": "Guest",
+  "@Guest": {
+    "description": "Text in a chip for a guest player",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Needs Invite": "Needs Invite",
+  "@Needs Invite": {
+    "description": "Text in a chip for a player that needs an invite.",
     "type": "text",
     "placeholders": {}
   }
