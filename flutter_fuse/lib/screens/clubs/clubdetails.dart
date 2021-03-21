@@ -107,6 +107,13 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
           bool admin = state?.club?.isAdmin() ?? false;
           if (admin) {
             actions.add(
+              IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () =>
+                    Navigator.pushNamed(context, 'EditClub/${widget.clubUid}'),
+              ),
+            );
+            actions.add(
               PopupMenuButton<String>(
                 onSelected: _select,
                 itemBuilder: (context) {

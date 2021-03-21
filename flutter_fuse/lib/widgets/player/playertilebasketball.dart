@@ -199,8 +199,8 @@ class PlayerTileBasketball extends StatelessWidget {
               );
             }
             if (singlePlayerState is SinglePlayerLoaded) {
-              return _loadedData(
-                  context, singlePlayerState.player, jerseyNumber, summary);
+              return _loadedData(context, singlePlayerState.player,
+                  jerseyNumber, summary, gameSummary);
             }
             return Card(
               color: color,
