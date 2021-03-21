@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v3.4.0
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
@@ -11,6 +11,6 @@ repos:
       - id: prettier
         exclude: "^firebase/(dartangular|public)/.*"
   - repo: https://github.com/Cretezy/flutter-format-pre-commit
-    rev: "master"
+    rev: "4a1df675bb74dea371c17934933e257e46f8dd98"
     hooks:
       - id: flutter-format
