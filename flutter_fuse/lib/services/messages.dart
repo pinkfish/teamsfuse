@@ -79,7 +79,7 @@ class Messages {
   String get addPlayer => Intl.message('Add Player',
       desc: 'Text on a add player drop down', locale: locale);
 
-  String get addPlayerButton => Intl.message('PLAYER',
+  String get addPlayerButton => Intl.message('ADD PLAYER',
       desc: 'Text on a add player button', locale: locale);
 
   String get addPlayerTooltip => Intl.message('Add Player',
@@ -3331,14 +3331,24 @@ class Messages {
       );
 
   String get teamButton => Intl.message(
-    'TEAM',
-    desc: 'Button to show the team',
-  );
+        'TEAM',
+        desc: 'Button to show the team',
+      );
 
   String get clubButton => Intl.message(
-    'CLUB',
-    desc: 'Button to show the club',
-  );
+        'CLUB',
+        desc: 'Button to show the club',
+      );
+
+  String get guest => Intl.message(
+        'Guest',
+        desc: 'Text in a chip for a guest player',
+      );
+
+  String get seasonGuest => Intl.message(
+        'Needs Invite',
+        desc: 'Text in a chip for a player that needs an invite.',
+      );
 
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {

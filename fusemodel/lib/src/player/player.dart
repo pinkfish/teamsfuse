@@ -93,7 +93,7 @@ abstract class Player implements Built<Player, PlayerBuilder> {
   /// The summary of the games per season.
   BuiltMap<String, GamePlayerSummary> get perSeason;
 
-  /// If this player has their data visible to the public.
+  /// If this player has their data visiblef to the public.
   bool get isPublic;
 
   /// The users in a nice useful format merged from the internal data.

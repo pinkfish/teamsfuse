@@ -34,7 +34,7 @@ void main() {
         ..league = 'AAU'
         ..clubUid = 'club'
         ..currentSeason = 'season'
-        ..trackAttendenceInternal = true
+        ..trackAttendanceInternal = true
         ..isPublic = true)
       .build();
   final testSeason = (SeasonBuilder()

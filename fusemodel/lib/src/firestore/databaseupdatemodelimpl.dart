@@ -1124,21 +1124,19 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           ..playerType = PlayerType.seasonGuest
           ..seasonUid = seasonUid
           ..isPublic = false);
-        print('Create player (guest)');
         await t.set(playerDoc, basicPlayer.toMap());
         // Add the player to the season.
-        print('Update season');
         await t.update(
           seasonDoc,
           {
-            '${Season.playersField}.$playerUid': SeasonPlayer((b) => b
-              ..playerUid = playerDoc.documentID
-              ..added = true
-              ..jerseyNumber = jerseyNumber ?? ''
-              ..role = role).toMap(),
+            '${Season.playersField}.${playerDoc.documentID}':
+                SeasonPlayer((b) => b
+                  ..playerUid = playerDoc.documentID
+                  ..added = true
+                  ..jerseyNumber = jerseyNumber ?? ''
+                  ..role = role).toMap(),
           },
         );
-        print('Updated season');
       }
 
       // Only do this if the email is not empty.
@@ -1154,7 +1152,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         document: snapshot.documents.isEmpty ? null : snapshot.documents[0],
       );
 
-      print('Finish transaction');
       return {};
     });
     return docId;

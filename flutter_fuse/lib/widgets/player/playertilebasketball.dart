@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -18,19 +19,43 @@ typedef PlayerExtraFunc = Widget Function(String playerUid);
 /// Shows the details on the player by giving the name and jersey number.
 ///
 class PlayerTileBasketball extends StatelessWidget {
+  /// Playeruid to display
   final String playerUid;
+
+  /// Season to display for.
   final String seasonUid;
+
+  /// The game uid to use.
   final String gameUid;
+
+  /// What to do whern the player is tapped.
   final PlayerCallbackFunc onTap;
+
+  /// Edit bbutton, if we should display it.
   final bool editButton;
+
+  /// The color of the bar.
   final Color color;
+
+  /// The color of the content.
   final Color contentColor;
+
+  /// The shape for the card.
   final ShapeBorder shape;
+
+  /// Display a more compact version.
   final bool compactDisplay;
+
+  /// Show the chips for the player.
+  final bool showChips;
+
+  /// The function to make to put extra stuff in.
   final PlayerExtraFunc extra;
-  final SeasonPlayerSummary summary;
+
+  /// The scale to show the item as.
   final double scale;
 
+  /// Create the player tile for the basketball setup.
   PlayerTileBasketball(
       {@required this.playerUid,
       this.gameUid,
@@ -39,9 +64,9 @@ class PlayerTileBasketball extends StatelessWidget {
       this.editButton = true,
       this.color,
       this.contentColor,
-      this.summary,
       this.shape,
       this.extra,
+      this.showChips = false,
       this.compactDisplay = false,
       this.scale = 1.0})
       : assert((playerUid != null && (gameUid != null || seasonUid != null)));
@@ -55,11 +80,12 @@ class PlayerTileBasketball extends StatelessWidget {
             bloc: singleGameBloc,
             builder: (context, gameState) {
               var jerseyNumber = 'U';
+              GamePlayerSummary summary;
               if (gameState is SingleGameLoaded) {
-                var player = gameState.game.getPlayerSummary(playerUid);
-                jerseyNumber = player?.jerseyNumber ?? 'U';
+                summary = gameState.game.getPlayerSummary(playerUid);
+                jerseyNumber = summary?.jerseyNumber ?? 'U';
               }
-              return _buildPlayer(context, jerseyNumber);
+              return _buildPlayer(context, jerseyNumber, null, summary);
             }),
       );
     } else {
@@ -69,17 +95,60 @@ class PlayerTileBasketball extends StatelessWidget {
             bloc: singleSeasonBloc,
             builder: (context, seasonState) {
               var jerseyNumber = 'U';
+              SeasonPlayerSummary summary;
               if (seasonState is SingleSeasonLoaded) {
                 var player = seasonState.season.playersData[playerUid];
                 jerseyNumber = player?.jerseyNumber ?? 'U';
+                summary = seasonState.season.playersData[playerUid].summary;
               }
-              return _buildPlayer(context, jerseyNumber);
+              return _buildPlayer(context, jerseyNumber, summary, null);
             }),
       );
     }
   }
 
-  Widget _buildPlayer(BuildContext context, String jerseyNumber) {
+  Widget _chips(BuildContext context, Player player) {
+    if (!showChips) {
+      return SizedBox(
+        height: 0,
+      );
+    }
+    var chips = <Widget>[];
+
+    switch (player.playerType) {
+      case PlayerType.player:
+        break;
+      case PlayerType.guest:
+        chips.add(
+          Chip(
+            label: Text(Messages.of(context).guest),
+          ),
+        );
+        break;
+      case PlayerType.seasonGuest:
+        chips.add(
+          Chip(
+            label: Text(Messages.of(context).seasonGuest),
+          ),
+        );
+        break;
+      case PlayerType.opponent:
+        chips.add(
+          Chip(
+            label: Text(Messages.of(context).opponent),
+          ),
+        );
+        break;
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: chips,
+    );
+  }
+
+  Widget _buildPlayer(BuildContext context, String jerseyNumber,
+      SeasonPlayerSummary summary, GamePlayerSummary gameSummary) {
     return SinglePlayerProvider(
       playerUid: playerUid,
       builder: (context, singlePlayerBloc) => AnimatedSwitcher(
@@ -96,11 +165,6 @@ class PlayerTileBasketball extends StatelessWidget {
                 shape: shape,
                 child: ListTile(
                   title: Text(Messages.of(context).unknown),
-                  subtitle: summary != null
-                      ? Text(
-                          Messages.of(context).seasonSummary(summary),
-                        )
-                      : null,
                   leading: Stack(
                     children: <Widget>[
                       Icon(MdiIcons.tshirtCrewOutline),
@@ -136,7 +200,7 @@ class PlayerTileBasketball extends StatelessWidget {
             }
             if (singlePlayerState is SinglePlayerLoaded) {
               return _loadedData(
-                  context, singlePlayerState.player, jerseyNumber);
+                  context, singlePlayerState.player, jerseyNumber, summary);
             }
             return Card(
               color: color,
@@ -147,7 +211,7 @@ class PlayerTileBasketball extends StatelessWidget {
                     ? Text(
                         Messages.of(context).seasonSummary(summary),
                       )
-                    : null,
+                    : SizedBox(height: 0),
                 leading: Stack(
                   children: <Widget>[
                     Icon(MdiIcons.tshirtCrewOutline),
@@ -162,8 +226,8 @@ class PlayerTileBasketball extends StatelessWidget {
     );
   }
 
-  Widget _loadedData(
-      BuildContext context, Player loadedPlayer, String jerseyNumber) {
+  Widget _loadedData(BuildContext context, Player loadedPlayer,
+      String jerseyNumber, SeasonPlayerSummary summary) {
     if (compactDisplay) {
       return GestureDetector(
         onTap: () => onTap != null ? onTap(loadedPlayer.uid) : null,
@@ -192,11 +256,6 @@ class PlayerTileBasketball extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-              Text(
-                loadedPlayer.name,
-                style: Theme.of(context).textTheme.headline6,
-                overflow: TextOverflow.ellipsis,
               ),
               (extra != null ? extra(loadedPlayer.uid) : SizedBox(width: 0)),
             ],
@@ -245,11 +304,17 @@ class PlayerTileBasketball extends StatelessWidget {
               ),
             ),
           ),
-          subtitle: summary != null
-              ? Text(
-                  Messages.of(context).seasonSummary(summary),
-                )
-              : null,
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _chips(context, loadedPlayer),
+              summary != null
+                  ? Text(
+                      Messages.of(context).seasonSummary(summary),
+                    )
+                  : SizedBox(height: 0),
+            ],
+          ),
           trailing: editButton
               ? IconButton(
                   icon: Icon(Icons.edit),

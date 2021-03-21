@@ -34,6 +34,7 @@ class TeamPlayersSeason extends StatelessWidget {
               ? PlayerTileBasketball(
                   playerUid: player.playerUid,
                   seasonUid: _seasonUid,
+                  showChips: true,
                 )
               : ListTile(
                   leading: PlayerImage(playerUid: player.playerUid),
@@ -48,14 +49,17 @@ class TeamPlayersSeason extends StatelessWidget {
     // Only do this if we are an admin.
     if (teamState.isAdmin()) {
       ret.add(
-        ListTile(
-          title: TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, 'AddPlayer/$_teamUid/$_seasonUid');
-            },
-            style: TextButton.styleFrom(primary: Theme.of(context).accentColor),
-            child: Text(Messages.of(context).addPlayerButton),
-          ),
+        ButtonBar(
+          children: [
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, 'AddPlayer/$_teamUid/$_seasonUid');
+              },
+              style:
+                  TextButton.styleFrom(primary: Theme.of(context).accentColor),
+              child: Text(Messages.of(context).addPlayerButton),
+            ),
+          ],
         ),
       );
     }
