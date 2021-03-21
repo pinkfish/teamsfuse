@@ -3079,6 +3079,11 @@ class Messages {
         summary.basketballSummary.blocks, summary.basketballSummary.steals);
   }
 
+  String gameSummary(GamePlayerSummary summary) {
+    return gameSummaryExpanded(summary.fullData.points, summary.fullData.blocks,
+        summary.fullData.steals);
+  }
+
   String seasonSummaryExpanded(int points, int blocks, int steals) {
     return Intl.message(
       'Pts $points Blks $blocks Stls $steals',

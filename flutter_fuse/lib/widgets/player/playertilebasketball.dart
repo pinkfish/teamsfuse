@@ -226,8 +226,12 @@ class PlayerTileBasketball extends StatelessWidget {
     );
   }
 
-  Widget _loadedData(BuildContext context, Player loadedPlayer,
-      String jerseyNumber, SeasonPlayerSummary summary) {
+  Widget _loadedData(
+      BuildContext context,
+      Player loadedPlayer,
+      String jerseyNumber,
+      SeasonPlayerSummary summary,
+      GamePlayerSummary gameSummary) {
     if (compactDisplay) {
       return GestureDetector(
         onTap: () => onTap != null ? onTap(loadedPlayer.uid) : null,
@@ -312,7 +316,11 @@ class PlayerTileBasketball extends StatelessWidget {
                   ? Text(
                       Messages.of(context).seasonSummary(summary),
                     )
-                  : SizedBox(height: 0),
+                  : gameSummary != null
+                      ? Text(
+                          Messages.of(context).gameSummary(gameSummary),
+                        )
+                      : SizedBox(height: 0),
             ],
           ),
           trailing: editButton
