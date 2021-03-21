@@ -74,6 +74,10 @@ abstract class Player implements Built<Player, PlayerBuilder> {
   @nullable
   String get gameUid;
 
+  /// The uid of the seson.
+  @nullable
+  String get seasonUid;
+
   /// The type of the player.
   PlayerType get playerType;
 

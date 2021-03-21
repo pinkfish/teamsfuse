@@ -21,18 +21,18 @@ abstract class Season implements Built<Season, SeasonBuilder> {
   String get uid;
 
   /// The uid of the team.
-  @BuiltValueField(wireName: TEAMUID)
+  @BuiltValueField(wireName: teamUidFIeld)
   String get teamUid;
 
   /// The record of the season.
   WinRecord get record;
 
   /// The data associated with the players.
-  @BuiltValueField(wireName: PLAYERS)
+  @BuiltValueField(wireName: playersField)
   BuiltMap<String, SeasonPlayer> get playersData;
 
   /// The users setup for the season.
-  @BuiltValueField(wireName: USER)
+  @BuiltValueField(wireName: usersField)
   BuiltMap<String, BuiltMap<String, bool>> get users;
 
   /// If this season is publicaly visible.
@@ -50,7 +50,7 @@ abstract class Season implements Built<Season, SeasonBuilder> {
       return ret;
     }
 
-    ret.remove(PLAYERS);
+    ret.remove(playersField);
     return ret;
   }
 
@@ -60,10 +60,10 @@ abstract class Season implements Built<Season, SeasonBuilder> {
 
   static Serializer<Season> get serializer => _$seasonSerializer;
 
-  static const String TEAMUID = 'teamUid';
-  static const String PLAYERS = 'players';
+  static const String teamUidFIeld = 'teamUid';
+  static const String playersField = 'players';
   // Used for indexing the invisible user field that has permissions.
-  static const String USER = 'users';
+  static const String usersField = 'users';
 
   @memoized
   BuiltList<SeasonPlayer> get players => BuiltList.from(playersData.values);

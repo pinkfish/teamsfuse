@@ -65,9 +65,31 @@ service cloud.firestore {
 
     function isPlayerCorrect(data) {
       return data != null &&
-         ((isNotEmpty(data, 'users') && isNull(data, 'opponentUid') && isNull(data, 'gameUid') && isNull(data, 'teamUid') && data.playerType == 'player') ||
-          (isEmpty(data, 'users')  && isNotNull(data, 'opponentUid') && isNull(data, 'gameUid') && isNotNull(data, 'teamUid') && data.playerType == 'opponent') ||
-           (isEmpty(data, 'users') && isNull(data, 'opponentUid') && isNotNull(data, 'gameUid') && isNull(data, 'teamUid') && data.playerType == 'guest'));
+         ((isNotEmpty(data, 'users') &&
+             isNull(data, 'opponentUid') &&
+             isNull(data, 'gameUid') &&
+             isNull(data, 'teamUid') &&
+             isNull(data, 'seasonUid') &&
+             data.playerType == 'player') ||
+          (isEmpty(data, 'users')  &&
+             isNotNull(data, 'opponentUid') &&
+             isNull(data, 'gameUid') &&
+             isNotNull(data, 'teamUid') &&
+             isNull(data, 'seasonUid') &&
+             data.playerType == 'opponent') ||
+          (isEmpty(data, 'users') &&
+             isNull(data, 'opponentUid') &&
+             isNotNull(data, 'gameUid') &&
+             isNull(data, 'teamUid') &&
+             isNull(data, 'seasonUid') &&
+             data.playerType == 'guest') ||
+          (isEmpty(data, 'users') &&
+             isNull(data, 'opponentUid') &&
+             isNull(data, 'gameUid') &&
+             isNull(data, 'teamUid') &&
+             isNotNull(data, 'seasonUid') &&
+             data.playerType == 'seasonGuest' &&
+             ));
     }
 
     function isPublicVisible() {

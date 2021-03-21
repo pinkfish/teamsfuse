@@ -749,6 +749,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         }
         eventName = 'addGuestOpponent';
         break;
+      case PlayerType.seasonGuest:
+        throw FormatException('opponentuid or gameUid not null, need '
+            'to create through invite');
     }
     // Add the game.
     var p = player.rebuild((b) => b..uid = docRef.documentID);
@@ -795,9 +798,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<Iterable<Season>> getPlayerSeasons(String playerUid) async* {
     var ref = _wrapper
         .collection(SEASONS_COLLECTION)
-        .where('${Season.PLAYERS}.$playerUid.$ADDED', isEqualTo: true);
+        .where('${Season.playersField}.$playerUid.$ADDED', isEqualTo: true);
     if (userData != null) {
-      ref = ref.where('${Season.USER}.${userData.uid}.$ADDED', isEqualTo: true);
+      ref = ref.where('${Season.usersField}.${userData.uid}.$ADDED',
+          isEqualTo: true);
     } else {
       ref = ref.where('isPublic', isEqualTo: true);
     }
@@ -813,15 +817,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var doc =
         await _wrapper.collection(PLAYERS_COLLECTION).document(playerUid).get();
     if (doc.exists) {
-      // Yay!  We have a player.
-      var playerInternal = PlayerUserInternal((b) => b
-        ..added = true
-        ..relationship = player.relationship);
-      var data = <String, dynamic>{};
-      data['${Player.usersField}.${player.userUid}'] = playerInternal.toMap();
-      await doc.reference.updateData(data);
-      _analytics.logEvent(name: 'addUserToPlayer');
-      return true;
+      final myPlayer = Player.fromMap(doc.data);
+      if (myPlayer.playerType == PlayerType.guest ||
+          myPlayer.playerType == PlayerType.player ||
+          myPlayer.playerType == PlayerType.seasonGuest) {
+        // Yay!  We have a player.
+        var playerInternal = PlayerUserInternal((b) => b
+          ..added = true
+          ..relationship = player.relationship);
+        var data = <String, dynamic>{};
+        data['playerType'] = PlayerType.player;
+        data['${Player.usersField}.${player.userUid}'] = playerInternal.toMap();
+        await doc.reference.updateData(data);
+        _analytics.logEvent(name: 'addUserToPlayer');
+        return true;
+      }
     }
     return false;
   }
@@ -974,7 +984,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String seasonUid, String playerUid) async {
     var doc = _wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
     var data = <String, dynamic>{};
-    data['${Season.PLAYERS}.$playerUid'] = null;
+    data['${Season.playersField}.$playerUid'] = null;
     await doc.updateData(data);
     _analytics.logEvent(name: 'removePlayerFromSeason');
 
@@ -996,7 +1006,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String seasonUid, SeasonPlayer player, RoleInTeam role) async {
     var data = <String, dynamic>{};
 
-    data['${Season.PLAYERS}.${player.playerUid}.${SeasonPlayer.ROLE}'] =
+    data['${Season.playersField}.${player.playerUid}.${SeasonPlayer.ROLE}'] =
         role.toString();
     await _wrapper
         .collection(SEASONS_COLLECTION)
@@ -1031,7 +1041,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   Future<String> _buildInviteToSeason(
-      TransactionWrapper t,
+      {TransactionWrapper t,
       String playerUid,
       String seasonUid,
       String seasonName,
@@ -1039,7 +1049,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String teamName,
       String email,
       String playerName,
-      DocumentSnapshotWrapper document) async {
+      DocumentSnapshotWrapper document}) async {
     _analytics.logEvent(name: 'inviteUserToSeason');
     if (document != null) {
       var invite =
@@ -1106,38 +1116,45 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     await _wrapper.runTransaction((t) async {
       if (playerUid == null) {
+        // Create the player as a guest, convert to a real player
+        // when the invite is accepted.
         final basicPlayer = Player((b) => b
           ..name = playerName
           ..uid = playerDoc.documentID
-          ..playerType = PlayerType.player
+          ..playerType = PlayerType.seasonGuest
+          ..seasonUid = seasonUid
           ..isPublic = false);
-        print('Create player');
+        print('Create player (guest)');
         await t.set(playerDoc, basicPlayer.toMap());
-        playerUid = playerDoc.documentID;
         // Add the player to the season.
         print('Update season');
-        await t.update(seasonDoc, {
-          '${Season.PLAYERS}.$playerUid': SeasonPlayer((b) => b
-            ..playerUid = playerUid
-            ..added = true
-            ..jerseyNumber = jerseyNumber ?? ''
-            ..role = role).toMap(),
-        });
+        await t.update(
+          seasonDoc,
+          {
+            '${Season.playersField}.$playerUid': SeasonPlayer((b) => b
+              ..playerUid = playerDoc.documentID
+              ..added = true
+              ..jerseyNumber = jerseyNumber ?? ''
+              ..role = role).toMap(),
+          },
+        );
         print('Updated season');
       }
 
       // Only do this if the email is not empty.
       docId = await _buildInviteToSeason(
-          t,
-          playerUid,
-          seasonUid,
-          seasonName,
-          teamUid,
-          teamName,
-          email,
-          playerName,
-          snapshot.documents.isEmpty ? null : snapshot.documents[0]);
+        t: t,
+        playerUid: playerDoc.documentID,
+        seasonUid: seasonUid,
+        seasonName: seasonName,
+        teamUid: teamUid,
+        teamName: teamName,
+        email: email,
+        playerName: playerName,
+        document: snapshot.documents.isEmpty ? null : snapshot.documents[0],
+      );
 
+      print('Finish transaction');
       return {};
     });
     return docId;
@@ -1182,7 +1199,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<Season>> getSeasons() async* {
     var query = _wrapper
         .collection(SEASONS_COLLECTION)
-        .where('${Season.USER}.${userData.uid}.$ADDED', isEqualTo: true);
+        .where('${Season.usersField}.${userData.uid}.$ADDED', isEqualTo: true);
     var snap = await query.getDocuments();
     yield BuiltList(snap.documents.map((d) => Season.fromMap(d.data)));
 
@@ -1196,7 +1213,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String seasonUid, SeasonPlayer seasonPlayer) async {
     var doc = _wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
     var data = <String, dynamic>{};
-    data['${Season.PLAYERS}.${seasonPlayer.playerUid}'] = seasonPlayer.toMap();
+    data['${Season.playersField}.${seasonPlayer.playerUid}'] =
+        seasonPlayer.toMap();
     await doc.updateData(data);
     _analytics.logEvent(name: 'addPlayerToSeason');
     return;
@@ -1214,8 +1232,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Find the seasons for the team.
     var query = _wrapper
         .collection(SEASONS_COLLECTION)
-        .where(Season.TEAMUID, isEqualTo: teamUid)
-        .where('${Season.USER}.${userData.uid}.$ADDED', isEqualTo: true);
+        .where(Season.teamUidFIeld, isEqualTo: teamUid)
+        .where('${Season.usersField}.${userData.uid}.$ADDED', isEqualTo: true);
     var snap = await query.getDocuments();
     yield BuiltList(snap.documents.map((d) => Season.fromMap(d.data)));
     await for (var snap in query.snapshots()) {

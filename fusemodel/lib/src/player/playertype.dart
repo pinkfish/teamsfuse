@@ -20,6 +20,9 @@ class PlayerType extends EnumClass {
   /// If this player is a guest
   static const PlayerType guest = _$guest;
 
+  /// If this player is a guest
+  static const PlayerType seasonGuest = _$seasonPending;
+
   const PlayerType._(String name) : super(name);
 
   /// The values associated with the relationship.

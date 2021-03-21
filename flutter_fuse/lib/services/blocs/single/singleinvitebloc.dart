@@ -10,6 +10,7 @@ import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
 import '../seasonbloc.dart';
 import '../teambloc.dart';
 
+/// The basic event to use for all the invites.
 class SingleInviteEvent extends Equatable {
   @override
   List<Object> get props => [];
