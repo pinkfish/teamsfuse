@@ -278,7 +278,9 @@ abstract class DatabaseUpdateModel {
 
   // Send an invite to a user for this season and team.
   Future<String> inviteUserToSeason({
-    @required InviteTeamData invite,
+    @required String email,
+    @required String playerName,
+    @required RoleInTeam role,
     @required String seasonUid,
     @required String seasonName,
     @required String teamUid,

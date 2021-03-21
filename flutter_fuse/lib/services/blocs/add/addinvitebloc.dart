@@ -31,15 +31,35 @@ class InviteEventAddUserToPlayer extends AddInviteEvent {
 /// Sends an invite to all the specified played to the team.
 ///
 class InvitePlayersToTeam extends AddInviteEvent {
-  final InviteTeamData invite;
+  /// The email to add the invite.
+  final String email;
+
+  /// The name of the player in the invite.
+  final String playerName;
+
+  /// The role the user is added as.
+  final RoleInTeam role;
+
+  /// The uid of the seson to invite to.
   final String seasonUid;
+
+  /// The name of the seson.
   final String seasonName;
+
+  /// The team uid to invite to.
   final String teamUid;
+
+  /// The name of the team to invite to.
   final String teamName;
+
+  /// The jersey number in the team.
   final String jerseyNumber;
 
+  /// Create an invite.
   InvitePlayersToTeam(
-      {@required this.invite,
+      {@required this.email,
+      @required this.playerName,
+      @required this.role,
       @required this.seasonUid,
       @required this.teamUid,
       @required this.seasonName,
@@ -47,7 +67,8 @@ class InvitePlayersToTeam extends AddInviteEvent {
       @required this.jerseyNumber});
 
   @override
-  List<Object> get props => [invite, seasonUid, seasonName, teamUid, teamName];
+  List<Object> get props =>
+      [email, playerName, role, seasonUid, seasonName, teamUid, teamName];
 }
 
 ///
@@ -99,7 +120,9 @@ class AddInviteBloc extends Bloc<AddInviteEvent, AddItemState> {
       yield AddItemSaving();
       try {
         await coordinationBloc.databaseUpdateModel.inviteUserToSeason(
-            invite: event.invite,
+            email: event.email,
+            playerName: event.playerName,
+            role: event.role,
             seasonUid: event.seasonUid,
             teamName: event.teamName,
             teamUid: event.teamUid,

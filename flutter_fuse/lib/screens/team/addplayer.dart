@@ -32,12 +32,11 @@ class AddPlayerScreen extends StatefulWidget {
 class _EmailName {
   final GlobalKey<FormFieldState<String>> nameKey =
       GlobalKey<FormFieldState<String>>();
-  InviteTeamData data = InviteTeamData((b) => b
-    ..email = ''
-    ..playerName = ''
-    ..role = RoleInTeam.Player);
-  FocusNode focusNodeEmail = FocusNode();
-  FocusNode focusNodeName = FocusNode();
+  String email = '';
+  String playerName = '';
+  RoleInTeam role = RoleInTeam.Player;
+  final FocusNode focusNodeEmail = FocusNode();
+  final FocusNode focusNodeName = FocusNode();
 }
 
 class _AddPlayerScreenState extends State<AddPlayerScreen> {
@@ -72,9 +71,9 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
   Future<void> _handleSubmit(Team team, Season season) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      if (_emailName.data.email.isEmpty) {
+      if (_emailName.email.isEmpty) {
         // Ask if they really want to add a player with no email address.
-        var res = await showDialog<bool>(
+        final res = await showDialog<bool>(
           context: context,
           barrierDismissible: false, // user must tap button!
           builder: (BuildContext context) {
@@ -114,7 +113,9 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
       addInviteBloc.add(InvitePlayersToTeam(
         seasonUid: widget._seasonUid,
         seasonName: season.name,
-        invite: _emailName.data,
+        email: _emailName.email,
+        role: _emailName.role,
+        playerName: _emailName.playerName,
         teamUid: team.uid,
         teamName: team.name,
         jerseyNumber: _jerseyNumber,
@@ -158,8 +159,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
           focusNode: _emailName.focusNodeName,
           keyboardType: TextInputType.text,
           onSaved: (value) {
-            _emailName.data =
-                _emailName.data.rebuild((b) => b..playerName = value);
+            _emailName.playerName = value;
           },
         ),
       ),
@@ -184,7 +184,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
           focusNode: _emailName.focusNodeEmail,
           keyboardType: TextInputType.emailAddress,
           onSaved: (value) {
-            _emailName.data = _emailName.data.rebuild((b) => b..email = value);
+            _emailName.email = value;
           },
         ),
       ),
@@ -201,8 +201,8 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
           return _validations.validateRoleInTeam(context, val);
         },
         onSaved: (val) {
-          _emailName.data = _emailName.data.rebuild((b) => b
-            ..role = RoleInTeam.values.firstWhere((e) => e.toString() == val));
+          _emailName.role =
+              RoleInTeam.values.firstWhere((e) => e.toString() == val);
         },
       ),
     );

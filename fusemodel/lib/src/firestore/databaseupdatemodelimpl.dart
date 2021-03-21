@@ -26,7 +26,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   /// Constructs the database update system implementation.
   DatabaseUpdateModelImpl(
       this._wrapper, this._authenticationBloc, this._analytics) {
-    _authenticationBloc?.listen((state) {
+    _authenticationBloc?.stream?.listen((state) {
       if (state is AuthenticationLoggedIn) {
         userData = state.user;
       }
@@ -1037,7 +1037,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String seasonName,
       String teamUid,
       String teamName,
-      InviteTeamData data,
+      String email,
+      String playerName,
       DocumentSnapshotWrapper document) async {
     _analytics.logEvent(name: 'inviteUserToSeason');
     if (document != null) {
@@ -1047,7 +1048,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
       var updatedInvite = InviteToPlayer((b) => b
         ..email = invite.email
-        ..playerName = data.playerName
+        ..playerName = playerName
         ..sentByUid = userData.uid
         ..teamName = teamName
         ..seasonName = seasonName);
@@ -1056,7 +1057,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       await t.update(document.reference, updatedInvite.toMap());
       return document.documentID;
     } else {
-      if (data.email == null || data.email.isEmpty) {
+      if (email == null || email.isEmpty) {
         return '';
       }
       var docRef = _wrapper.collection(INVITE_COLLECTION).document();
@@ -1064,8 +1065,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       var invite = InviteToPlayer((b) => b
         ..playerUid = playerUid
         ..uid = docRef.documentID
-        ..email = data.email
-        ..playerName = data.playerName
+        ..email = email
+        ..playerName = playerName
         ..sentByUid = userData.uid
         ..teamName = teamName
         ..seasonName = seasonName);
@@ -1080,7 +1081,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   /// Send an invite to a user for this season and team.
   @override
   Future<String> inviteUserToSeason({
-    @required InviteTeamData invite,
+    @required String email,
+    @required String playerName,
+    @required RoleInTeam role,
     @required String seasonUid,
     @required String seasonName,
     @required String teamUid,
@@ -1089,22 +1092,24 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     String jerseyNumber,
   }) async {
     String docId;
-    var playerDoc = _wrapper.collection(PLAYERS_COLLECTION).document();
-    var seasonDoc = _wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
+    final playerDoc = _wrapper.collection(PLAYERS_COLLECTION).document();
+    final seasonDoc =
+        _wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
 
-    var ref = _wrapper.collection(INVITE_COLLECTION);
+    final ref = _wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
-    var snapshot = await ref
-        .where(Invite.emailField, isEqualTo: invite.email)
+    final snapshot = await ref
+        .where(Invite.emailField, isEqualTo: email)
         .where(Invite.typeField, isEqualTo: InviteType.Player.toString())
         .where(InviteToPlayer.playerUidField, isEqualTo: playerUid)
         .getDocuments();
 
     await _wrapper.runTransaction((t) async {
       if (playerUid == null) {
-        var basicPlayer = Player((b) => b
-          ..name = invite.playerName
+        final basicPlayer = Player((b) => b
+          ..name = playerName
           ..uid = playerDoc.documentID
+          ..playerType = PlayerType.player
           ..isPublic = false);
         print('Create player');
         await t.set(playerDoc, basicPlayer.toMap());
@@ -1116,8 +1121,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             ..playerUid = playerUid
             ..added = true
             ..jerseyNumber = jerseyNumber ?? ''
-            ..role = invite.role).toMap(),
+            ..role = role).toMap(),
         });
+        print('Updated season');
       }
 
       // Only do this if the email is not empty.
@@ -1128,7 +1134,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           seasonName,
           teamUid,
           teamName,
-          invite,
+          email,
+          playerName,
           snapshot.documents.isEmpty ? null : snapshot.documents[0]);
 
       return {};
