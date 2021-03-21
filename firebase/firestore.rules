@@ -88,8 +88,8 @@ service cloud.firestore {
              isNull(data, 'gameUid') &&
              isNull(data, 'teamUid') &&
              isNotNull(data, 'seasonUid') &&
-             data.playerType == 'seasonGuest' &&
-             ));
+             data.playerType == 'seasonGuest')
+       );
     }
 
     function isPublicVisible() {
