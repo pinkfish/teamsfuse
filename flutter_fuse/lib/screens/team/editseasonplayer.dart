@@ -13,8 +13,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
-import '../../widgets/form/relationshipformfield.dart';
-import '../../widgets/util/username.dart';
 
 ///
 /// Edit the details for the player.
@@ -178,6 +176,11 @@ class _EditSeasonPlayerScreenState extends State<EditSeasonPlayerScreen> {
       if (_extraPlayerStuff.playerType == PlayerType.seasonGuest ||
           _extraPlayerStuff.playerType == PlayerType.guest ||
           _extraPlayerStuff.playerType == PlayerType.opponent) {
+        if (_email.isNotEmpty) {
+          singlePlayerBloc.add(SinglePlayerInviteUser(
+            email: _email,
+          ));
+        }
         singlePlayerBloc.add(SinglePlayerUpdate(
           player: _extraPlayerStuff,
           image: _changedImage ? _imageFile : null,
@@ -210,59 +213,56 @@ class _EditSeasonPlayerScreenState extends State<EditSeasonPlayerScreen> {
       body: BlocConsumer(
         bloc: singlePlayerBloc,
         listener: (context, playerState) {
-          if (playerState is SinglePlayerLoaded) {
-            _extraPlayerStuff = playerState.player.toBuilder();
-          }
-          if (playerState is SinglePlayerSaveDone) {
-            Navigator.pop(context);
-          }
           if (playerState is SinglePlayerDeleted) {
             Navigator.pop(context);
           }
         },
-        builder: (context, playerState) {
-          if (playerState is SinglePlayerUninitialized ||
-              playerState is SinglePlayerDeleted) {
-            return LoadingWidget();
-          }
-          return BlocConsumer(
-            bloc: singleSeasonBloc,
-            listener: (context, seasonState) {
-              if (seasonState is SingleTeamSeasonPlayerLoaded) {
-                _player = seasonState.seasonPlayer.toBuilder();
-              }
-              if (seasonState is SingleTeamSeasonPlayerSaveDone) {
-                Navigator.pop(context);
-              }
-              if (seasonState is SingleTeamSeasonPlayerDeleted) {
-                Navigator.pop(context);
-              }
-            },
-            builder: (context, seasonState) {
-              if (seasonState is SingleTeamSeasonPlayerUninitialized ||
-                  seasonState is SingleTeamSeasonPlayerDeleted) {
-                return LoadingWidget();
-              }
-              return Container(
-                padding: EdgeInsets.all(10.0),
-                child: Scrollbar(
-                  child: SingleChildScrollView(
-                    child: Form(
-                      autovalidateMode: _autoValidate
-                          ? AutovalidateMode.always
-                          : AutovalidateMode.onUserInteraction,
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: _buildPlayerData(playerState),
-                      ),
+        builder: (context, playerState) => BlocConsumer(
+          bloc: singleSeasonBloc,
+          listener: (context, seasonState) {
+            if (seasonState is SingleTeamSeasonPlayerSaveDone) {
+              Navigator.pop(context);
+            }
+            if (seasonState is SingleTeamSeasonPlayerDeleted) {
+              Navigator.pop(context);
+            }
+          },
+          builder: (context, seasonState) {
+            if (seasonState is SingleTeamSeasonPlayerLoaded &&
+                _player == null) {
+              _player = seasonState.seasonPlayer.toBuilder();
+            }
+            if (playerState is SinglePlayerLoaded &&
+                _extraPlayerStuff == null) {
+              _extraPlayerStuff = playerState.player.toBuilder();
+            }
+
+            if (seasonState is SingleTeamSeasonPlayerUninitialized ||
+                seasonState is SingleTeamSeasonPlayerDeleted ||
+                playerState is SinglePlayerUninitialized ||
+                playerState is SinglePlayerDeleted) {
+              return LoadingWidget();
+            }
+
+            return Container(
+              padding: EdgeInsets.all(10.0),
+              child: Scrollbar(
+                child: SingleChildScrollView(
+                  child: Form(
+                    autovalidateMode: _autoValidate
+                        ? AutovalidateMode.always
+                        : AutovalidateMode.onUserInteraction,
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _buildPlayerData(playerState),
                     ),
                   ),
                 ),
-              );
-            },
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _saveData,
