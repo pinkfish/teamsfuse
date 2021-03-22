@@ -24,6 +24,9 @@ abstract class MediaInfo implements Built<MediaInfo, MediaInfoBuilder> {
   /// The game the media is for.
   String get gameUid;
 
+  /// The player the media is for.
+  String get playerUid;
+
   /// When the media was uploaded.
   @nullable
   Timestamp get uploadTime;
@@ -58,7 +61,9 @@ abstract class MediaInfo implements Built<MediaInfo, MediaInfoBuilder> {
   MediaInfo._();
 
   /// Defaults for the state.  Always default to no games loaded.
-  static void _initializeBuilder(MediaInfoBuilder b) => b..isPublic = false;
+  static void _initializeBuilder(MediaInfoBuilder b) => b
+    ..isPublic = false
+    ..playerUid = '';
 
   /// The MediaInfo associated factory.
   factory MediaInfo([Function(MediaInfoBuilder b) updates]) = _$MediaInfo;

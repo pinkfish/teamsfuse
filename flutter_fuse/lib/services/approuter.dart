@@ -1,6 +1,7 @@
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter_fuse/screens/team/addmedia.dart';
 import 'package:flutter_fuse/screens/team/editseasonplayer.dart';
+import 'package:flutter_fuse/screens/team/teammedia.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
@@ -73,286 +74,296 @@ class AppRouter {
   static fluro.FluroRouter createAppRouter(Location location) {
     var router = fluro.FluroRouter();
     router.define('/Home',
-        handler: fluro.Handler(handlerFunc: (context, vals) => SplashScreen()));
+        handler:
+            fluro.Handler(handlerFunc: (context, values) => SplashScreen()));
     router.define('/Main/Home',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => HomeScreen(location)));
+            handlerFunc: (context, values) => HomeScreen(location)));
     router.define('/Profile',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => ProfileScreen(
+            handlerFunc: (context, values) => ProfileScreen(
                   onlyPlayer: false,
                 )));
     router.define('/Players',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => ProfileScreen(
+            handlerFunc: (context, values) => ProfileScreen(
                   onlyPlayer: true,
                 )));
     router.define('/EditProfile/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                EditProfileScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                EditProfileScreen(values['id'][0].toString())));
     router.define('/EditPlayer/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                EditPlayerScreen(playerUid: vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                EditPlayerScreen(playerUid: values['id'][0].toString())));
     router.define('/Settings',
         handler:
-            fluro.Handler(handlerFunc: (context, vals) => SettingsScreen()));
+            fluro.Handler(handlerFunc: (context, values) => SettingsScreen()));
     router.define('/About',
-        handler: fluro.Handler(handlerFunc: (context, vals) => AboutScreen()));
-    router.define('/Invites',
         handler:
-            fluro.Handler(handlerFunc: (context, vals) => InviteListScreen()));
+            fluro.Handler(handlerFunc: (context, values) => AboutScreen()));
+    router.define('/Invites',
+        handler: fluro.Handler(
+            handlerFunc: (context, values) => InviteListScreen()));
     router.define('/AddInviteToPlayer/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AddInviteToPlayerScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                AddInviteToPlayerScreen(values['id'][0].toString())));
     router.define('/AcceptInviteToPlayer/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AcceptInviteToPlayerScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                AcceptInviteToPlayerScreen(values['id'][0].toString())));
     router.define('/AcceptInviteAsAdmin/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AcceptInviteAsAdminScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                AcceptInviteAsAdminScreen(values['id'][0].toString())));
     router.define('/AcceptInviteToClub/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AcceptInviteToClubScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                AcceptInviteToClubScreen(values['id'][0].toString())));
     router.define('/AcceptInviteToClub/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AcceptInviteToClubScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                AcceptInviteToClubScreen(values['id'][0].toString())));
     router.define('/AcceptInviteToLeague/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AcceptInviteToLeagueScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                AcceptInviteToLeagueScreen(values['id'][0].toString())));
     router.define('/AcceptInviteToLeagueTeam/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AcceptInviteToLeagueTeamScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                AcceptInviteToLeagueTeamScreen(values['id'][0].toString())));
     router.define('/Team/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                TeamScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                TeamScreen(values['id'][0].toString())));
+    router.define('/Team/Media/:id',
+        handler: fluro.Handler(
+            handlerFunc: (context, values) =>
+                TeamMediaScreen(values['id'][0].toString())));
+
     router.define('/AddTeam',
         handler:
-            fluro.Handler(handlerFunc: (context, vals) => AddTeamScreen()));
+            fluro.Handler(handlerFunc: (context, values) => AddTeamScreen()));
     router.define('/AllTeams',
         handler:
-            fluro.Handler(handlerFunc: (context, vals) => TeamHomeScreen()));
+            fluro.Handler(handlerFunc: (context, values) => TeamHomeScreen()));
     router.define(
       '/EditTeam/:id',
       handler: fluro.Handler(
-          handlerFunc: (context, vals) =>
-              EditTeamScreen(vals['id'][0].toString())),
+          handlerFunc: (context, values) =>
+              EditTeamScreen(values['id'][0].toString())),
     );
     router.define(
       '/TeamSettings/:id',
       handler: fluro.Handler(
-          handlerFunc: (context, vals) =>
-              TeamSettingsScreen(vals['id'][0].toString())),
+          handlerFunc: (context, values) =>
+              TeamSettingsScreen(values['id'][0].toString())),
     );
     router.define(
       '/TeamAddAdmin/:id',
       handler: fluro.Handler(
-          handlerFunc: (context, vals) =>
-              AddAdminScreen(vals['id'][0].toString())),
+          handlerFunc: (context, values) =>
+              AddAdminScreen(values['id'][0].toString())),
     );
     router.define(
       '/TeamClub/:id',
       handler: fluro.Handler(
-          handlerFunc: (context, vals) =>
-              ClubSettingsScreen(vals['id'][0].toString())),
+          handlerFunc: (context, values) =>
+              ClubSettingsScreen(values['id'][0].toString())),
     );
     router.define(
       '/Team/Media/:teamId/:seasonId',
       handler: fluro.Handler(
-        handlerFunc: (context, vals) => AddMediaScreen(
-            vals['teamId'][0].toString(), vals['seasonId'][0].toString()),
+        handlerFunc: (context, values) => AddMediaScreen(
+            values['teamId'][0].toString(), values['seasonId'][0].toString()),
       ),
     );
     router.define(
       '/AddSeason/:id',
       handler: fluro.Handler(
-          handlerFunc: (context, vals) =>
-              AddSeasonScreen(vals['id'][0].toString())),
+          handlerFunc: (context, values) =>
+              AddSeasonScreen(values['id'][0].toString())),
     );
     router.define(
       '/Season/Edit/:id',
       handler: fluro.Handler(
-          handlerFunc: (context, vals) =>
-              EditSeasonScreen(vals['id'][0].toString())),
+          handlerFunc: (context, values) =>
+              EditSeasonScreen(values['id'][0].toString())),
     );
     router.define('/Season/View/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                SeasonDetailsScreen(seasonUid: vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                SeasonDetailsScreen(seasonUid: values['id'][0].toString())));
     router.define('/AddPlayer/:team/:season',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => AddPlayerScreen(
-                vals['team'][0].toString(), vals['season'][0].toString())));
+            handlerFunc: (context, values) => AddPlayerScreen(
+                values['team'][0].toString(), values['season'][0].toString())));
     router.define('/PlayerDetails/:team/:season/:player',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => PlayerDetailsScreen(
-                vals['team'][0].toString(),
-                vals['season'][0].toString(),
-                vals['player'][0].toString())));
+            handlerFunc: (context, values) => PlayerDetailsScreen(
+                values['team'][0].toString(),
+                values['season'][0].toString(),
+                values['player'][0].toString())));
     router.define('/Season/Player/:season/:player',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => EditSeasonPlayerScreen(
-                seasonUid: vals['season'][0].toString(),
-                playerUid: vals['player'][0].toString())));
+            handlerFunc: (context, values) => EditSeasonPlayerScreen(
+                seasonUid: values['season'][0].toString(),
+                playerUid: values['player'][0].toString())));
 
     router.define('/EditGame/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                EditGameScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                EditGameScreen(values['id'][0].toString())));
     router.define('/Game/:id',
-        handler: fluro.Handler(handlerFunc: (context, vals) {
+        handler: fluro.Handler(handlerFunc: (context, values) {
       AnalyticsSubsystemImpl.analytics.logViewItem(
-          itemId: vals['id'][0].toString(),
+          itemId: values['id'][0].toString(),
           itemName: 'Game',
           itemCategory: 'Game');
-      return GameDetailsScreen(vals['id'][0].toString());
+      return GameDetailsScreen(values['id'][0].toString());
     }));
     router.define(
       '/GameStats/:id/:seasonId/:teamId',
       handler: fluro.Handler(
-          handlerFunc: (context, vals) => GameStatsScreen(
-                vals['id'][0].toString(),
-                vals['seasonId'][0].toString(),
-                vals['teamId'][0].toString(),
+          handlerFunc: (context, values) => GameStatsScreen(
+                values['id'][0].toString(),
+                values['seasonId'][0].toString(),
+                values['teamId'][0].toString(),
               )),
     );
     router.define('/SharedGame/:id',
-        handler: fluro.Handler(handlerFunc: (context, vals) {
+        handler: fluro.Handler(handlerFunc: (context, values) {
       AnalyticsSubsystemImpl.analytics.logViewItem(
-          itemId: vals['id'][0].toString(),
+          itemId: values['id'][0].toString(),
           itemName: 'Game',
           itemCategory: 'Game');
-      return SharedGameDetailsScreen(vals['id'][0].toString());
+      return SharedGameDetailsScreen(values['id'][0].toString());
     }));
 
     router.define('/AddEvent',
         handler:
-            fluro.Handler(handlerFunc: (context, vals) => AddEventScreen()));
+            fluro.Handler(handlerFunc: (context, values) => AddEventScreen()));
     router.define('/AddGame',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => AddGameScreen(null, null)));
+            handlerFunc: (context, values) => AddGameScreen(null, null)));
     router.define('/Game/Add/:teamId/:seasonId',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => AddGameScreen(
-                vals['teamId'][0].toString(), vals['seasonId'][0].toString())));
+            handlerFunc: (context, values) => AddGameScreen(
+                values['teamId'][0].toString(),
+                values['seasonId'][0].toString())));
     router.define('/AddTraining',
-        handler:
-            fluro.Handler(handlerFunc: (context, vals) => AddTrainingScreen()));
+        handler: fluro.Handler(
+            handlerFunc: (context, values) => AddTrainingScreen()));
     router.define('/Messages',
         handler:
-            fluro.Handler(handlerFunc: (context, vals) => MessagesScreen()));
+            fluro.Handler(handlerFunc: (context, values) => MessagesScreen()));
     router.define('/AddMessage',
-        handler:
-            fluro.Handler(handlerFunc: (context, vals) => AddMessageScreen()));
+        handler: fluro.Handler(
+            handlerFunc: (context, values) => AddMessageScreen()));
     router.define('/ShowMessage/:id',
-        handler: fluro.Handler(handlerFunc: (context, vals) {
+        handler: fluro.Handler(handlerFunc: (context, values) {
       AnalyticsSubsystemImpl.analytics.logViewItem(
-          itemId: vals['id'][0].toString(),
+          itemId: values['id'][0].toString(),
           itemName: 'Message',
           itemCategory: 'Message');
 
-      return ShowMessageScreen(messageUid: vals['id'][0].toString());
+      return ShowMessageScreen(messageUid: values['id'][0].toString());
     }));
     router.define('/AddMessageTeam/:team',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AddMessageScreen(teamUid: vals['team'].toString())));
+            handlerFunc: (context, values) =>
+                AddMessageScreen(teamUid: values['team'].toString())));
     router.define('/AddMessagePlayer/:team/:season/:player',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => AddMessageScreen(
-                  teamUid: vals['team'][0].toString(),
-                  seasonUid: vals['season'][0].toString(),
-                  playerUid: vals['player'][0].toString(),
+            handlerFunc: (context, values) => AddMessageScreen(
+                  teamUid: values['team'][0].toString(),
+                  seasonUid: values['season'][0].toString(),
+                  playerUid: values['player'][0].toString(),
                 )));
 
     // Club screens.
     router.define('/Club/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                ClubDetailsScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                ClubDetailsScreen(values['id'][0].toString())));
     router.define('/EditClub/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                EditClubScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                EditClubScreen(values['id'][0].toString())));
     router.define('/AddClubMember/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AddMemberScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                AddMemberScreen(values['id'][0].toString())));
     router.define('/AddClubTeam/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AddTeamScreen(clubUid: vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                AddTeamScreen(clubUid: values['id'][0].toString())));
     router.define('/AddClub',
         handler:
-            fluro.Handler(handlerFunc: (context, vals) => AddClubScreen()));
+            fluro.Handler(handlerFunc: (context, values) => AddClubScreen()));
     router.define('/Club/Coach/Add/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AddCoachScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                AddCoachScreen(values['id'][0].toString())));
     router.define('/Club/Coach/Edit/:clubId/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => EditCoachScreen(
-                vals['clubId'][0].toString(), vals['id'][0].toString())));
+            handlerFunc: (context, values) => EditCoachScreen(
+                values['clubId'][0].toString(), values['id'][0].toString())));
     router.define('/Club/News/Add/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AddNewsItemScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                AddNewsItemScreen(values['id'][0].toString())));
     router.define('/Club/News/Edit/:clubId/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => EditNewsItemScreen(
-                vals['clubId'][0].toString(), vals['id'][0].toString())));
+            handlerFunc: (context, values) => EditNewsItemScreen(
+                values['clubId'][0].toString(), values['id'][0].toString())));
 
     // League screens.
     router.define('/League/Home',
-        handler:
-            fluro.Handler(handlerFunc: (context, vals) => LeagueHomeScreen()));
+        handler: fluro.Handler(
+            handlerFunc: (context, values) => LeagueHomeScreen()));
     router.define('/League/AddLeague',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
+            handlerFunc: (context, values) =>
                 AddLeagueScreen(LeagueOrTournamentType.League)));
     router.define('/League/AddTournament',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
+            handlerFunc: (context, values) =>
                 AddLeagueScreen(LeagueOrTournamentType.League)));
     router.define('/League/Main/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                LeagueScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                LeagueScreen(values['id'][0].toString())));
     router.define('/League/Edit/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                EditLeagueScreen(vals['id'][0].toString())));
+            handlerFunc: (context, values) =>
+                EditLeagueScreen(values['id'][0].toString())));
     router.define('/League/Divison/:id/:season/:divison',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => LeagueDivisonScreen(
-                  vals['divison'][0].toString(),
+            handlerFunc: (context, values) => LeagueDivisonScreen(
+                  values['divison'][0].toString(),
                 )));
     router.define('/League/Team/:id',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => LeagueTeamScreen(
-                  vals['id'][0].toString(),
+            handlerFunc: (context, values) => LeagueTeamScreen(
+                  values['id'][0].toString(),
                 )));
 
     // The login router.
     router.define('/Login/Home',
-        handler: fluro.Handler(handlerFunc: (context, vals) => LoginScreen()));
-    router.define('/Login/Verify',
         handler:
-            fluro.Handler(handlerFunc: (context, vals) => VerifyEmailScreen()));
+            fluro.Handler(handlerFunc: (context, values) => LoginScreen()));
+    router.define('/Login/Verify',
+        handler: fluro.Handler(
+            handlerFunc: (context, values) => VerifyEmailScreen()));
     router.define('/Login/SignUp',
-        handler: fluro.Handler(handlerFunc: (context, vals) => SignupScreen()));
+        handler:
+            fluro.Handler(handlerFunc: (context, values) => SignupScreen()));
     router.define('/Login/ForgotPassword',
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => ForgotPasswordScreen()));
+            handlerFunc: (context, values) => ForgotPasswordScreen()));
 
     return router;
   }

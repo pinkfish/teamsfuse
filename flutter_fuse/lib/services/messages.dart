@@ -3358,6 +3358,9 @@ class Messages {
   String get addMediaButton =>
       Intl.message('ADD MEDIA', desc: 'Button to add a media', locale: locale);
 
+  String get public => Intl.message('PUBLIC',
+      desc: 'Banner to say an item is public', locale: locale);
+
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {
     var name =

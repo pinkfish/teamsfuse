@@ -34,7 +34,8 @@ void main() async {
   var storageDirectory = Directory('');
   if (!kIsWeb) {
     final sd = await getTemporaryDirectory();
-    AsyncHydratedStorage.storageDirectory = Directory(sd.path);
+    storageDirectory = Directory(sd.path);
+    AsyncHydratedStorage.storageDirectory = storageDirectory;
     // Load up the data for the hydrated bloc stuff.
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: storageDirectory,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/teams/seasonimages.dart';
+import 'package:flutter_fuse/widgets/teams/media/seasonimages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -31,13 +31,6 @@ class TeamDetails extends StatelessWidget {
       ),
       initiallyExpanded: season.uid == team.currentSeason,
       children: <Widget>[
-        SizedBox(
-          height: 50,
-          child: SeasonImages(
-            height: 50,
-            seasonUid: season.uid,
-          ),
-        ),
         TeamResultsBySeason(
           teamUid: team.uid,
           seasonUid: season.uid,
@@ -45,11 +38,6 @@ class TeamDetails extends StatelessWidget {
         admin
             ? ButtonBar(
                 children: [
-                  TextButton(
-                    onPressed: () => Navigator.pushNamed(
-                        context, '/Season/Media/${season.uid}'),
-                    child: Text(Messages.of(context).addMediaButton),
-                  ),
                   TextButton(
                     onPressed: () => Navigator.pushNamed(
                         context, '/Game/Add/${team.uid}/${season.uid}'),

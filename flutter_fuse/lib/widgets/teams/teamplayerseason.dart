@@ -8,6 +8,7 @@ import '../blocs/singleteamprovider.dart';
 import '../player/playerimage.dart';
 import '../player/playername.dart';
 import '../player/playertilebasketball.dart';
+import '../util/publicmark.dart';
 
 ///
 /// Show the players of the team and a specific season.
@@ -31,13 +32,16 @@ class TeamPlayersSeason extends StatelessWidget {
                 'PlayerDetails/$_teamUid/$_seasonUid/${player.playerUid}');
           },
           child: teamState.team.sport == Sport.Basketball
-              ? PlayerTileBasketball(
-                  playerUid: player.playerUid,
-                  seasonUid: _seasonUid,
-                  showChips: true,
-                  // Edit for the season parts of the player.
-                  onEdit: (playerUid) => Navigator.pushNamed(context,
-                      '/Season/Player/$_seasonUid/${player.playerUid}'),
+              ? PublicMark(
+                  isPublic: player.isPublic,
+                  child: PlayerTileBasketball(
+                    playerUid: player.playerUid,
+                    seasonUid: _seasonUid,
+                    showChips: true,
+                    // Edit for the season parts of the player.
+                    onEdit: (playerUid) => Navigator.pushNamed(context,
+                        '/Season/Player/$_seasonUid/${player.playerUid}'),
+                  ),
                 )
               : ListTile(
                   leading: PlayerImage(playerUid: player.playerUid),

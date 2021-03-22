@@ -2220,6 +2220,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     final snapshot = (await task.future);
     final photoUrl = snapshot.downloadUrl;
 
+    if (media.gameUid == 'none') {
+      media = media.rebuild((b) => b..gameUid = '');
+    }
+
     try {
       await _wrapper.runTransaction((t) async {
         // Write the data up to storage.

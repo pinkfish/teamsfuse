@@ -87,7 +87,16 @@ class _TeamScreenState extends State<TeamScreen> {
           if (state is SingleTeamUninitialized) {
             return LoadingWidget();
           }
-          var actions = <Widget>[];
+          var actions = <Widget>[
+            IconButton(
+              icon: Icon(Icons.image),
+              onPressed: () => Navigator.pushNamed(
+                context,
+                '/Team/Media/${widget.teamUid}',
+              ),
+            ),
+          ];
+
           if (state.isAdmin() && _tabIndex == 0) {
             actions.add(
               IconButton(
