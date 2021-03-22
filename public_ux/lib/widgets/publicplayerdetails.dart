@@ -95,9 +95,9 @@ class PublicPlayerDetails extends StatelessWidget {
             ButtonBar(
               children: [
                 TextButton(
-                  child: Text(Messages.of(context).teamButton),
                   onPressed: () => Navigator.pushNamed(context,
                       '/Team/${PublicTeamTab.team.name}/${season.teamUid}'),
+                  child: Text(Messages.of(context).teamButton),
                 ),
               ],
             ),

@@ -37,20 +37,15 @@ class SeasonImages extends StatelessWidget {
             if (singleSeasonState.media.isEmpty) {
               inner = Text(Messages.of(context).noMedia);
             } else {
-              inner = CarouselSlider(
-                options: CarouselOptions(
-                  autoPlay: false,
-                  height: height,
-                  enlargeCenterPage: false,
-                  aspectRatio: 1.0,
-                  enlargeStrategy: CenterPageEnlargeStrategy.height,
-                ),
-                items: singleSeasonState.media
+              inner = ListView(
+                scrollDirection: Axis.horizontal,
+                children: singleSeasonState.media
                     .map<Widget>(
                       (MediaInfo info) => Container(
                         child: Center(
                           child: CachedNetworkImage(
                             imageUrl: info.url.toString(),
+                            height: height,
                             errorWidget: (c, str, e) => Icon(Icons.error),
                             placeholder: (c, str) =>
                                 CircularProgressIndicator(),

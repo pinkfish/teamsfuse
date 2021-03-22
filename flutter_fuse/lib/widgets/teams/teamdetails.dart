@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/teams/seasonimages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -28,7 +29,15 @@ class TeamDetails extends StatelessWidget {
         '${season.name} W:${season.record.win} L:${season.record.loss} '
         'T:${season.record.tie}',
       ),
+      initiallyExpanded: season.uid == team.currentSeason,
       children: <Widget>[
+        SizedBox(
+          height: 50,
+          child: SeasonImages(
+            height: 50,
+            seasonUid: season.uid,
+          ),
+        ),
         TeamResultsBySeason(
           teamUid: team.uid,
           seasonUid: season.uid,
@@ -38,8 +47,8 @@ class TeamDetails extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pushNamed(
-                        context, '/AddPlayer/${team.uid}/${season.uid}'),
-                    child: Text(Messages.of(context).addPlayerButton),
+                        context, '/Season/Media/${season.uid}'),
+                    child: Text(Messages.of(context).addMediaButton),
                   ),
                   TextButton(
                     onPressed: () => Navigator.pushNamed(
@@ -59,7 +68,6 @@ class TeamDetails extends StatelessWidget {
               )
             : SizedBox(height: 0),
       ],
-      initiallyExpanded: season.uid == team.currentSeason,
     );
   }
 
@@ -69,10 +77,14 @@ class TeamDetails extends StatelessWidget {
 
     if (team.isAdmin()) {
       ret.add(
-        TextButton(
-          onPressed: () =>
-              Navigator.pushNamed(context, 'AddSeason/${team.team.uid}'),
-          child: Text(Messages.of(context).addSeasonButton),
+        ButtonBar(
+          children: [
+            TextButton(
+              onPressed: () =>
+                  Navigator.pushNamed(context, 'AddSeason/${team.team.uid}'),
+              child: Text(Messages.of(context).addSeasonButton),
+            ),
+          ],
         ),
       );
     }

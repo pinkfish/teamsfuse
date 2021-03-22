@@ -54,7 +54,7 @@ class Messages {
       desc: 'Button to add an event to a team', locale: locale);
 
   String get addGameButton =>
-      Intl.message('GAME', desc: 'Button to add a game', locale: locale);
+      Intl.message('ADD GAME', desc: 'Button to add a game', locale: locale);
 
   String get addGameTooltip => Intl.message('Add Game',
       desc: 'Message to on the tooltip to add a game', locale: locale);
@@ -3354,6 +3354,9 @@ class Messages {
         'Needs Invite',
         desc: 'Text in a chip for a player that needs an invite.',
       );
+
+  String get addMediaButton =>
+      Intl.message('ADD MEDIA', desc: 'Button to add a media', locale: locale);
 
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {
