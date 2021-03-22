@@ -102,7 +102,10 @@ class _TeamMediaScreenState extends State<TeamMediaScreen> {
                           }
                           return ListView(
                             children: seasonState.media
-                                .map<Widget>((m) => MediaCard(media: m))
+                                .map<Widget>((m) => MediaCard(
+                                      media: m,
+                                      allMedia: seasonState.media,
+                                    ))
                                 .toList(),
                           );
                         },

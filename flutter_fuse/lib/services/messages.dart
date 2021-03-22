@@ -3361,6 +3361,9 @@ class Messages {
   String get public => Intl.message('PUBLIC',
       desc: 'Banner to say an item is public', locale: locale);
 
+  String get viewButton => Intl.message('VIEW',
+      desc: 'Banner to view the full data on the image', locale: locale);
+
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {
     var name =
