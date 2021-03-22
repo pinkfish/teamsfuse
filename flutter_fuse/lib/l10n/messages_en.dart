@@ -470,6 +470,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "Overtime 1" : MessageLookupByLibrary.simpleMessage("Overtime 1"),
     "Overtime Break" : MessageLookupByLibrary.simpleMessage("Overtime Break"),
     "PERIOD" : MessageLookupByLibrary.simpleMessage("PERIOD"),
+    "PUBLIC" : MessageLookupByLibrary.simpleMessage("PUBLIC"),
     "Parent" : MessageLookupByLibrary.simpleMessage("Parent"),
     "Password" : MessageLookupByLibrary.simpleMessage("Password"),
     "Passwords must match" : MessageLookupByLibrary.simpleMessage("Passwords must match"),
