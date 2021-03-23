@@ -101,7 +101,7 @@ void main() {
 
       expect(find.text('Loading...'), findsNWidgets(2));
 
-      await basicData.close();
+      basicData.close();
     },
     variant: TeamsFuseTestVariant(),
   );
@@ -128,7 +128,7 @@ void main() {
 
       expect(find.text('Fluff'), findsNWidgets(2));
 
-      await basicData.close();
+      basicData.close();
     },
     variant: TeamsFuseTestVariant(),
   );
@@ -172,7 +172,7 @@ void main() {
       await tester.pump();
       expect(find.text('Frog froggy'), findsOneWidget);
 
-      await basicData.close();
+      basicData.close();
     },
     variant: TeamsFuseTestVariant(),
   );
@@ -226,7 +226,7 @@ void main() {
       expect(find.text('Waffle'), findsOneWidget);
       expect(find.text('42'), findsOneWidget);
 
-      await basicData.close();
+      basicData.close();
     },
     variant: TeamsFuseTestVariant(),
     skip: true,
@@ -287,7 +287,7 @@ void main() {
         expect(find.text('By Big Fluff'), findsOneWidget);
         expect(find.text('More fluff was found'), findsOneWidget);
 
-        await basicData.close();
+        basicData.close();
       },
     ),
     variant: TeamsFuseTestVariant(),
@@ -319,7 +319,7 @@ void main() {
         await expectLater(find.byType(PublicClubHomeScreen),
             matchesGoldenFile('../golden/PublicClubHomeScreen.png'));
 
-        await basicData.close();
+        basicData.close();
       }
     },
   );

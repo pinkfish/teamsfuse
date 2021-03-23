@@ -178,12 +178,12 @@ class PublicTeamDetails extends StatelessWidget {
                           ButtonBar(
                             children: [
                               TextButton(
-                                child: Text(Messages.of(context).clubButton),
                                 onPressed: () => Navigator.pushNamed(
                                     context,
                                     '/Club/'
                                     '${PublicClubTab.club}/'
                                     '${teamState.team.clubUid}'),
+                                child: Text(Messages.of(context).clubButton),
                               )
                             ],
                           ),

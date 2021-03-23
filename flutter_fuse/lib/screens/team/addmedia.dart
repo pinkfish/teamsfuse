@@ -170,11 +170,11 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
     );
     rows.add(
       GestureDetector(
+        onTap: _pickImage,
         child: SizedBox(
           height: 100,
           child: _showImage(),
         ),
-        onTap: _pickImage,
       ),
     );
 

@@ -248,7 +248,7 @@ class AuthenticationBloc
   }
 
   AuthenticationState _updateWithUser(UserData user) {
-    print("Update with user $user");
+    print('Update with user $user');
     if (user == null) {
       return AuthenticationLoggedOut();
     } else if (user.isEmailVerified) {

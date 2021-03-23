@@ -30,7 +30,7 @@ class PublicClubTeams extends StatelessWidget {
     var myTeam = teams.toList();
     myTeam.sort((a, b) => a.name.compareTo(b.name));
 
-    if (myTeam.length == 0) {
+    if (myTeam.isEmpty) {
       // Put in a no teams marker...
       teamWidgets.add(
         SizedBox(
@@ -75,7 +75,7 @@ class PublicClubTeams extends StatelessWidget {
           Messages.of(context).loading,
         ));
       } else {
-        if (singleClubState.teams.length != 0) {
+        if (singleClubState.teams.isNotEmpty) {
           teamWidgets.addAll(_teamTiles(context, singleClubState.teams));
         } else {
           teamWidgets.add(

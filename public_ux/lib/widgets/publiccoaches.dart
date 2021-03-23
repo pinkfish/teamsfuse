@@ -52,6 +52,7 @@ class PublicCoachDetails extends StatelessWidget {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder(
         bloc: bloc,

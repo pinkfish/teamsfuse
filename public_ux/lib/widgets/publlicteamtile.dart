@@ -58,6 +58,15 @@ class PublicTeamTile extends StatelessWidget {
           }
 
           return GestureDetector(
+            onTap: onTap ??
+                () {
+                  if (popBeforeNavigate) {
+                    Navigator.pop(context);
+                  }
+                  RepositoryProvider.of<fluro.FluroRouter>(context).navigateTo(
+                      context, 'Team/${teamState.team.uid}',
+                      transition: fluro.TransitionType.inFromRight);
+                },
             child: Card(
               margin: EdgeInsets.all(5.0),
               child: Padding(
@@ -125,15 +134,6 @@ class PublicTeamTile extends StatelessWidget {
                 ),
               ),
             ),
-            onTap: onTap ??
-                () {
-                  if (popBeforeNavigate) {
-                    Navigator.pop(context);
-                  }
-                  RepositoryProvider.of<fluro.FluroRouter>(context).navigateTo(
-                      context, 'Team/${teamState.team.uid}',
-                      transition: fluro.TransitionType.inFromRight);
-                },
           );
         },
       ),

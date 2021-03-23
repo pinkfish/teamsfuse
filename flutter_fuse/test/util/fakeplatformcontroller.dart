@@ -139,16 +139,15 @@ class FakePlatformGoogleMap {
       return <Marker>{};
     }
     final List<dynamic> markersData = markers;
-    final Set<Marker> result = <Marker>{};
-    for (Map<dynamic, dynamic> markerData
-        in markersData.cast<Map<dynamic, dynamic>>()) {
+    final result = <Marker>{};
+    for (var markerData in markersData.cast<Map<dynamic, dynamic>>()) {
       final String markerId = markerData['markerId'];
       final double alpha = markerData['alpha'];
       final bool draggable = markerData['draggable'];
       final bool visible = markerData['visible'];
 
       final dynamic infoWindowData = markerData['infoWindow'];
-      InfoWindow infoWindow = InfoWindow.noText;
+      var infoWindow = InfoWindow.noText;
       if (infoWindowData != null) {
         final Map<dynamic, dynamic> infoWindowMap = infoWindowData;
         infoWindow = InfoWindow(
@@ -191,14 +190,13 @@ class FakePlatformGoogleMap {
       return <Polygon>{};
     }
     final List<dynamic> polygonsData = polygons;
-    final Set<Polygon> result = <Polygon>{};
-    for (Map<dynamic, dynamic> polygonData
-        in polygonsData.cast<Map<dynamic, dynamic>>()) {
+    final result = <Polygon>{};
+    for (var polygonData in polygonsData.cast<Map<dynamic, dynamic>>()) {
       final String polygonId = polygonData['polygonId'];
       final bool visible = polygonData['visible'];
       final bool geodesic = polygonData['geodesic'];
-      final List<LatLng> points = _deserializePoints(polygonData['points']);
-      final List<List<LatLng>> holes = _deserializeHoles(polygonData['holes']);
+      final points = _deserializePoints(polygonData['points']);
+      final holes = _deserializeHoles(polygonData['holes']);
 
       result.add(Polygon(
         polygonId: PolygonId(polygonId),
@@ -251,13 +249,12 @@ class FakePlatformGoogleMap {
       return <Polyline>{};
     }
     final List<dynamic> polylinesData = polylines;
-    final Set<Polyline> result = <Polyline>{};
-    for (Map<dynamic, dynamic> polylineData
-        in polylinesData.cast<Map<dynamic, dynamic>>()) {
+    final result = <Polyline>{};
+    for (var polylineData in polylinesData.cast<Map<dynamic, dynamic>>()) {
       final String polylineId = polylineData['polylineId'];
       final bool visible = polylineData['visible'];
       final bool geodesic = polylineData['geodesic'];
-      final List<LatLng> points = _deserializePoints(polylineData['points']);
+      final points = _deserializePoints(polylineData['points']);
 
       result.add(Polyline(
         polylineId: PolylineId(polylineId),
@@ -284,17 +281,17 @@ class FakePlatformGoogleMap {
     if (updateTileOverlayUpdates == null) {
       return;
     }
-    final List<Map<dynamic, dynamic>> tileOverlaysToAddList =
+    final tileOverlaysToAddList =
         updateTileOverlayUpdates['tileOverlaysToAdd'] != null
             ? List.castFrom<dynamic, Map<dynamic, dynamic>>(
                 updateTileOverlayUpdates['tileOverlaysToAdd'])
             : null;
-    final List<String> tileOverlayIdsToRemoveList =
+    final tileOverlayIdsToRemoveList =
         updateTileOverlayUpdates['tileOverlayIdsToRemove'] != null
             ? List.castFrom<dynamic, String>(
                 updateTileOverlayUpdates['tileOverlayIdsToRemove'])
             : null;
-    final List<Map<dynamic, dynamic>> tileOverlaysToChangeList =
+    final tileOverlaysToChangeList =
         updateTileOverlayUpdates['tileOverlaysToChange'] != null
             ? List.castFrom<dynamic, Map<dynamic, dynamic>>(
                 updateTileOverlayUpdates['tileOverlaysToChange'])
@@ -317,9 +314,8 @@ class FakePlatformGoogleMap {
       return <Circle>{};
     }
     final List<dynamic> circlesData = circles;
-    final Set<Circle> result = <Circle>{};
-    for (Map<dynamic, dynamic> circleData
-        in circlesData.cast<Map<dynamic, dynamic>>()) {
+    final result = <Circle>{};
+    for (var circleData in circlesData.cast<Map<dynamic, dynamic>>()) {
       final String circleId = circleData['circleId'];
       final bool visible = circleData['visible'];
       final double radius = circleData['radius'];
@@ -348,8 +344,8 @@ class FakePlatformGoogleMap {
     if (tileOverlays == null || tileOverlays.isEmpty) {
       return <TileOverlay>{};
     }
-    final Set<TileOverlay> result = <TileOverlay>{};
-    for (Map<dynamic, dynamic> tileOverlayData in tileOverlays) {
+    final result = <TileOverlay>{};
+    for (var tileOverlayData in tileOverlays) {
       final String tileOverlayId = tileOverlayData['tileOverlayId'];
       final bool fadeIn = tileOverlayData['fadeIn'];
       final double transparency = tileOverlayData['transparency'];
@@ -435,7 +431,7 @@ class FakePlatformViewsController {
     switch (call.method) {
       case 'create':
         final Map<dynamic, dynamic> args = call.arguments;
-        final Map<dynamic, dynamic> params = _decodeParams(args['params']);
+        final params = _decodeParams(args['params']);
         lastCreatedView = FakePlatformGoogleMap(
           args['id'],
           params,
@@ -452,8 +448,8 @@ class FakePlatformViewsController {
 }
 
 Map<dynamic, dynamic> _decodeParams(Uint8List paramsMessage) {
-  final ByteBuffer buffer = paramsMessage.buffer;
-  final ByteData messageBytes = buffer.asByteData(
+  final buffer = paramsMessage.buffer;
+  final messageBytes = buffer.asByteData(
     paramsMessage.offsetInBytes,
     paramsMessage.lengthInBytes,
   );

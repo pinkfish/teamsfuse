@@ -18,8 +18,7 @@ import '../../util/testdata.dart';
 import '../../util/widgetvariant.dart';
 
 void main() {
-  final FakePlatformViewsController fakePlatformViewsController =
-      FakePlatformViewsController();
+  final fakePlatformViewsController = FakePlatformViewsController();
 
   setUpAll(() {
     SystemChannels.platform_views.setMockMethodCallHandler(
@@ -138,7 +137,7 @@ void main() {
     // Still loading when there is no team.
     expect(find.text('Loading...'), findsOneWidget);
 
-    await allBlocs.close();
+    allBlocs.close();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('loaded team', (tester) async {
@@ -219,7 +218,7 @@ void main() {
           matchesGoldenFile('../../golden/game_details_set.png'));
     }
 
-    await allStuff.close();
+    allStuff.close();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('loaded basketball, finished', (tester) async {
@@ -315,10 +314,10 @@ void main() {
           matchesGoldenFile('../../golden/game_details_basketball.png'));
     }
 
-    await allBlocs.close();
-    seasonController.close();
-    opponentController.close();
-    teamSeasonController.close();
-    teamController.close();
+    allBlocs.close();
+    await seasonController.close();
+    await opponentController.close();
+    await teamSeasonController.close();
+    await teamController.close();
   }, variant: TeamsFuseTestVariant());
 }

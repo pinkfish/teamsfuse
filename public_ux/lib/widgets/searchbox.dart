@@ -26,8 +26,8 @@ class SearchBox extends StatelessWidget {
       Expanded(
         child: TextField(
           controller: _filter,
-          decoration: new InputDecoration(
-            prefixIcon: new Icon(Icons.search),
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.search),
             hintText: MessagesPublic.of(context).search,
           ),
           onChanged: onSearchChanged,

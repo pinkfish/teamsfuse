@@ -17,30 +17,32 @@ class AppRouter {
     var router = fluro.FluroRouter();
 
     // Public section
-    router.define("/Club/:tab/:id",
+    router.define('/Club/:tab/:id',
         handler: fluro.Handler(
             handlerFunc: (context, vals) => PublicClubHomeScreen(
-                vals["tab"][0].toString(), vals["id"][0].toString(),)));
+                  vals['tab'][0].toString(),
+                  vals['id'][0].toString(),
+                )));
 
-    router.define("/Team/:tab/:id",
+    router.define('/Team/:tab/:id',
         handler: fluro.Handler(
             handlerFunc: (context, vals) => PublicTeamDetailsScreen(
-                vals["tab"][0].toString(), vals["id"][0].toString())));
+                vals['tab'][0].toString(), vals['id'][0].toString())));
 
-    router.define("/Player/:tab/:playerId",
+    router.define('/Player/:tab/:playerId',
         handler: fluro.Handler(
             handlerFunc: (context, vals) => PublicPlayerDetailsScreen(
-                vals["tab"][0].toString(), vals["playerId"][0].toString())));
+                vals['tab'][0].toString(), vals['playerId'][0].toString())));
 
-    router.define("/Home",
+    router.define('/Home',
         handler: fluro.Handler(
             handlerFunc: (context, vals) =>
                 PublicHomeScreen(PublicMainTab.about.name)));
 
-    router.define("/Home/:tab",
+    router.define('/Home/:tab',
         handler: fluro.Handler(
             handlerFunc: (context, vals) =>
-                PublicHomeScreen(vals["tab"][0].toString())));
+                PublicHomeScreen(vals['tab'][0].toString())));
 
     return router;
   }

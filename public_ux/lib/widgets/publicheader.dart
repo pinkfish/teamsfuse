@@ -22,10 +22,10 @@ class PublicHeader extends StatelessWidget {
         bloc: singleClubBloc,
         builder: (context, singleClubState) {
           if (singleClubState is SingleClubUninitialized) {
-            return Text("Loading the club details");
+            return Text('Loading the club details');
           }
           if (singleClubState is SingleClubDeleted) {
-            return Text("This club is deleted?");
+            return Text('This club is deleted?');
           }
           return Row(children: [
             ClubImage(
@@ -33,7 +33,7 @@ class PublicHeader extends StatelessWidget {
               width: 50,
               height: 50,
             ),
-            Text(singleClubState.club?.name ?? "Womble?",
+            Text(singleClubState.club?.name ?? 'Womble?',
                 style: Theme.of(context).textTheme.headline4),
           ]);
         },

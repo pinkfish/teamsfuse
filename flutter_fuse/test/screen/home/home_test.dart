@@ -19,7 +19,7 @@ void main() {
       (tester) async =>
           withClock(Clock.fixed(DateTime(2020, 09, 01)), () async {
             final allBlocs = AllBlocs();
-            await tz.initializeTimeZones();
+            tz.initializeTimeZones();
             var laLoc = getLocation('America/Los_Angeles');
 
             setupStorage();
@@ -71,7 +71,7 @@ void main() {
               testWidget,
             );
 
-            await allBlocs.loadedStateBloc.emit(LoadedState.AllLoaded);
+            allBlocs.loadedStateBloc.emit(LoadedState.AllLoaded);
 
             //await tester.pumpWidget(testWidget);
             await tester.pump(Duration(milliseconds: 600));
@@ -85,7 +85,7 @@ void main() {
             }
             await tester.pump(Duration(milliseconds: 600));
 
-            await allBlocs.close();
+            allBlocs.close();
           }),
       variant: TeamsFuseTestVariant());
 }

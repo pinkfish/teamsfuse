@@ -29,7 +29,8 @@ class _SearchState extends State<Search> {
   void _updateSearch(String query) async {
     _query = query.trim();
     // Navigate the state.
-    Navigator.pushNamed(context, '/Search/${Uri.encodeQueryComponent(query)}');
+    await Navigator.pushNamed(
+        context, '/Search/${Uri.encodeQueryComponent(query)}');
     if (_query.isNotEmpty) {
       // Update the navigation url to include the query.
       final algolia = RepositoryProvider.of<AlgoliaSearch>(context);
