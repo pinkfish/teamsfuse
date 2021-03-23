@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/blocs/single/singleseasonbloc.dart';
 import 'package:flutter_fuse/services/blocs/single/singleteambloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/blocs/singleseasonprovider.dart';
-import 'package:flutter_fuse/widgets/games/teamresults.dart';
-import 'package:flutter_fuse/widgets/player/gendericon.dart';
-import 'package:flutter_fuse/widgets/teams/seasonimages.dart';
 import 'package:flutter_fuse/widgets/teams/stats/seasonplayerlist.dart';
-import 'package:flutter_fuse/widgets/teams/teamimage.dart';
 import 'package:flutter_fuse/widgets/util/deleted.dart';
-import 'package:flutter_fuse/widgets/util/handsandtrophy.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:public_ux/screens/publicplayer.dart';
 
 ///
