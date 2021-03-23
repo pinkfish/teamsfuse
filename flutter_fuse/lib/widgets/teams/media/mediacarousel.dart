@@ -217,7 +217,6 @@ class _MediaCarouselState extends State<MediaCarousel> {
                         tag: 'media${_currentMedia.uid}',
                         child: CachedNetworkImage(
                           imageBuilder: (context, provider) {
-                            print('zoom loc $_zoomLocation $_scale');
                             final imageToDisplay = Image(
                               image: provider,
                               height: _size.height / _scale,
@@ -232,19 +231,26 @@ class _MediaCarouselState extends State<MediaCarousel> {
                               ImageStreamListener(
                                 (ImageInfo image, bool synchronousCall) {
                                   var myImage = image.image;
-                                  _size = Size(myImage.width.toDouble(),
-                                      myImage.height.toDouble());
-                                  _imageScale = max(
-                                    _size.width / constraints.maxWidth,
-                                    _size.height / constraints.maxHeight,
-                                  );
-                                  if (!_zoomed) {
-                                    _scale = _imageScale;
+                                  if (myImage.width != _size.width ||
+                                      myImage.height != _size.height ||
+                                      _imageScale !=
+                                          max(
+                                            _size.width / constraints.maxWidth,
+                                            _size.height /
+                                                constraints.maxHeight,
+                                          )) {
+                                    _size = Size(myImage.width.toDouble(),
+                                        myImage.height.toDouble());
+                                    _imageScale = max(
+                                      _size.width / constraints.maxWidth,
+                                      _size.height / constraints.maxHeight,
+                                    );
+                                    if (!_zoomed) {
+                                      _scale = _imageScale;
+                                    }
+                                    // Refresh the page,
+                                    sizeController.add(true);
                                   }
-                                  // Refresh the page,
-                                  sizeController.add(true);
-
-                                  print('got size $_size');
                                 },
                               ),
                             );
@@ -266,9 +272,13 @@ class _MediaCarouselState extends State<MediaCarousel> {
                       left: 0,
                       width: constraints.maxWidth,
                       child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         color: Colors.white38,
                         child: Padding(
-                          padding: EdgeInsets.all(10),
+                          padding:
+                              EdgeInsets.only(left: 10, right: 10, top: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -293,6 +303,19 @@ class _MediaCarouselState extends State<MediaCarousel> {
                                   ),
                                 ],
                               ),
+                              ButtonBar(
+                                children: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pushNamed(
+                                        context,
+                                        '/Season/Media/'
+                                        '${widget.media.seasonUid}/'
+                                        '${widget.media.uid}'),
+                                    child: Text(
+                                        Messages.of(context).editbuttontext),
+                                  )
+                                ],
+                              )
                             ],
                           ),
                         ),

@@ -6,6 +6,7 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../services/messages.dart';
 import '../blocs/singleseasonprovider.dart';
 import '../blocs/singleteamprovider.dart';
+import '../util/publicmark.dart';
 import 'teamimage.dart';
 
 ///
@@ -60,82 +61,89 @@ class TeamTile extends StatelessWidget {
           return SingleSeasonProvider(
               seasonUid: teamState.team.currentSeason,
               builder: (c, seasonBloc) {
-                return ListTile(
-                  selected: selected,
-                  selectedTileColor:
-                      selectedTileColor ?? Theme.of(context).splashColor,
-                  leading: TeamImage(
-                    width: 40.0,
-                    height: 40.0,
-                    teamUid: teamState.team.uid,
-                    alignment: Alignment.centerLeft,
-                    showIcon: showIconForTeam,
-                  ),
-                  title: BlocBuilder(
-                    bloc: seasonBloc,
-                    builder: (context, seasonState) {
-                      var seasonName = '';
-                      if (seasonState is SingleSeasonLoaded) {
-                        seasonName = seasonState.season.name;
-                      }
-
-                      return RichText(
-                        text: TextSpan(
-                          text: teamState.team.name,
-                          style: Theme.of(context).textTheme.subtitle1.copyWith(
-                              fontWeight: FontWeight.bold, fontSize: 17.0),
-                          children: <TextSpan>[
-                            TextSpan(text: '  '),
-                            TextSpan(
-                              text: seasonName,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1
-                                  .copyWith(
-                                      fontStyle: FontStyle.italic,
-                                      fontSize: 15.0),
-                            ),
-                            TextSpan(
-                              text: teamState.isAdmin()
-                                  ? '\n${Messages.of(context).administrator}'
-                                  : '',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1
-                                  .copyWith(
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 10.0,
-                                    color: Theme.of(context).primaryColorDark,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  isThreeLine: false,
-                  dense: true,
-                  subtitle: BlocBuilder(
-                    bloc: seasonBloc,
-                    builder: (context, seasonState) {
-                      if (seasonState is SingleSeasonLoaded) {
-                        return Text(seasonState.season.record != null
-                            ? Messages.of(context)
-                                .winRecord(seasonState.season.record)
-                            : '');
-                      }
-                      return Text(Messages.of(context).loading);
-                    },
-                  ),
-                  onTap: onTap ??
-                      () {
-                        if (popBeforeNavigate) {
-                          Navigator.pop(context);
+                return PublicMark(
+                  isPublic: teamState.team.isPublic,
+                  child: ListTile(
+                    selected: selected,
+                    selectedTileColor:
+                        selectedTileColor ?? Theme.of(context).splashColor,
+                    leading: TeamImage(
+                      width: 40.0,
+                      height: 40.0,
+                      teamUid: teamState.team.uid,
+                      alignment: Alignment.centerLeft,
+                      showIcon: showIconForTeam,
+                    ),
+                    title: BlocBuilder(
+                      bloc: seasonBloc,
+                      builder: (context, seasonState) {
+                        var seasonName = '';
+                        if (seasonState is SingleSeasonLoaded) {
+                          seasonName = seasonState.season.name;
                         }
-                        RepositoryProvider.of<fluro.FluroRouter>(context)
-                            .navigateTo(context, 'Team/${teamState.team.uid}',
-                                transition: fluro.TransitionType.inFromRight);
+
+                        return RichText(
+                          text: TextSpan(
+                            text: teamState.team.name,
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle1
+                                .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17.0),
+                            children: <TextSpan>[
+                              TextSpan(text: '  '),
+                              TextSpan(
+                                text: seasonName,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .subtitle1
+                                    .copyWith(
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 15.0),
+                              ),
+                              TextSpan(
+                                text: teamState.isAdmin()
+                                    ? '\n${Messages.of(context).administrator}'
+                                    : '',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .subtitle1
+                                    .copyWith(
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 10.0,
+                                      color: Theme.of(context).primaryColorDark,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        );
                       },
+                    ),
+                    isThreeLine: false,
+                    dense: true,
+                    subtitle: BlocBuilder(
+                      bloc: seasonBloc,
+                      builder: (context, seasonState) {
+                        if (seasonState is SingleSeasonLoaded) {
+                          return Text(seasonState.season.record != null
+                              ? Messages.of(context)
+                                  .winRecord(seasonState.season.record)
+                              : '');
+                        }
+                        return Text(Messages.of(context).loading);
+                      },
+                    ),
+                    onTap: onTap ??
+                        () {
+                          if (popBeforeNavigate) {
+                            Navigator.pop(context);
+                          }
+                          RepositoryProvider.of<fluro.FluroRouter>(context)
+                              .navigateTo(context, 'Team/${teamState.team.uid}',
+                                  transition: fluro.TransitionType.inFromRight);
+                        },
+                  ),
                 );
               });
         },

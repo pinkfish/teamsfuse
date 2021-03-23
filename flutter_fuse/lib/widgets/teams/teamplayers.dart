@@ -55,7 +55,7 @@ class _TeamPlayersState extends State<TeamPlayers> {
 
   @override
   Widget build(BuildContext context) {
-    var messsages = Messages.of(context);
+    var messages = Messages.of(context);
 
     return SingleTeamProvider(
       teamUid: widget._teamUid,
@@ -75,7 +75,7 @@ class _TeamPlayersState extends State<TeamPlayers> {
                 Row(
                   children: <Widget>[
                     DropdownButton<String>(
-                      hint: Text(messsages.seasonselect),
+                      hint: Text(messages.seasonselect),
                       value: _seasonUid,
                       items: _buildItems(context, teamState),
                       onChanged: (val) {

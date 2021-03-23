@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/teams/media/seasonimages.dart';
@@ -9,6 +11,7 @@ import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import '../games/teamresults.dart';
 import '../player/gendericon.dart';
+import '../util/publicmark.dart';
 import 'teamimage.dart';
 
 ///
@@ -25,11 +28,19 @@ class TeamDetails extends StatelessWidget {
       BuildContext context, Team team, Season season, bool admin) {
     return ExpansionTile(
       key: PageStorageKey<Season>(season),
-      title: Text(
-        '${season.name} W:${season.record.win} L:${season.record.loss} '
-        'T:${season.record.tie}',
+      title: SizedBox(
+        height: 30,
+        child: PublicMark(
+          isPublic: season.isPublic,
+          clipper: OverflowClipper(),
+          child: Text(
+            '${season.name} W:${season.record.win} L:${season.record.loss} '
+            'T:${season.record.tie}',
+          ),
+        ),
       ),
       initiallyExpanded: season.uid == team.currentSeason,
+      expandedCrossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         TeamResultsBySeason(
           teamUid: team.uid,
@@ -122,13 +133,16 @@ class TeamDetails extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Center(
-                  child: Image(
-                    image: ExactAssetImage('assets/images/abstractsport.png'),
-                    width: (screenSize.width < 500)
-                        ? 120.0
-                        : (screenSize.width / 4) + 12.0,
-                    height: screenSize.height / 4 + 20,
+                PublicMark(
+                  isPublic: false,
+                  child: Center(
+                    child: Image(
+                      image: ExactAssetImage('assets/images/abstractsport.png'),
+                      width: (screenSize.width < 500)
+                          ? 120.0
+                          : (screenSize.width / 4) + 12.0,
+                      height: screenSize.height / 4 + 20,
+                    ),
                   ),
                 ),
                 ListTile(title: Text(Messages.of(context).unknown)),
@@ -138,8 +152,8 @@ class TeamDetails extends StatelessWidget {
             );
           }
 
-          var tags = <Widget>[];
-          var team = teamState.team;
+          final tags = <Widget>[];
+          final team = teamState.team;
           if (team.clubUid != null) {
             Widget middle;
             if (teamState.club == null) {
@@ -186,18 +200,27 @@ class TeamDetails extends StatelessWidget {
             ),
           );
 
+          final imgSize = max(150.0,
+              min((screenSize.width / 4) + 12.0, screenSize.height / 4 + 20));
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Center(
-                child: TeamImage(
-                  team: team,
-                  showIcon: false,
-                  width: (screenSize.width < 500)
-                      ? 120.0
-                      : (screenSize.width / 4) + 12.0,
-                  height: screenSize.height / 4 + 20,
+              PublicMark(
+                isPublic: team.isPublic,
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: TeamImage(
+                      team: team,
+                      showIcon: false,
+                      circleBox: false,
+                      width: screenSize.width - 20,
+                      fit: BoxFit.fitHeight,
+                      height: imgSize,
+                    ),
+                  ),
                 ),
               ),
               ListTile(

@@ -25,6 +25,7 @@ class TeamImage extends StatelessWidget {
       this.height = 200.0,
       this.color,
       this.showIcon = false,
+      this.circleBox = true,
       this.fit = BoxFit.cover,
       this.alignment = Alignment.center,
       this.repeat = ImageRepeat.noRepeat,
@@ -69,27 +70,35 @@ class TeamImage extends StatelessWidget {
   /// If we should display an icon or not.
   final bool showIcon;
 
+  /// If the image should be clipped to a circle.
+  final bool circleBox;
+
   Widget _buildImageBit(Team t) {
     if (t.photoUrl != null && t.photoUrl.isNotEmpty) {
-      return ClipOval(
-        child: SizedBox(
-          width: width < height ? width : height,
-          height: width < height ? width : height,
-          child: FittedBox(
-            fit: fit,
-            child: CachedNetworkImage(
-              imageUrl: t.photoUrl,
-              fadeInDuration: Duration(milliseconds: 200),
-              fadeOutDuration: Duration(milliseconds: 200),
-              alignment: alignment,
-              repeat: repeat,
-              matchTextDirection: matchTextDirection,
-              placeholder: (context, url) => SportImage(),
-              errorWidget: (context, url, e) => SportImage(),
+      final img = CachedNetworkImage(
+        imageUrl: t.photoUrl,
+        fadeInDuration: Duration(milliseconds: 200),
+        fadeOutDuration: Duration(milliseconds: 200),
+        alignment: alignment,
+        repeat: repeat,
+        matchTextDirection: matchTextDirection,
+        placeholder: (context, url) => SportImage(),
+        errorWidget: (context, url, e) => SportImage(),
+      );
+      if (circleBox) {
+        return ClipOval(
+          child: SizedBox(
+            width: width < height ? width : height,
+            height: width < height ? width : height,
+            child: FittedBox(
+              fit: fit,
+              child: img,
             ),
           ),
-        ),
-      );
+        );
+      } else {
+        return img;
+      }
     } else {
       return SportImage();
     }

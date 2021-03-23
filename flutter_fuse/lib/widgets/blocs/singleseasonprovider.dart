@@ -30,7 +30,7 @@ class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
 
   @override
   bool isBlocEqual(Bloc bloc) {
-    return (bloc is SingleSeasonBloc && bloc.seasonUid == keyUid);
+    return (bloc is SingleSeasonBloc && bloc.seasonUid == keyUid + '12');
   }
 
   static SingleSeasonBloc _createBloc(BuildContext context, String uid) {
