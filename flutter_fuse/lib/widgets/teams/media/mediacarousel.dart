@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:built_collection/built_collection.dart';
@@ -42,11 +43,44 @@ class _MediaCarouselState extends State<MediaCarousel> {
   Size _size = Size(0, 0);
   bool _zoomed = false;
 
+  final sizeController = StreamController<bool>.broadcast();
+
   @override
   void initState() {
     super.initState();
     _currentMedia = widget.media;
     _index = widget.allMedia.indexOf(_currentMedia);
+  }
+
+  double _realPixelToImage(double pos) {
+    return pos * _scale;
+  }
+
+  double _imagePixelToReal(double pos) {
+    return pos / _scale;
+  }
+
+  Offset _normalizeZoomLocation(Offset loc, BoxConstraints constraints) {
+    final imageX = _realPixelToImage(loc.dx);
+    final imageY = _realPixelToImage(loc.dy);
+    final endX = imageX + _realPixelToImage(constraints.maxWidth);
+    final endY = imageY + _realPixelToImage(constraints.maxHeight);
+
+    if (endX > _size.width) {
+      final maxX = _size.width - _realPixelToImage(constraints.maxWidth);
+      loc = Offset(_imagePixelToReal(maxX), loc.dy);
+    }
+    if (endY > _size.height) {
+      final maxY = _size.height - _realPixelToImage(constraints.maxHeight);
+      loc = Offset(loc.dx, _imagePixelToReal(maxY));
+    }
+    if (loc.dx < 0) {
+      loc = Offset(0, loc.dy);
+    }
+    if (loc.dy < 0) {
+      loc = Offset(loc.dx, 0);
+    }
+    return loc;
   }
 
   @override
@@ -62,35 +96,31 @@ class _MediaCarouselState extends State<MediaCarousel> {
             onScaleUpdate: (scale) {
               _panOffset = scale.focalPoint - _startOffset;
               if (_zoomed) {
-                setState(() {
-                  _zoomLocation += _panOffset;
-                  if (_zoomLocation.dx > 0) {
-                    _zoomLocation = Offset(0, _zoomLocation.dy);
-                  }
-                  if (_zoomLocation.dy > 0) {
-                    _zoomLocation = Offset(_zoomLocation.dx, 0);
-                  }
-                  print(
-                      'Zoom $_zoomLocation ${constraints.maxWidth} ${_size.width} ${constraints.maxWidth / _scale} ${_zoomLocation.dx + (constraints.maxWidth / _scale)}');
-                  if (constraints.maxWidth < _size.width) {
-                    if (-_zoomLocation.dx + (constraints.maxWidth / _scale) >
-                        (_size.width / _scale)) {
-                      _zoomLocation = Offset(
-                          -(_size.width - (constraints.maxWidth / _scale)) /
-                              _scale,
-                          _zoomLocation.dy);
-                    }
-                  }
-                  if (constraints.maxHeight < _size.height) {
-                    if (-_zoomLocation.dy + (constraints.maxHeight / _scale) >
-                        (_size.height / _scale)) {
-                      _zoomLocation = Offset(
-                          _zoomLocation.dx,
-                          -(_size.height - constraints.maxHeight / _scale) /
-                              _scale);
-                    }
-                  }
-                });
+                if (scale.pointerCount == 2) {
+                  final zoomScale = min(
+                    constraints.maxWidth / _size.width,
+                    constraints.maxHeight / _size.height,
+                  );
+                  print('$zoomScale $_imageScale -- $_scale ${scale.scale}');
+                  final oldScale = _scale;
+                  setState(() {
+                    // Scale the top corner.
+                    _scale =
+                        (_scale / scale.scale).clamp(zoomScale, _imageScale);
+                    final diffScale = oldScale / _scale;
+                    _zoomLocation = _normalizeZoomLocation(
+                        Offset(_zoomLocation.dx * diffScale,
+                            _zoomLocation.dy * diffScale),
+                        constraints);
+                  });
+                  print('$_scale');
+                } else {
+                  setState(() {
+                    _zoomLocation -= _panOffset;
+                    _zoomLocation =
+                        _normalizeZoomLocation(_zoomLocation, constraints);
+                  });
+                }
               }
             },
             onScaleStart: (pan) {
@@ -98,6 +128,10 @@ class _MediaCarouselState extends State<MediaCarousel> {
               _startOffset = pan.focalPoint;
             },
             onScaleEnd: (pan) {
+              // If zoomed out, mark as not zoomed.
+              if (_scale == _imageScale && _zoomed) {
+                _zoomed = false;
+              }
               // we are zoomed
               if (pan.pointerCount == 1 || pan.pointerCount == 0) {
                 if (!_zoomed) {
@@ -127,8 +161,14 @@ class _MediaCarouselState extends State<MediaCarousel> {
             onDoubleTap: () {
               _zoomed = !_zoomed;
               if (_zoomed) {
-                setState(() => _scale = _imageScale / 2);
+                final zoomScale = min(
+                  constraints.maxWidth / _size.width,
+                  constraints.maxHeight / _size.height,
+                );
+
+                setState(() => _scale = zoomScale);
               } else {
+                _zoomLocation = Offset(0, 0);
                 setState(() => _scale = _imageScale);
               }
               print('double $_zoomed $_scale');
@@ -161,111 +201,116 @@ class _MediaCarouselState extends State<MediaCarousel> {
                   );
                 }
               },
-              child: Stack(
+              child: StreamBuilder(
                 key: ValueKey(_currentMedia),
-                alignment: Alignment.topLeft,
-                fit: StackFit.expand,
-                children: [
-                  Positioned(
-                    top: _zoomLocation.dy,
-                    left: _zoomLocation.dx,
-                    width: constraints.maxWidth,
-                    height: constraints.maxHeight,
-                    child: Hero(
-                      tag: 'media${_currentMedia.uid}',
-                      child: CachedNetworkImage(
-                        imageBuilder: (context, provider) {
-                          print('zoom loc $_zoomLocation $_scale');
-                          final imageToDisplay = Image(
-                            image: provider,
-                            height: _size.height / _scale,
-                            width: _size.width / _scale,
-                            fit: BoxFit.fill,
-                            alignment: Alignment.topLeft,
-                          );
-
-                          imageToDisplay.image
-                              .resolve(ImageConfiguration())
-                              .addListener(
-                            ImageStreamListener(
-                              (ImageInfo image, bool synchronousCall) {
-                                var myImage = image.image;
-                                _size = Size(myImage.width.toDouble(),
-                                    myImage.height.toDouble());
-                                _imageScale = max(
-                                  _size.width / constraints.maxWidth,
-                                  _size.height / constraints.maxHeight,
-                                );
-                                if (!_zoomed) {
-                                  _scale = _imageScale;
-                                }
-
-                                print('got size $_size');
-                              },
-                            ),
-                          );
-                          return FittedBox(
-                              fit: BoxFit.none,
+                stream: sizeController.stream,
+                builder: (context, snapshot) => Stack(
+                  alignment: Alignment.topLeft,
+                  fit: StackFit.expand,
+                  children: [
+                    Positioned(
+                      top: -_zoomLocation.dy,
+                      left: -_zoomLocation.dx,
+                      width: constraints.maxWidth,
+                      height: constraints.maxHeight,
+                      child: Hero(
+                        tag: 'media${_currentMedia.uid}',
+                        child: CachedNetworkImage(
+                          imageBuilder: (context, provider) {
+                            print('zoom loc $_zoomLocation $_scale');
+                            final imageToDisplay = Image(
+                              image: provider,
+                              height: _size.height / _scale,
+                              width: _size.width / _scale,
+                              fit: BoxFit.fill,
                               alignment: Alignment.topLeft,
-                              child: imageToDisplay);
-                        },
-                        alignment: Alignment.topLeft,
-                        imageUrl: _currentMedia.url.toString(),
-                        fit: BoxFit.none,
-                        errorWidget: (c, str, e) => Icon(Icons.error),
-                        placeholder: (c, str) => CircularProgressIndicator(),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 20,
-                    left: 0,
-                    width: constraints.maxWidth,
-                    child: Card(
-                      color: Colors.white38,
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              _currentMedia.description,
-                              style: Theme.of(context).textTheme.bodyText1,
-                              textScaleFactor: 1.5,
-                              maxLines: 5,
-                              overflow: TextOverflow.fade,
-                            ),
-                            SizedBox(height: 10),
-                            Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Text(
-                                  _dateFormat.format(_currentMedia.startAt),
-                                ),
-                                SizedBox(width: 20),
-                                Text(
-                                  _timeFormat.format(_currentMedia.startAt),
-                                ),
-                              ],
-                            ),
-                          ],
+                            );
+
+                            imageToDisplay.image
+                                .resolve(ImageConfiguration())
+                                .addListener(
+                              ImageStreamListener(
+                                (ImageInfo image, bool synchronousCall) {
+                                  var myImage = image.image;
+                                  _size = Size(myImage.width.toDouble(),
+                                      myImage.height.toDouble());
+                                  _imageScale = max(
+                                    _size.width / constraints.maxWidth,
+                                    _size.height / constraints.maxHeight,
+                                  );
+                                  if (!_zoomed) {
+                                    _scale = _imageScale;
+                                  }
+                                  // Refresh the page,
+                                  sizeController.add(true);
+
+                                  print('got size $_size');
+                                },
+                              ),
+                            );
+                            return FittedBox(
+                                fit: BoxFit.none,
+                                alignment: Alignment.topLeft,
+                                child: imageToDisplay);
+                          },
+                          alignment: Alignment.topLeft,
+                          imageUrl: _currentMedia.url.toString(),
+                          fit: BoxFit.none,
+                          errorWidget: (c, str, e) => Icon(Icons.error),
+                          placeholder: (c, str) => CircularProgressIndicator(),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: Colors.white,
+                    Positioned(
+                      bottom: 20,
+                      left: 0,
+                      width: constraints.maxWidth,
+                      child: Card(
+                        color: Colors.white38,
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                _currentMedia.description,
+                                style: Theme.of(context).textTheme.bodyText1,
+                                textScaleFactor: 1.5,
+                                maxLines: 5,
+                                overflow: TextOverflow.fade,
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text(
+                                    _dateFormat.format(_currentMedia.startAt),
+                                  ),
+                                  SizedBox(width: 20),
+                                  Text(
+                                    _timeFormat.format(_currentMedia.startAt),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      onPressed: () => Navigator.pop(context),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: Colors.white,
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
