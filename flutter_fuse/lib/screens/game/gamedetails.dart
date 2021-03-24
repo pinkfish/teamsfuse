@@ -114,7 +114,9 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                   }
 
                   if (_tabIndex == 0) {
-                    body = GameDetails(gameBloc);
+                    body = SingleChildScrollView(
+                      child: GameDetails(gameBloc),
+                    );
                   } else if (_tabIndex == 1) {
                     if (game.result.inProgress != GameInProgress.NotStarted &&
                         singleTeamState?.team?.sport == Sport.Basketball) {

@@ -19,8 +19,6 @@ void main() {
     var loginForm = _LoginFormTest(tester);
     await loginForm.setup();
 
-    debugDumpApp();
-
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
 
@@ -41,6 +39,8 @@ void main() {
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
+
+    await tester.pump(Duration(milliseconds: 600));
 
     if (Platform.environment['GOLDEN'] != null) {
       print('Golden!');
