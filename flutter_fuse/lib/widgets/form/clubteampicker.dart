@@ -37,10 +37,6 @@ class ClubTeamPicker extends StatefulWidget {
 }
 
 class _ClubTeamPickerState extends State<ClubTeamPicker> {
-  _ClubTeamPickerState() {
-    widget.clubBloc.add(SingleClubLoadTeams());
-  }
-
   @override
   void dispose() {
     super.dispose();
@@ -49,6 +45,7 @@ class _ClubTeamPickerState extends State<ClubTeamPicker> {
   @override
   void initState() {
     super.initState();
+    widget.clubBloc.add(SingleClubLoadTeams());
     _refreshClub();
   }
 

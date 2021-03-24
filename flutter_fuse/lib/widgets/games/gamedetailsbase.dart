@@ -219,13 +219,13 @@ class GameDetailsBase extends StatelessWidget {
 
       tzShortName = ' ($abbr)';
     }
-    String arriveAttimeStr;
+    String arriveAtTimeStr;
     if (dayArrive.minute == day.minute && dayArrive.hour == day.hour) {
-      arriveAttimeStr =
+      arriveAtTimeStr =
           MaterialLocalizations.of(context).formatTimeOfDay(dayArrive) +
               (tzShortName ?? '');
     } else {
-      arriveAttimeStr = MaterialLocalizations.of(context).formatTimeOfDay(day) +
+      arriveAtTimeStr = MaterialLocalizations.of(context).formatTimeOfDay(day) +
           (tzShortName ?? '');
     }
     var opponent = teamState.opponents[game.opponentUid];
@@ -269,8 +269,8 @@ class GameDetailsBase extends StatelessWidget {
         ),
         title: Text(teamState.team.name, style: theme.textTheme.headline6),
         subtitle:
-            arriveAttimeStr != null && game.sharedData.type == EventType.Game
-                ? Text('arrive at $arriveAttimeStr',
+            arriveAtTimeStr != null && game.sharedData.type == EventType.Game
+                ? Text('arrive at $arriveAtTimeStr',
                     style: theme.textTheme.subtitle1)
                 : null,
         trailing: game.homegame ? const Icon(Icons.home) : null,
@@ -291,6 +291,7 @@ class GameDetailsBase extends StatelessWidget {
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(game.sharedData.place.name ?? ''),
             Text(game.sharedData.place.address ?? Messages.of(context).unknown),
@@ -430,6 +431,7 @@ class GameDetailsBase extends StatelessWidget {
         ExpansionTile(
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
                 opponent != null
@@ -508,18 +510,23 @@ class GameDetailsBase extends StatelessWidget {
       }
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        ...top,
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
+    return LayoutBuilder(
+      builder: (context, c) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ...top,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: body,
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 

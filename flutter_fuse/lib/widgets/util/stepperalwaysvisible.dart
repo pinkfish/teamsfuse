@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../services/messages.dart';
+
 const TextStyle _kStepStyle = TextStyle(
   fontSize: 12.0,
   color: Colors.white,
@@ -50,6 +52,7 @@ class StepperAlwaysVisible extends StatefulWidget {
     this.onStepContinue,
     this.onStepCancel,
     this.controlsBuilder,
+    this.lastAsDone = false,
   })  : assert(steps != null),
         assert(type != null),
         assert(currentStep != null),
@@ -86,6 +89,9 @@ class StepperAlwaysVisible extends StatefulWidget {
 
   /// Builds the controls for the widget.
   final ControlsWidgetBuilder controlsBuilder;
+
+  /// If it show show the last button as 'done'
+  final bool lastAsDone;
 
   @override
   _StepperAlwaysVisibleState createState() => _StepperAlwaysVisibleState();
@@ -259,12 +265,14 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
     }
   }
 
-  Widget _buildVerticalControls() {
+  Widget _buildVerticalControls(int index) {
     if (widget.controlsBuilder != null) {
       return widget.controlsBuilder(context,
           onStepContinue: widget.onStepContinue,
           onStepCancel: widget.onStepCancel);
     }
+
+    print('Build $index ${_isLast(index)}');
 
     Color cancelColor;
 
@@ -314,7 +322,9 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
                 shape: MaterialStateProperty.all<OutlinedBorder>(buttonShape),
               ),
               key: Key('CONTINUE'),
-              child: Text(localizations.continueButtonLabel),
+              child: _isLast(index) && widget.lastAsDone
+                  ? Text(Messages.of(context).doneButton)
+                  : Text(localizations.continueButtonLabel),
             ),
             Container(
               margin: const EdgeInsetsDirectional.only(start: 8.0),
@@ -454,7 +464,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
             child: Column(
               children: <Widget>[
                 widget.steps[index].content,
-                _buildVerticalControls(),
+                _buildVerticalControls(index),
               ],
             ),
           ),
@@ -574,7 +584,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
             ),
           ),
         ),
-        _buildVerticalControls(),
+        _buildVerticalControls(widget.currentStep),
       ],
     );
   }

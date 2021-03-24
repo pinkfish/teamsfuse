@@ -183,9 +183,9 @@ class GoogleMapPlacePicker extends StatelessWidget {
 
             // gestureRecognizers make it possible to navigate the map when it's a
             // child in a scroll view e.g ListView, SingleChildScrollView...
-            gestureRecognizers: <dynamic>{}..add(
-                Factory<EagerGestureRecognizer>(
-                    () => EagerGestureRecognizer())),
+            gestureRecognizers: <Factory<EagerGestureRecognizer>>{
+              Factory<EagerGestureRecognizer>(() => EagerGestureRecognizer()),
+            },
           );
         });
   }

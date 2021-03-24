@@ -92,7 +92,8 @@ class _PlacesFormFieldState extends FormFieldState<PlaceAndTimezone> {
     PickResult myResult;
     LatLng loc;
     if (value != null && value.place != null) {
-      loc = LatLng(value.place.latitude, value.place.longitude);
+      loc = LatLng(
+          value.place.latitude.toDouble(), value.place.longitude.toDouble());
     }
 
     await Navigator.push(

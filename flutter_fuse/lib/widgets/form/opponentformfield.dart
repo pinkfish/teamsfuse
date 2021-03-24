@@ -18,6 +18,7 @@ class OpponentFormField extends FormField<String> {
     InputDecoration decoration = const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
+    bool isExpanded = false,
     FormFieldValidator<String> validator,
   })  : assert(initialValue != null),
         assert(teamBloc != null),
@@ -46,6 +47,7 @@ class OpponentFormField extends FormField<String> {
                       hint: Text(Messages.of(state.context).opponentselect,
                           overflow: TextOverflow.clip),
                       items: state._buildItems(context, singleTeamState),
+                      isExpanded: isExpanded,
                       value: state.value.isEmpty
                           ? OpponentFormField.none
                           : state.value,

@@ -25,7 +25,7 @@ class AutoCompleteSearch extends StatefulWidget {
       this.searchingText,
       this.height = 40,
       this.contentPadding = EdgeInsets.zero,
-      this.debounceMilliseconds,
+      this.debounceMilliseconds = 200,
       this.onSearchFailed,
       @required this.searchBarController,
       this.autocompleteOffset,

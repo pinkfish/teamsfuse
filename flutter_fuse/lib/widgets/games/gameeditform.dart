@@ -51,7 +51,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   /// If we should autovalidate the fiels in the form, or only on save.
-  bool _autovalidate = false;
+  bool _autoValidate = false;
   final Validations _validations = Validations();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNodeNotes = FocusNode();
@@ -86,14 +86,14 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
     if (_formKey.currentState.validate()) {
       return true;
     }
-    _autovalidate = true;
+    _autoValidate = true;
     return false;
   }
 
   @override
   GameBuilder get finalGameResult {
     if (!_formKey.currentState.validate()) {
-      _autovalidate = true;
+      _autoValidate = true;
       return null;
     } else {
       _formKey.currentState.save();
@@ -153,214 +153,218 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
 
   @override
   Widget build(BuildContext context) {
-    var teamBloc = BlocProvider.of<TeamBloc>(context);
-    if (widget.game.teamUid == null ||
-        teamBloc.state.getTeam(widget.game.teamUid) == null) {
-      return Text('Invalid state');
-    }
-    var firstRow = <Widget>[];
-    firstRow.add(
-      Expanded(
-        flex: 1,
-        child: SingleTeamProvider(
-          teamUid: _builder.teamUid,
-          builder: (context, teambloc) => SeasonFormField(
-            initialValue: widget.game.seasonUid,
-            teamBloc: teambloc,
-            onSaved: (value) {
-              _builder.seasonUid = value;
-            },
-          ),
-        ),
-      ),
-    );
-    if (widget.game.sharedData.type == EventType.Game) {
-      firstRow.add(
-        const SizedBox(width: 12.0),
-      );
-      firstRow.add(
-        Expanded(
-          flex: 1,
-          child: SingleTeamProvider(
-            teamUid: _builder.teamUid,
-            builder: (context, teambloc) => OpponentFormField(
-              teamBloc: teambloc,
-              key: _opponentState,
-              initialValue: _builder.opponentUid.isNotEmpty
-                  ? OpponentFormField.none
-                  : _builder.opponentUid,
-              validator: (str) {
-                return _validations.validateOpponent(context, str);
-              },
-              onFieldSubmitted: (value) {
-                if (value == 'add') {
-                  // Open up a picker to create an opponent.
-                  _openAddOpponentDialog();
-                }
-              },
-              onSaved: (value) {
-                _builder.opponentUid = value;
-              },
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Scrollbar(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        controller: _scrollController,
-        child: Form(
-          key: _formKey,
-          autovalidateMode: _autovalidate
-              ? AutovalidateMode.always
-              : AutovalidateMode.disabled,
-          child: DropdownButtonHideUnderline(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: firstRow,
-                ),
-                DateTimeFormField(
-                  labelText: Messages.of(context).gametime,
-                  initialValue: _atDate,
-                  hideDate: false,
+    return SingleTeamProvider(
+        teamUid: _builder.teamUid,
+        builder: (context, singleTeamBloc) {
+          var teamBloc = BlocProvider.of<TeamBloc>(context);
+          if (widget.game.teamUid == null ||
+              teamBloc.state.getTeam(widget.game.teamUid) == null) {
+            return Text('Invalid state');
+          }
+          var firstRow = <Widget>[];
+          firstRow.add(
+            Expanded(
+              //flex: 1,
+              child: SingleTeamProvider(
+                teamUid: _builder.teamUid,
+                builder: (context, singleTeamBloc) => SeasonFormField(
+                  initialValue: widget.game.seasonUid,
+                  teamBloc: singleTeamBloc,
                   onSaved: (value) {
-                    _atDate = value;
+                    _builder.seasonUid = value;
                   },
-                  onFieldChanged: _changeAtTime,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 4,
-                      child: DateTimeFormField(
-                        key: _arriveByKey,
-                        labelText: Messages.of(context).arriveat,
-                        initialValue: _atArrival,
-                        hideDate: true,
-                        onSaved: (val) {
-                          _atArrival = val;
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12.0),
-                    Expanded(
-                      flex: 4,
-                      child: DateTimeFormField(
-                        key: _atEndKEy,
-                        labelText: Messages.of(context).gameend,
-                        initialValue: _atEnd,
-                        hideDate: true,
-                        onSaved: (val) {
-                          _atEnd = val;
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                PlacesFormField(
-                  initialValue: PlaceAndTimezone(widget.game.sharedData.place,
-                      widget.game.sharedData.timezone),
-                  labelText: Messages.of(context).selectplace,
-                  decoration: const InputDecoration(icon: Icon(Icons.place)),
-                  onSaved: (loc) {
-                    _builder.sharedData.place = loc.place.toBuilder();
-                    _builder.sharedData.timezone = loc.timeZone;
-                  },
-                  validator: (place) =>
-                      _validations.validateGamePlace(context, place.place),
-                ),
-                EnsureVisibleWhenFocused(
-                  focusNode: _focusNodePlaceNotes,
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      icon: const Icon(MdiIcons.tshirtCrew),
-                      hintText: Messages.of(context).placesnoteshint,
-                      labelText: Messages.of(context).placesnotes,
-                    ),
-                    keyboardType: TextInputType.text,
-                    focusNode: _focusNodePlaceNotes,
-                    obscureText: false,
-                    initialValue: _builder.sharedData.place.notes,
-                    onSaved: (value) {
-                      _builder.sharedData.place.notes = value;
-                    },
-                  ),
-                ),
-                EnsureVisibleWhenFocused(
-                  focusNode: _focusNodeUniform,
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      icon: const Icon(MdiIcons.tshirtCrew),
-                      hintText: Messages.of(context).uniformhint,
-                      labelText: Messages.of(context).uniform,
-                    ),
-                    focusNode: _focusNodeUniform,
-                    keyboardType: TextInputType.text,
-                    obscureText: false,
-                    initialValue: widget.game.uniform,
-                    onSaved: (value) {
-                      _builder.uniform = value;
-                    },
-                  ),
-                ),
-                EnsureVisibleWhenFocused(
-                  focusNode: _focusNodeNotes,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                        icon: Icon(Icons.note),
-                        hintText: 'Game notes',
-                        labelText: 'Game notes'),
-                    keyboardType: TextInputType.text,
-                    focusNode: _focusNodeNotes,
-                    obscureText: false,
-                    initialValue: widget.game.notes,
-                    onSaved: (value) {
-                      _builder.notes = value;
-                    },
-                  ),
-                ),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                      child: SwitchFormField(
-                        icon: MdiIcons.home,
-                        label: Messages.of(context).homeaway,
-                        initialValue: widget.game.homegame,
-                        onSaved: (value) {
-                          if (value) {
-                            _builder.sharedData.officialResult
-                                .homeTeamLeagueUid = _builder.teamUid;
-                            _builder.sharedData.officialResult
-                                .awayTeamLeagueUid = _builder.opponentUid;
-                          } else {
-                            _builder.sharedData.officialResult
-                                .homeTeamLeagueUid = _builder.opponentUid;
-                            _builder.sharedData.officialResult
-                                .awayTeamLeagueUid = _builder.teamUid;
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
+          if (widget.game.sharedData.type == EventType.Game) {
+            firstRow.add(
+              const SizedBox(width: 12.0),
+            );
+            firstRow.add(
+              Expanded(
+                //flex: 1,
+                child: OpponentFormField(
+                  teamBloc: singleTeamBloc,
+                  key: _opponentState,
+                  initialValue: _builder.opponentUid.isNotEmpty
+                      ? OpponentFormField.none
+                      : _builder.opponentUid,
+                  isExpanded: true,
+                  validator: (str) {
+                    return _validations.validateOpponent(context, str);
+                  },
+                  onFieldSubmitted: (value) {
+                    if (value == 'add') {
+                      // Open up a picker to create an opponent.
+                      _openAddOpponentDialog();
+                    }
+                  },
+                  onSaved: (value) {
+                    _builder.opponentUid = value;
+                  },
+                ),
+              ),
+            );
+          }
+
+          return Scrollbar(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              controller: _scrollController,
+              child: Form(
+                key: _formKey,
+                autovalidateMode: _autoValidate
+                    ? AutovalidateMode.always
+                    : AutovalidateMode.disabled,
+                child: DropdownButtonHideUnderline(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: firstRow,
+                      ),
+                      DateTimeFormField(
+                        labelText: Messages.of(context).gametime,
+                        initialValue: _atDate,
+                        hideDate: false,
+                        onSaved: (value) {
+                          _atDate = value;
+                        },
+                        onFieldChanged: _changeAtTime,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Expanded(
+                            flex: 4,
+                            child: DateTimeFormField(
+                              key: _arriveByKey,
+                              labelText: Messages.of(context).arriveat,
+                              initialValue: _atArrival,
+                              hideDate: true,
+                              onSaved: (val) {
+                                _atArrival = val;
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12.0),
+                          Expanded(
+                            flex: 4,
+                            child: DateTimeFormField(
+                              key: _atEndKEy,
+                              labelText: Messages.of(context).gameend,
+                              initialValue: _atEnd,
+                              hideDate: true,
+                              onSaved: (val) {
+                                _atEnd = val;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      PlacesFormField(
+                        initialValue: PlaceAndTimezone(
+                            widget.game.sharedData.place,
+                            widget.game.sharedData.timezone),
+                        labelText: Messages.of(context).selectplace,
+                        decoration:
+                            const InputDecoration(icon: Icon(Icons.place)),
+                        onSaved: (loc) {
+                          _builder.sharedData.place = loc.place.toBuilder();
+                          _builder.sharedData.timezone = loc.timeZone;
+                        },
+                        validator: (place) => _validations.validateGamePlace(
+                            context, place.place),
+                      ),
+                      EnsureVisibleWhenFocused(
+                        focusNode: _focusNodePlaceNotes,
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            icon: const Icon(MdiIcons.tshirtCrew),
+                            hintText: Messages.of(context).placesnoteshint,
+                            labelText: Messages.of(context).placesnotes,
+                          ),
+                          keyboardType: TextInputType.text,
+                          focusNode: _focusNodePlaceNotes,
+                          obscureText: false,
+                          initialValue: _builder.sharedData.place.notes,
+                          onSaved: (value) {
+                            _builder.sharedData.place.notes = value;
+                          },
+                        ),
+                      ),
+                      EnsureVisibleWhenFocused(
+                        focusNode: _focusNodeUniform,
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            icon: const Icon(MdiIcons.tshirtCrew),
+                            hintText: Messages.of(context).uniformhint,
+                            labelText: Messages.of(context).uniform,
+                          ),
+                          focusNode: _focusNodeUniform,
+                          keyboardType: TextInputType.text,
+                          obscureText: false,
+                          initialValue: widget.game.uniform,
+                          onSaved: (value) {
+                            _builder.uniform = value;
+                          },
+                        ),
+                      ),
+                      EnsureVisibleWhenFocused(
+                        focusNode: _focusNodeNotes,
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                              icon: Icon(Icons.note),
+                              hintText: 'Game notes',
+                              labelText: 'Game notes'),
+                          keyboardType: TextInputType.text,
+                          focusNode: _focusNodeNotes,
+                          obscureText: false,
+                          initialValue: widget.game.notes,
+                          onSaved: (value) {
+                            _builder.notes = value;
+                          },
+                        ),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            flex: 1,
+                            child: SwitchFormField(
+                              icon: MdiIcons.home,
+                              label: Messages.of(context).homeaway,
+                              initialValue: widget.game.homegame,
+                              onSaved: (value) {
+                                if (value) {
+                                  _builder.sharedData.officialResult
+                                      .homeTeamLeagueUid = _builder.teamUid;
+                                  _builder.sharedData.officialResult
+                                      .awayTeamLeagueUid = _builder.opponentUid;
+                                } else {
+                                  _builder.sharedData.officialResult
+                                      .homeTeamLeagueUid = _builder.opponentUid;
+                                  _builder.sharedData.officialResult
+                                      .awayTeamLeagueUid = _builder.teamUid;
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

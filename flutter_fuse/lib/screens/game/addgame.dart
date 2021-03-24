@@ -75,23 +75,9 @@ class _AddGameScreenState extends State<AddGameScreen> {
   }
 
   Widget _buildSummary(BuildContext context) {
-    return Column(
-      children: [
-        GameDetailsBase(
-          game: _initGame,
-          adding: true,
-        ),
-        ButtonBar(
-          children: [
-            TextButton.icon(
-              icon: Icon(Icons.save),
-              label: Text(Messages.of(context).saveButtonText),
-              onPressed: () =>
-                  addGameBloc.add(AddGameEventCommit(newGame: _initGame)),
-            ),
-          ],
-        ),
-      ],
+    return GameDetailsBase(
+      game: _initGame,
+      adding: true,
     );
   }
 
@@ -115,6 +101,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
           teamStepState = StepState.error;
           return false;
         }
+        clubStepState = StepState.complete;
         teamStepState = StepState.complete;
         detailsStepState = StepState.editing;
         createStepStage = StepState.disabled;
@@ -140,6 +127,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
         createStepStage = StepState.editing;
         break;
       case 3:
+        clubStepState = StepState.complete;
         createStepStage = StepState.editing;
         break;
     }
@@ -229,6 +217,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
               child: Container(
                 padding: EdgeInsets.all(5.0),
                 child: StepperAlwaysVisible(
+                  lastAsDone: true,
                   type: StepperType.horizontal,
                   currentStep: _currentStep,
                   onStepContinue: () {
