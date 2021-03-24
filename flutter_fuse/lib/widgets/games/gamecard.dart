@@ -242,7 +242,7 @@ class GameCard extends StatelessWidget {
     return Column(
       children: <Widget>[
         Text(
-          Messages.of(context).gameinprogress(game.result.inProgress),
+          Messages.of(context).gameInProgress(game.result.inProgress),
         ),
         Text(
           Messages.of(context).cardresultinprogress(game.result),

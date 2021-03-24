@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-03-10T03:06:24.784855",
+  "@@last_modified": "2021-03-24T22:40:28.975693",
   "Search...": "Search...",
   "@Search...": {
     "description": "Title in the search box",
@@ -124,6 +124,12 @@
   "League": "League",
   "@League": {
     "description": "League section header",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Media": "Media",
+  "@Media": {
+    "description": "Media section header",
     "type": "text",
     "placeholders": {}
   }

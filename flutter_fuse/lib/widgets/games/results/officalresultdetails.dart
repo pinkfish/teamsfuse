@@ -333,7 +333,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                             groupValue: _currentState,
                             value: DetailsState.notStarted,
                             title: Text(Messages.of(context)
-                                .gameofficalinprogress(
+                                .gameOfficialInProgress(
                                     OfficialResult.NotStarted)),
                             onChanged: _updateState,
                           ),
@@ -341,7 +341,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                             groupValue: _currentState,
                             value: DetailsState.inProgress,
                             title: Text(Messages.of(context)
-                                .gameofficalinprogress(
+                                .gameOfficialInProgress(
                                     OfficialResult.InProgress)),
                             onChanged: _updateState,
                           ),

@@ -2247,7 +2247,7 @@ class Messages {
           name: 'gameAddressArriveAt',
           locale: locale);
 
-  String gameinprogress(GameInProgress val) {
+  String gameInProgress(GameInProgress val) {
     switch (val) {
       case GameInProgress.InProgress:
         return gameResultInProgress;
@@ -2259,7 +2259,7 @@ class Messages {
     return unknown;
   }
 
-  String gameofficalinprogress(OfficialResult offical) {
+  String gameOfficialInProgress(OfficialResult offical) {
     switch (offical) {
       case OfficialResult.NotStarted:
         return periodNameNotStarted;
@@ -2302,7 +2302,7 @@ class Messages {
           'Away: $ptsAgainst',
           args: [resultString, ptsFor, ptsAgainst],
           locale: locale,
-          name: 'gameResultOfficalBreakout');
+          name: 'gameResultOfficialBreakout');
 
   String gameSummary(GamePlayerSummary summary) {
     return seasonSummaryExpanded(summary.fullData.points,
@@ -2341,14 +2341,14 @@ class Messages {
       Intl.message('NOW! $time - $endTime cs $opponent',
           desc: 'Game title in game list',
           locale: locale,
-          args: [time, endTime],
+          args: [time, endTime, opponent],
           name: 'gameTitleNowSharedEnd');
   String gameTitleNowSharedEndShort(
           String time, String endTime, String tzShortName, String opponent) =>
       Intl.message('NOW! $time - $endTime ($tzShortName) vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
-          args: [time, endTime, tzShortName],
+          args: [time, endTime, tzShortName, opponent],
           name: 'gameTitleNowSharedEndShort');
 
   String gameTitleNowSharedShort(
@@ -2356,13 +2356,13 @@ class Messages {
       Intl.message('NOW! $time ($tzShortName) vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
-          args: [time, tzShortName],
+          args: [time, tzShortName, opponent],
           name: 'gameTitleNowSharedShort');
   String gameTitleNowSharedTime(String time, String opponent) =>
       Intl.message('NOW! $time vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
-          args: [time],
+          args: [time, opponent],
           name: 'gameTitleNowSharedTime');
 
   String gameTitleShared(
@@ -2383,7 +2383,7 @@ class Messages {
       Intl.message('$time - $endTime vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
-          args: [time, endTime],
+          args: [time, endTime, opponent],
           name: 'gameTitleSharedEnd');
 
   String gameTitleSharedEndShort(
@@ -2391,21 +2391,21 @@ class Messages {
       Intl.message('$time - $endTime ($tzShortName) vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
-          args: [time, endTime, tzShortName],
+          args: [time, endTime, tzShortName, opponent],
           name: 'gameTitleSharedEndShort');
   String gameTitleSharedShort(
           String time, String tzShortName, String opponent) =>
       Intl.message('$time ($tzShortName) vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
-          args: [time, tzShortName],
+          args: [time, tzShortName, opponent],
           name: 'gameTitleSharedShort');
 
   String gameTitleSharedTime(String time, String opponent) =>
       Intl.message('$time vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
-          args: [time],
+          args: [time, opponent],
           name: 'gameTitleSharedTime');
 
   String gameTitleVs(GameSharedData game, String oppponent) {

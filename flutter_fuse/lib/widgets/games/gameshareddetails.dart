@@ -301,28 +301,28 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
         switch (widget.game.officialResult.result) {
           case OfficialResult.NotStarted:
             title = Messages.of(context)
-                .gameofficalinprogress(widget.game.officialResult.result);
+                .gameOfficialInProgress(widget.game.officialResult.result);
             break;
           case OfficialResult.InProgress:
             if (widget.game.officialResult.result !=
                 OfficialResult.NotStarted) {
               title = Messages.of(context)
-                  .gameofficalinprogress(widget.game.officialResult.result);
+                  .gameOfficialInProgress(widget.game.officialResult.result);
             } else {
               title = Messages.of(context).noResult;
             }
             break;
           case OfficialResult.HomeTeamWon:
             title = Messages.of(context)
-                .gameofficalinprogress(widget.game.officialResult.result);
+                .gameOfficialInProgress(widget.game.officialResult.result);
             break;
           case OfficialResult.AwayTeamWon:
             title = Messages.of(context)
-                .gameofficalinprogress(widget.game.officialResult.result);
+                .gameOfficialInProgress(widget.game.officialResult.result);
             break;
           case OfficialResult.Tie:
             title = Messages.of(context)
-                .gameofficalinprogress(widget.game.officialResult.result);
+                .gameOfficialInProgress(widget.game.officialResult.result);
             break;
         }
         body.add(

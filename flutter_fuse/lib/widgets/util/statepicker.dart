@@ -110,7 +110,7 @@ class InProgressGamePicker extends StatelessWidget {
                 value == initialValue ? selectedStyle : defaultStyle;
 
             return Center(
-              child: Text(Messages.of(context).gameinprogress(value),
+              child: Text(Messages.of(context).gameInProgress(value),
                   style: itemStyle),
             );
           },
