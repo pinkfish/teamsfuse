@@ -28,24 +28,30 @@ class TeamDetails extends StatelessWidget {
       BuildContext context, Team team, Season season, bool admin) {
     return ExpansionTile(
       key: PageStorageKey<Season>(season),
-      title: SizedBox(
-        height: 30,
-        child: PublicMark(
-          isPublic: season.isPublic,
-          clipper: OverflowClipper(),
-          child: Text(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text(
             '${season.name} W:${season.record.win} L:${season.record.loss} '
             'T:${season.record.tie}',
           ),
-        ),
+          season.isPublic
+              ? Expanded(
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: Text(
+                      Messages.of(context).public,
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                          fontStyle: FontStyle.italic, color: Colors.blue),
+                    ),
+                  ),
+                )
+              : SizedBox(width: 0),
+        ],
       ),
       initiallyExpanded: season.uid == team.currentSeason,
       expandedCrossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        TeamResultsBySeason(
-          teamUid: team.uid,
-          seasonUid: season.uid,
-        ),
         admin
             ? ButtonBar(
                 children: [
@@ -66,38 +72,38 @@ class TeamDetails extends StatelessWidget {
                 ],
               )
             : SizedBox(height: 0),
+        Padding(
+          padding: EdgeInsets.all(10),
+          child: TeamResultsBySeason(
+            teamUid: team.uid,
+            seasonUid: season.uid,
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildSeasons(BuildContext context, SingleTeamState team, Club club,
       Iterable<Season> seasons) {
-    var ret = <Widget>[];
+    final ret = <Widget>[];
 
-    if (team.isAdmin()) {
-      ret.add(
-        ButtonBar(
-          children: [
-            TextButton(
-              onPressed: () =>
-                  Navigator.pushNamed(context, 'AddSeason/${team.team.uid}'),
-              child: Text(Messages.of(context).addSeasonButton),
-            ),
-          ],
-        ),
-      );
-    }
     // Show all the seasons here, not just the ones we know.
-    var happyData = <Widget>[];
+    final happyData = <Widget>[];
 
     if (!team.loadedSeasons) {
       ret.add(Text(Messages.of(context).loading));
     } else {
-      var seasons = team.fullSeason.where((s) => s.teamUid == team.team.uid);
+      final seasons =
+          team.fullSeason.where((s) => s.teamUid == team.team.uid).toList();
+      seasons.sort((a, b) => a.uid == team.team.currentSeason
+          ? -1
+          : b.uid == team.team.currentSeason
+              ? 1
+              : a.name.compareTo(b.name));
       if (seasons.isEmpty) {
         ret.add(Text(Messages.of(context).noseasons));
       } else {
-        for (var season in seasons) {
+        for (final season in seasons) {
           happyData.add(_buildSeasonExpansionTitle(
               context, team.team, season, team.isAdmin()));
         }
@@ -236,19 +242,6 @@ class TeamDetails extends StatelessWidget {
                   children: tags,
                 ),
               ),
-              /*
-              ListTile(
-                leading: const Icon(Icons.timer),
-                title: teamState.club == null && teamState.team.clubUid != null
-                    ? Text(Messages.of(context).loading)
-                    : Text(
-                        Messages.of(context).arrivebefore(
-                          team.arriveEarly(teamState.club).toInt(),
-                        ),
-                      ),
-              ),
-              */
-
               _buildSeasons(
                   context, teamState, teamState.club, teamState.fullSeason)
             ],

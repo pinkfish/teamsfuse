@@ -70,6 +70,8 @@ class _TeamScreenState extends State<TeamScreen> {
           context,
           '/Team/Media/${widget.teamUid}/'
           '${singleTeamBloc.state.team.currentSeason}');
+    } else if (choice == 'season') {
+      await Navigator.pushNamed(context, 'AddSeason/${widget.teamUid}');
     }
   }
 
@@ -117,6 +119,13 @@ class _TeamScreenState extends State<TeamScreen> {
                       child: ListTile(
                         leading: Icon(Icons.image),
                         title: Text(Messages.of(context).addMediaItem),
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'season',
+                      child: ListTile(
+                        leading: Icon(MdiIcons.calendar),
+                        title: Text(Messages.of(context).addSeason),
                       ),
                     ),
                     PopupMenuItem<String>(

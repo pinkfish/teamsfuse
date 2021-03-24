@@ -28,17 +28,18 @@ class SeasonPlayerList extends StatefulWidget {
   }
 }
 
+/// The order to sort players in the season list.
 enum SortPlayerBy {
-  Points,
-  Fouls,
-  Turnovers,
-  Steals,
-  Blocks,
-  MadePerentage,
+  points,
+  fouls,
+  turnovers,
+  steals,
+  blocks,
+  madePercentage,
 }
 
 class _PlayerListState extends State<SeasonPlayerList> {
-  SortPlayerBy _sortBy = SortPlayerBy.Points;
+  SortPlayerBy _sortBy = SortPlayerBy.points;
 
   @override
   Widget build(BuildContext context) {
@@ -95,17 +96,17 @@ class _PlayerListState extends State<SeasonPlayerList> {
 
   int _sortFunction(PlayerSummaryData s1, PlayerSummaryData s2) {
     switch (_sortBy) {
-      case SortPlayerBy.Points:
+      case SortPlayerBy.points:
         return s2.points - s1.points;
-      case SortPlayerBy.Fouls:
+      case SortPlayerBy.fouls:
         return s2.fouls - s1.fouls;
-      case SortPlayerBy.Turnovers:
+      case SortPlayerBy.turnovers:
         return s2.turnovers - s1.turnovers;
-      case SortPlayerBy.Steals:
+      case SortPlayerBy.steals:
         return s2.steals - s1.steals;
-      case SortPlayerBy.Blocks:
+      case SortPlayerBy.blocks:
         return s2.blocks - s1.blocks;
-      case SortPlayerBy.MadePerentage:
+      case SortPlayerBy.madePercentage:
         if ((s2.one.attempts + s2.two.attempts + s2.three.attempts) > 0) {
           if ((s1.one.attempts + s1.two.attempts + s1.three.attempts) > 0) {
             return ((s2.one.made + s2.two.made + s2.three.made) ~/

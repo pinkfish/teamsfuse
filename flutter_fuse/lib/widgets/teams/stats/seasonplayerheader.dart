@@ -66,14 +66,14 @@ class SeasonPlayerHeader extends StatelessWidget {
         SizedBox(
           width: boxWidth,
           child: TextButton(
-            onPressed: () => onSort(SortPlayerBy.Points),
+            onPressed: () => onSort(SortPlayerBy.points),
             child: Text(
               'Pts',
               overflow: TextOverflow.fade,
               softWrap: false,
               style: dataStyle.copyWith(
                 fontWeight: FontWeight.bold,
-                color: sortBy == SortPlayerBy.Points
+                color: sortBy == SortPlayerBy.points
                     ? Theme.of(context).accentColor
                     : null,
               ),
@@ -84,14 +84,14 @@ class SeasonPlayerHeader extends StatelessWidget {
         SizedBox(
           width: boxWidth,
           child: TextButton(
-            onPressed: () => onSort(SortPlayerBy.MadePerentage),
+            onPressed: () => onSort(SortPlayerBy.madePercentage),
             child: Text(
               'Pct',
               overflow: TextOverflow.fade,
               softWrap: false,
               style: dataStyle.copyWith(
                 fontWeight: FontWeight.bold,
-                color: sortBy == SortPlayerBy.MadePerentage
+                color: sortBy == SortPlayerBy.madePercentage
                     ? Theme.of(context).accentColor
                     : null,
               ),
@@ -102,14 +102,14 @@ class SeasonPlayerHeader extends StatelessWidget {
         SizedBox(
           width: boxWidth,
           child: TextButton(
-            onPressed: () => onSort(SortPlayerBy.Fouls),
+            onPressed: () => onSort(SortPlayerBy.fouls),
             child: Text(
               'Fouls',
               overflow: TextOverflow.fade,
               softWrap: false,
               style: dataStyle.copyWith(
                 fontWeight: FontWeight.bold,
-                color: sortBy == SortPlayerBy.Fouls
+                color: sortBy == SortPlayerBy.fouls
                     ? Theme.of(context).accentColor
                     : null,
               ),
@@ -120,14 +120,14 @@ class SeasonPlayerHeader extends StatelessWidget {
         SizedBox(
           width: boxWidth,
           child: TextButton(
-            onPressed: () => onSort(SortPlayerBy.Turnovers),
+            onPressed: () => onSort(SortPlayerBy.turnovers),
             child: Text(
               'T/O',
               overflow: TextOverflow.fade,
               softWrap: false,
               style: dataStyle.copyWith(
                 fontWeight: FontWeight.bold,
-                color: sortBy == SortPlayerBy.Turnovers
+                color: sortBy == SortPlayerBy.turnovers
                     ? Theme.of(context).accentColor
                     : null,
               ),
@@ -138,14 +138,14 @@ class SeasonPlayerHeader extends StatelessWidget {
         SizedBox(
           width: boxWidth,
           child: TextButton(
-            onPressed: () => onSort(SortPlayerBy.Steals),
+            onPressed: () => onSort(SortPlayerBy.steals),
             child: Text(
               'Steals',
               softWrap: false,
               overflow: TextOverflow.clip,
               style: dataStyle.copyWith(
                 fontWeight: FontWeight.bold,
-                color: sortBy == SortPlayerBy.Steals
+                color: sortBy == SortPlayerBy.steals
                     ? Theme.of(context).accentColor
                     : null,
               ),
@@ -156,14 +156,14 @@ class SeasonPlayerHeader extends StatelessWidget {
         SizedBox(
           width: boxWidth,
           child: TextButton(
-            onPressed: () => onSort(SortPlayerBy.Blocks),
+            onPressed: () => onSort(SortPlayerBy.blocks),
             child: Text(
               'Blk',
               softWrap: false,
               overflow: TextOverflow.clip,
               style: dataStyle.copyWith(
                 fontWeight: FontWeight.bold,
-                color: sortBy == SortPlayerBy.Blocks
+                color: sortBy == SortPlayerBy.blocks
                     ? Theme.of(context).accentColor
                     : null,
               ),
