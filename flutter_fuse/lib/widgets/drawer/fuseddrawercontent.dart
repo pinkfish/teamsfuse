@@ -113,7 +113,6 @@ class FusedDrawerContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var children = <Widget>[
-      FusedDrawerHeader(),
       BlocBuilder(
         bloc: BlocProvider.of<ClubBloc>(context),
         builder: (context, state) {
@@ -193,6 +192,16 @@ class FusedDrawerContent extends StatelessWidget {
         },
       ),
     ];
-    return ListView(children: children);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        FusedDrawerHeader(),
+        Expanded(
+          child: ListView(children: children),
+        ),
+      ],
+    );
   }
 }
