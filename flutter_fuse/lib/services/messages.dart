@@ -2141,7 +2141,7 @@ class Messages {
           penaltyPeriodResult.score.ptsFor,
           penaltyPeriodResult.score.ptsAgainst);
     }
-    return gameResultOffical(resultString, regulationPeriodResult);
+    return gameResultOfficial(resultString, regulationPeriodResult);
   }
 
   String finalOfficalScoreBodyOvertime(String resultString, num homeFor,
@@ -2275,7 +2275,7 @@ class Messages {
     return unknown;
   }
 
-  String gameresult(GameResult result) {
+  String gameResult(GameResult result) {
     switch (result) {
       case GameResult.Unknown:
         return unknown;
@@ -2289,13 +2289,13 @@ class Messages {
     return unknown;
   }
 
-  String gameResultOffical(
+  String gameResultOfficial(
           String resultString, GameResultPerPeriod regulationPeriodResult) =>
-      gameResultOfficalBreakout(
+      gameResultOfficialBreakout(
           resultString,
           regulationPeriodResult.score.ptsFor,
           regulationPeriodResult.score.ptsAgainst);
-  String gameResultOfficalBreakout(
+  String gameResultOfficialBreakout(
           String resultString, num ptsFor, num ptsAgainst) =>
       Intl.message(
           '$resultString\nHome: $ptsFor '
@@ -2309,99 +2309,104 @@ class Messages {
         summary.fullData.blocks, summary.fullData.steals);
   }
 
-  String gametitle(
+  String gameTitle(
       String time, String endTime, String tzShortName, String opponent) {
     if (endTime != null) {
       if (tzShortName != null) {
-        return gameTitleSharedEndShort(time, endTime, tzShortName);
+        return gameTitleSharedEndShort(time, endTime, tzShortName, opponent);
       }
-      return gameTitleSharedEnd(time, endTime);
+      return gameTitleSharedEnd(time, endTime, opponent);
     }
     if (tzShortName != null) {
-      return gameTitleSharedEnd(time, tzShortName);
+      return gameTitleSharedEnd(time, tzShortName, opponent);
     }
-    return gameTitleSharedTime(time);
+    return gameTitleSharedTime(time, opponent);
   }
 
   String gameTitleNow(
       String time, String endTime, String tzShortName, String opponent) {
     if (endTime != null) {
       if (tzShortName != null) {
-        return gameTitleNowSharedEndShort(time, endTime, tzShortName);
+        return gameTitleNowSharedEndShort(time, endTime, tzShortName, opponent);
       }
-      return gameTitleNowSharedEnd(time, endTime);
+      return gameTitleNowSharedEnd(time, endTime, opponent);
     }
     if (tzShortName != null) {
-      return gameTitleNowSharedEnd(time, tzShortName);
+      return gameTitleNowSharedEnd(time, tzShortName, opponent);
     }
-    return gameTitleNowSharedTime(time);
+    return gameTitleNowSharedTime(time, opponent);
   }
 
-  String gameTitleNowSharedEnd(String time, String endTime) =>
-      Intl.message('NOW! $time - $endTime',
+  String gameTitleNowSharedEnd(String time, String endTime, String opponent) =>
+      Intl.message('NOW! $time - $endTime cs $opponent',
           desc: 'Game title in game list',
           locale: locale,
           args: [time, endTime],
           name: 'gameTitleNowSharedEnd');
   String gameTitleNowSharedEndShort(
-          String time, String endTime, String tzShortName) =>
-      Intl.message('NOW! $time - $endTime ($tzShortName)',
+          String time, String endTime, String tzShortName, String opponent) =>
+      Intl.message('NOW! $time - $endTime ($tzShortName) vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
           args: [time, endTime, tzShortName],
           name: 'gameTitleNowSharedEndShort');
 
-  String gameTitleNowSharedShort(String time, String tzShortName) =>
-      Intl.message('NOW! $time ($tzShortName)',
+  String gameTitleNowSharedShort(
+          String time, String tzShortName, String opponent) =>
+      Intl.message('NOW! $time ($tzShortName) vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
           args: [time, tzShortName],
           name: 'gameTitleNowSharedShort');
-  String gameTitleNowSharedTime(String time) => Intl.message('NOW! $time',
-      desc: 'Game title in game list',
-      locale: locale,
-      args: [time],
-      name: 'gameTitleNowSharedTime');
+  String gameTitleNowSharedTime(String time, String opponent) =>
+      Intl.message('NOW! $time vs $opponent',
+          desc: 'Game title in game list',
+          locale: locale,
+          args: [time],
+          name: 'gameTitleNowSharedTime');
 
-  String gameTitleShared(String time, String endTime, String tzShortName) {
+  String gameTitleShared(
+      String time, String endTime, String tzShortName, String opponent) {
     if (endTime != null) {
       if (tzShortName != null) {
-        return gameTitleSharedEndShort(time, endTime, tzShortName);
+        return gameTitleSharedEndShort(time, endTime, tzShortName, opponent);
       }
-      return gameTitleSharedEnd(time, endTime);
+      return gameTitleSharedEnd(time, endTime, opponent);
     }
     if (tzShortName != null) {
-      return gameTitleSharedEnd(time, tzShortName);
+      return gameTitleSharedEnd(time, tzShortName, opponent);
     }
-    return gameTitleSharedTime(time);
+    return gameTitleSharedTime(time, opponent);
   }
 
-  String gameTitleSharedEnd(String time, String endTime) =>
-      Intl.message('$time - $endTime',
+  String gameTitleSharedEnd(String time, String endTime, String opponent) =>
+      Intl.message('$time - $endTime vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
           args: [time, endTime],
           name: 'gameTitleSharedEnd');
 
   String gameTitleSharedEndShort(
-          String time, String endTime, String tzShortName) =>
-      Intl.message('$time - $endTime ($tzShortName)',
+          String time, String endTime, String tzShortName, String opponent) =>
+      Intl.message('$time - $endTime ($tzShortName) vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
           args: [time, endTime, tzShortName],
           name: 'gameTitleSharedEndShort');
-  String gameTitleSharedShort(String time, String tzShortName) =>
-      Intl.message('$time ($tzShortName)',
+  String gameTitleSharedShort(
+          String time, String tzShortName, String opponent) =>
+      Intl.message('$time ($tzShortName) vs $opponent',
           desc: 'Game title in game list',
           locale: locale,
           args: [time, tzShortName],
           name: 'gameTitleSharedShort');
 
-  String gameTitleSharedTime(String time) => Intl.message('$time',
-      desc: 'Game title in game list',
-      locale: locale,
-      args: [time],
-      name: 'gameTitleSharedTime');
+  String gameTitleSharedTime(String time, String opponent) =>
+      Intl.message('$time vs $opponent',
+          desc: 'Game title in game list',
+          locale: locale,
+          args: [time],
+          name: 'gameTitleSharedTime');
 
   String gameTitleVs(GameSharedData game, String oppponent) {
     switch (game.type) {

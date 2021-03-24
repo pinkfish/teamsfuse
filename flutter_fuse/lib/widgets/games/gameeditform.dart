@@ -97,9 +97,11 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
       return null;
     } else {
       _formKey.currentState.save();
+
+      print('tz ${_builder.sharedData.timezone} ${_atDate}');
       // Add the date time and the time together.
       _builder.sharedData.time = TZDateTime(
-              getLocation(widget.game.sharedData.timezone),
+              getLocation(_builder.sharedData.timezone),
               _atDate.year,
               _atDate.month,
               _atDate.day,
@@ -112,7 +114,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
         arrival.add(Duration(days: 1));
       }
       _builder.arrivalTime = TZDateTime(
-              getLocation(widget.game.sharedData.timezone),
+              getLocation(_builder.sharedData.timezone),
               arrival.year,
               arrival.month,
               arrival.day,
@@ -123,8 +125,8 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
       if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
         end.add(Duration(days: 1));
       }
-      var time = TZDateTime(getLocation(widget.game.sharedData.timezone),
-              end.year, end.month, end.day, end.hour, end.minute)
+      var time = TZDateTime(getLocation(_builder.sharedData.timezone), end.year,
+              end.month, end.day, end.hour, end.minute)
           .toUtc();
       _builder.sharedData.endTime = time;
     }
@@ -272,8 +274,8 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                       ),
                       PlacesFormField(
                         initialValue: PlaceAndTimezone(
-                            widget.game.sharedData.place,
-                            widget.game.sharedData.timezone),
+                            _builder.sharedData.place.build(),
+                            _builder.sharedData.timezone),
                         labelText: Messages.of(context).selectplace,
                         decoration:
                             const InputDecoration(icon: Icon(Icons.place)),

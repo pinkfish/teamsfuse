@@ -166,10 +166,10 @@ class GameSharedCard extends StatelessWidget {
 
     switch (game.type) {
       case EventType.Game:
-        title = Messages.of(context)
-            .gameTitleShared(format, endTimeFormat, tzShortName);
+        title = Messages.of(context).gameTitleShared(
+            format, endTimeFormat, tzShortName, Messages.of(context).unknown);
 
-        // Add in the offical results.
+        // Add in the official results.
         if (game.officialResult.result != OfficialResult.NotStarted) {
           var homeStyle =
               Theme.of(context).textTheme.headline4.copyWith(fontSize: 25.0);

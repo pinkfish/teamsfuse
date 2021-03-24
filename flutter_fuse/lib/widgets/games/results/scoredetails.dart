@@ -479,7 +479,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
           resultStr = Messages.of(context).resultWin(_details.build());
           break;
         default:
-          resultStr = Messages.of(context).gameresult(_details.result);
+          resultStr = Messages.of(context).gameResult(_details.result);
           break;
       }
       return Form(

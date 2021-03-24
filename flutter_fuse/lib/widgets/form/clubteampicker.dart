@@ -58,6 +58,7 @@ class _ClubTeamPickerState extends State<ClubTeamPicker> {
   }
 
   List<DropdownMenuItem<Team>> _buildItems(SingleClubState state) {
+    print('Teams for state $state');
     var ret = <DropdownMenuItem<Team>>[];
     if (state.teams.isNotEmpty) {
       var sorted = state.teams.toList();
@@ -112,6 +113,11 @@ class _ClubTeamPickerState extends State<ClubTeamPicker> {
         bloc: widget.clubBloc,
         builder: (context, state) {
           Widget inner;
+
+          print('Club team picker ${state}');
+          if (!state.loadedTeams) {
+            widget.clubBloc.add(SingleClubLoadTeams());
+          }
 
           if (state.teams.length == 0) {
             inner = ListTile(

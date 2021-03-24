@@ -37,7 +37,7 @@ class EditResultDialog extends StatelessWidget {
           resultStr = Messages.of(context).resultWin(game.result);
           break;
         default:
-          resultStr = Messages.of(context).gameresult(game.result.result);
+          resultStr = Messages.of(context).gameResult(game.result.result);
           break;
       }
     }

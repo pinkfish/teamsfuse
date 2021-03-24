@@ -27,10 +27,13 @@ class GameTitle extends StatelessWidget {
   final TextOverflow overflow;
 
   /// Creates a game title.
-  GameTitle(this.game, this.leagueTeam,
-      {this.style = const TextStyle(fontWeight: FontWeight.bold),
-      this.overflow = TextOverflow.clip,
-      this.textScaleFactor});
+  GameTitle(
+    this.game,
+    this.leagueTeam, {
+    this.style = const TextStyle(fontWeight: FontWeight.bold),
+    this.overflow = TextOverflow.clip,
+    this.textScaleFactor = 1.0,
+  });
 
   String _opponentUid(Game game) {
     if (game.sharedData.type == EventType.Game && game.opponentUid.isNotEmpty) {
@@ -61,8 +64,9 @@ class GameTitle extends StatelessWidget {
     var op = _opponentData(context, game, leagueTeam, opState);
 
     var day = TimeOfDay.fromDateTime(game.sharedData.tzTime);
-    var format = MaterialLocalizations.of(context).formatTimeOfDay(day);
-    String endTimeFormat;
+    var formattedStartTime =
+        MaterialLocalizations.of(context).formatTimeOfDay(day);
+    String formattedEndTime;
     String tzShortName;
     if (game.sharedData.timezone != local.name) {
       tzShortName = getLocation(game.sharedData.timezone)
@@ -72,7 +76,8 @@ class GameTitle extends StatelessWidget {
 
     if (game.sharedData.time != game.sharedData.endTime) {
       var endDay = TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
-      endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
+      formattedEndTime =
+          MaterialLocalizations.of(context).formatTimeOfDay(endDay);
     }
     switch (game.sharedData.type) {
       case EventType.Game:
@@ -82,21 +87,23 @@ class GameTitle extends StatelessWidget {
         } else {
           opName = op.name;
         }
+        print('op $opName');
         // Within an hour.
-        title = Messages.of(context)
-            .gametitle(format, endTimeFormat, tzShortName, opName);
+        title = Messages.of(context).gameTitle(
+            formattedStartTime, formattedEndTime, tzShortName, opName);
+        print('op $title');
 
         break;
 
       case EventType.Event:
-        title = Messages.of(context).eventtitle(
-            format, game.sharedData.name, endTimeFormat, tzShortName);
+        title = Messages.of(context).eventtitle(formattedStartTime,
+            game.sharedData.name, formattedEndTime, tzShortName);
 
         break;
 
       case EventType.Practice:
         title = Messages.of(context)
-            .trainingtitle(format, endTimeFormat, tzShortName);
+            .trainingtitle(formattedStartTime, formattedEndTime, tzShortName);
 
         break;
     }

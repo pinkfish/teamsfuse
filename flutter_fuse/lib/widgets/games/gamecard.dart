@@ -146,7 +146,7 @@ class GameCard extends StatelessWidget {
     var children = <Widget>[];
     children.add(
       Text(
-        Messages.of(context).gameresult(result),
+        Messages.of(context).gameResult(result),
         style: style,
       ),
     );
@@ -428,7 +428,10 @@ class GameCard extends StatelessWidget {
         width: 50.0,
         height: 50.0,
       ),
-      title: GameTitle(game, leagueTeam),
+      title: Align(
+        alignment: Alignment.topLeft,
+        child: GameTitle(game, leagueTeam),
+      ),
       subtitle: SingleTeamProvider(
         teamUid: game.teamUid,
         builder: (context, teamBloc) => BlocBuilder(
@@ -461,6 +464,8 @@ class GameCard extends StatelessWidget {
       return Card(
         color: color,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             tile,
 
@@ -479,7 +484,7 @@ class GameCard extends StatelessWidget {
     }
   }
 
-  Widget _buildFromnState(BuildContext context, SingleGameBloc gameBloc) {
+  Widget _buildFromState(BuildContext context, SingleGameBloc gameBloc) {
     return BlocBuilder(
       bloc: gameBloc,
       builder: (context, state) {
@@ -505,7 +510,7 @@ class GameCard extends StatelessWidget {
               bloc: leagueTeamBloc,
               builder: (context, teamState) => SingleSeasonProvider(
                 seasonUid: game.seasonUid,
-                builder: (contrext, seasonBloc) => BlocBuilder(
+                builder: (context, seasonBloc) => BlocBuilder(
                   bloc: seasonBloc,
                   builder: (context, seasonState) {
                     return _buildMain(context, state, gameBloc,
@@ -518,7 +523,7 @@ class GameCard extends StatelessWidget {
         }
         return SingleSeasonProvider(
           seasonUid: game.seasonUid,
-          builder: (contrext, seasonBloc) => BlocBuilder(
+          builder: (context, seasonBloc) => BlocBuilder(
             bloc: seasonBloc,
             builder: (context, seasonState) =>
                 _buildMain(context, state, gameBloc, null, seasonState),
@@ -531,11 +536,11 @@ class GameCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (singleGameBloc != null) {
-      return _buildFromnState(context, singleGameBloc);
+      return _buildFromState(context, singleGameBloc);
     }
     return SingleGameProvider(
       gameUid: gameUid,
-      builder: _buildFromnState,
+      builder: _buildFromState,
     );
   }
 }
