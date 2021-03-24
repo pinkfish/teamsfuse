@@ -252,17 +252,20 @@ class _SignupScreenState extends State<SignupScreen> {
                             ],
                           ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        ButtonBar(
                           children: <Widget>[
-                            FlatButton(
-                              textColor: Theme.of(context).accentColor,
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                primary: Theme.of(context).accentColor,
+                              ),
                               key: Key('LOGIN'),
                               onPressed: () => _onPressed('/Login/Home'),
                               child: Text(Messages.of(context).login),
                             ),
-                            FlatButton(
-                              textColor: Theme.of(context).accentColor,
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                primary: Theme.of(context).accentColor,
+                              ),
                               key: Key('FORGOTPASSWORD'),
                               onPressed: () =>
                                   _onPressed('/Login/ForgotPassword'),

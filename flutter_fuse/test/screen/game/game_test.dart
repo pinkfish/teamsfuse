@@ -222,22 +222,45 @@ void main() {
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('loaded basketball, finished', (tester) async {
-    final teamController = StreamController<Team>();
-    final seasonController = StreamController<Season>();
-    final opponentController = StreamController<Iterable<Opponent>>();
-    final teamSeasonController = StreamController<BuiltList<Season>>();
+    // create the data.
+    final season = makeTestSeason();
+    final newScores = Map<GamePeriod, GameResultPerPeriod>.fromEntries([
+      MapEntry(
+          GamePeriod.regulation1,
+          GameResultPerPeriod((b) => b
+            ..score.ptsFor = 12
+            ..score.ptsAgainst = 12
+            ..period = GamePeriod.regulation1.toBuilder()))
+    ]);
+    final game = makeTestGame(
+            start: DateTime(2021, 3, 2, 11, 3, 1).toUtc(),
+            end: DateTime(2021, 3, 44, 11, 3, 1).toUtc())
+        .rebuild((b) => b
+          ..result.inProgress = GameInProgress.Final
+          ..result.result = GameResult.Win
+          ..result.scoresInternal = MapBuilder(newScores));
+    final team = makeTestTeam().rebuild((b) => b..sport = Sport.Basketball);
+    final opponents = [makeTestOpponent()];
+
+    // stream the data
+    final teamController = StreamGenerator<Team>(team);
+    final seasonController = StreamGenerator<Season>(season);
+    final opponentController = StreamGenerator<Iterable<Opponent>>(opponents);
+    final teamSeasonController =
+        StreamGenerator<BuiltList<Season>>(BuiltList.of([season]));
+    final gameController = StreamGenerator<Game>(game);
     final allBlocs = AllBlocs();
 
     when(allBlocs.mockDb.getGame('game123'))
-        .thenAnswer((_) => allBlocs.gameController.stream);
+        .thenAnswer((_) => gameController.stream());
     when(allBlocs.mockDb.getTeamDetails(teamUid: 'team123'))
-        .thenAnswer((_) => teamController.stream);
+        .thenAnswer((_) => teamController.stream());
     when(allBlocs.mockDb.getSingleSeason('season123'))
-        .thenAnswer((_) => seasonController.stream);
+        .thenAnswer((_) => seasonController.stream());
     when(allBlocs.mockDb.getTeamOpponents('team123'))
-        .thenAnswer((_) => opponentController.stream);
+        .thenAnswer((_) => opponentController.stream());
     when(allBlocs.mockDb.getSeasonsForTeam('team123'))
-        .thenAnswer((_) => teamSeasonController.stream);
+        .thenAnswer((_) => teamSeasonController.stream());
 
     allBlocs.playerBloc.emit((PlayerLoaded.fromState(PlayerUninitialized())
           ..players = MapBuilder({
@@ -277,29 +300,6 @@ void main() {
 
     await tester.pumpWidget(testWidget);
 
-    final season = makeTestSeason();
-    final newScores = Map<GamePeriod, GameResultPerPeriod>.fromEntries([
-      MapEntry(
-          GamePeriod.regulation1,
-          GameResultPerPeriod((b) => b
-            ..score.ptsFor = 12
-            ..score.ptsAgainst = 12
-            ..period = GamePeriod.regulation1.toBuilder()))
-    ]);
-    final game = makeTestGame(
-            start: DateTime(2021, 3, 2, 11, 3, 1).toUtc(),
-            end: DateTime(2021, 3, 44, 11, 3, 1).toUtc())
-        .rebuild((b) => b
-          ..result.inProgress = GameInProgress.Final
-          ..result.result = GameResult.Win
-          ..result.scoresInternal = MapBuilder(newScores));
-    allBlocs.gameController.add(game);
-    teamController
-        .add(makeTestTeam().rebuild((b) => b..sport = Sport.Basketball));
-    seasonController.add(season);
-    opponentController.add([makeTestOpponent()]);
-    teamSeasonController.add(BuiltList.of([season]));
-
     await tester.pump(Duration(milliseconds: 600));
     await tester.pump(Duration(milliseconds: 600));
     await tester.pump(Duration(milliseconds: 600));
@@ -315,9 +315,5 @@ void main() {
     }
 
     allBlocs.close();
-    await seasonController.close();
-    await opponentController.close();
-    await teamSeasonController.close();
-    await teamController.close();
   }, variant: TeamsFuseTestVariant());
 }

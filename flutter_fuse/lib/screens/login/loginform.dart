@@ -114,8 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(Messages.of(context).login),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ButtonBar(
                     children: <Widget>[
                       TextButton(
                         style: TextButton.styleFrom(

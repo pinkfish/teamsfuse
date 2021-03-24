@@ -83,19 +83,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ],
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ButtonBar(
             children: <Widget>[
-              FlatButton(
-                textColor: Theme.of(context).accentColor,
+              TextButton(
+                style: TextButton.styleFrom(
+                  primary: Theme.of(context).accentColor,
+                ),
                 key: Key('CREATEACCOUNT'),
                 onPressed: () {
                   onPressed('/Login/SignUp');
                 },
                 child: Text(Messages.of(context).createaccount),
               ),
-              FlatButton(
-                textColor: Theme.of(context).accentColor,
+              TextButton(
+                style: TextButton.styleFrom(
+                  primary: Theme.of(context).accentColor,
+                ),
                 key: Key('LOGIN'),
                 onPressed: () {
                   onPressed('/Login/Home');

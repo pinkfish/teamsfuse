@@ -61,7 +61,7 @@ Future<Widget> makeTestableWidget(Widget child,
 class HasRouteName extends CustomMatcher {
   HasRouteName(matcher) : super('Route with the nme that is', 'name', matcher);
   @override
-  featureValueOf(actual) => (actual as Route).settings.name;
+  String featureValueOf(actual) => (actual as Route).settings.name;
 }
 
 ///
@@ -73,6 +73,7 @@ MockStorage setupStorage() {
   when(storage.read(any)).thenReturn(<dynamic, dynamic>{});
   when(storage.write(any, any)).thenAnswer((_) => Future.value(null));
   AsyncHydratedStorage.storageDirectory = Directory('fail');
+  return storage;
 }
 
 ///
@@ -151,5 +152,44 @@ class AllBlocs extends BasicData {
     );
     playerBloc =
         PlayerBloc(coordinationBloc: coordinationBloc, crashes: mockAnalytics);
+  }
+}
+
+/// Mocked stream.
+class MS<T> extends Mock implements Stream<T> {}
+
+/// Mock subscription for the generator.
+class MockSubscription<T> extends Mock implements StreamSubscription<T> {}
+
+/// Simple generator that always returns the same result from a stream.
+class StreamGenerator<T> {
+  final T data;
+  final int maxCount;
+  final Duration interval;
+  final Exception throwException;
+
+  StreamGenerator(this.data,
+      {this.maxCount = 5,
+      this.interval = const Duration(seconds: 1),
+      this.throwException});
+
+  Stream<T> stream() {
+    var stream = MS<T>();
+    when(stream.listen(any)).thenAnswer((invocation) {
+      invocation.positionalArguments.single(data);
+
+      var sub = MockSubscription<T>();
+      when(sub.onError(any)).thenAnswer((invocation) {
+        if (throwException != null) {
+          invocation.positionalArguments.single(throwException);
+        }
+      });
+      when(sub.cancel()).thenAnswer((invocation) {
+        return;
+      });
+      return sub;
+    });
+
+    return stream;
   }
 }

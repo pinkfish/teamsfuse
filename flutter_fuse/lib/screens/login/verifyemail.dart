@@ -135,17 +135,20 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                         ],
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ButtonBar(
                       children: <Widget>[
-                        FlatButton(
-                          textColor: Theme.of(context).accentColor,
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            primary: Theme.of(context).accentColor,
+                          ),
                           key: Key('CREATEACCOUNT'),
                           onPressed: () => _onSignup(context),
                           child: Text(messages.createaccount),
                         ),
-                        FlatButton(
-                          textColor: Theme.of(context).accentColor,
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            primary: Theme.of(context).accentColor,
+                          ),
                           key: Key('LOGOUT'),
                           onPressed: () => _onLogout(context),
                           child: Text(messages.logout),

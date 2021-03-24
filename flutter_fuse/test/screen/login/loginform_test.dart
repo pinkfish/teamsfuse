@@ -16,8 +16,10 @@ import '../../util/widgetvariant.dart';
 
 void main() {
   testWidgets('forgot button', (tester) async {
-    var loginForm = _LoginFormTest();
-    loginForm.setup(tester);
+    var loginForm = _LoginFormTest(tester);
+    await loginForm.setup();
+
+    debugDumpApp();
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
@@ -34,8 +36,8 @@ void main() {
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('signup button', (tester) async {
-    var loginForm = _LoginFormTest();
-    loginForm.setup(tester);
+    var loginForm = _LoginFormTest(tester);
+    await loginForm.setup();
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
@@ -58,8 +60,8 @@ void main() {
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('login failed', (tester) async {
-    var loginForm = _LoginFormTest();
-    loginForm.setup(tester);
+    var loginForm = _LoginFormTest(tester);
+    await loginForm.setup();
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
@@ -95,8 +97,8 @@ void main() {
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('login success', (tester) async {
-    var loginForm = _LoginFormTest();
-    loginForm.setup(tester);
+    var loginForm = _LoginFormTest(tester);
+    await loginForm.setup();
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
@@ -133,6 +135,10 @@ void main() {
 }
 
 class _LoginFormTest {
+  final WidgetTester tester;
+
+  _LoginFormTest(this.tester);
+
   final mockObserver = MockNavigatorObserver();
 
   final mockAnalytics = MockAnalyticsSubsystem();
@@ -148,7 +154,7 @@ class _LoginFormTest {
   Widget testWidget;
   final screen = LoginScreen();
 
-  void setup(WidgetTester tester) async {
+  Future<void> setup() async {
     when(mockUserAuth.onAuthChanged()).thenAnswer((_) => userController.stream);
     authBloc = AuthenticationBloc(mockUserAuth, mockAnalytics);
     // Logged out.
@@ -177,7 +183,9 @@ class _LoginFormTest {
       testWidget,
     );
 
-    await tester.pump(Duration(milliseconds: 600));
+    await tester.pump(
+      Duration(milliseconds: 600),
+    );
   }
 
   void dispose() {
