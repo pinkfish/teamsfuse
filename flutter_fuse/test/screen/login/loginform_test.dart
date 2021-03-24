@@ -41,6 +41,7 @@ void main() {
     expect(loginForm.createAccountButton, findsOneWidget);
 
     await tester.pump(Duration(milliseconds: 600));
+    await tester.pump(Duration(milliseconds: 600));
 
     if (Platform.environment['GOLDEN'] != null) {
       print('Golden!');
