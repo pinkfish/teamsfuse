@@ -595,6 +595,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "Upload Video" : MessageLookupByLibrary.simpleMessage("Upload Video"),
     "Use the results of the offical game for this game?" : MessageLookupByLibrary.simpleMessage("Use the results of the offical game for this game?"),
     "Username is empty." : MessageLookupByLibrary.simpleMessage("Username is empty."),
+    "VIEW" : MessageLookupByLibrary.simpleMessage("VIEW"),
     "Verify password" : MessageLookupByLibrary.simpleMessage("Verify password"),
     "Video" : MessageLookupByLibrary.simpleMessage("Video"),
     "Weekly" : MessageLookupByLibrary.simpleMessage("Weekly"),

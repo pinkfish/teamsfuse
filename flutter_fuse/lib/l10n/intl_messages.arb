@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-03-22T08:08:42.065789",
+  "@@last_modified": "2021-03-24T01:02:02.760336",
   "About": "About",
   "@About": {
     "type": "text",
@@ -3140,6 +3140,12 @@
   "PUBLIC": "PUBLIC",
   "@PUBLIC": {
     "description": "Banner to say an item is public",
+    "type": "text",
+    "placeholders": {}
+  },
+  "VIEW": "VIEW",
+  "@VIEW": {
+    "description": "Banner to view the full data on the image",
     "type": "text",
     "placeholders": {}
   }
