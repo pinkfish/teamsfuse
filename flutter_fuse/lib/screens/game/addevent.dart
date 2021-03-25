@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/teams/clubselection.dart';
+import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
@@ -15,6 +17,15 @@ import '../../widgets/util/savingoverlay.dart';
 /// Add screen to event to the game
 ///
 class AddEventScreen extends StatefulWidget {
+  /// Optional teamUid to use for the add game
+  final String teamUid;
+
+  /// Optional seasonUid to use for the add game.
+  final String seasonUid;
+
+  /// Create the add event screen.
+  AddEventScreen({this.teamUid, this.seasonUid});
+
   @override
   _AddEventScreenState createState() {
     return _AddEventScreenState();
@@ -25,20 +36,43 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<EventEditFormState> _eventFormKey =
       GlobalKey<EventEditFormState>();
-  StepState teamStepState = StepState.editing;
-  StepState detailsStepState = StepState.disabled;
-  StepState createStepStage = StepState.disabled;
+  StepState _teamStepState = StepState.editing;
+  StepState _timePlaceStepState = StepState.disabled;
+  StepState _createStepState = StepState.disabled;
+  StepState _clubStepState = StepState.disabled;
   Team _team;
   Game _initGame;
-  int currentStep = 0;
-  AddGameBloc addGameBloc;
+  Club _club;
+  int _currentStep = 0;
+  AddGameBloc _addGameBloc;
+  bool _clubEnabled = false;
 
   @override
   void initState() {
     newGame();
     super.initState();
-    addGameBloc = AddGameBloc(
+    var clubBloc = BlocProvider.of<ClubBloc>(context);
+    _addGameBloc = AddGameBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
+    if (clubBloc.state.clubs.values.any((club) => club.isAdmin())) {
+      _currentStep = 0;
+      _clubStepState = StepState.editing;
+      _teamStepState = StepState.disabled;
+      _clubEnabled = true;
+    } else {
+      _clubStepState = StepState.complete;
+      _teamStepState = StepState.editing;
+    }
+    if (widget.teamUid != null) {
+      _clubStepState = StepState.complete;
+      _teamStepState = StepState.complete;
+      _timePlaceStepState = StepState.editing;
+      _currentStep = 2;
+      var teamBloc = BlocProvider.of<TeamBloc>(context);
+      _team = teamBloc.state.getTeam(widget.teamUid);
+      _teamChanged(_team);
+      _initGame = _initGame.rebuild((b) => b..seasonUid = widget.seasonUid);
+    }
   }
 
   void _showInSnackBar(String value) {
@@ -125,36 +159,50 @@ class _AddEventScreenState extends State<AddEventScreen> {
   }
 
   bool _leaveCurrentState(bool backwards) {
-    switch (currentStep) {
-      // Check to make sure a team is picked.
+    switch (_currentStep) {
       case 0:
-        if (_team == null) {
-          teamStepState = StepState.error;
-          return false;
-        }
-        teamStepState = StepState.complete;
-        detailsStepState = StepState.editing;
+        _teamStepState = StepState.editing;
+        _clubStepState = StepState.complete;
         break;
-      // Verify the form is correct.
+      // Check to make sure a team is picked.
       case 1:
         if (backwards) {
+          var clubBloc = BlocProvider.of<ClubBloc>(context);
+          if (clubBloc.state.clubs.values.any((club) => club.isAdmin())) {
+            return true;
+          }
+          _showInSnackBar(Messages.of(context).formerror);
+          return false;
+        }
+        if (_team == null) {
+          _teamStepState = StepState.error;
+          return false;
+        }
+        _teamStepState = StepState.complete;
+        _timePlaceStepState = StepState.editing;
+        break;
+      // Verify the form is correct.
+      case 2:
+        if (backwards) {
           // Can always leave this step.
-          detailsStepState = StepState.editing;
+          _timePlaceStepState = StepState.editing;
           return true;
         }
         if (!_eventFormKey.currentState.validate()) {
-          detailsStepState = StepState.error;
-          createStepStage = StepState.disabled;
+          _timePlaceStepState = StepState.error;
+          _createStepState = StepState.disabled;
           _showInSnackBar('Please fix the errors in red before submitting.');
           _eventFormKey.currentState.autoValidate = true;
           return false;
         }
         _eventFormKey.currentState.save();
         _initGame = _eventFormKey.currentState.finalGameResult.build();
-        detailsStepState = StepState.complete;
+        _timePlaceStepState = StepState.complete;
+        _createStepState = StepState.editing;
         break;
-      case 2:
-        createStepStage = StepState.disabled;
+
+      case 4:
+        _createStepState = StepState.disabled;
         break;
     }
     return true;
@@ -163,29 +211,37 @@ class _AddEventScreenState extends State<AddEventScreen> {
   void _onStepperContinue(BuildContext context) {
     if (_leaveCurrentState(false)) {
       setState(() {
-        if (currentStep < 2) {
-          currentStep++;
+        if (_currentStep < 3) {
+          _currentStep++;
         } else {
           // Write the game out.
-          addGameBloc.add(AddGameEventCommit(newGame: _initGame));
+          _addGameBloc.add(AddGameEventCommit(newGame: _initGame));
         }
       });
     }
   }
 
   void _onStepTapped(int step) {
-    if (_leaveCurrentState(step < currentStep)) {
+    if (_leaveCurrentState(step < _currentStep)) {
       setState(() {
-        currentStep = step;
+        _currentStep = step;
       });
     }
   }
 
   void newGame() {
     if (_team != null) {
-      var start = clock.now().add(const Duration(days: 1));
+      final baseTimeDate = clock.now().add(const Duration(days: 1));
 
-      var sharedGameData = GameSharedData((b) => b
+      final start = DateTime(
+        baseTimeDate.year,
+        baseTimeDate.month,
+        baseTimeDate.day,
+        12,
+        0,
+      );
+
+      final sharedGameData = GameSharedData((b) => b
         ..uid = ''
         ..type = EventType.Event
         ..time = start
@@ -193,7 +249,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         ..timezone = local.name
         ..officialResult.homeTeamLeagueUid = _team.uid);
 
-      var result = GameResultDetailsBuilder()
+      final result = GameResultDetailsBuilder()
         ..result = GameResult.Unknown
         ..inProgress = GameInProgress.NotStarted;
 
@@ -211,6 +267,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
         ..result = result
         ..notes = '');
     }
+  }
+
+  void _clubChanged(Club club) {
+    setState((() {
+      _club = club;
+    }));
   }
 
   void _teamChanged(Team team) {
@@ -235,14 +297,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
     var messages = Messages.of(context);
 
     return BlocProvider(
-      create: (context) => addGameBloc,
+      create: (context) => _addGameBloc,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
           title: Text(messages.title),
         ),
         body: BlocListener(
-          bloc: addGameBloc,
+          bloc: _addGameBloc,
           listener: (context, state) {
             if (state is AddItemDone) {
               Navigator.pop(context);
@@ -260,14 +322,15 @@ class _AddEventScreenState extends State<AddEventScreen> {
             }
           },
           child: BlocBuilder(
-            bloc: addGameBloc,
+            bloc: _addGameBloc,
             builder: (context, state) => SavingOverlay(
               saving: state is AddItemSaving,
               child: Container(
                 padding: EdgeInsets.all(16.0),
-                child: Stepper(
+                child: StepperAlwaysVisible(
+                  lastAsDone: true,
                   type: StepperType.horizontal,
-                  currentStep: currentStep,
+                  currentStep: _currentStep,
                   onStepContinue: () {
                     _onStepperContinue(context);
                   },
@@ -280,25 +343,46 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   },
                   steps: <Step>[
                     Step(
+                      title: Text(messages.club),
+                      state: _clubStepState,
+                      isActive: _clubEnabled,
+                      content: Column(
+                        children: [
+                          ClubSelection(
+                            onChanged: _clubChanged,
+                            initialClub: _club,
+                          ),
+                          ButtonBar(
+                            children: [
+                              TextButton(
+                                onPressed: () => setState(() => _currentStep++),
+                                child: Text(Messages.of(context).skipButton),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                    Step(
                       title: Text(messages.team),
-                      state: teamStepState,
+                      state: _teamStepState,
                       isActive: true,
                       content: TeamSelection(
-                        club: null,
+                        club: _club,
                         onChanged: _teamChanged,
                         initialTeam: _team,
                       ),
                     ),
                     Step(
                       title: Text(messages.details),
-                      state: detailsStepState,
+                      state: _timePlaceStepState,
                       isActive:
                           _team != null && ((_team?.uid?.isNotEmpty) ?? false),
                       content: _buildForm(context),
                     ),
                     Step(
                       title: Text(messages.create),
-                      state: createStepStage,
+                      state: _createStepState,
                       isActive: _eventFormKey != null &&
                           _eventFormKey.currentState != null &&
                           _eventFormKey.currentState.validate(),

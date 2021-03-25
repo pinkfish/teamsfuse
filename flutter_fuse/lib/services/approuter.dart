@@ -253,6 +253,17 @@ class AppRouter {
             handlerFunc: (context, values) => AddGameScreen(
                 values['teamId'][0].toString(),
                 values['seasonId'][0].toString())));
+    router.define('/Game/AddEvent/:teamId/:seasonId',
+        handler: fluro.Handler(
+            handlerFunc: (context, values) => AddEventScreen(
+                teamUid: values['teamId'][0].toString(),
+                seasonUid: values['seasonId'][0].toString())));
+    router.define('/Game/AddTraining/:teamId/:seasonId',
+        handler: fluro.Handler(
+            handlerFunc: (context, values) => AddTrainingScreen(
+                teamUid: values['teamId'][0].toString(),
+                seasonUid: values['seasonId'][0].toString())));
+
     router.define('/AddTraining',
         handler: fluro.Handler(
             handlerFunc: (context, values) => AddTrainingScreen()));
