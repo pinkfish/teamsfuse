@@ -55,6 +55,7 @@ dependencies:
   tuple: any
   sliver_calendar: ^0.4.2
   flutter_cache_manager: ^2.1.2
+  flutter_keyboard_visibility: ^5.0.0
 
   cupertino_icons: ^1.0.2
 

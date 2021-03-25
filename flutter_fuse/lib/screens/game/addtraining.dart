@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/localutilities.dart';
 import 'package:flutter_fuse/widgets/teams/clubselection.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
@@ -15,7 +17,6 @@ import '../../widgets/games/repeatdetails.dart';
 import '../../widgets/games/trainingeditform.dart';
 import '../../widgets/teams/teamselection.dart';
 import '../../widgets/util/savingoverlay.dart';
-import '../../widgets/util/stepperalwaysvisible.dart';
 
 ///
 /// Adds a traning session.
@@ -37,19 +38,19 @@ class AddTrainingScreen extends StatefulWidget {
 }
 
 class _AddTrainingScreenState extends State<AddTrainingScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<TrainingEditFormState> _trainingFormKey =
-      GlobalKey<TrainingEditFormState>();
-  final GlobalKey<RepeatDetailsState> _repeatKey =
-      GlobalKey<RepeatDetailsState>();
-  StepState _teamStepState = StepState.editing;
-  StepState _clubStepState = StepState.editing;
-  StepState _detailsStepState = StepState.disabled;
-  StepState _repeatStepState = StepState.disabled;
-  StepState _createStepStage = StepState.disabled;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _timeTrainingFormKey = GlobalKey<TrainingEditFormState>();
+  final _detailsTrainingFormKey = GlobalKey<TrainingEditFormState>();
+  final _repeatKey = GlobalKey<RepeatDetailsState>();
+  final _controlsKey = GlobalKey();
+  var _teamStepState = StepState.editing;
+  var _clubStepState = StepState.editing;
+  var _detailsStepState = StepState.disabled;
+  var _repeatStepState = StepState.disabled;
+  var _createStepStage = StepState.disabled;
   Team _team;
   Game _initGame;
-  RepeatData _repeatData = RepeatData((b) => b
+  var _repeatData = RepeatData((b) => b
     ..repeatInterval = 1
     ..repeatUntil = true
     ..endRepeat = clock.now()
@@ -92,11 +93,25 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
-  Widget _buildForm(BuildContext context) {
+  Widget _buildForm(BuildContext context, TrainingEditFormDisplay display) {
+    GlobalKey<TrainingEditFormState> key;
+    switch (display) {
+      case TrainingEditFormDisplay.all:
+        throw ArgumentError('not a good argument');
+        break;
+      case TrainingEditFormDisplay.timePlace:
+        key = _timeTrainingFormKey;
+        break;
+
+      case TrainingEditFormDisplay.details:
+        key = _detailsTrainingFormKey;
+        break;
+    }
     if (_initGame != null) {
       return TrainingEditForm(
         game: _initGame,
-        key: _trainingFormKey,
+        key: key,
+        displaySection: display,
       );
     } else {
       return SizedBox(height: 0, width: 0);
@@ -231,20 +246,40 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
           _detailsStepState = StepState.editing;
           return true;
         }
-        if (!_trainingFormKey.currentState.validate()) {
+        if (!_timeTrainingFormKey.currentState.validate()) {
           _detailsStepState = StepState.error;
           _createStepStage = StepState.disabled;
           _showInSnackBar('Please fix the errors in red before submitting.');
-          _trainingFormKey.currentState.autoValidate = true;
+          _timeTrainingFormKey.currentState.autoValidate = true;
           _repeatStepState = StepState.disabled;
           return false;
         }
-        _trainingFormKey.currentState.save();
-        _initGame = _trainingFormKey.currentState.finalGameResult.build();
+        _timeTrainingFormKey.currentState.save();
+        _initGame = _timeTrainingFormKey.currentState.finalGameResult.build();
         _detailsStepState = StepState.complete;
         _repeatStepState = StepState.editing;
         break;
       case 3:
+        if (backwards) {
+          // Can always leave this step.
+          _detailsStepState = StepState.editing;
+          return true;
+        }
+        if (!_detailsTrainingFormKey.currentState.validate()) {
+          _detailsStepState = StepState.error;
+          _createStepStage = StepState.disabled;
+          _showInSnackBar('Please fix the errors in red before submitting.');
+          _detailsTrainingFormKey.currentState.autoValidate = true;
+          _repeatStepState = StepState.disabled;
+          return false;
+        }
+        _detailsTrainingFormKey.currentState.save();
+        _initGame =
+            _detailsTrainingFormKey.currentState.finalGameResult.build();
+        _detailsStepState = StepState.complete;
+        _repeatStepState = StepState.editing;
+        break;
+      case 4:
         if (!_repeatKey.currentState.validate()) {
           _showInSnackBar('Please fix the errors in red before submitting.');
           return false;
@@ -254,7 +289,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
         _createStepStage = StepState.complete;
         _repeatDates = _repeatData.repeatTimes(_initGame.sharedData.tzTime);
         break;
-      case 4:
+      case 5:
         _createStepStage = StepState.disabled;
         break;
     }
@@ -264,7 +299,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
   void _onStepperContinue(BuildContext context) {
     if (_leaveCurrentState(false)) {
       setState(() {
-        if (_currentStep < 4) {
+        if (_currentStep < 5) {
           _currentStep++;
         } else {
           // Write the game out.
@@ -340,7 +375,14 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
 
   void _teamChanged(Team team) {
     _team = team;
-    var start = clock.now().add(const Duration(days: 0));
+    final baseTimeDate = clock.now().add(const Duration(days: 1));
+    final start = DateTime(
+      baseTimeDate.year,
+      baseTimeDate.month,
+      baseTimeDate.day,
+      12,
+      0,
+    );
     if (_initGame == null) {
       newGame();
     }
@@ -353,6 +395,103 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
         ..seasonUid = team.currentSeason
         ..trackAttendance = team.trackAttendanceInternal);
     });
+  }
+
+  Widget _buildVerticalControls(BuildContext context,
+      {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+    Color cancelColor;
+
+    switch (Theme.of(context).brightness) {
+      case Brightness.light:
+        cancelColor = Colors.black54;
+        break;
+      case Brightness.dark:
+        cancelColor = Colors.white70;
+        break;
+    }
+
+    assert(cancelColor != null);
+
+    var themeData = Theme.of(context);
+    var localizations = MaterialLocalizations.of(context);
+    final colorScheme = themeData.colorScheme;
+    const OutlinedBorder buttonShape = RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(2)));
+    const buttonPadding = EdgeInsets.symmetric(horizontal: 16.0);
+    final lastAsDone = true;
+
+    final row = Row(
+      children: <Widget>[
+        TextButton(
+          onPressed: onStepContinue,
+          style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                (Set<MaterialState> states) {
+              return states.contains(MaterialState.disabled)
+                  ? null
+                  : (LocalUtilities.isDark(context)
+                      ? colorScheme.onSurface
+                      : colorScheme.onPrimary);
+            }),
+            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                (Set<MaterialState> states) {
+              return LocalUtilities.isDark(context) ||
+                      states.contains(MaterialState.disabled)
+                  ? null
+                  : colorScheme.primary;
+            }),
+            padding:
+                MaterialStateProperty.all<EdgeInsetsGeometry>(buttonPadding),
+            shape: MaterialStateProperty.all<OutlinedBorder>(buttonShape),
+          ),
+          key: Key('CONTINUE'),
+          child: _currentStep == 5 && lastAsDone
+              ? Text(Messages.of(context).doneButton)
+              : Text(localizations.continueButtonLabel),
+        ),
+        (_currentStep == 0
+            ? Container(
+                margin: const EdgeInsetsDirectional.only(start: 8.0),
+                child: TextButton(
+                  onPressed: () => setState(() => _currentStep++),
+                  style: TextButton.styleFrom(
+                    primary: cancelColor,
+                    padding: buttonPadding,
+                    shape: buttonShape,
+                  ),
+                  key: Key('BACK'),
+                  child: Text(Messages.of(context).skipButton),
+                ),
+              )
+            : SizedBox(width: 0)),
+        Container(
+          margin: const EdgeInsetsDirectional.only(start: 8.0),
+          child: TextButton(
+            onPressed: onStepCancel,
+            style: TextButton.styleFrom(
+              primary: cancelColor,
+              padding: buttonPadding,
+              shape: buttonShape,
+            ),
+            key: Key('BACK'),
+            child: Text(localizations.cancelButtonLabel),
+          ),
+        ),
+      ],
+    );
+
+    return Container(
+      margin: const EdgeInsets.only(top: 16.0),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints.tightFor(height: 48.0),
+        child: KeyboardVisibilityBuilder(builder: (context, isVisible) {
+          // Make the continue button be visible.
+          Timer(Duration(milliseconds: 50),
+              () => Scrollable.ensureVisible(context));
+          return row;
+        }),
+      ),
+    );
   }
 
   @override
@@ -390,10 +529,11 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
               saving: addState is AddItemSaving,
               child: Container(
                 padding: EdgeInsets.all(16.0),
-                child: StepperAlwaysVisible(
-                  lastAsDone: true,
-                  type: StepperType.horizontal,
+                child: Stepper(
+                  type: StepperType.vertical,
                   currentStep: _currentStep,
+                  physics: ClampingScrollPhysics(),
+                  controlsBuilder: _buildVerticalControls,
                   onStepContinue: () {
                     _onStepperContinue(context);
                   },
@@ -407,6 +547,11 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
                   steps: <Step>[
                     Step(
                       title: Text(messages.club),
+                      subtitle: _currentStep > 0
+                          ? _club == null
+                              ? Text(Messages.of(context).noclub)
+                              : Text(_club.name)
+                          : null,
                       state: _clubStepState,
                       isActive: _clubEnabled,
                       content: Column(
@@ -415,19 +560,12 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
                             onChanged: _clubChanged,
                             initialClub: _club,
                           ),
-                          ButtonBar(
-                            children: [
-                              TextButton(
-                                onPressed: () => setState(() => _currentStep++),
-                                child: Text(Messages.of(context).skipButton),
-                              ),
-                            ],
-                          )
                         ],
                       ),
                     ),
                     Step(
                       title: Text(messages.team),
+                      subtitle: _currentStep > 1 ? Text(_team.name) : null,
                       state: _teamStepState,
                       isActive: true,
                       content: TeamSelection(
@@ -437,10 +575,32 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
                       ),
                     ),
                     Step(
+                      title: Text(messages.gametime),
+                      subtitle: _currentStep > 2
+                          ? Text(
+                              MaterialLocalizations.of(context).formatTimeOfDay(
+                                  TimeOfDay.fromDateTime(
+                                      _initGame.sharedData.tzTime)),
+                            )
+                          : null,
+                      state: _detailsStepState,
+                      isActive: _team != null ? _team?.uid?.isNotEmpty : false,
+                      content: _buildForm(
+                          context, TrainingEditFormDisplay.timePlace),
+                    ),
+                    Step(
                       title: Text(messages.details),
                       state: _detailsStepState,
                       isActive: _team != null ? _team?.uid?.isNotEmpty : false,
-                      content: _buildForm(context),
+                      content:
+                          _buildForm(context, TrainingEditFormDisplay.details),
+                      subtitle: _currentStep > 3
+                          ? _initGame.uniform.isNotEmpty
+                              ? Text(_initGame.uniform)
+                              : _initGame.notes.isNotEmpty
+                                  ? Text(_initGame.notes)
+                                  : null
+                          : null,
                     ),
                     Step(
                       title: Text(messages.repeat),
@@ -451,9 +611,9 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
                     Step(
                       title: Text(messages.create),
                       state: _createStepStage,
-                      isActive: _trainingFormKey != null &&
-                          _trainingFormKey.currentState != null &&
-                          _trainingFormKey.currentState.validate(),
+                      isActive: _timeTrainingFormKey != null &&
+                          _timeTrainingFormKey.currentState != null &&
+                          _timeTrainingFormKey.currentState.validate(),
                       content: _buildRepeatSummary(),
                     )
                   ],

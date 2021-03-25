@@ -12,17 +12,25 @@ import '../util/ensurevisiblewhenfocused.dart';
 import 'editformbase.dart';
 import '../form/placesformfield.dart';
 
+/// The edit form bits to display.
+enum TrainingEditFormDisplay { all, timePlace, details }
+
 ///
 /// Edit form to edit all the training stuff.
 ///
 class TrainingEditForm extends StatefulWidget {
   /// Constructor.
-  TrainingEditForm(
-      {@required this.game, @required GlobalKey<TrainingEditFormState> key})
-      : super(key: key);
+  TrainingEditForm({
+    @required this.game,
+    @required GlobalKey<TrainingEditFormState> key,
+    this.displaySection = TrainingEditFormDisplay.all,
+  }) : super(key: key);
 
   /// Game the training is for.
   final Game game;
+
+  /// The sections of the form to display.
+  final TrainingEditFormDisplay displaySection;
 
   @override
   TrainingEditFormState createState() {
@@ -122,102 +130,115 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                SingleTeamProvider(
-                  teamUid: _builder.teamUid,
-                  builder: (context, teamBloc) => SeasonFormField(
-                    decoration: InputDecoration(
-                      icon: const Icon(MdiIcons.calendarQuestion),
-                      labelText: messages.season,
-                    ),
-                    initialValue: widget.game.seasonUid,
-                    teamBloc: teamBloc,
-                    onSaved: (value) {
-                      _builder.seasonUid = value;
-                    },
-                  ),
-                ),
-                DateTimeFormField(
-                  labelText: Messages.of(context).gametime,
-                  decoration: InputDecoration(
-                    icon: const Icon(Icons.calendar_today),
-                  ),
-                  initialValue: _atDate,
-                  hideDate: false,
-                  onFieldChanged: _updateTimes,
-                  onSaved: (value) {
-                    _atDate = value;
-                  },
-                ),
-                DateTimeFormField(
-                  labelText: Messages.of(context).trainingend,
-                  key: _endTimeKey,
-                  decoration: InputDecoration(
-                    icon: const Icon(MdiIcons.calendarRange),
-                  ),
-                  initialValue: _atEnd,
-                  hideDate: false,
-                  onSaved: (value) {
-                    _atEnd = value;
-                  },
-                ),
-                PlacesFormField(
-                  initialValue: PlaceAndTimezone(widget.game.sharedData.place,
-                      widget.game.sharedData.timezone),
-                  labelText: Messages.of(context).selectplace,
-                  decoration: const InputDecoration(icon: Icon(Icons.place)),
-                  onSaved: (loc) {
-                    _builder.sharedData.place = loc.place.toBuilder();
-                    _builder.sharedData.timezone = loc.timeZone;
-                  },
-                  validator: (place) =>
-                      _validations.validateGamePlace(context, place.place),
-                ),
-                EnsureVisibleWhenFocused(
-                  focusNode: _focusNodePlaceNotes,
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      icon: const Icon(MdiIcons.tshirtCrew),
-                      hintText: Messages.of(context).placesnoteshint,
-                      labelText: Messages.of(context).placesnotes,
-                    ),
-                    keyboardType: TextInputType.text,
-                    focusNode: _focusNodePlaceNotes,
-                    obscureText: false,
-                    initialValue: widget.game.sharedData.place.notes,
-                    onSaved: (value) {
-                      _builder.sharedData.place.notes = value;
-                    },
-                  ),
-                ),
-                EnsureVisibleWhenFocused(
-                  focusNode: _focusNodeUniform,
-                  child: TextFormField(
-                    initialValue: widget.game.uniform,
-                    decoration: InputDecoration(
-                        hintText: messages.uniformhint,
-                        labelText: messages.uniform,
-                        icon: const Icon(MdiIcons.tshirtCrew)),
-                    onSaved: (value) {
-                      _builder.uniform = value;
-                    },
-                    focusNode: _focusNodeUniform,
-                  ),
-                ),
-                EnsureVisibleWhenFocused(
-                  focusNode: _focusNodeNotes,
-                  child: TextFormField(
-                    initialValue: widget.game.notes,
-                    decoration: InputDecoration(
-                      hintText: messages.trainingnoteshint,
-                      labelText: messages.trainingnotes,
-                      icon: const Icon(Icons.note),
-                    ),
-                    focusNode: _focusNodeNotes,
-                    onSaved: (value) {
-                      _builder.notes = value;
-                    },
-                  ),
-                ),
+                ...(widget.displaySection == TrainingEditFormDisplay.all ||
+                        widget.displaySection ==
+                            TrainingEditFormDisplay.timePlace
+                    ? [
+                        SingleTeamProvider(
+                          teamUid: _builder.teamUid,
+                          builder: (context, teamBloc) => SeasonFormField(
+                            decoration: InputDecoration(
+                              icon: const Icon(MdiIcons.calendarQuestion),
+                              labelText: messages.season,
+                            ),
+                            initialValue: widget.game.seasonUid,
+                            teamBloc: teamBloc,
+                            onSaved: (value) {
+                              _builder.seasonUid = value;
+                            },
+                          ),
+                        ),
+                        DateTimeFormField(
+                          labelText: Messages.of(context).gametime,
+                          decoration: InputDecoration(
+                            icon: const Icon(Icons.calendar_today),
+                          ),
+                          initialValue: _atDate,
+                          hideDate: false,
+                          onFieldChanged: _updateTimes,
+                          onSaved: (value) {
+                            _atDate = value;
+                          },
+                        ),
+                        DateTimeFormField(
+                          labelText: Messages.of(context).trainingend,
+                          key: _endTimeKey,
+                          decoration: InputDecoration(
+                            icon: const Icon(MdiIcons.calendarRange),
+                          ),
+                          initialValue: _atEnd,
+                          hideDate: false,
+                          onSaved: (value) {
+                            _atEnd = value;
+                          },
+                        ),
+                        PlacesFormField(
+                          initialValue: PlaceAndTimezone(
+                              widget.game.sharedData.place,
+                              widget.game.sharedData.timezone),
+                          labelText: Messages.of(context).selectplace,
+                          decoration:
+                              const InputDecoration(icon: Icon(Icons.place)),
+                          onSaved: (loc) {
+                            _builder.sharedData.place = loc.place.toBuilder();
+                            _builder.sharedData.timezone = loc.timeZone;
+                          },
+                          validator: (place) => _validations.validateGamePlace(
+                              context, place.place),
+                        ),
+                        EnsureVisibleWhenFocused(
+                          focusNode: _focusNodePlaceNotes,
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              icon: const Icon(MdiIcons.tshirtCrew),
+                              hintText: Messages.of(context).placesnoteshint,
+                              labelText: Messages.of(context).placesnotes,
+                            ),
+                            keyboardType: TextInputType.text,
+                            focusNode: _focusNodePlaceNotes,
+                            obscureText: false,
+                            initialValue: widget.game.sharedData.place.notes,
+                            onSaved: (value) {
+                              _builder.sharedData.place.notes = value;
+                            },
+                          ),
+                        ),
+                      ]
+                    : <Widget>[]),
+                ...(widget.displaySection == TrainingEditFormDisplay.details ||
+                        widget.displaySection == TrainingEditFormDisplay.all
+                    ? [
+                        EnsureVisibleWhenFocused(
+                          focusNode: _focusNodeUniform,
+                          child: TextFormField(
+                            initialValue: widget.game.uniform,
+                            decoration: InputDecoration(
+                                hintText: messages.uniformhint,
+                                labelText: messages.uniform,
+                                icon: const Icon(MdiIcons.tshirtCrew)),
+                            onSaved: (value) {
+                              _builder.uniform = value;
+                            },
+                            focusNode: _focusNodeUniform,
+                          ),
+                        ),
+                        EnsureVisibleWhenFocused(
+                          focusNode: _focusNodeNotes,
+                          child: TextFormField(
+                            initialValue: widget.game.notes,
+                            decoration: InputDecoration(
+                              hintText: messages.trainingnoteshint,
+                              labelText: messages.trainingnotes,
+                              icon: const Icon(Icons.note),
+                            ),
+                            focusNode: _focusNodeNotes,
+                            onSaved: (value) {
+                              _builder.notes = value;
+                            },
+                          ),
+                        ),
+                      ]
+                    : <Widget>[]),
               ],
             ),
           ),

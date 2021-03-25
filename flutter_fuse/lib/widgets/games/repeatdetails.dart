@@ -86,6 +86,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
         hint: Text(messages.repeat),
         items: _buildRepeatIntervalItems(context),
         value: _updatedRepeat.period,
+        isExpanded: true,
         onChanged: (val) {
           setState(() {
             _updatedRepeat = _updatedRepeat.rebuild((b) => b..period = val);
@@ -148,16 +149,15 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                   ),
           ],
         ));
-        var days = MaterialLocalizations.of(context).narrowWeekdays;
-        var first = MaterialLocalizations.of(context).firstDayOfWeekIndex;
-        var daysWidgets = <Widget>[];
-        print('$days');
-        daysWidgets.add(const Icon(Icons.calendar_today));
+        final days = MaterialLocalizations.of(context).narrowWeekdays;
+        final first = MaterialLocalizations.of(context).firstDayOfWeekIndex;
+        final daysWidgets = <Widget>[];
+        //daysWidgets.add(const Icon(Icons.calendar_today));
         for (var i = first; i < first + days.length; i++) {
-          var pos = i % days.length;
+          final pos = i % days.length;
           daysWidgets.add(
             Container(
-              margin: EdgeInsets.only(left: 10.0),
+              margin: EdgeInsets.only(left: 6.0),
               child: GestureDetector(
                 onTap: () {
                   setState(() {
