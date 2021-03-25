@@ -37,14 +37,16 @@ class _AddGameScreenState extends State<AddGameScreen> {
   final GlobalKey<GameEditFormState> _gameFormKey =
       GlobalKey<GameEditFormState>();
   StepState teamStepState = StepState.editing;
-  StepState detailsStepState = StepState.disabled;
+  StepState timePlaceStepState = StepState.disabled;
   StepState createStepStage = StepState.disabled;
   StepState clubStepState = StepState.disabled;
+  StepState detailsStepState = StepState.disabled;
   Team _team;
   Club _club;
   int _currentStep = 1;
   Game _initGame;
   AddGameBloc addGameBloc;
+  bool _clubEnabled = false;
 
   @override
   void initState() {
@@ -53,8 +55,15 @@ class _AddGameScreenState extends State<AddGameScreen> {
       _currentStep = 0;
       clubStepState = StepState.editing;
       teamStepState = StepState.disabled;
+      _clubEnabled = true;
+    } else {
+      clubStepState = StepState.complete;
+      teamStepState = StepState.editing;
     }
     if (widget.teamUid != null) {
+      clubStepState = StepState.complete;
+      teamStepState = StepState.complete;
+      timePlaceStepState = StepState.editing;
       _currentStep = 2;
       var teamBloc = BlocProvider.of<TeamBloc>(context);
       _team = teamBloc.state.getTeam(widget.teamUid);
@@ -70,8 +79,12 @@ class _AddGameScreenState extends State<AddGameScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
-  Widget _buildForm(BuildContext context) {
-    return GameEditForm(game: _initGame, key: _gameFormKey);
+  Widget _buildForm(BuildContext context, GameEditFormDisplay display) {
+    return GameEditForm(
+      game: _initGame,
+      key: _gameFormKey,
+      displayType: display,
+    );
   }
 
   Widget _buildSummary(BuildContext context) {
@@ -110,11 +123,11 @@ class _AddGameScreenState extends State<AddGameScreen> {
       case 2:
         if (backwards) {
           // Can always leave this step.
-          detailsStepState = StepState.editing;
+          timePlaceStepState = StepState.editing;
           return true;
         }
         if (!_gameFormKey.currentState.validate()) {
-          detailsStepState = StepState.error;
+          timePlaceStepState = StepState.error;
           createStepStage = StepState.disabled;
           _showInSnackBar(Messages.of(context).formerror);
           //_gameFormKey.currentState.autovalidate = true;
@@ -123,11 +136,13 @@ class _AddGameScreenState extends State<AddGameScreen> {
         _gameFormKey.currentState.save();
         _initGame = _gameFormKey.currentState.finalGameResult.build();
 
-        detailsStepState = StepState.complete;
-        createStepStage = StepState.editing;
+        timePlaceStepState = StepState.complete;
+        detailsStepState = StepState.editing;
         break;
       case 3:
-        clubStepState = StepState.complete;
+        createStepStage = StepState.editing;
+        break;
+      case 4:
         createStepStage = StepState.editing;
         break;
     }
@@ -137,7 +152,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
   void _onStepperContinue(BuildContext context) {
     if (_leaveCurrentState(false)) {
       setState(() {
-        if (_currentStep < 3) {
+        if (_currentStep < 4) {
           _currentStep++;
         } else {
           // Write the game out.
@@ -162,7 +177,15 @@ class _AddGameScreenState extends State<AddGameScreen> {
       ..timezone = tz.local.name
       ..officialResult.homeTeamLeagueUid = team.uid
       ..type = EventType.Game;
-    var start = clock.now().add(const Duration(days: 1));
+    var baseTimeDate = clock.now().add(const Duration(days: 1));
+
+    var start = DateTime(
+      baseTimeDate.year,
+      baseTimeDate.month,
+      baseTimeDate.day,
+      12,
+      0,
+    );
     var result = GameResultDetailsBuilder()
       ..result = GameResult.Unknown
       ..inProgress = GameInProgress.NotStarted;
@@ -193,6 +216,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
   Widget build(BuildContext context) {
     var messages = Messages.of(context);
 
+    print('Step $_currentStep $clubStepState $teamStepState');
     return BlocProvider(
       create: (context) => addGameBloc,
       child: Scaffold(
@@ -234,7 +258,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
                     Step(
                       title: Text(messages.club),
                       state: clubStepState,
-                      isActive: false,
+                      isActive: _clubEnabled,
                       content: ClubSelection(
                         onChanged: _clubChanged,
                         initialClub: _club,
@@ -252,9 +276,16 @@ class _AddGameScreenState extends State<AddGameScreen> {
                     ),
                     Step(
                       title: Text(messages.details),
+                      state: timePlaceStepState,
+                      isActive: _team != null,
+                      content:
+                          _buildForm(context, GameEditFormDisplay.timePlace),
+                    ),
+                    Step(
+                      title: Text(messages.details),
                       state: detailsStepState,
                       isActive: _team != null,
-                      content: _buildForm(context),
+                      content: _buildForm(context, GameEditFormDisplay.details),
                     ),
                     Step(
                       title: Text(messages.create),

@@ -16,16 +16,24 @@ part 'game.g.dart';
 /// Tracking the attendance for the game.
 ///
 class Attendance extends EnumClass {
+  /// The serializer for the attendence enum
   static Serializer<Attendance> get serializer => _$attendanceSerializer;
 
+  /// Yes for attendance.
   static const Attendance Yes = _$Yes;
+
+  /// No for attendance.
   static const Attendance No = _$No;
+
+  /// Maybe for attendance.
   static const Attendance Maybe = _$Maybe;
 
   const Attendance._(String name) : super(name);
 
+  /// The values of the enum.
   static BuiltSet<Attendance> get values => _$AttendanceValues;
 
+  /// The value from the string.
   static Attendance valueOf(String name) => _$AttendanceValueOf(name);
 }
 

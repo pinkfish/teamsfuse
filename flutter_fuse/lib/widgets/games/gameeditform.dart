@@ -18,6 +18,9 @@ import '../form/switchformfield.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 import 'editformbase.dart';
 
+/// The edit form bits to display.
+enum GameEditFormDisplay { all, timePlace, details }
+
 ///
 /// This form has all the stuff needed to edit the main parts
 /// of the game.  Does not have the add game step flow.
@@ -25,11 +28,16 @@ import 'editformbase.dart';
 class GameEditForm extends StatefulWidget {
   /// Constructor.
   GameEditForm(
-      {@required this.game, @required GlobalKey<GameEditFormState> key})
+      {@required this.game,
+      @required GlobalKey<GameEditFormState> key,
+      this.displayType = GameEditFormDisplay.all})
       : super(key: key);
 
   /// The game to edit.
   final Game game;
+
+  /// What to display.
+  final GameEditFormDisplay displayType;
 
   @override
   GameEditFormState createState() {
@@ -210,6 +218,155 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
             );
           }
 
+          var firstCols = widget.displayType == GameEditFormDisplay.all ||
+                  widget.displayType == GameEditFormDisplay.timePlace
+              ? <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: firstRow,
+                  ),
+                  DateTimeFormField(
+                    labelText: Messages.of(context).gametime,
+                    initialValue: _atDate,
+                    hideDate: false,
+                    onSaved: (value) {
+                      _atDate = value;
+                    },
+                    onFieldChanged: _changeAtTime,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 4,
+                        child: DateTimeFormField(
+                          key: _arriveByKey,
+                          labelText: Messages.of(context).arriveat,
+                          initialValue: _atArrival,
+                          hideDate: true,
+                          onSaved: (val) {
+                            _atArrival = val;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12.0),
+                      Expanded(
+                        flex: 4,
+                        child: DateTimeFormField(
+                          key: _atEndKEy,
+                          labelText: Messages.of(context).gameend,
+                          initialValue: _atEnd,
+                          hideDate: true,
+                          onSaved: (val) {
+                            _atEnd = val;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  PlacesFormField(
+                    initialValue: PlaceAndTimezone(
+                        _builder.sharedData.place.build(),
+                        _builder.sharedData.timezone),
+                    labelText: Messages.of(context).selectplace,
+                    decoration: const InputDecoration(icon: Icon(Icons.place)),
+                    onSaved: (loc) {
+                      _builder.sharedData.place = loc.place.toBuilder();
+                      _builder.sharedData.timezone = loc.timeZone;
+                    },
+                    validator: (place) =>
+                        _validations.validateGamePlace(context, place.place),
+                  ),
+                  EnsureVisibleWhenFocused(
+                    focusNode: _focusNodePlaceNotes,
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        icon: const Icon(MdiIcons.tshirtCrew),
+                        hintText: Messages.of(context).placesnoteshint,
+                        labelText: Messages.of(context).placesnotes,
+                      ),
+                      keyboardType: TextInputType.text,
+                      focusNode: _focusNodePlaceNotes,
+                      obscureText: false,
+                      initialValue: _builder.sharedData.place.notes,
+                      onSaved: (value) {
+                        _builder.sharedData.place.notes = value;
+                      },
+                    ),
+                  ),
+                ]
+              : <Widget>[];
+
+          var secondBit = widget.displayType == GameEditFormDisplay.all ||
+                  widget.displayType == GameEditFormDisplay.details
+              ? <Widget>[
+                  EnsureVisibleWhenFocused(
+                    focusNode: _focusNodeUniform,
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        icon: const Icon(MdiIcons.tshirtCrew),
+                        hintText: Messages.of(context).uniformhint,
+                        labelText: Messages.of(context).uniform,
+                      ),
+                      focusNode: _focusNodeUniform,
+                      keyboardType: TextInputType.text,
+                      obscureText: false,
+                      initialValue: widget.game.uniform,
+                      onSaved: (value) {
+                        _builder.uniform = value;
+                      },
+                    ),
+                  ),
+                  EnsureVisibleWhenFocused(
+                    focusNode: _focusNodeNotes,
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                          icon: Icon(Icons.note),
+                          hintText: 'Game notes',
+                          labelText: 'Game notes'),
+                      keyboardType: TextInputType.text,
+                      focusNode: _focusNodeNotes,
+                      obscureText: false,
+                      initialValue: widget.game.notes,
+                      maxLines: 7,
+                      minLines: 3,
+                      onSaved: (value) {
+                        _builder.notes = value;
+                      },
+                    ),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 1,
+                        child: SwitchFormField(
+                          icon: MdiIcons.home,
+                          label: Messages.of(context).homeaway,
+                          initialValue: widget.game.homegame,
+                          onSaved: (value) {
+                            if (value) {
+                              _builder.sharedData.officialResult
+                                  .homeTeamLeagueUid = _builder.teamUid;
+                              _builder.sharedData.officialResult
+                                  .awayTeamLeagueUid = _builder.opponentUid;
+                            } else {
+                              _builder.sharedData.officialResult
+                                  .homeTeamLeagueUid = _builder.opponentUid;
+                              _builder.sharedData.officialResult
+                                  .awayTeamLeagueUid = _builder.teamUid;
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ]
+              : <Widget>[];
+
           return Scrollbar(
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
@@ -225,142 +382,8 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: firstRow,
-                      ),
-                      DateTimeFormField(
-                        labelText: Messages.of(context).gametime,
-                        initialValue: _atDate,
-                        hideDate: false,
-                        onSaved: (value) {
-                          _atDate = value;
-                        },
-                        onFieldChanged: _changeAtTime,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Expanded(
-                            flex: 4,
-                            child: DateTimeFormField(
-                              key: _arriveByKey,
-                              labelText: Messages.of(context).arriveat,
-                              initialValue: _atArrival,
-                              hideDate: true,
-                              onSaved: (val) {
-                                _atArrival = val;
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 12.0),
-                          Expanded(
-                            flex: 4,
-                            child: DateTimeFormField(
-                              key: _atEndKEy,
-                              labelText: Messages.of(context).gameend,
-                              initialValue: _atEnd,
-                              hideDate: true,
-                              onSaved: (val) {
-                                _atEnd = val;
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      PlacesFormField(
-                        initialValue: PlaceAndTimezone(
-                            _builder.sharedData.place.build(),
-                            _builder.sharedData.timezone),
-                        labelText: Messages.of(context).selectplace,
-                        decoration:
-                            const InputDecoration(icon: Icon(Icons.place)),
-                        onSaved: (loc) {
-                          _builder.sharedData.place = loc.place.toBuilder();
-                          _builder.sharedData.timezone = loc.timeZone;
-                        },
-                        validator: (place) => _validations.validateGamePlace(
-                            context, place.place),
-                      ),
-                      EnsureVisibleWhenFocused(
-                        focusNode: _focusNodePlaceNotes,
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            icon: const Icon(MdiIcons.tshirtCrew),
-                            hintText: Messages.of(context).placesnoteshint,
-                            labelText: Messages.of(context).placesnotes,
-                          ),
-                          keyboardType: TextInputType.text,
-                          focusNode: _focusNodePlaceNotes,
-                          obscureText: false,
-                          initialValue: _builder.sharedData.place.notes,
-                          onSaved: (value) {
-                            _builder.sharedData.place.notes = value;
-                          },
-                        ),
-                      ),
-                      EnsureVisibleWhenFocused(
-                        focusNode: _focusNodeUniform,
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            icon: const Icon(MdiIcons.tshirtCrew),
-                            hintText: Messages.of(context).uniformhint,
-                            labelText: Messages.of(context).uniform,
-                          ),
-                          focusNode: _focusNodeUniform,
-                          keyboardType: TextInputType.text,
-                          obscureText: false,
-                          initialValue: widget.game.uniform,
-                          onSaved: (value) {
-                            _builder.uniform = value;
-                          },
-                        ),
-                      ),
-                      EnsureVisibleWhenFocused(
-                        focusNode: _focusNodeNotes,
-                        child: TextFormField(
-                          decoration: const InputDecoration(
-                              icon: Icon(Icons.note),
-                              hintText: 'Game notes',
-                              labelText: 'Game notes'),
-                          keyboardType: TextInputType.text,
-                          focusNode: _focusNodeNotes,
-                          obscureText: false,
-                          initialValue: widget.game.notes,
-                          onSaved: (value) {
-                            _builder.notes = value;
-                          },
-                        ),
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            flex: 1,
-                            child: SwitchFormField(
-                              icon: MdiIcons.home,
-                              label: Messages.of(context).homeaway,
-                              initialValue: widget.game.homegame,
-                              onSaved: (value) {
-                                if (value) {
-                                  _builder.sharedData.officialResult
-                                      .homeTeamLeagueUid = _builder.teamUid;
-                                  _builder.sharedData.officialResult
-                                      .awayTeamLeagueUid = _builder.opponentUid;
-                                } else {
-                                  _builder.sharedData.officialResult
-                                      .homeTeamLeagueUid = _builder.opponentUid;
-                                  _builder.sharedData.officialResult
-                                      .awayTeamLeagueUid = _builder.teamUid;
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
+                      ...firstCols,
+                      ...secondBit,
                     ],
                   ),
                 ),
