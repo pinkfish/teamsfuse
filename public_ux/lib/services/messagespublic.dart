@@ -107,6 +107,17 @@ class MessagesPublic {
       Intl.message('League', desc: 'League section header');
   String get media => Intl.message('Media', desc: 'Media section header');
 
+  String get playersButton =>
+      Intl.message('PLAYERS', desc: 'Button to show the players in a club');
+  String get teamsButton =>
+      Intl.message('TEAMS', desc: 'Button to show the teams in a club');
+  String get coachesButton =>
+      Intl.message('COACHES', desc: 'Button to show the coaches in a club');
+  String get newsButton =>
+      Intl.message('NEWS', desc: 'Button to show the coaches in a club');
+  String get aboutButton =>
+      Intl.message('ABOUT', desc: 'Button to show the coaches in a club');
+
   /// Load the messages for the specific locale.
   static Future<MessagesPublic> load(Locale locale) async {
     var name =

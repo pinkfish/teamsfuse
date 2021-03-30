@@ -1,20 +1,45 @@
+import 'dart:io';
+
 import 'package:fluro/fluro.dart' as fluro;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/firestore/firestore.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:pedantic/pedantic.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import 'screens/publichome.dart';
 import 'services/algolia.dart';
 import 'services/approuter.dart';
 import 'services/messagespublic.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+
+  var storageDirectory = Directory('');
+  if (!kIsWeb) {
+    final sd = await getTemporaryDirectory();
+    storageDirectory = Directory(sd.path);
+    AsyncHydratedStorage.storageDirectory = storageDirectory;
+    // Load up the data for the hydrated bloc stuff.
+    HydratedBloc.storage = await HydratedStorage.build(
+      storageDirectory: storageDirectory,
+    );
+  } else {
+    HydratedBloc.storage = _EmptyHydratedStorage();
+  }
+
   runApp(PublicTeamsFuse());
 }
 
@@ -30,6 +55,14 @@ class PublicTeamsFuse extends StatelessWidget {
     );
     final route = 'Home';
     final wrapper = Firestore();
+
+    unawaited(AnalyticsSubsystemImpl.instance.logAppOpen());
+
+    // Send error logs up to crashalytics.
+    FlutterError.onError = (details) {
+      AnalyticsSubsystemImpl.instance
+          .recordException(details.exception, details.stack);
+    };
 
     return MultiRepositoryProvider(
       providers: [
@@ -78,4 +111,18 @@ class PublicTeamsFuse extends StatelessWidget {
     final router = RepositoryProvider.of<fluro.FluroRouter>(context);
     return router.generator(routeSettings);
   }
+}
+
+class _EmptyHydratedStorage implements Storage {
+  @override
+  dynamic read(String key) {}
+
+  @override
+  Future<void> write(String key, dynamic value) async {}
+
+  @override
+  Future<void> delete(String key) async {}
+
+  @override
+  Future<void> clear() async {}
 }

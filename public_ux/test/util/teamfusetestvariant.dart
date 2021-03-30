@@ -1,8 +1,6 @@
 import 'package:flutter_fuse/widgets/blocs/base/singleprovider.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'testable.dart';
-
 /// The [TestVariant] that represents the variant for the
 ///  widget test cases.
 class TeamsFuseTestVariant extends TestVariant<void> {

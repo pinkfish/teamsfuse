@@ -121,8 +121,8 @@ class PublicTeamTile extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
                               TextButton(
-                                child: const Text('VIEW'),
                                 onPressed: onTap,
+                                child: const Text('VIEW'),
                               ),
                               const SizedBox(width: 8),
                             ],

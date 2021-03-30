@@ -42,7 +42,6 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
   final _timeTrainingFormKey = GlobalKey<TrainingEditFormState>();
   final _detailsTrainingFormKey = GlobalKey<TrainingEditFormState>();
   final _repeatKey = GlobalKey<RepeatDetailsState>();
-  final _controlsKey = GlobalKey();
   var _teamStepState = StepState.editing;
   var _clubStepState = StepState.editing;
   var _detailsStepState = StepState.disabled;

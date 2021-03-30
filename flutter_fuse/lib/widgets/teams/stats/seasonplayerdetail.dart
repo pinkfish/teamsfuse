@@ -24,12 +24,16 @@ class SeasonPlayerDetails extends StatelessWidget {
   /// What to call when the player is tapped on.
   final PlayerTapFunction onTap;
 
+  /// If we shoudl show the name column.
+  final bool showName;
+
   SeasonPlayerDetails({
     @required this.uid,
     @required this.season,
     this.constraints,
     this.orientation = Orientation.portrait,
     this.onTap,
+    this.showName = true,
   });
 
   @override
@@ -43,10 +47,13 @@ class SeasonPlayerDetails extends StatelessWidget {
   }
 
   Widget _innerBuilder(BuildContext context, BoxConstraints boxConstraints) {
-    var width = boxConstraints.maxWidth / 8;
+    var width = boxConstraints.maxWidth / (showName ? 8 : 6);
     var scale = orientation == Orientation.portrait ? 1.0 : 1.5;
     var seasonPlayer = season.playersData[uid];
     var s = seasonPlayer.summary.basketballSummary;
+
+    print('Width.. $width');
+
     return PublicMark(
       isPublic: seasonPlayer.isPublic,
       child: GestureDetector(
@@ -55,15 +62,25 @@ class SeasonPlayerDetails extends StatelessWidget {
             : () => Navigator.pushNamed(
                 context, '/Game/Player/' + season.uid + '/' + uid),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            SizedBox(
-              width: width * 2,
-              child: PlayerName(
-                playerUid: uid,
-                textScaleFactor: scale,
-                fallback: seasonPlayer.jerseyNumber,
-              ),
-            ),
+            ...showName
+                ? [
+                    SizedBox(
+                      width: 5,
+                    ),
+                    SizedBox(
+                      width: width * 2 - 5,
+                      child: PlayerName(
+                        playerUid: uid,
+                        textScaleFactor: scale,
+                        fallback: seasonPlayer.jerseyNumber,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ]
+                : [],
             SizedBox(
               width: width,
               child: Text(

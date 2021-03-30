@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fuse/screens/game/editgame.dart';
 import 'package:flutter_fuse/widgets/teams/stats/seasonplayerdetail.dart';
 import 'package:flutter_fuse/widgets/teams/stats/seasonplayerheader.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -74,13 +75,17 @@ class _PlayerListState extends State<SeasonPlayerList> {
                 style: minDataStyle,
               ),
               ...sortedList
-                  .map((String s) => SeasonPlayerDetails(
-                        uid: s,
-                        season: widget.season,
-                        constraints: constraints,
-                        orientation: widget.orientation,
-                        onTap: widget.onTap,
-                      ))
+                  .map(
+                    (String s) => Padding(
+                        padding: EdgeInsets.only(top: 5, bottom: 5),
+                        child: SeasonPlayerDetails(
+                          uid: s,
+                          season: widget.season,
+                          constraints: constraints,
+                          orientation: widget.orientation,
+                          onTap: widget.onTap,
+                        )),
+                  )
                   .toList(),
             ],
           ),
@@ -90,7 +95,7 @@ class _PlayerListState extends State<SeasonPlayerList> {
   }
 
   PlayerSummaryData _getData(String playerUid) {
-    return widget.season.playersData[playerUid]?.summary.basketballSummary ??
+    return widget.season.playersData[playerUid]?.summary?.basketballSummary ??
         PlayerSummaryData();
   }
 

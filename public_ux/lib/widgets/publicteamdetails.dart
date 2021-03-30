@@ -13,8 +13,8 @@ import 'package:flutter_fuse/widgets/util/deleted.dart';
 import 'package:flutter_fuse/widgets/util/handsandtrophy.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:public_ux/screens/publicclubhome.dart';
+import 'package:public_ux/screens/publicteam.dart';
 import 'package:public_ux/widgets/publicseasonplayers.dart';
 
 ///
@@ -50,6 +50,7 @@ class PublicTeamDetails extends StatelessWidget {
                   .textTheme
                   .headline6
                   .copyWith(fontStyle: FontStyle.italic),
+              overflow: TextOverflow.fade,
             ),
             // Show the list of players here.
           ],
@@ -123,54 +124,64 @@ class PublicTeamDetails extends StatelessWidget {
                         children: <Widget>[
                           Row(
                             children: [
-                              Text(team.name,
-                                  style: Theme.of(context).textTheme.headline4),
-                              SizedBox(width: 5),
                               Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: GenderIcon(
-                                    team.gender,
-                                    size: 30,
-                                  ),
+                                child: Text(
+                                  team.name,
+                                  style: Theme.of(context).textTheme.headline4,
+                                  overflow: TextOverflow.fade,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: GenderIcon(
+                                  team.gender,
+                                  size: 30,
                                 ),
                               ),
                             ],
                           ),
                           SizedBox(height: 20),
-                          Row(
-                            children: [
-                              ...(team.clubUid != null
-                                  ? <Widget>[
-                                      ClubImage(
-                                        clubUid: team.clubUid,
-                                        width: 30,
-                                        height: 30,
-                                      ),
-                                      ClubName(
-                                        clubUid: team.clubUid,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5,
-                                      ),
-                                    ]
-                                  : <Widget>[
-                                      SizedBox(width: 0),
-                                    ]),
-                              SizedBox(width: 5),
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    '${team.sport}(${team.league}) ',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(fontStyle: FontStyle.italic),
+                          GestureDetector(
+                            onTap: () => Navigator.pushNamed(context,
+                                '/Club/${PublicClubTab.club}/${team.clubUid}'),
+                            child: Row(
+                              children: [
+                                ...(team.clubUid != null
+                                    ? <Widget>[
+                                        ClubImage(
+                                          clubUid: team.clubUid,
+                                          width: 30,
+                                          height: 30,
+                                        ),
+                                        ClubName(
+                                          clubUid: team.clubUid,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline5,
+                                        ),
+                                      ]
+                                    : <Widget>[
+                                        SizedBox(width: 0),
+                                      ]),
+                                SizedBox(width: 5),
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
+                                      '${team.sport}(${team.league}) ',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline6
+                                          .copyWith(
+                                              fontStyle: FontStyle.italic),
+                                      overflow: TextOverflow.fade,
+                                      maxLines: 1,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           SizedBox(height: 10),
                           _buildCurrentSeason(
@@ -181,10 +192,18 @@ class PublicTeamDetails extends StatelessWidget {
                                 onPressed: () => Navigator.pushNamed(
                                     context,
                                     '/Club/'
-                                    '${PublicClubTab.club}/'
+                                    '${PublicClubTab.club.name}/'
                                     '${teamState.team.clubUid}'),
                                 child: Text(Messages.of(context).clubButton),
-                              )
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pushNamed(
+                                    context,
+                                    '/Team/'
+                                    '${PublicTeamTab.stats.name}/'
+                                    '${teamState.team.uid}'),
+                                child: Text(Messages.of(context).statsButton),
+                              ),
                             ],
                           ),
                         ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_fuse/services/blocs/single/singleplayerbloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
 import 'package:flutter_fuse/widgets/player/playerimage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/teams/teamimage.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_fuse/widgets/teams/stats/seasonplayerheader.dart';
 import 'package:flutter_fuse/widgets/teams/teamname.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:public_ux/screens/publicclubhome.dart';
 import 'package:public_ux/screens/publicteam.dart';
 
 ///
@@ -39,6 +41,8 @@ class PublicPlayerDetails extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(5),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,6 +50,7 @@ class PublicPlayerDetails extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 TeamImage(teamUid: season.teamUid, width: 50, height: 50),
+                SizedBox(width: 5),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,11 +61,13 @@ class PublicPlayerDetails extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           TeamName(
-                              teamUid: season.teamUid,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1
-                                  .copyWith(fontWeight: FontWeight.w600)),
+                            teamUid: season.teamUid,
+                            style:
+                                Theme.of(context).textTheme.bodyText1.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 20,
+                                    ),
+                          ),
                           SizedBox(width: 15),
                           Expanded(
                             child: Align(
@@ -70,36 +77,52 @@ class PublicPlayerDetails extends StatelessWidget {
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText1
-                                    .copyWith(fontStyle: FontStyle.italic),
+                                    .copyWith(
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 15,
+                                    ),
                               ),
                             ),
                           ),
                         ],
-                      ),
-                      SizedBox(height: 5),
-                      SeasonPlayerHeader(
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText1
-                            .copyWith(fontWeight: FontWeight.w100),
-                      ),
-                      SeasonPlayerDetails(
-                        uid: playerUid,
-                        season: season,
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            ButtonBar(
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pushNamed(context,
-                      '/Team/${PublicTeamTab.team.name}/${season.teamUid}'),
-                  child: Text(Messages.of(context).teamButton),
+            SizedBox(height: 5),
+            SeasonPlayerHeader(
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1
+                  .copyWith(fontWeight: FontWeight.w100),
+              showName: false,
+            ),
+            SeasonPlayerDetails(
+              uid: playerUid,
+              season: season,
+              showName: false,
+            ),
+            SingleTeamProvider(
+              teamUid: season.teamUid,
+              builder: (context, teamBloc) => BlocBuilder(
+                bloc: teamBloc,
+                builder: (context, singleTeamState) => ButtonBar(
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pushNamed(context,
+                          '/Team/${PublicTeamTab.team.name}/${season.teamUid}'),
+                      child: Text(Messages.of(context).teamButton),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pushNamed(context,
+                          '/Club/${PublicClubTab.club.name}/${singleTeamState.team.clubUid}'),
+                      child: Text(Messages.of(context).clubButton),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ],
         ),
@@ -134,8 +157,11 @@ class PublicPlayerDetails extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PlayerImage(
-                    playerUid: singlePlayerState.player.uid, radius: 100),
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: PlayerImage(
+                      playerUid: singlePlayerState.player.uid, radius: 100),
+                ),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,

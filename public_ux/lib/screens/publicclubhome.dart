@@ -14,7 +14,8 @@ import '../widgets/publicclub.dart';
 import '../widgets/publicclubnews.dart';
 import '../widgets/publicclubteams.dart';
 import '../widgets/publiccoaches.dart';
-import '../widgets/publicteamdetails.dart';
+import '../widgets/searchdelegate.dart';
+import '../services/messagespublic.dart';
 import 'publicteam.dart';
 
 /// Which of the tabs in the public view are selected.
@@ -114,7 +115,7 @@ class PublicClubHomeScreen extends StatelessWidget {
             }
             return AnimatedSwitcher(
               duration: Duration(milliseconds: 500),
-              child: _buildStuff(context, singleClubState.club, bloc),
+              child: _buildStuff(context, singleClubState.club, bloc, false),
             );
           },
         ),
@@ -127,20 +128,30 @@ class PublicClubHomeScreen extends StatelessWidget {
         .navigateTo(context, newRoute, transition: fluro.TransitionType.fadeIn);
   }
 
-  Widget _buildStuff(
-      BuildContext context, Club club, SingleClubBloc singleClubBloc) {
+  void _doSearch(BuildContext context) async {
+    final result = await showSearch(
+      context: context,
+      delegate: TeamsFuseSearchDelegate(),
+    );
+    if (result != null) {
+      await Navigator.pushNamed(context, result);
+    }
+  }
+
+  Widget _buildStuff(BuildContext context, Club club,
+      SingleClubBloc singleClubBloc, bool smallDisplay) {
     switch (tabSelected) {
       case PublicClubTab.club:
-        return PublicClub(club);
+        return PublicClub(club, smallDisplay: smallDisplay);
       case PublicClubTab.team:
         return PublicClubTeams(singleClubBloc,
-            onlyPublic: true,
+            smallDisplay: smallDisplay,
             onTap: (t) => _navigateTo(
                 context, '/Team/${PublicTeamTab.team.name}/${t.uid}'));
       case PublicClubTab.coaches:
-        return PublicCoachDetails(singleClubBloc);
+        return PublicCoachDetails(singleClubBloc, smallDisplay: smallDisplay);
       case PublicClubTab.news:
-        return PublicClubNews(singleClubBloc);
+        return PublicClubNews(singleClubBloc, smallDisplay: smallDisplay);
     }
     return SizedBox(height: 0);
   }
@@ -152,12 +163,21 @@ class PublicClubHomeScreen extends StatelessWidget {
         bloc: singleClubBloc,
         builder: (context, state) {
           if (state is SingleClubUninitialized) {
-            return Text(Messages.of(context).loading);
+            return Text(
+              Messages.of(context).loading,
+              overflow: TextOverflow.fade,
+            );
           }
           if (state is SingleClubDeleted) {
-            return Text(Messages.of(context).clubDeleted);
+            return Text(
+              Messages.of(context).clubDeleted,
+              overflow: TextOverflow.fade,
+            );
           }
-          return Text(state.club.name);
+          return Text(
+            state.club.name,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
       bottom: ColoredTabBar(
@@ -172,8 +192,14 @@ class PublicClubHomeScreen extends StatelessWidget {
             Tab(
                 icon: Icon(MdiIcons.basketball),
                 text: Messages.of(context).about),
-            Tab(icon: Icon(Icons.people), text: Messages.of(context).teams),
-            Tab(icon: Icon(Icons.people), text: Messages.of(context).coaches),
+            Tab(
+              icon: Icon(Icons.people),
+              text: Messages.of(context).teams,
+            ),
+            Tab(
+              icon: Icon(Icons.people),
+              text: Messages.of(context).coaches,
+            ),
             Tab(
                 icon: Icon(MdiIcons.newspaper),
                 text: Messages.of(context).news),
@@ -185,6 +211,16 @@ class PublicClubHomeScreen extends StatelessWidget {
               '/$clubUid'),
         ),
       ),
+      actions: [
+        TextButton.icon(
+          icon: Icon(Icons.search),
+          label: Text(MessagesPublic.of(context).search),
+          onPressed: () => _doSearch(context),
+          style: TextButton.styleFrom(
+            primary: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 
@@ -195,21 +231,36 @@ class PublicClubHomeScreen extends StatelessWidget {
           bloc: singleClubBloc,
           builder: (context, state) {
             if (state is SingleClubUninitialized) {
-              return Text(Messages.of(context).loading);
+              return Text(
+                Messages.of(context).loading,
+                overflow: TextOverflow.fade,
+              );
             }
             if (state is SingleClubDeleted) {
-              return Text(Messages.of(context).clubDeleted);
+              return Text(
+                Messages.of(context).clubDeleted,
+                overflow: TextOverflow.fade,
+              );
             }
             return Row(
               children: [
                 ClubImage(clubUid: state.club.uid, width: 40, height: 40),
                 SizedBox(width: 30),
-                Text(state.club.name,
-                    style: Theme.of(context).textTheme.headline4),
+                Text(
+                  state.club.name,
+                  overflow: TextOverflow.fade,
+                ),
               ],
             );
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () => _doSearch(context),
+            color: Colors.white,
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -283,7 +334,8 @@ class PublicClubHomeScreen extends StatelessWidget {
           if (singleClubState is SingleClubDeleted) {
             return Text(Messages.of(context).clubDeleted);
           }
-          return _buildStuff(context, singleClubState.club, singleClubBloc);
+          return _buildStuff(
+              context, singleClubState.club, singleClubBloc, true);
         },
       ),
     );

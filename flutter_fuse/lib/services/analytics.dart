@@ -65,16 +65,22 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
   }
 
   @override
-  void logSignUp({String signUpMethod}) {
+  Future<void> logSignUp({String signUpMethod}) async {
     if (Platform.isAndroid || Platform.isIOS) {
-      _analytics.logSignUp(signUpMethod: signUpMethod);
+      return _analytics.logSignUp(signUpMethod: signUpMethod);
     }
   }
 
   @override
-  void logLogin() {
+  Future<void> logLogin() async {
     if (Platform.isAndroid || Platform.isIOS) {
-      _analytics.logLogin();
+      return _analytics.logLogin();
+    }
+  }
+
+  Future<void> logAppOpen() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      return _analytics.logAppOpen();
     }
   }
 
@@ -138,16 +144,17 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
   /// Log an event to analytics for details on what is going on.
   ///
   @override
-  void logEvent({String name, Map<String, String> parameters}) {
+  Future<void> logEvent({String name, Map<String, String> parameters}) async {
     if (Platform.isAndroid || Platform.isIOS) {
-      _analytics.logEvent(name: name, parameters: parameters);
+      return _analytics.logEvent(name: name, parameters: parameters);
     }
   }
 
   @override
-  void logInviteAccepted(String inviteType, String invitedTo) {
+  Future<void> logInviteAccepted(String inviteType, String invitedTo) async {
     if (Platform.isAndroid || Platform.isIOS) {
-      _analytics.logShare(contentType: inviteType, itemId: invitedTo);
+      return _analytics.logShare(
+          contentType: inviteType, itemId: invitedTo, method: 'invite');
     }
   }
 

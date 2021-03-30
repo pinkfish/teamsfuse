@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:public_ux/screens/publicclubhome.dart';
+import 'package:public_ux/services/messagespublic.dart';
 
 import 'publlicteamtile.dart';
 
@@ -17,13 +19,19 @@ typedef TeamCallback = void Function(Team team);
 class PublicClubTeams extends StatelessWidget {
   /// Constructor.
   PublicClubTeams(this.clubBloc,
-      {this.onlyPublic = false, this.onTap, this.selected});
+      {this.onTap, this.selected, this.smallDisplay = false});
 
   /// The club to show the teams for.
   final SingleClubBloc clubBloc;
-  final bool onlyPublic;
+
+  /// The team to tap on.
   final TeamCallback onTap;
+
+  /// Which team is selected.
   final Team selected;
+
+  /// If this is small display,
+  final bool smallDisplay;
 
   List<Widget> _teamTiles(BuildContext context, Iterable<Team> teams) {
     var teamWidgets = <Widget>[];
@@ -62,13 +70,6 @@ class PublicClubTeams extends StatelessWidget {
 
   Widget _buildTeams(BuildContext context, SingleClubState singleClubState) {
     final teamWidgets = <Widget>[];
-    teamWidgets.add(SizedBox(height: 10));
-    teamWidgets.add(Text(
-      Messages.of(context).teams,
-      style:
-          Theme.of(context).textTheme.headline4.copyWith(color: Colors.green),
-    ));
-    teamWidgets.add(SizedBox(height: 10));
     if (singleClubState is SingleClubLoaded) {
       if (!singleClubState.loadedTeams) {
         teamWidgets.add(Text(
@@ -88,12 +89,65 @@ class PublicClubTeams extends StatelessWidget {
       }
     }
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: teamWidgets,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SizedBox(height: 10),
+        Text(
+          Messages.of(context).teams,
+          style: Theme.of(context)
+              .textTheme
+              .headline4
+              .copyWith(color: Colors.green),
+        ),
+        SizedBox(height: 10),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: teamWidgets,
+            ),
+          ),
+        ),
+        smallDisplay
+            ? ButtonBar(
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(
+                        context,
+                        '/Club/'
+                        '${PublicClubTab.club.name}'
+                        '/${singleClubState.club.uid}'),
+                    child: Text(
+                      MessagesPublic.of(context).aboutButton,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(
+                        context,
+                        '/Club/'
+                        '${PublicClubTab.coaches.name}'
+                        '/${singleClubState.club.uid}'),
+                    child: Text(
+                      MessagesPublic.of(context).coachesButton,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(
+                        context,
+                        '/Club/'
+                        '${PublicClubTab.news.name}'
+                        '/${singleClubState.club.uid}'),
+                    child: Text(
+                      MessagesPublic.of(context).newsButton,
+                    ),
+                  ),
+                ],
+              )
+            : SizedBox(height: 0),
+      ],
     );
   }
 

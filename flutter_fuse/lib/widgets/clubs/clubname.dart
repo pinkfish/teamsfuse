@@ -11,13 +11,25 @@ import '../../services/messages.dart';
 ///
 class ClubName extends StatelessWidget {
   /// Constructor.
-  ClubName({@required this.clubUid, Key key, this.style}) : super(key: key);
+  ClubName({
+    @required this.clubUid,
+    Key key,
+    this.style,
+    this.overflow = TextOverflow.visible,
+    this.maxLines = 5,
+  }) : super(key: key);
 
   /// The club to lookup.
   final String clubUid;
 
   /// The style of the image.
   final TextStyle style;
+
+  /// Overflow for thetest
+  final TextOverflow overflow;
+
+  /// Max lines to display.
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +40,19 @@ class ClubName extends StatelessWidget {
         builder: (context, state) {
           Widget img;
           if (state is SingleClubUninitialized || state is SingleClubDeleted) {
-            img = Text(Messages.of(context).loading, style: style);
+            img = Text(
+              Messages.of(context).loading,
+              style: style,
+              overflow: overflow,
+              maxLines: maxLines,
+            );
           } else {
-            img = Text(state.club.name, style: style);
+            img = Text(
+              state.club.name,
+              style: style,
+              overflow: overflow,
+              maxLines: maxLines,
+            );
           }
           return AnimatedSwitcher(
               duration: Duration(milliseconds: 500), child: img);

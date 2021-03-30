@@ -4,8 +4,9 @@ import 'package:fusemodel/fusemodel.dart';
 
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/clubs/clubimage.dart';
 import 'package:flutter_fuse/widgets/clubs/coachimage.dart';
+import 'package:public_ux/screens/publicclubhome.dart';
+import 'package:public_ux/services/messagespublic.dart';
 
 ///
 /// Shows the details about the coaches in a specific club.
@@ -14,8 +15,11 @@ class PublicCoachDetails extends StatelessWidget {
   /// The bloc to use to populate the coaches from.
   final SingleClubBloc bloc;
 
+  /// If we should display this as if it is small.
+  final bool smallDisplay;
+
   /// The constructor.
-  PublicCoachDetails(this.bloc);
+  PublicCoachDetails(this.bloc, {this.smallDisplay = false});
 
   Widget _buildCoach(BuildContext context, Coach coach) {
     return Padding(
@@ -83,11 +87,56 @@ class PublicCoachDetails extends StatelessWidget {
                     .headline4
                     .copyWith(color: Colors.green),
               ),
-              state.coaches.isEmpty
-                  ? Text(Messages.of(context).noCoaches,
-                      style: Theme.of(context).textTheme.headline4)
-                  : SizedBox(height: 0, width: 0),
-              ...state.coaches.map<Widget>((c) => _buildCoach(context, c))
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      state.coaches.isEmpty
+                          ? Text(Messages.of(context).noCoaches,
+                              style: Theme.of(context).textTheme.headline4)
+                          : SizedBox(height: 0, width: 0),
+                      ...state.coaches
+                          .map<Widget>((c) => _buildCoach(context, c)),
+                    ],
+                  ),
+                ),
+              ),
+              smallDisplay
+                  ? ButtonBar(
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(
+                              context,
+                              '/Club/'
+                              '${PublicClubTab.club.name}'
+                              '/${state.club.uid}'),
+                          child: Text(
+                            MessagesPublic.of(context).aboutButton,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(
+                              context,
+                              '/Club/'
+                              '${PublicClubTab.team.name}'
+                              '/${state.club.uid}'),
+                          child: Text(
+                            MessagesPublic.of(context).teamsButton,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(
+                              context,
+                              '/Club/'
+                              '${PublicClubTab.news.name}'
+                              '/${state.club.uid}'),
+                          child: Text(
+                            MessagesPublic.of(context).newsButton,
+                          ),
+                        ),
+                      ],
+                    )
+                  : SizedBox(height: 0),
             ],
           );
         });

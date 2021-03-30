@@ -10,11 +10,14 @@ import '../blocs/singleplayerprovider.dart';
 ///
 class PlayerName extends StatelessWidget {
   /// Constructor.
-  PlayerName(
-      {@required this.playerUid,
-      this.style,
-      this.textScaleFactor,
-      this.fallback});
+  PlayerName({
+    @required this.playerUid,
+    this.style,
+    this.textScaleFactor,
+    this.fallback,
+    this.overflow = TextOverflow.visible,
+    this.maxLines = 5,
+  });
 
   /// The player uid to show the name for,
   final String playerUid;
@@ -27,6 +30,12 @@ class PlayerName extends StatelessWidget {
 
   /// The scale factor for the player name text.
   final double textScaleFactor;
+
+  /// The overflow for the test.
+  final TextOverflow overflow;
+
+  /// The maximum number of lines.
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +55,8 @@ class PlayerName extends StatelessWidget {
               fallback ?? Messages.of(context).unknown,
               style: style,
               textScaleFactor: textScaleFactor,
+              overflow: overflow,
+              maxLines: maxLines,
             );
             if (play.name != null) {
               if (play.users.isEmpty && play.playerType == PlayerType.player) {
@@ -53,12 +64,16 @@ class PlayerName extends StatelessWidget {
                   Messages.of(context).invitedToTeamWithName(play.name),
                   style: style,
                   textScaleFactor: textScaleFactor,
+                  overflow: overflow,
+                  maxLines: maxLines,
                 );
               } else {
                 widgetTwo = Text(
                   play.name,
                   style: style,
                   textScaleFactor: textScaleFactor,
+                  overflow: overflow,
+                  maxLines: maxLines,
                 );
               }
             }
@@ -71,6 +86,8 @@ class PlayerName extends StatelessWidget {
             fallback ?? Messages.of(context).loading,
             style: style,
             textScaleFactor: textScaleFactor,
+            overflow: overflow,
+            maxLines: maxLines,
           );
           return AnimatedCrossFade(
             firstChild: widgetOne,

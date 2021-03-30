@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/messagespublic.dart';
 
 ///
-/// The search box to displkay for doing a fun search
+/// The search box to display for doing a fun search
 ///
 class SearchBox extends StatelessWidget {
   // controls the text label we use as a search bar

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/handsandtrophy.dart';
 import 'package:public_ux/services/messagespublic.dart';
 
-import '../services/algolia.dart';
 import '../widgets/appleplaystore.dart';
 import '../widgets/googleplaystore.dart';
-import '../widgets/searchresult.dart';
+import '../widgets/searchdelegate.dart';
 import 'home/about.dart';
 import 'home/league.dart';
 import 'home/tournament.dart';
@@ -114,7 +112,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen>
   void _doSearch(BuildContext context) async {
     final result = await showSearch(
       context: context,
-      delegate: _SearchDelegateStuff(),
+      delegate: TeamsFuseSearchDelegate(),
     );
     if (result != null) {
       await Navigator.pushNamed(context, result);
@@ -156,9 +154,15 @@ class _PublicHomeScreenState extends State<PublicHomeScreen>
               child: TabBarView(
                 controller: _controller,
                 children: [
-                  PublicAboutWidget(),
-                  PublicTournamentWidget(),
-                  PublicLeagueWidget(),
+                  SingleChildScrollView(
+                    child: PublicAboutWidget(),
+                  ),
+                  SingleChildScrollView(
+                    child: PublicTournamentWidget(),
+                  ),
+                  SingleChildScrollView(
+                    child: PublicLeagueWidget(),
+                  ),
                 ],
               ),
             ),
@@ -181,72 +185,5 @@ class _PublicHomeScreenState extends State<PublicHomeScreen>
         ),
       ),
     );
-  }
-}
-
-class _SearchDelegateStuff extends SearchDelegate<String> {
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-          icon: Icon(Icons.clear),
-          onPressed: () {
-            query = '';
-          })
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      tooltip: 'Back',
-      icon: AnimatedIcon(
-        icon: AnimatedIcons.menu_arrow,
-        progress: transitionAnimation,
-      ),
-      onPressed: () {
-        close(context, null);
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    final algolia = RepositoryProvider.of<AlgoliaSearch>(context);
-    final results = algolia.search(query);
-    return FutureBuilder(
-      future: results,
-      builder: (context, data) {
-        Widget inner;
-        if (data.hasData) {
-          if (data.data.isEmpty) {
-            inner = Text(MessagesPublic.of(context).noResults);
-          } else {
-            inner = ListView(
-              children: data.data
-                  .map<Widget>((r) => SearchResult(
-                      result: r,
-                      onTapped: (s) {
-                        close(context, s);
-                      }))
-                  .toList(),
-            );
-          }
-        } else {
-          inner = Text(Messages.of(context).loading);
-        }
-        return AnimatedSwitcher(
-          duration: Duration(
-            milliseconds: 500,
-          ),
-          child: inner,
-        );
-      },
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return SizedBox(height: 0);
   }
 }

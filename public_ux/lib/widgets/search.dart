@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:built_collection/built_collection.dart';
 
 import '../services/algolia.dart';
 import '../services/messagespublic.dart';
@@ -24,7 +25,7 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> {
   String _query;
-  List<AlgoliaResult> _results;
+  BuiltList<AlgoliaResult> _results;
 
   void _updateSearch(String query) async {
     _query = query.trim();
@@ -37,7 +38,7 @@ class _SearchState extends State<Search> {
       final results = await algolia.search(_query);
       setState(() => _results = results);
     } else {
-      setState(() => _results = []);
+      setState(() => _results = BuiltList.of(<AlgoliaResult>[]));
     }
   }
 

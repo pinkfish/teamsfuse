@@ -4,12 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
-import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:flutter_fuse/widgets/teams/teamimage.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/coloredtabbar.dart';
 import 'package:flutter_fuse/widgets/util/responsivewidget.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:public_ux/services/messagespublic.dart';
+import 'package:public_ux/widgets/publicteamstats.dart';
+import 'package:public_ux/widgets/searchdelegate.dart';
 
 import '../widgets/publicteamdetails.dart';
 import '../widgets/publicseasonplayers.dart';
@@ -87,6 +89,16 @@ class PublicTeamDetailsScreen extends StatelessWidget {
   PublicTeamDetailsScreen(String tab, this.teamUid)
       : tabSelected = PublicTeamTabExtension.fromString(tab);
 
+  void _doSearch(BuildContext context) async {
+    final result = await showSearch(
+      context: context,
+      delegate: TeamsFuseSearchDelegate(),
+    );
+    if (result != null) {
+      await Navigator.pushNamed(context, result);
+    }
+  }
+
   Widget _buildMediumBody(BuildContext context, SingleTeamBloc bloc) {
     return DefaultTabController(
       length: 3,
@@ -125,7 +137,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
       case PublicTeamTab.players:
         return PublicSeasonPlayers(singleTeamBloc);
       case PublicTeamTab.stats:
-        return SizedBox(height: 0);
+        return PublicTeamStatsWidget(teamBloc: singleTeamBloc);
     }
     return SizedBox(height: 0);
   }
@@ -174,6 +186,16 @@ class PublicTeamDetailsScreen extends StatelessWidget {
               '/$teamUid'),
         ),
       ),
+      actions: [
+        TextButton.icon(
+          icon: Icon(Icons.search),
+          label: Text(MessagesPublic.of(context).search),
+          onPressed: () => _doSearch(context),
+          style: TextButton.styleFrom(
+            primary: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 
@@ -196,12 +218,21 @@ class PublicTeamDetailsScreen extends StatelessWidget {
                   width: 30,
                   height: 30,
                 ),
-                Text(state.team.name,
-                    style: Theme.of(context).textTheme.headline4),
+                SizedBox(width: 10),
+                Text(
+                  state.team.name,
+                ),
               ],
             );
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () => _doSearch(context),
+            color: Colors.white,
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(

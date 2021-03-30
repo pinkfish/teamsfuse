@@ -1,4 +1,5 @@
 import 'package:algolia/algolia.dart';
+import 'package:built_collection/built_collection.dart';
 
 /// The type of the result from the search
 enum ResultType { team, club }
@@ -33,26 +34,25 @@ class AlgoliaSearch {
   ///
   /// Search algolia and result the current set of results.
   ///
-  Future<List<AlgoliaResult>> search(String query) async {
+  Future<BuiltList<AlgoliaResult>> search(String query) async {
     ///
     /// Perform Query
     ///
-    final result = _algolia.instance.index('teams').search(query);
+    final result = _algolia.instance.index('teams').query(query);
 
     // Get Result/Objects
     try {
       final snap = await result.getObjects();
       if (snap.empty) {
-        return [];
+        return BuiltList.of(<AlgoliaResult>[]);
       }
-      return snap.hits
+      return BuiltList.of(snap.hits
           .map<AlgoliaResult>((d) => _makeResult(d))
-          .where((d) => d != null)
-          .toList();
+          .where((d) => d != null));
     } catch (e, stack) {
       print(e);
       print(stack);
-      return [];
+      return BuiltList.of(<AlgoliaResult>[]);
     }
   }
 

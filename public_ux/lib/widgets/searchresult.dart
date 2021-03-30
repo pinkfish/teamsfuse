@@ -20,6 +20,7 @@ class SearchResult extends StatelessWidget {
   Widget _createResult(BuildContext context, AlgoliaResult result) {
     switch (result.type) {
       case ResultType.club:
+        print('(${result.uid})');
         return ListTile(
           title: Text(result.name),
           leading: Icon(MdiIcons.cardsClub),
