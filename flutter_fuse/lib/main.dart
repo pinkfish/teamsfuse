@@ -63,19 +63,25 @@ void main() async {
 
   // Timezone
   initializeDatabase(loadedData.buffer.asUint8List());
-  if (currentTimeZone == 'GMT') {
-    currentTimeZone = 'Europe/London';
-    setLocalLocation(getLocation(currentTimeZone));
-  } else if (currentTimeZone == 'Pacific Standard Time') {
+  try {
+    if (currentTimeZone == 'GMT' || currentTimeZone == 'Etc/UTC') {
+      currentTimeZone = 'Europe/London';
+      setLocalLocation(getLocation(currentTimeZone));
+    } else if (currentTimeZone == 'Pacific Standard Time') {
+      currentTimeZone = 'America/Los_Angeles';
+      setLocalLocation(getLocation(currentTimeZone));
+    } else if (currentTimeZone == 'Mountain Standard Time') {
+      currentTimeZone = 'America/Detroit';
+      setLocalLocation(getLocation(currentTimeZone));
+    } else if (currentTimeZone == 'Coordinated Universal Time') {
+      currentTimeZone = 'Europe/London';
+      setLocalLocation(getLocation(currentTimeZone));
+    } else {
+      setLocalLocation(getLocation(currentTimeZone));
+    }
+  } catch (e, stack) {
+    AnalyticsSubsystemImpl.instance.recordException(e, stack);
     currentTimeZone = 'America/Los_Angeles';
-    setLocalLocation(getLocation(currentTimeZone));
-  } else if (currentTimeZone == 'Mountain Standard Time') {
-    currentTimeZone = 'America/Detroit';
-    setLocalLocation(getLocation(currentTimeZone));
-  } else if (currentTimeZone == 'Coordinated Universal Time') {
-    currentTimeZone = 'Europe/London';
-    setLocalLocation(getLocation(currentTimeZone));
-  } else {
     setLocalLocation(getLocation(currentTimeZone));
   }
   print('$currentTimeZone ${local.toString()}');
