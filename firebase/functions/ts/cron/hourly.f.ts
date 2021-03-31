@@ -9,7 +9,7 @@ const db = admin.firestore();
 const CUT_OFF_DURATION = moment.duration({ hours: 2 });
 const LOOK_AHEAD_DURATION = moment.duration({ hours: 2 });
 
-export const onPublish = functions.pubsub.topic('hourly-tick').onPublish(async (data, context) => {
+export const onHourlyPublish = functions.pubsub.topic('hourly-tick').onPublish(async (data, context) => {
     console.log('Doing the hours work.');
 
     // Do something useful every hour.
@@ -68,7 +68,7 @@ export const onPublish = functions.pubsub.topic('hourly-tick').onPublish(async (
                 message.body = 'Arrive by {{arrivalTime}}';
             }
             if (message.body === undefined || message.body === null) {
-                console.log('no body, droping out.');
+                console.log('no body, dropping out.');
                 continue;
             }
             message.body += ' for {{team.name}}';
@@ -93,4 +93,4 @@ export const onPublish = functions.pubsub.topic('hourly-tick').onPublish(async (
     }
 });
 
-export default onPublish;
+export default onHourlyPublish;
