@@ -16,8 +16,10 @@ enum LoginFailedReason {
 /// States for the authentication bloc.
 ///
 abstract class AuthenticationState extends Equatable {
+  /// The current user.
   final UserData user;
 
+  /// The current state.
   AuthenticationState({@required this.user});
 
   @override
@@ -26,6 +28,7 @@ abstract class AuthenticationState extends Equatable {
 
 /// The auth state is unknown.
 class AuthenticationUninitialized extends AuthenticationState {
+  /// Uninitialized constructor.
   AuthenticationUninitialized() : super(user: null);
 
   @override
@@ -34,6 +37,7 @@ class AuthenticationUninitialized extends AuthenticationState {
 
 /// The auth state is loading.
 class AuthenticationLoading extends AuthenticationState {
+  /// The auth is loading.
   AuthenticationLoading() : super(user: null);
 
   @override
@@ -42,6 +46,7 @@ class AuthenticationLoading extends AuthenticationState {
 
 /// The auth operation is done.
 class AuthenticationDone extends AuthenticationState {
+  /// The auth is done.
   AuthenticationDone() : super(user: null);
 
   @override
@@ -52,6 +57,7 @@ class AuthenticationDone extends AuthenticationState {
 /// The user is logged in.
 ///
 class AuthenticationLoggedIn extends AuthenticationState {
+  /// User is logged in, update with the data.
   AuthenticationLoggedIn({@required UserData user}) : super(user: user);
 
   @override
@@ -59,9 +65,10 @@ class AuthenticationLoggedIn extends AuthenticationState {
 }
 
 ///
-/// The user is logged in, but unvierified.
+/// The user is logged in, but unverified.
 ///
 class AuthenticationLoggedInUnverified extends AuthenticationState {
+  /// the user is logged in but unverified.
   AuthenticationLoggedInUnverified({@required UserData user})
       : super(user: user);
 
@@ -73,6 +80,7 @@ class AuthenticationLoggedInUnverified extends AuthenticationState {
 /// The user is logged out.
 ///
 class AuthenticationLoggedOut extends AuthenticationState {
+  /// The user is logged out.
   AuthenticationLoggedOut() : super(user: null);
 
   @override
@@ -83,10 +91,16 @@ class AuthenticationLoggedOut extends AuthenticationState {
 /// The login failed.
 ///
 class AuthenticationFailed extends AuthenticationState {
+  /// The user that attempted to login.
   final UserData userData;
+
+  /// Reason it failed.
   final LoginFailedReason reason;
+
+  /// Error from the login.
   final dynamic error;
 
+  /// Constructore for the authentication.
   AuthenticationFailed({this.userData, this.reason, this.error});
 
   @override
@@ -143,8 +157,10 @@ class AuthenticationLogOut extends AuthenticationEvent {
 /// Updates the notification token so we can receive notifications.
 ///
 class AuthenticationNotificationToken extends AuthenticationEvent {
+  /// The notification to use.
   final String notificationToken;
 
+  /// Update the notification token.
   AuthenticationNotificationToken(this.notificationToken);
 
   @override
@@ -163,9 +179,13 @@ class AuthenticationResendEmail extends AuthenticationEvent {
 /// Sends a login attempt request.
 ///
 class AuthenticationLoginAttempt extends AuthenticationEvent {
+  /// The email to try.
   final String email;
+
+  /// THe password to update.
   final String password;
 
+  /// Attempt to login.
   AuthenticationLoginAttempt({@required this.email, @required this.password});
 
   @override
@@ -198,11 +218,19 @@ class AuthenticationForgotPasswordSend extends AuthenticationEvent {
 /// Requests signing up the user.
 ///
 class AuthenticationSignupUser extends AuthenticationEvent {
+  /// The email to signup.
   final String email;
+
+  /// THe password to signup with.
   final String password;
+
+  /// The name of the user,
   final String displayName;
+
+  /// THe phone number for the users.
   final String phoneNumber;
 
+  /// Constructor to signup with the user.
   AuthenticationSignupUser(
       {@required this.email,
       @required this.password,
@@ -223,11 +251,15 @@ class AuthenticationSignupUser extends AuthenticationEvent {
 ///
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
+  /// The firebase class to do the actual auth.
   final UserAuthImpl userAuth;
+
+  /// The analytics subsystem to use.
   final AnalyticsSubsystem analyticsSubsystem;
 
   StreamSubscription<UserData> _listener;
 
+  /// Create a new authentication bloc.
   AuthenticationBloc(this.userAuth, @required this.analyticsSubsystem)
       : super(AuthenticationUninitialized()) {
     print('Made with $userAuth $analyticsSubsystem');
@@ -240,6 +272,7 @@ class AuthenticationBloc
     await _listener?.cancel();
   }
 
+  /// The current user that is signed in.
   UserData get currentUser {
     if (state is AuthenticationLoggedIn) {
       return (state as AuthenticationLoggedIn).user;

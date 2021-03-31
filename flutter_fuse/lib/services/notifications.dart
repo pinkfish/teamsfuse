@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'appconfiguration.dart';
-import 'firebasemessaging.dart';
 
 ///
 /// Handles interacting with the notifztions for the app.  Displaying
@@ -14,15 +15,18 @@ import 'firebasemessaging.dart';
 class Notifications {
   static const String _keyNotificationData = 'lib_notification_data';
 
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
   //final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   //   FlutterLocalNotificationsPlugin();
 
   final StreamController<String> _notificationRoutes =
       StreamController<String>();
+
   //Stream<String> _routeStream;
   StreamSubscription<UpdateReason> _gameStream;
   final Map<String, int> _notificationMapping = <String, int>{};
+
   //final Random _random = Random.secure();
   //State<SplashScreen> _state;
 
@@ -40,29 +44,29 @@ class Notifications {
   }
 
   /// Initalize the system from the setup.
-  void init(AuthenticationBloc auth, AppConfiguration configuration) {
-    _firebaseMessaging.requestNotificationPermissions();
-    _firebaseMessaging.getToken().then((token) {
-      auth.add(AuthenticationNotificationToken(token));
-    });
-    _firebaseMessaging.configure(
-      onMessage: (message) {
-        print('onMessage: $message');
-        //this._handleMessage(message);
-        return;
-      },
-      onLaunch: (message) {
-        print('onLaunch: $message');
-        //this._handleLaunch(message);
-        return;
-      },
-      onResume: (message) {
-        print('onResume: $message');
-        //this._handleResume(message);
-        return;
-      },
+  void init(AuthenticationBloc auth, AppConfiguration configuration) async {
+    final settings = await _firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
     );
-    SharedPreferences.getInstance().then((pref) {
+
+    print('User granted permission: ${settings.authorizationStatus}');
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    FirebaseMessaging.onMessage.listen((message) {
+      print('onMessage: $message');
+      //this._handleMessage(message);
+      return;
+    });
+
+    /*
+    final pref = SharedPreferences.getInstance();
+
       var jsonCacheString = pref.getString(_keyNotificationData);
       if (jsonCacheString != null) {
         var tmp = json.decode(jsonCacheString) as Map<String, dynamic>;
@@ -70,7 +74,19 @@ class Notifications {
         tmp.forEach(
             (str, val) => val is int ? _notificationMapping[str] = val : null);
       }
-    });
+    }
+
+     */
+  }
+
+  // Background messaging handler.
+  Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
+    // If you're going to use other Firebase services in the background, such as Firestore,
+    // make sure you call `initializeApp` before using other Firebase services.
+    await Firebase.initializeApp();
+
+    print("Handling a background message: ${message.messageId}");
   }
 
   ///

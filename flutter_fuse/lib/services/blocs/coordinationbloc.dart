@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:clock/clock.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
@@ -16,9 +17,11 @@ abstract class CoordinationState extends Equatable {
   final BuiltSet<BlocsToLoad> toLoad;
   final String uid;
 
+  /// The current coordination state.
   CoordinationState(
       {@required this.uid, @required this.loaded, @required this.toLoad});
 
+  /// Update with the new data.
   CoordinationState update(BuiltSet<BlocsToLoad> toLoad);
 
   @override
@@ -56,6 +59,7 @@ class CoordinationStateLoaded extends CoordinationState {
     return CoordinationStateLoaded(uid: uid, toLoad: toLoad);
   }
 
+  /// Current loaded state.
   CoordinationStateLoaded(
       {@required String uid, @required BuiltSet<BlocsToLoad> toLoad})
       : super(uid: uid, loaded: BuiltSet(), toLoad: toLoad);
@@ -65,6 +69,7 @@ class CoordinationStateLoaded extends CoordinationState {
 /// Logged out amd not doing any loading.
 ///
 class CoordinationStateLoggedOut extends CoordinationState {
+  /// Current logged out state.
   CoordinationStateLoggedOut(BuiltSet<BlocsToLoad> newToLoad)
       : super(loaded: BuiltSet(), uid: '', toLoad: newToLoad);
 
@@ -78,6 +83,7 @@ class CoordinationStateLoggedOut extends CoordinationState {
 /// Before we have worked out if we are logged in or logged out.
 ///
 class CoordinationStateUninitialized extends CoordinationState {
+  /// Current uninitialized state.
   CoordinationStateUninitialized(BuiltSet<BlocsToLoad> newToLoad)
       : super(loaded: BuiltSet(), uid: '', toLoad: newToLoad);
 
@@ -96,8 +102,10 @@ abstract class CoordinationEvent extends Equatable {}
 /// The blocs dispatch this to sau they have loaded stuff.
 ///
 class CoordinationEventLoadedData extends CoordinationEvent {
+  /// The blocs to load.
   final BlocsToLoad loaded;
 
+  /// the new data to load.
   CoordinationEventLoadedData({this.loaded});
 
   @override
@@ -108,8 +116,10 @@ class CoordinationEventLoadedData extends CoordinationEvent {
 /// The blocs dispatch this to sau they want to be loaded.
 ///
 class CoordinationEventTrackLoading extends CoordinationEvent {
+  /// The blocs to load.
   final BlocsToLoad toLoad;
 
+  /// Update the tracking
   CoordinationEventTrackLoading({this.toLoad});
 
   @override
@@ -119,7 +129,7 @@ class CoordinationEventTrackLoading extends CoordinationEvent {
 ///
 /// called when the system logs out at the auth level.
 ///
-class _CoordintationStateLoggedOut extends CoordinationEvent {
+class _CoordinationStateLoggedOut extends CoordinationEvent {
   @override
   List<Object> get props => [];
 }
@@ -127,9 +137,10 @@ class _CoordintationStateLoggedOut extends CoordinationEvent {
 ///
 /// Starts the whole process by logging in.
 ///
-class _CoordintationStateStart extends CoordinationEvent {
+class _CoordinationStateStart extends CoordinationEvent {
+  /// The uid to start with.
   final String uid;
-  _CoordintationStateStart({this.uid});
+  _CoordinationStateStart({this.uid});
 
   @override
   List<Object> get props => [uid];
@@ -156,21 +167,24 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
         loadingTrace = analytics.newTrace('fullLoadTrace');
         start = clock.now();
         assert(authState.user.uid != null);
-        add(_CoordintationStateStart(uid: authState.user.uid));
+        add(_CoordinationStateStart(uid: authState.user.uid));
+        // Write the firebase token out to the db.
+        FirebaseMessaging.instance.getToken().then((token) =>
+            authenticationBloc.add(AuthenticationNotificationToken(token)));
       } else {
-        add(_CoordintationStateLoggedOut());
+        add(_CoordinationStateLoggedOut());
       }
     });
   }
 
   @override
   Stream<CoordinationState> mapEventToState(CoordinationEvent event) async* {
-    if (event is _CoordintationStateStart) {
+    if (event is _CoordinationStateStart) {
       yield CoordinationStateLoadingFirestore(
           uid: event.uid, toLoad: state.toLoad, loaded: BuiltSet());
     }
 
-    if (event is _CoordintationStateLoggedOut) {
+    if (event is _CoordinationStateLoggedOut) {
       yield CoordinationStateLoggedOut(state.toLoad);
     }
 
