@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/blocs/singleseasonprovider.dart';
 import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -75,11 +76,16 @@ class _TeamStatsWidgetState extends State<TeamStatsWidget> {
                       Flexible(
                         child: Padding(
                           padding: EdgeInsets.only(right: 10.0),
-                          child: PlayerDropDown(
-                            value: _playerUid,
-                            isExpanded: true,
-                            onChanged: (s) => setState(() => _playerUid = s),
-                            includeAll: true,
+                          child: SingleSeasonProvider(
+                            seasonUid: _currentSeasonUid,
+                            builder: (context, singleSeasonBloc) =>
+                                PlayerDropDown(
+                              singleSeasonBloc,
+                              value: _playerUid,
+                              isExpanded: true,
+                              onChanged: (s) => setState(() => _playerUid = s),
+                              includeAll: true,
+                            ),
                           ),
                         ),
                       ),
