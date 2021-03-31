@@ -30,7 +30,7 @@ class SportFormField extends FormField<Sport> {
                   decoration:
                       effectiveDecoration.copyWith(errorText: field.errorText),
                   child: DropdownButton<Sport>(
-                      hint: Text(Messages.of(state.context).opponentselect),
+                      hint: Text(Messages.of(state.context).opponentSelect),
                       items: state._buildItems(state.context),
                       value: state.value,
                       onChanged: (val) {

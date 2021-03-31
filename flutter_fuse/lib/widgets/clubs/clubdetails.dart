@@ -39,7 +39,7 @@ class ClubDetails extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.check),
             title: Text(
-                Messages.of(context).trackattendence(club.trackAttendence)),
+                Messages.of(context).trackAttendance(club.trackAttendence)),
           ),
           Card(
             margin: EdgeInsets.all(10),

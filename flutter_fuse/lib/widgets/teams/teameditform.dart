@@ -168,7 +168,7 @@ class TeamEditFormState extends State<TeamEditForm> {
           decoration: InputDecoration(
             icon: const Icon(Icons.calendar_today),
             hintText: Messages.of(context).season,
-            labelText: Messages.of(context).seasonhint,
+            labelText: Messages.of(context).seasonHint,
           ),
           focusNode: _focusNodeSeason,
           initialValue: _seasonName,
@@ -187,8 +187,8 @@ class TeamEditFormState extends State<TeamEditForm> {
       seasonWidget = SeasonFormField(
         decoration: InputDecoration(
           icon: const Icon(Icons.calendar_today),
-          hintText: Messages.of(context).seasonselect,
-          labelText: Messages.of(context).seasonselect,
+          hintText: Messages.of(context).seasonSelect,
+          labelText: Messages.of(context).seasonSelect,
         ),
         team: _builder.build(),
         initialValue: _builder.currentSeason,
@@ -232,8 +232,8 @@ class TeamEditFormState extends State<TeamEditForm> {
         SportFormField(
           decoration: InputDecoration(
             icon: const Icon(Icons.people),
-            hintText: Messages.of(context).sportselect,
-            labelText: Messages.of(context).sportselect,
+            hintText: Messages.of(context).sportSelect,
+            labelText: Messages.of(context).sportSelect,
           ),
           initialValue: _builder.sport ?? Sport.None,
           validator: (value) {
@@ -246,8 +246,8 @@ class TeamEditFormState extends State<TeamEditForm> {
         GenderFormField(
           decoration: InputDecoration(
             icon: const Icon(MdiIcons.genderMaleFemale),
-            hintText: Messages.of(context).genderselect,
-            labelText: Messages.of(context).genderselect,
+            hintText: Messages.of(context).genderSelect,
+            labelText: Messages.of(context).genderSelect,
           ),
           initialValue: _builder.gender ?? Gender.Female,
           onSaved: (value) {
@@ -265,7 +265,7 @@ class TeamEditFormState extends State<TeamEditForm> {
             decoration: InputDecoration(
               icon: const Icon(Icons.event_note),
               hintText: Messages.of(context).league,
-              labelText: Messages.of(context).leaguehint,
+              labelText: Messages.of(context).leagueHint,
             ),
             focusNode: _focusNodeNotes,
             initialValue: _builder.league ?? '',
@@ -298,7 +298,7 @@ class TeamEditFormState extends State<TeamEditForm> {
           icon: MdiIcons.trafficLight,
           enabled:
               widget.club != null ? widget.club.trackAttendence != null : true,
-          label: Messages.of(context).trackattendence(Tristate.Yes),
+          label: Messages.of(context).trackAttendance(Tristate.Yes),
           onSaved: (value) => _builder.trackAttendanceInternal = value,
         ),
       ]);
@@ -309,7 +309,7 @@ class TeamEditFormState extends State<TeamEditForm> {
             initialValue: _builder.isPublic,
             icon: MdiIcons.earth,
             enabled: widget.club != null,
-            label: Messages.of(context).publicalyVisible(Tristate.Yes),
+            label: Messages.of(context).publicallyVisible(Tristate.Yes),
             onSaved: (value) => _builder.isPublic = value,
           ),
         );

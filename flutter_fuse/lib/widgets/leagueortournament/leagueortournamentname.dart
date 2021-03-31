@@ -42,7 +42,7 @@ class LeagueOrTournamentName extends StatelessWidget {
             );
           } else {
             inner = Text(
-              state.divison.name,
+              state.division.name,
               style: style,
               textAlign: textAlign,
               overflow: TextOverflow.ellipsis,

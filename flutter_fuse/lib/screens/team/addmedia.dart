@@ -89,7 +89,7 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
       ));
     } else {
       autovalidate = AutovalidateMode.always;
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -236,7 +236,7 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
               Navigator.pop(context);
             }
             if (state is AddItemSaveFailed) {
-              _showInSnackBar(Messages.of(context).formerror);
+              _showInSnackBar(Messages.of(context).formError);
             }
           },
           child: BlocBuilder(

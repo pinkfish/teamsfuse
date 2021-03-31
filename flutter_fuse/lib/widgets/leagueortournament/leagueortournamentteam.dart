@@ -108,7 +108,7 @@ class _LeagueOrTournamentTeamDetailsState
                                       widget.leagueOrTournamentTeamUid)
                               .toList();
                           if (sortedGames.isEmpty) {
-                            return Text(Messages.of(context).nogames);
+                            return Text(Messages.of(context).noGames);
                           }
 
                           sortedGames.sort(

@@ -105,7 +105,7 @@ class _TeamSelectionState extends State<TeamSelection> {
       <Widget>[
         SizedBox(height: 20.0),
         Text(
-          Messages.of(context).teamselected,
+          Messages.of(context).teamSelected,
           style: Theme.of(context).textTheme.subtitle1.copyWith(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).accentColor),

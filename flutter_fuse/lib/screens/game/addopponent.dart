@@ -85,7 +85,7 @@ class _AddOpponentState extends State<AddOpponent> {
                       child: TextFormField(
                         decoration: InputDecoration(
                           icon: Icon(Icons.short_text),
-                          hintText: Messages.of(context).opponentnamehint,
+                          hintText: Messages.of(context).opponentNameHint,
                           labelText: Messages.of(context).name,
                         ),
                         keyboardType: TextInputType.text,
@@ -100,8 +100,8 @@ class _AddOpponentState extends State<AddOpponent> {
                       child: TextFormField(
                         decoration: InputDecoration(
                           icon: Icon(Icons.email),
-                          hintText: Messages.of(context).opponentcontacthint,
-                          labelText: Messages.of(context).opponentcontact,
+                          hintText: Messages.of(context).opponentContactHint,
+                          labelText: Messages.of(context).opponentContact,
                         ),
                         keyboardType: TextInputType.text,
                         obscureText: false,

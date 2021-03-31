@@ -28,7 +28,7 @@ class ClubMembers extends StatelessWidget {
       barrierDismissible: false, // user must tap button!
       builder: (context) {
         return AlertDialog(
-          title: Text(mess.deletemember),
+          title: Text(mess.deleteMember),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[

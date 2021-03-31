@@ -28,7 +28,7 @@ class _AttendanceDialogState extends State<AttendanceDialog> {
     var theme = Theme.of(context);
 
     return SimpleDialog(
-      title: Text(Messages.of(context).attendanceselect),
+      title: Text(Messages.of(context).attendanceSelect),
       children: <Widget>[
         SimpleDialogOption(
           onPressed: () {
@@ -36,7 +36,7 @@ class _AttendanceDialogState extends State<AttendanceDialog> {
           },
           child: ListTile(
             leading: Icon(Icons.check, color: theme.accentColor),
-            title: Text(Messages.of(context).attendanceyes),
+            title: Text(Messages.of(context).attendanceYes),
             dense: true,
             selected: widget.current == Attendance.Yes,
           ),
@@ -48,7 +48,7 @@ class _AttendanceDialogState extends State<AttendanceDialog> {
           },
           child: ListTile(
             leading: Icon(Icons.clear, color: theme.errorColor),
-            title: Text(Messages.of(context).attendanceno),
+            title: Text(Messages.of(context).attendanceNo),
             dense: true,
             selected: widget.current == Attendance.No,
           ),
@@ -60,7 +60,7 @@ class _AttendanceDialogState extends State<AttendanceDialog> {
           },
           child: ListTile(
             leading: Icon(Icons.help, color: theme.disabledColor),
-            title: Text(Messages.of(context).attendncemaybe),
+            title: Text(Messages.of(context).attendnceMaybe),
             dense: true,
             selected: widget.current == Attendance.Maybe,
           ),

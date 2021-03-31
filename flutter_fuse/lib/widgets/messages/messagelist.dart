@@ -108,7 +108,7 @@ class MessageList extends StatelessWidget {
       builder: (context, MessagesBlocState state) {
         if (state.unreadMessages.isEmpty && state.recentMessages.isEmpty) {
           return Center(
-            child: Text(Messages.of(context).nomessages),
+            child: Text(Messages.of(context).noMessages),
           );
         }
         // Make a sorted list of the messages.

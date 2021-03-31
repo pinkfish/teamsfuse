@@ -117,10 +117,10 @@ class _GameDetailsState extends State<GameDetails> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text(Messages.of(context).useofficialresultbutton),
+            title: Text(Messages.of(context).useOfficialResultButton),
             content: RichText(
                 text: TextSpan(
-                    text: Messages.of(context).useofficialresultdialog,
+                    text: Messages.of(context).useOfficialResultDialog,
                     children: <TextSpan>[
                   TextSpan(text: Messages.of(context).resultInProgress(details))
                 ])),

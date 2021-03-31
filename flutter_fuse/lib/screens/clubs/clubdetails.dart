@@ -120,7 +120,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                   return <PopupMenuItem<String>>[
                     PopupMenuItem<String>(
                       value: 'editclub',
-                      child: Text(Messages.of(context).editbuttontext),
+                      child: Text(Messages.of(context).editButton),
                     ),
                     PopupMenuItem<String>(
                       value: 'addteam',
@@ -164,7 +164,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
           var navItems = <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.gamepad),
-              label: Messages.of(context).clubdetails,
+              label: Messages.of(context).clubDetails,
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.people),

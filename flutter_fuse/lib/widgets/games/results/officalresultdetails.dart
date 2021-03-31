@@ -217,9 +217,9 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text(Messages.of(context).finalscore),
-              content: Text(
-                  Messages.of(context).finalOfficalScoreBody(_results.build())),
+              title: Text(Messages.of(context).finalScore),
+              content: Text(Messages.of(context)
+                  .finalOfficialScoreBody(_results.build())),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -267,14 +267,14 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
         Container(
           margin: EdgeInsets.only(left: 15.0, right: 5.0),
           child: Text(
-            Messages.of(context).finalscore,
+            Messages.of(context).finalScore,
             style: style,
           ),
         ),
         Container(
           margin: EdgeInsets.only(top: 5.0, left: 25.0, right: 5.0),
           child: Text(
-            Messages.of(context).finalOfficalScoreBody(_results.build()),
+            Messages.of(context).finalOfficialScoreBody(_results.build()),
             style: Theme.of(context).textTheme.subtitle1,
           ),
         ),
@@ -307,7 +307,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
           bloc: bloc,
           builder: (context, state) {
             if (state is SingleSharedGameDeleted) {
-              return Center(child: Text(Messages.of(context).nogames));
+              return Center(child: Text(Messages.of(context).noGames));
             }
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -325,7 +325,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                         children: <Widget>[
                           ListTile(
                             title: Text(
-                              Messages.of(context).startgame,
+                              Messages.of(context).startGame,
                               style: header,
                             ),
                           ),
@@ -348,7 +348,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                           RadioListTile<DetailsState>(
                             groupValue: _currentState,
                             value: DetailsState.finalState,
-                            title: Text(Messages.of(context).finalscore),
+                            title: Text(Messages.of(context).finalScore),
                             onChanged: _updateState,
                           ),
                           _currentState == DetailsState.finalState

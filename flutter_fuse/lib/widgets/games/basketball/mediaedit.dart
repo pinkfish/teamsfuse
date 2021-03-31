@@ -37,7 +37,7 @@ class _MediaEditState extends State<MediaEdit> {
   void _saveForm() {
     if (!_formKey.currentState.validate()) {
       Scaffold.of(context).showSnackBar(
-          SnackBar(content: Text(Messages.of(context).formerror)));
+          SnackBar(content: Text(Messages.of(context).formError)));
 
       return;
     }

@@ -67,7 +67,7 @@ class _AcceptInviteToLeagueTeamScreenState
     if (!_seasonForm.currentState.validate()) {
       // Show an error.
       setState(() {});
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
       return;
     }
     _seasonForm.currentState.save();
@@ -116,7 +116,7 @@ class _AcceptInviteToLeagueTeamScreenState
         decoration: InputDecoration(
           icon: const Icon(Icons.calendar_today),
           hintText: Messages.of(context).season,
-          labelText: Messages.of(context).seasonhint,
+          labelText: Messages.of(context).seasonHint,
         ),
         focusNode: _focusNodeSeason,
         initialValue: invite.leagueSeasonName,
@@ -241,7 +241,7 @@ class _AcceptInviteToLeagueTeamScreenState
                                 TextButton(
                                   onPressed: () => Navigator.pushNamed(context,
                                       '/League/Main/${inviteToLeagueTeam.leagueUid}'),
-                                  child: Text(messages.openbutton),
+                                  child: Text(messages.openButton),
                                 ),
                                 TextButton(
                                   onPressed: () => showDeleteInvite(

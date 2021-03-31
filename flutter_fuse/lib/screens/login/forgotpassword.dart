@@ -93,7 +93,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 onPressed: () {
                   onPressed('/Login/SignUp');
                 },
-                child: Text(Messages.of(context).createaccount),
+                child: Text(Messages.of(context).createButton),
               ),
               TextButton(
                 style: TextButton.styleFrom(
@@ -128,7 +128,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 onPressed: () {
                   onPressed('/Login/SignUp');
                 },
-                child: Text(Messages.of(context).createaccount),
+                child: Text(Messages.of(context).createButton),
               ),
               FlatButton(
                 textColor: Theme.of(context).accentColor,

@@ -111,7 +111,7 @@ class _EditSeasonPlayerScreenState extends State<EditSeasonPlayerScreen> {
         TextFormField(
           decoration: InputDecoration(
             labelText: messages.name,
-            hintText: messages.displaynamehint,
+            hintText: messages.displayNameHint,
             icon: const Icon(Icons.account_circle),
           ),
           initialValue: _extraPlayerStuff.name,
@@ -127,7 +127,7 @@ class _EditSeasonPlayerScreenState extends State<EditSeasonPlayerScreen> {
           TextFormField(
             decoration: InputDecoration(
               labelText: messages.email,
-              hintText: messages.playeremailHint,
+              hintText: messages.playerEmailHint,
               icon: const Icon(Icons.email),
             ),
             initialValue: '',
@@ -143,8 +143,8 @@ class _EditSeasonPlayerScreenState extends State<EditSeasonPlayerScreen> {
     ret.add(
       TextFormField(
         decoration: InputDecoration(
-          labelText: messages.jersyNumber,
-          hintText: messages.jersyNumber,
+          labelText: messages.jerseyNumber,
+          hintText: messages.jerseyNumber,
           icon: const Icon(MdiIcons.tshirtCrew),
         ),
         initialValue: _player.jerseyNumber,
@@ -156,8 +156,8 @@ class _EditSeasonPlayerScreenState extends State<EditSeasonPlayerScreen> {
       RoleInTeamFormField(
         initialValue: _player.role.toString(),
         decoration: InputDecoration(
-          labelText: messages.jersyNumber,
-          hintText: messages.jersyNumber,
+          labelText: messages.jerseyNumber,
+          hintText: messages.jerseyNumber,
           icon: const Icon(MdiIcons.tshirtCrew),
         ),
         onSaved: (role) => _player.role = RoleInTeam.values.firstWhere(

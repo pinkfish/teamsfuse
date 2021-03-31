@@ -42,7 +42,7 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
       } else if (state.games.isEmpty) {
         inner = Center(
           child: Text(
-            Messages.of(context).nogames,
+            Messages.of(context).noGames,
             textScaleFactor: 2.0,
           ),
         );
@@ -88,7 +88,7 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
     } else {
       if (state.season.playersData.isEmpty) {
         return Center(
-          child: Text(Messages.of(context).noplayers),
+          child: Text(Messages.of(context).noPlayers),
         );
       }
       return ListView(
@@ -212,7 +212,7 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
       showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: Text(Messages.of(context).noplayers),
+          title: Text(Messages.of(context).noPlayers),
           content: Text(
             Messages.of(context).noPlayersForSeasonDialog,
             softWrap: true,

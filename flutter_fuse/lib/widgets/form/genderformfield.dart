@@ -30,7 +30,7 @@ class GenderFormField extends FormField<Gender> {
               decoration:
                   effectiveDecoration.copyWith(errorText: field.errorText),
               child: DropdownButton<Gender>(
-                hint: Text(Messages.of(state.context).genderselect),
+                hint: Text(Messages.of(state.context).genderSelect),
                 items: state._buildItems(state.context),
                 value: state.value,
                 onChanged: (val) {
@@ -64,22 +64,22 @@ class _GenderFormFieldState extends FormFieldState<Gender> {
     var ret = <DropdownMenuItem<Gender>>[];
     ret.add(DropdownMenuItem<Gender>(
       value: Gender.Female,
-      child: Text(Messages.of(context).genderfemale),
+      child: Text(Messages.of(context).genderFemale),
     ));
 
     ret.add(DropdownMenuItem<Gender>(
       value: Gender.Male,
-      child: Text(Messages.of(context).gendermale),
+      child: Text(Messages.of(context).genderMale),
     ));
 
     ret.add(DropdownMenuItem<Gender>(
       value: Gender.Coed,
-      child: Text(Messages.of(context).gendercoed),
+      child: Text(Messages.of(context).genderCoed),
     ));
 
     ret.add(DropdownMenuItem<Gender>(
       value: Gender.NA,
-      child: Text(Messages.of(context).genderna),
+      child: Text(Messages.of(context).genderNA),
     ));
 
     return ret;

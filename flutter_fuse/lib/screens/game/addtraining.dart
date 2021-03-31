@@ -195,7 +195,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
     }
     cols.add(
       Text(
-        Messages.of(context).trainingtimes,
+        Messages.of(context).trainingTimes,
         style: Theme.of(context).textTheme.subtitle1,
       ),
     );
@@ -548,7 +548,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
                       title: Text(messages.club),
                       subtitle: _currentStep > 0
                           ? _club == null
-                              ? Text(Messages.of(context).noclub)
+                              ? Text(Messages.of(context).noClub)
                               : Text(_club.name)
                           : null,
                       state: _clubStepState,
@@ -574,7 +574,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
                       ),
                     ),
                     Step(
-                      title: Text(messages.gametime),
+                      title: Text(messages.gameTime),
                       subtitle: _currentStep > 2
                           ? Text(
                               MaterialLocalizations.of(context).formatTimeOfDay(

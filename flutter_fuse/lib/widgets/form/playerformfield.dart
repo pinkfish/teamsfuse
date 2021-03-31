@@ -37,7 +37,7 @@ class PlayerFormField extends FormField<String> {
                     bloc: BlocProvider.of<PlayerBloc>(state.context),
                     builder: (context, playerState) {
                       return DropdownButton<String>(
-                        hint: Text(Messages.of(state.context).playerselecthint),
+                        hint: Text(Messages.of(state.context).playerSelectHint),
                         items: state._buildItems(state.context, playerState),
                         value: state.value,
                         onChanged: (val) {
@@ -87,7 +87,7 @@ class PlayerFormFieldState extends FormFieldState<String> {
     ret.add(
       DropdownMenuItem<String>(
         value: PlayerFormField.nonePlayer,
-        child: Text(Messages.of(context).playerselect),
+        child: Text(Messages.of(context).playerSelect),
       ),
     );
 

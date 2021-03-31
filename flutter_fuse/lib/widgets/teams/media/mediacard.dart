@@ -68,7 +68,7 @@ class MediaCard extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodyText2,
                         )
                       : Text(
-                          Messages.of(context).noplayers,
+                          Messages.of(context).noPlayers,
                           style: Theme.of(context).textTheme.bodyText2,
                         ),
                   Row(
@@ -87,7 +87,7 @@ class MediaCard extends StatelessWidget {
                       TextButton(
                         onPressed: () => Navigator.pushNamed(context,
                             '/Season/Media/${media.seasonUid}/${media.uid}'),
-                        child: Text(Messages.of(context).editbuttontext),
+                        child: Text(Messages.of(context).editButton),
                       ),
                       TextButton(
                         onPressed: () => Navigator.push(

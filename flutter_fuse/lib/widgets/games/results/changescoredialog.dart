@@ -18,7 +18,7 @@ Future<GameResultDetailsBuilder> changeScoreDialog(
       barrierDismissible: false, // user must tap button!
       builder: (context) {
         return AlertDialog(
-          title: Text(mess.changescore),
+          title: Text(mess.changeScore),
           content: _ChangeScore(details, detailsState),
           actions: <Widget>[
             FlatButton(
@@ -75,7 +75,7 @@ class _ChangeScoreState extends State<_ChangeScore> {
       ret.add(Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text(Messages.of(context).forpts),
+          Text(Messages.of(context).forPointsAbbreviation),
           SizedBox(
             width: 5.0,
           ),
@@ -92,7 +92,7 @@ class _ChangeScoreState extends State<_ChangeScore> {
               },
             ),
           ),
-          Text(Messages.of(context).againstpts),
+          Text(Messages.of(context).againstPoints),
           SizedBox(
             width: 5.0,
           ),

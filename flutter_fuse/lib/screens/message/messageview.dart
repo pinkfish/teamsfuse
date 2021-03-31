@@ -112,12 +112,12 @@ class _ShowMessageScreenState extends State<ShowMessageScreen> {
           FlatButton(
             onPressed: () => _archiveMessage(context),
             textColor: Theme.of(context).accentColor,
-            child: Text(messages.archivemessage),
+            child: Text(messages.archiveMessage),
           ),
           FlatButton(
             onPressed: () => _deleteMessage(context),
             textColor: Theme.of(context).accentColor,
-            child: Text(messages.deletemessage),
+            child: Text(messages.deleteMessage),
           ),
         ],
       ),

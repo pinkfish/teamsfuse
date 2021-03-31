@@ -50,7 +50,7 @@ class SeasonFormField extends FormField<String> {
                   return InputDecorator(
                     decoration: effectiveDecoration,
                     child: DropdownButton<String>(
-                        hint: Text(Messages.of(state.context).seasonselect),
+                        hint: Text(Messages.of(state.context).seasonSelect),
                         value: state.value,
                         items:
                             state._buildItems(state.context, singleTeamState),
@@ -85,7 +85,7 @@ class SeasonFormField extends FormField<String> {
                       return InputDecorator(
                         decoration: effectiveDecoration,
                         child: DropdownButton<String>(
-                            hint: Text(Messages.of(state.context).seasonselect),
+                            hint: Text(Messages.of(state.context).seasonSelect),
                             value: state.value,
                             items: state._buildItems(
                                 state.context, singleTeamState),
@@ -147,7 +147,7 @@ class SeasonFormFieldState extends FormFieldState<String> {
     if (_widget.includeNone) {
       ret.add(DropdownMenuItem<String>(
         value: SeasonFormField.none,
-        child: Text(Messages.of(context).noseasons),
+        child: Text(Messages.of(context).noSeasons),
       ));
     }
     if (_widget.includeNew) {

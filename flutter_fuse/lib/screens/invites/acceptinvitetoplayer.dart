@@ -128,7 +128,7 @@ class _AcceptInviteToPlayerScreenState
                               RelationshipFormField(
                                 initialValue: Relationship.Friend,
                                 decoration: InputDecoration(
-                                  labelText: messages.relationshipselect,
+                                  labelText: messages.relationshipSelect,
                                   icon: const Icon(Icons.person),
                                 ),
                                 onSaved: (rel) {
@@ -151,7 +151,7 @@ class _AcceptInviteToPlayerScreenState
                                     TextButton(
                                       onPressed: () => showDeleteInvite(
                                           context, _singleInviteBloc),
-                                      child: Text(messages.deleteinvite),
+                                      child: Text(messages.deleteInvite),
                                     ),
                                   ],
                                 ),

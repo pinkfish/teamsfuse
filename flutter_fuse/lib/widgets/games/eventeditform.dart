@@ -121,7 +121,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                   ),
                 ),
                 DateTimeFormField(
-                  labelText: Messages.of(context).gametime,
+                  labelText: Messages.of(context).gameTime,
                   decoration: InputDecoration(
                     icon: const Icon(Icons.calendar_today),
                   ),
@@ -133,7 +133,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                   },
                 ),
                 DateTimeFormField(
-                  labelText: Messages.of(context).trainingend,
+                  labelText: Messages.of(context).trainingEnd,
                   key: _endTimeKey,
                   decoration: InputDecoration(
                     icon: const Icon(MdiIcons.calendarRange),
@@ -147,7 +147,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                 PlacesFormField(
                   initialValue: PlaceAndTimezone(widget.game.sharedData.place,
                       widget.game.sharedData.timezone),
-                  labelText: Messages.of(context).selectplace,
+                  labelText: Messages.of(context).selectPlace,
                   decoration: const InputDecoration(icon: Icon(Icons.place)),
                   onSaved: (loc) {
                     builder.sharedData.place = loc.place.toBuilder();
@@ -159,8 +159,8 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                   child: TextFormField(
                     initialValue: widget.game.notes,
                     decoration: InputDecoration(
-                      hintText: messages.trainingnoteshint,
-                      labelText: messages.trainingnotes,
+                      hintText: messages.trainingNotesHint,
+                      labelText: messages.trainingNotes,
                       icon: const Icon(Icons.note),
                     ),
                     onSaved: (value) {

@@ -58,7 +58,7 @@ class PlayerDetailsScreen extends StatelessWidget {
         barrierDismissible: false, // user must tap button!
         builder: (context) {
           return AlertDialog(
-            title: Text(mess.deleteplayer),
+            title: Text(mess.removeFromTeamButton),
             content: Scrollbar(
               child: SingleChildScrollView(
                 child: BlocBuilder(
@@ -207,7 +207,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                       return ListTile(
                         leading: const Icon(Icons.email),
                         title: Text(profile.displayName),
-                        subtitle: Text(messages.sendmessage),
+                        subtitle: Text(messages.sendMessage),
                       );
                     }
                   }
@@ -273,7 +273,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                   style: TextButton.styleFrom(
                     primary: theme.accentColor,
                   ),
-                  child: Text(messages.deleteplayer),
+                  child: Text(messages.removeFromTeamButton),
                 ),
               ],
             ),
@@ -318,7 +318,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                   singlePlayerBloc.add(SinglePlayerLoadInvites());
                 }
                 if (singlePlayerState is SingleTeamSeasonPlayerSaveFailed) {
-                  _showInSnackBar(context, Messages.of(context).formerror);
+                  _showInSnackBar(context, Messages.of(context).formError);
                 }
               },
               builder: (context, singlePlayerState) => BlocConsumer(
@@ -328,7 +328,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                     Navigator.pop(context);
                   }
                   if (playerState is SingleTeamSeasonPlayerSaveFailed) {
-                    _showInSnackBar(context, Messages.of(context).formerror);
+                    _showInSnackBar(context, Messages.of(context).formError);
                   }
                 },
                 builder: (context, seasonPlayerState) {

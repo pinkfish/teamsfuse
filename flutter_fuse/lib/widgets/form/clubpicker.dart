@@ -39,7 +39,7 @@ class ClubPicker extends StatelessWidget {
     ret.add(
       DropdownMenuItem<String>(
         value: noClub,
-        child: Text(Messages.of(context).noclub),
+        child: Text(Messages.of(context).noClub),
       ),
     );
     for (var club in state.clubs.values) {
@@ -78,7 +78,7 @@ class ClubPicker extends StatelessWidget {
                   builder: (context, state) {
                     return DropdownButton<String>(
                       key: Key('CLUB'),
-                      hint: Text(Messages.of(context).selectclub),
+                      hint: Text(Messages.of(context).selectClub),
                       items: _buildItems(context, state),
                       value: clubUid,
                       onChanged: onChanged,

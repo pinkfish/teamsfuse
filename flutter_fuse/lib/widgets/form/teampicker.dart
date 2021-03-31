@@ -75,7 +75,7 @@ class TeamPicker extends StatelessWidget {
               flex: 1,
               child: disabled
                   ? Text(
-                      Messages.of(context).teamselect,
+                      Messages.of(context).teamSelect,
                       style: Theme.of(context).textTheme.bodyText2.copyWith(
                           color: Theme.of(context).disabledColor, height: 3.0),
                     )
@@ -84,7 +84,7 @@ class TeamPicker extends StatelessWidget {
                       builder: (context, state) {
                         return DropdownButton<String>(
                           key: Key('TEAM'),
-                          hint: Text(Messages.of(context).teamselect),
+                          hint: Text(Messages.of(context).teamSelect),
                           items: _buildItems(context, state),
                           value: teamUid,
                           onChanged: onChanged,

@@ -96,7 +96,7 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
       TextFormField(
         decoration: InputDecoration(
           labelText: messages.name,
-          hintText: messages.displaynamehint,
+          hintText: messages.displayNameHint,
           icon: const Icon(Icons.account_circle),
         ),
         initialValue: _player.name,

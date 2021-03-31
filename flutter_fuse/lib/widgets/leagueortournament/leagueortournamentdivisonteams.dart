@@ -198,7 +198,7 @@ class _LeagueOrTournamentDivisonDetailsState
                     style: Theme.of(context).textTheme.headline5,
                   ),
                   subtitle: Text(
-                    '${seasonState.season.name} ${divisonState.divison.name}',
+                    '${seasonState.season.name} ${divisonState.division.name}',
                     style: Theme.of(context).textTheme.subtitle1,
                   ),
                 );
@@ -257,7 +257,7 @@ class _LeagueOrTournamentDivisonDetailsState
                         var sortedTeams = teams.toList();
                         sortedTeams.sort(_sortTeams);
                         _updateTeams(leagueBloc.state.league, sortedTeams,
-                            divisonState.divison);
+                            divisonState.division);
                         _sortedTeams = sortedTeams;
                         return Expanded(
                           child: Scrollbar(
@@ -267,7 +267,7 @@ class _LeagueOrTournamentDivisonDetailsState
                                 shrinkWrap: true,
                                 itemBuilder: (context, item, an) =>
                                     _buildTeamItem(context, item, an,
-                                        divisonState.divison),
+                                        divisonState.division),
                                 initialItemCount: sortedTeams.length,
                               ),
                             ),

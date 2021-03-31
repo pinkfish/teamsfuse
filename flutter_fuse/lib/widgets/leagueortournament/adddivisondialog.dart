@@ -53,8 +53,8 @@ class AddDivisonDialog extends Dialog {
             controller: _controller,
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
-              labelText: Messages.of(context).divison,
-              hintText: Messages.of(context).newdivisonhint,
+              labelText: Messages.of(context).division,
+              hintText: Messages.of(context).newDivisionHint,
             ),
           ),
         ),

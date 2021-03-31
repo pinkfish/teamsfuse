@@ -50,7 +50,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
       context: context,
       builder: (context) {
         return SimpleDialog(
-          title: Text(messages.teamselect),
+          title: Text(messages.teamSelect),
           children: teams,
         );
       },
@@ -63,7 +63,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     var messages = Messages.of(context);
     var pickerText = '';
     if (widget.details.teamUids.isEmpty) {
-      pickerText = messages.allteams;
+      pickerText = messages.allTeams;
     } else {
       var teamBloc = BlocProvider.of<TeamBloc>(context);
       pickerText = widget.details.teamUids
@@ -108,7 +108,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
       context: context,
       builder: (context) {
         return SimpleDialog(
-          title: Text(messages.playerselect),
+          title: Text(messages.playerSelect),
           children: players,
         );
       },
@@ -174,7 +174,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
                 items: <DropdownMenuItem<GameResult>>[
                   DropdownMenuItem<GameResult>(
                     value: null,
-                    child: Text(messages.noresult),
+                    child: Text(messages.noResult),
                   ),
                   DropdownMenuItem<GameResult>(
                     value: GameResult.Win,
@@ -207,19 +207,19 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
                 items: <DropdownMenuItem<EventType>>[
                   DropdownMenuItem<EventType>(
                     value: null,
-                    child: Text(messages.noevent),
+                    child: Text(messages.noEvent),
                   ),
                   DropdownMenuItem<EventType>(
                     value: EventType.Game,
-                    child: Text(messages.gametype),
+                    child: Text(messages.gameType),
                   ),
                   DropdownMenuItem<EventType>(
                     value: EventType.Practice,
-                    child: Text(messages.trainingtype),
+                    child: Text(messages.trainingType),
                   ),
                   DropdownMenuItem<EventType>(
                     value: EventType.Event,
-                    child: Text(messages.eventtype),
+                    child: Text(messages.eventType),
                   ),
                 ],
                 onChanged: (ev) {

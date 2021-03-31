@@ -80,7 +80,7 @@ class GameSharedCard extends StatelessWidget {
         FlatButton(
           onPressed: () => _showDirections(context),
           child: Text(
-            Messages.of(context).directionsbuttons,
+            Messages.of(context).directionsButtons,
           ),
         ),
       );
@@ -219,13 +219,13 @@ class GameSharedCard extends StatelessWidget {
 
       case EventType.Event:
         title = Messages.of(context)
-            .eventtitle(format, game.name, endTimeFormat, tzShortName);
+            .eventTitle(format, game.name, endTimeFormat, tzShortName);
 
         break;
 
       case EventType.Practice:
         title = Messages.of(context)
-            .trainingtitle(format, endTimeFormat, tzShortName);
+            .trainingTitle(format, endTimeFormat, tzShortName);
 
         break;
     }

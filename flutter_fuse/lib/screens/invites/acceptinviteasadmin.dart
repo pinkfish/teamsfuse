@@ -71,7 +71,7 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
             bloc: _singleInviteBloc,
             listener: (context, state) {
               if (state is SingleInviteSaveFailed) {
-                _showInSnackBar(Messages.of(context).formerror);
+                _showInSnackBar(Messages.of(context).formError);
               } else if (state is SingleInviteDeleted) {
                 Navigator.pop(context);
               }
@@ -92,7 +92,7 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
                         Padding(
                           padding: EdgeInsets.all(10.0),
                           child: Text(
-                            Messages.of(context).acceptinviteasadmin,
+                            Messages.of(context).acceptInviteAsAdmin,
                             style: Theme.of(context)
                                 .textTheme
                                 .subtitle1
@@ -127,7 +127,7 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
                             TextButton(
                               onPressed: () =>
                                   showDeleteInvite(context, _singleInviteBloc),
-                              child: Text(messages.deleteinvitebutton),
+                              child: Text(messages.deleteInviteButton),
                             ),
                           ],
                         ),

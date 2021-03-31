@@ -96,14 +96,14 @@ class GameTitle extends StatelessWidget {
         break;
 
       case EventType.Event:
-        title = Messages.of(context).eventtitle(formattedStartTime,
+        title = Messages.of(context).eventTitle(formattedStartTime,
             game.sharedData.name, formattedEndTime, tzShortName);
 
         break;
 
       case EventType.Practice:
         title = Messages.of(context)
-            .trainingtitle(formattedStartTime, formattedEndTime, tzShortName);
+            .trainingTitle(formattedStartTime, formattedEndTime, tzShortName);
 
         break;
     }

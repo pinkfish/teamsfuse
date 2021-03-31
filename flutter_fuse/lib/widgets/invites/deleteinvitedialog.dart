@@ -18,12 +18,12 @@ Future<bool> deleteInviteDialog(BuildContext context, Invite invite) async {
       barrierDismissible: false, // user must tap button!
       builder: (context) {
         return AlertDialog(
-          title: Text(mess.deleteinvite),
+          title: Text(mess.deleteInvite),
           content: Scrollbar(
             child: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text(mess.confirmdelete(invite)),
+                  Text(mess.confirmDeleteInvite(invite)),
                 ],
               ),
             ),

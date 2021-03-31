@@ -123,7 +123,7 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                   children: firstRow,
                 ),
                 DateTimeFormField(
-                  labelText: Messages.of(context).gametime,
+                  labelText: Messages.of(context).gameTime,
                   initialValue: _atDate,
                   hideDate: false,
                   onSaved: (value) {
@@ -140,7 +140,7 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                       flex: 4,
                       child: DateTimeFormField(
                         key: _atEndKEy,
-                        labelText: Messages.of(context).gameend,
+                        labelText: Messages.of(context).gameEnd,
                         initialValue: _atEnd,
                         hideDate: true,
                         onSaved: (val) {
@@ -153,7 +153,7 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                 PlacesFormField(
                   initialValue:
                       PlaceAndTimezone(widget.game.place, widget.game.timezone),
-                  labelText: Messages.of(context).selectplace,
+                  labelText: Messages.of(context).selectPlace,
                   decoration: const InputDecoration(icon: Icon(Icons.place)),
                   onSaved: (loc) {
                     _builder.place = loc.place.toBuilder();
@@ -167,8 +167,8 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                   child: TextFormField(
                     decoration: InputDecoration(
                       icon: const Icon(MdiIcons.tshirtCrew),
-                      hintText: Messages.of(context).placesnoteshint,
-                      labelText: Messages.of(context).placesnotes,
+                      hintText: Messages.of(context).placesNotesHint,
+                      labelText: Messages.of(context).placesNotes,
                     ),
                     keyboardType: TextInputType.text,
                     focusNode: _focusNodePlaceNotes,

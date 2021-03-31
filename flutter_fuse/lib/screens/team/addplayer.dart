@@ -122,7 +122,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
       ));
     } else {
       autovalidate = true;
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -152,7 +152,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
           decoration: InputDecoration(
               icon: const Icon(Icons.person),
               labelText: messages.name,
-              hintText: messages.displaynamehint),
+              hintText: messages.displayNameHint),
           validator: (value) {
             return _validations.validateDisplayName(context, value);
           },
@@ -173,7 +173,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
           decoration: InputDecoration(
               icon: const Icon(Icons.email),
               labelText: messages.email,
-              hintText: messages.playeremailHint),
+              hintText: messages.playerEmailHint),
           validator: (value) {
             // Allow no email, or an email for an invite.
             if (value.isEmpty) {
@@ -195,7 +195,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
         initialValue: 'none',
         decoration: InputDecoration(
           icon: const Icon(Icons.message),
-          labelText: messages.roleselect,
+          labelText: messages.roleSelect,
         ),
         validator: (val) {
           return _validations.validateRoleInTeam(context, val);
@@ -214,7 +214,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
           initialValue: '',
           decoration: InputDecoration(
             icon: const Icon(MdiIcons.tshirtCrew),
-            labelText: messages.jersyNumber,
+            labelText: messages.jerseyNumber,
           ),
           onSaved: (val) {
             _jerseyNumber = val;
@@ -284,7 +284,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
               Navigator.pop(context);
             }
             if (state is AddItemSaveFailed) {
-              _showInSnackBar(Messages.of(context).formerror);
+              _showInSnackBar(Messages.of(context).formError);
             }
           },
           child: BlocBuilder(

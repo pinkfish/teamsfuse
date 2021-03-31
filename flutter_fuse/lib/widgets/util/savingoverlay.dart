@@ -26,7 +26,7 @@ class SavingOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var quote = Messages.of(context).quoteforsaving(quoteId);
+    var quote = Messages.of(context).quoteForSaving(quoteId);
     return Stack(
       children: <Widget>[
         child,

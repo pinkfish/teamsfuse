@@ -100,7 +100,7 @@ class _ClubTeamPickerState extends State<ClubTeamPicker> {
       Widget inner = ListTile(
         //trailing: const Icon(CommunityIcons.update),
         title: Text(
-          Messages.of(context).selectclub,
+          Messages.of(context).selectClub,
           style: Theme.of(context)
               .textTheme
               .bodyText2
@@ -130,7 +130,7 @@ class _ClubTeamPickerState extends State<ClubTeamPicker> {
           } else {
             inner = DropdownButton<Team>(
               key: Key('CLUBTEAM'),
-              hint: Text(Messages.of(context).teamselect),
+              hint: Text(Messages.of(context).teamSelect),
               items: _buildItems(state),
               value: widget.team,
               onChanged: (val) {

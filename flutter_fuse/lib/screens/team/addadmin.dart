@@ -65,7 +65,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
       }
     } else {
       autovalidate = AutovalidateMode.always;
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -89,7 +89,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
           decoration: InputDecoration(
               icon: const Icon(Icons.email),
               labelText: messages.email,
-              hintText: messages.playeremailHint),
+              hintText: messages.playerEmailHint),
           validator: (value) {
             return _validations.validateEmail(context, value);
           },
@@ -143,7 +143,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
               Navigator.pop(context);
             }
             if (state is AddItemSaveFailed) {
-              _showInSnackBar(Messages.of(context).formerror);
+              _showInSnackBar(Messages.of(context).formError);
             }
           },
           child: BlocBuilder(

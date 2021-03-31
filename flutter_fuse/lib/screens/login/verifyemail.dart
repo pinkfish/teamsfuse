@@ -73,7 +73,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
-                  content: Text(Messages.of(context).verifyemailsent),
+                  content: Text(Messages.of(context).verifyEmailSent),
                   actions: <Widget>[
                     TextButton(
                         onPressed: () {
@@ -87,7 +87,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                 Navigator.pushNamed(context, '/');
               });
             } else if (state is AuthenticationFailed) {
-              showInSnackBar(Messages.of(context).verifyemailerror);
+              showInSnackBar(Messages.of(context).verifyEmailError);
             } else if (!(state is AuthenticationLoggedInUnverified)) {
               Navigator.popAndPushNamed(context, '/Login/Home');
             }
@@ -129,7 +129,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                               textColor: Colors.white,
                               key: Key('SUBMIT'),
                               onPressed: _handleSubmitted,
-                              child: Text(messages.resendverify),
+                              child: Text(messages.resendVerify),
                             ),
                           ),
                         ],
@@ -143,7 +143,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                           ),
                           key: Key('CREATEACCOUNT'),
                           onPressed: () => _onSignup(context),
-                          child: Text(messages.createaccount),
+                          child: Text(messages.createButton),
                         ),
                         TextButton(
                           style: TextButton.styleFrom(

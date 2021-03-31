@@ -62,17 +62,17 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
     var ret = <DropdownMenuItem<RepeatPeriod>>[];
     ret.add(DropdownMenuItem<RepeatPeriod>(
       value: RepeatPeriod.None,
-      child: Text(Messages.of(context).noneperiod),
+      child: Text(Messages.of(context).nonePeriod),
     ));
 
     ret.add(DropdownMenuItem<RepeatPeriod>(
       value: RepeatPeriod.Weekly,
-      child: Text(Messages.of(context).weeklyperiod),
+      child: Text(Messages.of(context).weeklyPeriod),
     ));
 
     ret.add(DropdownMenuItem<RepeatPeriod>(
       value: RepeatPeriod.Monthly,
-      child: Text(Messages.of(context).monthlyperiod),
+      child: Text(Messages.of(context).monthlyPeriod),
     ));
 
     return ret;

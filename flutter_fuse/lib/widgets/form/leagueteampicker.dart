@@ -60,7 +60,7 @@ class _TournamentOrLeagueTeamPickerState
     if (widget.includeAll) {
       ret.add(DropdownMenuItem<String>(
         value: TournamentOrLeagueTeamPicker.all,
-        child: Text(Messages.of(context).allteams),
+        child: Text(Messages.of(context).allTeams),
       ));
     }
     for (var team in teams) {
@@ -92,7 +92,7 @@ class _TournamentOrLeagueTeamPickerState
           if (state.teams.length == 0) {
             if (widget.disabled) {
               return Text(
-                Messages.of(context).teamselect,
+                Messages.of(context).teamSelect,
                 style: Theme.of(context).textTheme.bodyText2.copyWith(
                     color: Theme.of(context).disabledColor, height: 3.0),
               );
@@ -111,14 +111,14 @@ class _TournamentOrLeagueTeamPickerState
                 flex: 1,
                 child: widget.disabled
                     ? Text(
-                        Messages.of(context).teamselect,
+                        Messages.of(context).teamSelect,
                         style: Theme.of(context).textTheme.bodyText2.copyWith(
                             color: Theme.of(context).disabledColor,
                             height: 3.0),
                       )
                     : DropdownButton<String>(
                         key: Key('LEAGUETEAM'),
-                        hint: Text(Messages.of(context).teamselect),
+                        hint: Text(Messages.of(context).teamSelect),
                         items: _buildItems(state.teams.values),
                         value: widget.initialTeamUid,
                         onChanged: (val) {

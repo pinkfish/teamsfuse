@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!form.validate()) {
       autovalidate = true; // Start validating on every change.
       setState(() {
-        errorText = Messages.of(context).formerror;
+        errorText = Messages.of(context).formError;
       });
       _showInSnackBar(errorText);
     } else {
@@ -122,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         key: Key('CREATEACCOUNT'),
                         onPressed: () => _onPressed('/Login/SignUp'),
-                        child: Text(Messages.of(context).createaccount),
+                        child: Text(Messages.of(context).createButton),
                       ),
                       TextButton(
                         style: TextButton.styleFrom(
@@ -153,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Navigator.pushNamedAndRemoveUntil(context, '/Home', (d) => false);
           }
           if (state is AuthenticationFailed) {
-            errorText = Messages.of(context).passwordnotcorrect;
+            errorText = Messages.of(context).passwordNotCorrect;
             _showInSnackBar(errorText);
           }
           if (state is AuthenticationLoggedInUnverified) {

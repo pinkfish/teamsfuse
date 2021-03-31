@@ -78,7 +78,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
             leagueStepState = StepState.error;
             createStepStage = StepState.disabled;
           });
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         _formState.currentState.save();
@@ -102,7 +102,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
           if (clubBloc.state.clubs.values.any((club) => club.isAdmin())) {
             return true;
           }
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         break;

@@ -70,7 +70,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
           name: _seasonName,
           players: players.build()));
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -85,7 +85,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
             decoration: InputDecoration(
               icon: const Icon(Icons.event_note),
               hintText: Messages.of(context).season,
-              labelText: Messages.of(context).newseasonhint,
+              labelText: Messages.of(context).newSeasonHint,
             ),
             validator: (s) {
               return _validations.validateDisplayName(context, s);
@@ -109,7 +109,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
               InkWell(
                 onTap: () => setState(() => _importPlayers = !_importPlayers),
                 child: Text(
-                  Messages.of(context).importplayers,
+                  Messages.of(context).importPlayers,
                   style: Theme.of(context).textTheme.button,
                 ),
               ),
@@ -125,7 +125,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
                     },
                     validator: (s) {
                       return _importPlayers && s == SeasonFormField.none
-                          ? Messages.of(context).seasonrequired
+                          ? Messages.of(context).seasonRequired
                           : null;
                     },
                   ),
@@ -179,7 +179,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
                   Navigator.pop(context);
                 }
                 if (addState is AddItemSaveFailed) {
-                  _showInSnackBar(Messages.of(context).savefailed);
+                  _showInSnackBar(Messages.of(context).saveFailed);
                 }
               },
               child: BlocBuilder(

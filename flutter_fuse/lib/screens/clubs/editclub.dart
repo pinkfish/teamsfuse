@@ -40,7 +40,7 @@ class _EditClubScreenState extends State<EditClubScreen> {
         singleClubBloc
             .add(SingleClubUpdate(club: club.build(), image: imageFile));
       } else {
-        _showInSnackBar(Messages.of(context).formerror);
+        _showInSnackBar(Messages.of(context).formError);
       }
     } finally {}
   }

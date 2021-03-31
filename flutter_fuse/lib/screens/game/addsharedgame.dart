@@ -75,7 +75,7 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
             homeAwayStepState = StepState.error;
             detailsStepState = StepState.disabled;
           });
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         if (_homeTeamUid == _awayTeamUid) {
@@ -83,7 +83,7 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
             homeAwayStepState = StepState.error;
             detailsStepState = StepState.disabled;
           });
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         homeAwayStepState = StepState.complete;
@@ -99,7 +99,7 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
         if (!_gameFormKey.currentState.validate()) {
           detailsStepState = StepState.error;
           createStepStage = StepState.disabled;
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           _gameFormKey.currentState.autovalidate = true;
           return false;
         }
@@ -217,7 +217,7 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
                   },
                   steps: <Step>[
                     Step(
-                      title: Text(messages.homeaway),
+                      title: Text(messages.homeAway),
                       state: homeAwayStepState,
                       isActive: false,
                       content: _buildHomeAwayChooser(),

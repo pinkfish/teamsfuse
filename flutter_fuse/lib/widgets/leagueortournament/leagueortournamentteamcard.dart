@@ -32,9 +32,9 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
             bloc: divisonBloc,
             builder: (context, divisonState) {
               if (divisonBloc != SingleLeagueOrTournamentDivisonUninitialized) {
-                if (team.record.containsKey(divisonState.divison.uid)) {
+                if (team.record.containsKey(divisonState.division.uid)) {
                   subtitle = Text(Messages.of(context)
-                      .winRecord(team.record[divisonState.divison.uid]));
+                      .winRecord(team.record[divisonState.division.uid]));
                 } else {
                   var record = WinRecord((b) => b
                     ..win = 0

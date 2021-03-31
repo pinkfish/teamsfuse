@@ -178,7 +178,7 @@ class LeagueOrTournamentEditFormState
                         GenderFormField(
                           decoration: InputDecoration(
                             icon: const Icon(MdiIcons.genderTransgender),
-                            hintText: Messages.of(context).needtoselectgender,
+                            hintText: Messages.of(context).needToSelectGender,
                           ),
                           initialValue: widget.leagueOrTournament.gender,
                           onSaved: (g) {

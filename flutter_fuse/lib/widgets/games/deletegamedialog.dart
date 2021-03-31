@@ -21,7 +21,7 @@ Future<bool> deleteGameDialog(
       barrierDismissible: false, // user must tap button!
       builder: (context) {
         return AlertDialog(
-          title: Text(mess.deletegame(game.sharedData)),
+          title: Text(mess.deleteGame(game.sharedData)),
           content: Scrollbar(
             child: SingleChildScrollView(
               child: GameCard(gameUid: game.uid),

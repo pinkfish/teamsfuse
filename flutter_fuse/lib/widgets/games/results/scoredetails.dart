@@ -185,7 +185,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text(Messages.of(context).finalscore),
+            title: Text(Messages.of(context).finalScore),
             content: Text(Messages.of(context).finalScoreBody(
                 _currentPeriodResults.score.ptsFor,
                 _currentPeriodResults.score.ptsAgainst,
@@ -239,7 +239,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         context: context,
         builder: (context) {
           return SimpleDialog(
-            title: Text(Messages.of(context).choosedivisions),
+            title: Text(Messages.of(context).startGameBreaks),
             children: <Widget>[
               SimpleDialogOption(
                 onPressed: () {
@@ -284,8 +284,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text(Messages.of(context).startgame),
-            content: Text(Messages.of(context).startgamebody),
+            title: Text(Messages.of(context).startGame),
+            content: Text(Messages.of(context).startGameBody),
             actions: <Widget>[
               FlatButton(
                 onPressed: () {
@@ -360,8 +360,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text(Messages.of(context).resettimer),
-            content: Text(Messages.of(context).resettimerbody),
+            title: Text(Messages.of(context).resetTimer),
+            content: Text(Messages.of(context).resetTimerBody),
             actions: <Widget>[
               FlatButton(
                 onPressed: () {
@@ -455,7 +455,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                       onPressed: _startGame,
                       color: Theme.of(context).accentColor,
                       textColor: Colors.white,
-                      child: Text(Messages.of(context).startgame),
+                      child: Text(Messages.of(context).startGame),
                     ),
                   ),
                 )
@@ -540,7 +540,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       Text(
-                        Messages.of(context).forpts,
+                        Messages.of(context).forPointsAbbreviation,
                         style: Theme.of(context).textTheme.subtitle1.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).accentColor,
@@ -630,7 +630,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        Messages.of(context).againstpts,
+                        Messages.of(context).againstPoints,
                         style: Theme.of(context).textTheme.subtitle1.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).accentColor,
@@ -680,7 +680,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                     onPressed: _updateScore,
                     color: Colors.blue,
                     textColor: Colors.white,
-                    child: Text(Messages.of(context).updatescorebutton),
+                    child: Text(Messages.of(context).updateScoreButton),
                   ),
                 ),
               ),
@@ -690,7 +690,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                   onPressed: _finishGame,
                   color: Theme.of(context).accentColor,
                   textColor: Colors.white,
-                  child: Text(Messages.of(context).finishgamebutton),
+                  child: Text(Messages.of(context).finishGameButton),
                 ),
               ),
             ],

@@ -133,7 +133,7 @@ class _InviteListScreenState extends State<InviteListScreen> {
           },
         ),
         title: Text(invite.leagueName),
-        subtitle: Text(Messages.of(context).leaguetournament),
+        subtitle: Text(Messages.of(context).leagueTournament),
         trailing: IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
@@ -160,7 +160,7 @@ class _InviteListScreenState extends State<InviteListScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(invite.leagueName),
-            Text(Messages.of(context).leaguetournament),
+            Text(Messages.of(context).leagueTournament),
           ],
         ),
         trailing: IconButton(
@@ -180,7 +180,7 @@ class _InviteListScreenState extends State<InviteListScreen> {
       inviteWidgets.add(
         Center(
           child: Text(
-            Messages.of(context).noinvites,
+            Messages.of(context).noInvites,
             style: Theme.of(context).textTheme.headline4,
           ),
         ),

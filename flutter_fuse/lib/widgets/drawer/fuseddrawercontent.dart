@@ -129,14 +129,14 @@ class FusedDrawerContent extends StatelessWidget {
       mode == DrawerMode.gameList
           ? ListTile(
               leading: const Icon(Icons.people_outline),
-              title: Text(Messages.of(context).leaguetournament),
+              title: Text(Messages.of(context).leagueTournament),
               onTap: () {
                 Navigator.popAndPushNamed(context, '/League/Home');
               },
             )
           : ListTile(
               leading: const Icon(Icons.list),
-              title: Text(Messages.of(context).allgames),
+              title: Text(Messages.of(context).allGames),
               onTap: () {
                 Navigator.popAndPushNamed(context, '/Home');
               },
@@ -151,7 +151,7 @@ class FusedDrawerContent extends StatelessWidget {
       ),
       ListTile(
         leading: const Icon(Icons.exit_to_app),
-        title: Text(Messages.of(context).signout),
+        title: Text(Messages.of(context).signOut),
         onTap: () async {
           var overlayState = Overlay.of(context);
           var overlayEntry = OverlayEntry(builder: (context) {

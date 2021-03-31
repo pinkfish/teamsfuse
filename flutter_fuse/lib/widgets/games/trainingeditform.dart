@@ -149,7 +149,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                           ),
                         ),
                         DateTimeFormField(
-                          labelText: Messages.of(context).gametime,
+                          labelText: Messages.of(context).gameTime,
                           decoration: InputDecoration(
                             icon: const Icon(Icons.calendar_today),
                           ),
@@ -161,7 +161,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                           },
                         ),
                         DateTimeFormField(
-                          labelText: Messages.of(context).trainingend,
+                          labelText: Messages.of(context).trainingEnd,
                           key: _endTimeKey,
                           decoration: InputDecoration(
                             icon: const Icon(MdiIcons.calendarRange),
@@ -176,7 +176,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                           initialValue: PlaceAndTimezone(
                               widget.game.sharedData.place,
                               widget.game.sharedData.timezone),
-                          labelText: Messages.of(context).selectplace,
+                          labelText: Messages.of(context).selectPlace,
                           decoration:
                               const InputDecoration(icon: Icon(Icons.place)),
                           onSaved: (loc) {
@@ -191,8 +191,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                           child: TextFormField(
                             decoration: InputDecoration(
                               icon: const Icon(MdiIcons.tshirtCrew),
-                              hintText: Messages.of(context).placesnoteshint,
-                              labelText: Messages.of(context).placesnotes,
+                              hintText: Messages.of(context).placesNotesHint,
+                              labelText: Messages.of(context).placesNotes,
                             ),
                             keyboardType: TextInputType.text,
                             focusNode: _focusNodePlaceNotes,
@@ -213,7 +213,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                           child: TextFormField(
                             initialValue: widget.game.uniform,
                             decoration: InputDecoration(
-                                hintText: messages.uniformhint,
+                                hintText: messages.uniformHint,
                                 labelText: messages.uniform,
                                 icon: const Icon(MdiIcons.tshirtCrew)),
                             onSaved: (value) {
@@ -227,8 +227,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                           child: TextFormField(
                             initialValue: widget.game.notes,
                             decoration: InputDecoration(
-                              hintText: messages.trainingnoteshint,
-                              labelText: messages.trainingnotes,
+                              hintText: messages.trainingNotesHint,
+                              labelText: messages.trainingNotes,
                               icon: const Icon(Icons.note),
                             ),
                             focusNode: _focusNodeNotes,

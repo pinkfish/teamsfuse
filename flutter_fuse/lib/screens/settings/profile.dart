@@ -36,7 +36,7 @@ class ProfileScreen extends StatelessWidget {
         barrierDismissible: false, // user must tap button!
         builder: (context) {
           return AlertDialog(
-            title: Text(mess.deleteplayer),
+            title: Text(mess.removeFromTeamButton),
             content: Scrollbar(
               child: SingleChildScrollView(
                 child: ListBody(
@@ -354,7 +354,7 @@ class ProfileScreen extends StatelessWidget {
             bloc: BlocProvider.of<PlayerBloc>(context),
             builder: (context, state) {
               if (state is PlayerUninitialized) {
-                return Text(Messages.of(context).formerror);
+                return Text(Messages.of(context).formError);
               }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -171,7 +171,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
           if (clubBloc.state.clubs.values.any((club) => club.isAdmin())) {
             return true;
           }
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         if (_team == null) {

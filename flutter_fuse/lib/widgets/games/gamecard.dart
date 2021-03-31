@@ -233,7 +233,7 @@ class GameCard extends StatelessWidget {
             officalData.overtimeResult,
             officalData.penaltyResult,
             officalData.result);
-        children.insert(0, Text(Messages.of(context).offical));
+        children.insert(0, Text(Messages.of(context).official));
         return Column(
           children: children,
         );
@@ -245,7 +245,7 @@ class GameCard extends StatelessWidget {
           Messages.of(context).gameInProgress(game.result.inProgress),
         ),
         Text(
-          Messages.of(context).cardresultinprogress(game.result),
+          Messages.of(context).cardResultInProgress(game.result),
         ),
       ],
     );
@@ -338,7 +338,7 @@ class GameCard extends StatelessWidget {
         TextButton(
           onPressed: () => _showDirections(context, game),
           child: Text(
-            Messages.of(context).directionsbuttons,
+            Messages.of(context).directionsButtons,
           ),
         ),
       );
@@ -352,7 +352,7 @@ class GameCard extends StatelessWidget {
           game.sharedData.officialResult.result != OfficialResult.NotStarted) {
         buttons.add(TextButton(
           onPressed: () => _officalResult(context),
-          child: Text(Messages.of(context).useofficialresultbutton),
+          child: Text(Messages.of(context).useOfficialResultButton),
         ));
       }
       // Show a result button.

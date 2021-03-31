@@ -65,10 +65,10 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
         bloc.add(SingleClubInviteMember(
             email: _emailToInvite, admin: _inviteAsAdmin));
       } else {
-        _showInSnackBar(Messages.of(context).needtobeadmin);
+        _showInSnackBar(Messages.of(context).needToBeAdmin);
       }
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -77,7 +77,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
       bloc: bloc,
       listener: (context, state) {
         if (state is SingleClubSaveFailed) {
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
         } else if (state is SingleClubDeleted) {
           Navigator.pop(context);
         } else if (state is SingleClubLoaded) {
@@ -117,7 +117,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                       child: TextFormField(
                         decoration: InputDecoration(
                             labelText: Messages.of(context).email,
-                            hintText: Messages.of(context).playeremailHint),
+                            hintText: Messages.of(context).playerEmailHint),
                         initialValue: '',
                         validator: (value) =>
                             validations.validateEmail(context, value),
@@ -147,7 +147,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
       builder: (context, singleCLubBloc) => Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text(Messages.of(context).addClubMemeberTitle),
+          title: Text(Messages.of(context).addClubMemberTitle),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => _savePressed(singleCLubBloc),

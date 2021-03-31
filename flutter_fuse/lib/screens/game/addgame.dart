@@ -107,7 +107,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
           if (clubBloc.state.clubs.values.any((club) => club.isAdmin())) {
             return true;
           }
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         if (_team == null) {
@@ -130,7 +130,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
           _timePlaceStepState = StepState.error;
           _createStepStage = StepState.disabled;
           _detailsStepState = StepState.disabled;
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           //_gameFormKey.currentState.autovalidate = true;
           return false;
         }
@@ -149,7 +149,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
         if (!_gameFormKey.currentState.validate()) {
           _detailsStepState = StepState.error;
           _createStepStage = StepState.disabled;
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           //_gameFormKey.currentState.autovalidate = true;
           return false;
         }

@@ -50,7 +50,7 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
       BuildContext context, SingleLeagueOrTournamentBloc bloc) async {
     if (!_formState.currentState.validate()) {
       setState(() {});
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
       return;
     }
     _formState.currentState.save();
@@ -65,7 +65,7 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
         bloc.add(SingleLeagueOrTournamentUpdateImage(image: imageFile));
       }
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 

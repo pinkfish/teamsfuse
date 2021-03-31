@@ -44,7 +44,7 @@ class OpponentFormField extends FormField<String> {
                       errorText: field.errorText,
                     ),
                     child: DropdownButton<String>(
-                      hint: Text(Messages.of(state.context).opponentselect,
+                      hint: Text(Messages.of(state.context).opponentSelect,
                           overflow: TextOverflow.clip),
                       items: state._buildItems(context, singleTeamState),
                       isExpanded: isExpanded,
@@ -89,7 +89,7 @@ class OpponentFormFieldState extends FormFieldState<String> {
     ret.add(DropdownMenuItem<String>(
       value: OpponentFormField.none,
       child: Text(
-        Messages.of(context).opponentselect,
+        Messages.of(context).opponentSelect,
         overflow: TextOverflow.clip,
       ),
     ));

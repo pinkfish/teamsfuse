@@ -54,7 +54,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Text(Messages.of(context).nodivisons),
+                    Text(Messages.of(context).noDivisions),
                     Align(
                       alignment: Alignment.topLeft,
                       child: FlatButton(
@@ -70,7 +70,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
             } else {
               return Container(
                 margin: EdgeInsets.all(5.0),
-                child: Text(Messages.of(context).nodivisons),
+                child: Text(Messages.of(context).noDivisions),
               );
             }
           }
@@ -141,7 +141,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
       } else {
         return Container(
           margin: EdgeInsets.all(5.0),
-          child: Text(Messages.of(context).noseasons),
+          child: Text(Messages.of(context).noSeasons),
         );
       }
     }

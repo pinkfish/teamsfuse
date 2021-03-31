@@ -32,7 +32,7 @@ class _TeamSettingsState extends State<TeamSettings> {
       barrierDismissible: false, // user must tap button!
       builder: (context) {
         return AlertDialog(
-          title: Text(mess.deleteadmin),
+          title: Text(mess.deleteAdmin),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -72,7 +72,7 @@ class _TeamSettingsState extends State<TeamSettings> {
       barrierDismissible: false, // user must tap button!
       builder: (context) {
         return AlertDialog(
-          title: Text(mess.deleteadmininvite),
+          title: Text(mess.deleteAdminInvite),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -123,7 +123,7 @@ class _TeamSettingsState extends State<TeamSettings> {
               if (state is SinglePlayerDeleted) {
                 return ListTile(
                   leading: const Icon(Icons.person),
-                  title: Text(Messages.of(context).deleteplayer),
+                  title: Text(Messages.of(context).removeFromTeamButton),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: null,

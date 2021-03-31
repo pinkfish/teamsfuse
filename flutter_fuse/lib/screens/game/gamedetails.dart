@@ -91,7 +91,7 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                   ),
                   BottomNavigationBarItem(
                     icon: const Icon(Icons.people),
-                    label: Messages.of(context).gameavailability,
+                    label: Messages.of(context).gameAvailability,
                   )
                 ];
 
@@ -154,7 +154,7 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                             PopupMenuItem<String>(
                               value: 'delete',
                               child: Text(Messages.of(context)
-                                  .deletegame(game.sharedData)),
+                                  .deleteGame(game.sharedData)),
                             ),
                             PopupMenuItem<String>(
                               value: 'edit',

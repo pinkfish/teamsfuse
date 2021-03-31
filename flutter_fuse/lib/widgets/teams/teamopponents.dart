@@ -41,7 +41,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
       barrierDismissible: false, // user must tap button!
       builder: (context) {
         return AlertDialog(
-          title: Text(mess.deleteopponent),
+          title: Text(mess.deleteOpponent),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -80,7 +80,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
     ret.add(
       RichText(
         text: TextSpan(
-          text: Messages.of(context).opponentwithresult,
+          text: Messages.of(context).opponentWithResult,
           style: theme.textTheme.headline6,
         ),
       ),
@@ -133,7 +133,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                         }
                         if (state is SingleOpponentDeleted) {
                           return Center(
-                            child: Text(Messages.of(context).teamdeleted),
+                            child: Text(Messages.of(context).teamDeleted),
                           );
                         }
                         if (state.gamesLoaded) {
@@ -144,7 +144,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                               children: <Widget>[
                                 Center(
                                   child: Text(
-                                      Messages.of(context).unabletoloadgames),
+                                      Messages.of(context).unableToLoadGames),
                                 ),
                               ],
                             );
@@ -160,7 +160,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                               }
                             }
                             if (newData.isEmpty) {
-                              newData.add(Text(Messages.of(context).nogames));
+                              newData.add(Text(Messages.of(context).noGames));
                             }
                             return Column(
                               children: newData,
@@ -182,7 +182,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
       ret.add(
         RichText(
           text: TextSpan(
-            text: Messages.of(context).opponentwithnoresult,
+            text: Messages.of(context).opponentWithNoResult,
             style: theme.textTheme.headline6,
           ),
         ),
@@ -206,7 +206,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                   builder: (context, state) {
                     if (state is SingleOpponentDeleted) {
                       return Center(
-                        child: Text(Messages.of(context).teamdeleted),
+                        child: Text(Messages.of(context).teamDeleted),
                       );
                     }
                     if (state is SingleOpponentUninitialized) {
@@ -221,7 +221,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Center(
-                            child: Text(Messages.of(context).nogames),
+                            child: Text(Messages.of(context).noGames),
                           ),
                           IconButton(
                             onPressed: () => _deleteOpponent(opBloc),
@@ -246,7 +246,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                       }
                       if (newData.isEmpty) {
                         newData
-                            .add(Text(Messages.of(context).nogamesthisseason));
+                            .add(Text(Messages.of(context).noGamesThisSeason));
                       }
                       return Column(
                         children: newData,

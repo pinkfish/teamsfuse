@@ -105,7 +105,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
         _showInSnackBar('Need to specify some recipients');
       }
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
       _autovalidateMode = AutovalidateMode.always;
     }
   }
@@ -124,7 +124,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
         if (_teamUid == null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(Messages.of(context).teamselect),
+              content: Text(Messages.of(context).teamSelect),
             ),
           );
           return;
@@ -134,7 +134,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
         if (_seasonUid == null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(Messages.of(context).seasonselect),
+              content: Text(Messages.of(context).seasonSelect),
             ),
           );
           return;
@@ -211,7 +211,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
               controlAffinity: ListTileControlAffinity.trailing,
               value: _includeMyself,
               onChanged: (newVal) => setState(() => _includeMyself = newVal),
-              title: Text(Messages.of(context).includemyself),
+              title: Text(Messages.of(context).includeMyself),
             ),
           );
         } else {
@@ -285,7 +285,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
           TextButton(
             onPressed: _sendMessage,
             child: Text(
-              Messages.of(context).sendmessagebuttontext,
+              Messages.of(context).sendButton,
               style: Theme.of(context)
                   .textTheme
                   .subtitle1
@@ -301,7 +301,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
             Navigator.pop(context);
           }
           if (state is AddItemSaveFailed || state is AddItemInvalidArguments) {
-            _showInSnackBar(Messages.of(context).formerror);
+            _showInSnackBar(Messages.of(context).formError);
           }
         },
         child: BlocBuilder(

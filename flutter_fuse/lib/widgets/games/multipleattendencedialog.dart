@@ -122,7 +122,7 @@ class _MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
                     const EdgeInsetsDirectional.fromSTEB(24.0, 24.0, 24.0, 0.0),
                 child: DefaultTextStyle(
                     style: Theme.of(context).textTheme.headline6,
-                    child: Text(Messages.of(context).attendanceselect)),
+                    child: Text(Messages.of(context).attendanceSelect)),
               ),
               Flexible(
                 child: SingleChildScrollView(

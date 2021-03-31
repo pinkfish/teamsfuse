@@ -93,7 +93,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         teamImage: _imageFileToAdd,
       ));
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -102,7 +102,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         _teamToAdd.currentSeason.isNotEmpty) {
       return _teamToAdd.currentSeason;
     }
-    return Messages.of(context).noseasons;
+    return Messages.of(context).noSeasons;
   }
 
   bool _leaveCurrentState(bool backwards) {
@@ -122,7 +122,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         if (_playerUid == PlayerFormField.nonePlayer) {
           _playerStepState = StepState.error;
           _detailsStepState = StepState.disabled;
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         _playerStepState = StepState.complete;
@@ -139,14 +139,14 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         if (!_formKeyTeam.currentState.validate()) {
           _detailsStepState = StepState.error;
           _detailsSecondStepState = StepState.disabled;
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         _teamToAdd = _formKeyTeam.currentState.validateAndCreate();
         if (_teamToAdd == null) {
           _detailsStepState = StepState.error;
           _detailsSecondStepState = StepState.disabled;
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         _imageFileToAdd = _formKeyTeam.currentState.getImageFile();
@@ -164,14 +164,14 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         if (!_formKeyTeam.currentState.validate()) {
           _detailsSecondStepState = StepState.error;
           _createStepStage = StepState.disabled;
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         _teamToAdd = _formKeyTeam.currentState.validateAndCreate();
         if (_teamToAdd == null) {
           _detailsSecondStepState = StepState.error;
           _createStepStage = StepState.disabled;
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         _imageFileToAdd = _formKeyTeam.currentState.getImageFile();
@@ -200,7 +200,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
 
   void _onStepTapped(int step) {
     if (step == 0 && !isActiveClub()) {
-      _showInSnackBar(Messages.of(context).noclub);
+      _showInSnackBar(Messages.of(context).noClub);
       return;
     }
     if (_leaveCurrentState(step < _currentStep)) {
@@ -260,7 +260,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                           leading: const Icon(MdiIcons.group),
                           title: _clubUid != ClubPicker.noClub
                               ? Text(singleClubBloc.state.club.name)
-                              : Text(Messages.of(context).noclub),
+                              : Text(Messages.of(context).noClub),
                           trailing: _clubUid != ClubPicker.noClub
                               ? ClubImage(
                                   clubUid: _clubUid,
@@ -275,17 +275,17 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
             ListTile(
               leading: const Icon(MdiIcons.tshirtCrew),
               title: Text(_teamToAdd.league.isEmpty
-                  ? Messages.of(context).noleagues
+                  ? Messages.of(context).noLeagues
                   : _teamToAdd.league),
             ),
             ListTile(
               leading: const Icon(Icons.timer),
               title: Text(Messages.of(context)
-                  .arrivebefore(_teamToAdd.arriveEarlyInternal.toInt())),
+                  .arriveBefore(_teamToAdd.arriveEarlyInternal.toInt())),
             ),
             ListTile(
               leading: const Icon(MdiIcons.trafficLight),
-              title: Text(Messages.of(context).trackattendence(
+              title: Text(Messages.of(context).trackAttendance(
                   _teamToAdd.trackAttendanceInternal
                       ? Tristate.Yes
                       : Tristate.No)),
@@ -340,7 +340,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
             Navigator.pop(context);
           }
           if (addState is AddItemSaveFailed) {
-            _showInSnackBar(Messages.of(context).formerror);
+            _showInSnackBar(Messages.of(context).formError);
           }
         },
         child: BlocBuilder(

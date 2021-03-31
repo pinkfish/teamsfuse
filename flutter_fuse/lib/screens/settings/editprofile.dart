@@ -86,7 +86,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ..phoneNumber = _phoneNumber);
       profileBloc.add(SingleProfileUpdate(profile: profile, image: _imageFile));
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -161,7 +161,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         icon: const Icon(Icons.person),
                                         hintText: Messages.of(context).name,
                                         labelText: Messages.of(context)
-                                            .displaynamehint,
+                                            .displayNameHint,
                                       ),
                                       initialValue:
                                           profileState.profile.displayName,
@@ -182,9 +182,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       decoration: InputDecoration(
                                         icon: const Icon(Icons.phone),
                                         hintText:
-                                            Messages.of(context).phonenumber,
+                                            Messages.of(context).phoneNumber,
                                         labelText: Messages.of(context)
-                                            .phonenumberhint,
+                                            .phoneNumberHint,
                                       ),
                                       initialValue:
                                           profileState.profile.phoneNumber,

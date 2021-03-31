@@ -33,8 +33,8 @@ class _ClubSettingsState extends State<ClubSettings> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text(Messages.of(context).selectclub),
-              content: Text(Messages.of(context).noclub),
+              title: Text(Messages.of(context).selectClub),
+              content: Text(Messages.of(context).noClub),
               actions: <Widget>[
                 FlatButton(
                   onPressed: () {
@@ -51,7 +51,7 @@ class _ClubSettingsState extends State<ClubSettings> {
           context: context,
           builder: (context) {
             return SimpleDialog(
-              title: Text(Messages.of(context).selectclub),
+              title: Text(Messages.of(context).selectClub),
               children: clubBloc.state.clubs.values
                   .where((c) => c.isAdmin())
                   .map((c) {
@@ -72,7 +72,7 @@ class _ClubSettingsState extends State<ClubSettings> {
     var ret = <Widget>[];
     if (team.clubUid == null) {
       ret.add(Text(
-        Messages.of(context).clubsettingdescription,
+        Messages.of(context).clubSettingDescription,
         softWrap: true,
         style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 20.0),
       ));
@@ -87,7 +87,7 @@ class _ClubSettingsState extends State<ClubSettings> {
             FlatButton(
               onPressed: () => _setClub(singleTeamBloc),
               child: Text(
-                Messages.of(context).setclub,
+                Messages.of(context).setClubButton,
                 style: Theme.of(context)
                     .textTheme
                     .button

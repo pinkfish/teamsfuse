@@ -91,12 +91,12 @@ class _AcceptInviteToLeagueScreenState
                           onPressed: _savePressed,
                           color: theme.accentColor,
                           textColor: Colors.white,
-                          child: Text(messages.joinleague),
+                          child: Text(messages.joinLeague),
                         ),
                         TextButton(
                           onPressed: () => Navigator.pushNamed(context,
                               '/League/Main/${inviteToLeagueAsAdmin.leagueUid}'),
-                          child: Text(messages.openbutton),
+                          child: Text(messages.openButton),
                         ),
                         TextButton(
                           onPressed: () =>

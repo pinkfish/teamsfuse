@@ -106,7 +106,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
                                 TextFormField(
                                   decoration: InputDecoration(
                                     labelText: messages.email,
-                                    hintText: messages.playeremailHint,
+                                    hintText: messages.playerEmailHint,
                                   ),
                                   keyboardType: TextInputType.emailAddress,
                                   initialValue: _email,

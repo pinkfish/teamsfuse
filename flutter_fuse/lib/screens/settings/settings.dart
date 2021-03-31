@@ -40,7 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ..emailOnUpdates = emailOnUpdate);
       bloc.add(SingleProfileUpdate(profile: profile));
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -85,18 +85,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            Messages.of(context).emailheader,
+                            Messages.of(context).emailHeader,
                             style: Theme.of(context).textTheme.headline6,
                           ),
                           SwitchFormField(
-                            label: Messages.of(context).emailonupdates,
+                            label: Messages.of(context).emailOnUpdates,
                             icon: Icons.update,
                             initialValue:
                                 singleProfileState.profile.emailOnUpdates,
                             onSaved: (val) => emailOnUpdate = val,
                           ),
                           SwitchFormField(
-                            label: Messages.of(context).emailonupcoming,
+                            label: Messages.of(context).emailOnUpcoming,
                             icon: Icons.calendar_today,
                             initialValue:
                                 singleProfileState.profile.emailUpcomingGame,

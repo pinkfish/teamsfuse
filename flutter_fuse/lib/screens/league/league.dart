@@ -80,11 +80,11 @@ class LeagueScreen extends StatelessWidget {
                         ),
                         PopupMenuItem<String>(
                           value: 'image',
-                          child: Text(Messages.of(context).editimagebutton),
+                          child: Text(Messages.of(context).editImageButton),
                         ),
                         PopupMenuItem<String>(
                           value: 'edit',
-                          child: Text(Messages.of(context).editbuttontext),
+                          child: Text(Messages.of(context).editButton),
                         )
                       ];
                     },

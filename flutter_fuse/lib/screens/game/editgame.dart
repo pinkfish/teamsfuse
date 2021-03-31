@@ -60,7 +60,7 @@ class _EditGameScreenState extends State<EditGameScreen> {
       gameBloc.add(SingleGameUpdate(
           game: baseForm.finalGameResult.build(), updateShared: true));
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -72,7 +72,7 @@ class _EditGameScreenState extends State<EditGameScreen> {
         bloc: gameBloc,
         listener: (context, state) {
           if (state is SingleGameSaveFailed) {
-            _showInSnackBar(Messages.of(context).formerror);
+            _showInSnackBar(Messages.of(context).formError);
           }
           if (state is SingleGameSaveDone) {
             Navigator.pop(context);

@@ -26,11 +26,11 @@ class GameLogView extends StatelessWidget {
         break;
       case GameLogType.PeriodStart:
         subtitle =
-            Text(Messages.of(context).periodstart(log), style: subheadStyle);
+            Text(Messages.of(context).periodStart(log), style: subheadStyle);
         break;
       case GameLogType.PeriodStop:
         subtitle = Text(
-          Messages.of(context).periodstop(log),
+          Messages.of(context).periodStop(log),
           style: subheadStyle,
         );
         break;

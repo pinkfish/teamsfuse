@@ -30,7 +30,7 @@ class RelationshipFormField extends FormField<Relationship> {
               decoration:
                   effectiveDecoration.copyWith(errorText: field.errorText),
               child: DropdownButton<Relationship>(
-                hint: Text(Messages.of(state.context).relationshipselect),
+                hint: Text(Messages.of(state.context).relationshipSelect),
                 items: state._buildItems(state.context),
                 value: state.value,
                 onChanged: (val) {

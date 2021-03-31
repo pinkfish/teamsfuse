@@ -30,7 +30,7 @@ class RoleInTeamFormField extends FormField<String> {
                 decoration:
                     effectiveDecoration.copyWith(errorText: field.errorText),
                 child: DropdownButton<String>(
-                  hint: Text(Messages.of(state.context).opponentselect),
+                  hint: Text(Messages.of(state.context).opponentSelect),
                   items: state._buildItems(state.context),
                   value: state.value,
                   onChanged: (val) {
@@ -61,7 +61,7 @@ class RoleInTeamFormFieldState extends FormFieldState<String> {
     var ret = <DropdownMenuItem<String>>[];
     ret.add(DropdownMenuItem<String>(
       value: 'none',
-      child: Text(Messages.of(context).roleselect),
+      child: Text(Messages.of(context).roleSelect),
     ));
 
     for (var role in RoleInTeam.values) {

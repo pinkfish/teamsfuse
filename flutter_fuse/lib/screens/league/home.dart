@@ -50,7 +50,7 @@ class LeagueHomeScreen extends StatelessWidget {
                   .leagueOrTournaments.values
                   .where((l) => l.type == LeagueOrTournamentType.League);
               if (league.isEmpty) {
-                return Text(Messages.of(context).noleagues);
+                return Text(Messages.of(context).noLeagues);
               }
               return Column(
                 children: league
@@ -80,7 +80,7 @@ class LeagueHomeScreen extends StatelessWidget {
               var tournament = state.leagueOrTournaments.values
                   .where((l) => l.type == LeagueOrTournamentType.Tournament);
               if (tournament.length == 0) {
-                return Text(Messages.of(context).notournaments);
+                return Text(Messages.of(context).noTournaments);
               }
               return Column(
                 children: tournament
@@ -107,7 +107,7 @@ class LeagueHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(Messages.of(context).leaguetournament),
+        title: Text(Messages.of(context).leagueTournament),
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: (str) => _doAction(context, str),
@@ -115,15 +115,15 @@ class LeagueHomeScreen extends StatelessWidget {
               return <PopupMenuItem<String>>[
                 PopupMenuItem<String>(
                   value: 'league',
-                  child: Text(Messages.of(context).addleague),
+                  child: Text(Messages.of(context).addLeague),
                 ),
                 PopupMenuItem<String>(
                   value: 'tournament',
-                  child: Text(Messages.of(context).addtournament),
+                  child: Text(Messages.of(context).addTournament),
                 ),
                 PopupMenuItem<String>(
                   value: 'edit',
-                  child: Text(Messages.of(context).editbuttontext),
+                  child: Text(Messages.of(context).editButton),
                 )
               ];
             },

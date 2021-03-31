@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 FabMiniMenuItemWidget(
                   icon: const Icon(Icons.mail),
                   fabColor: Colors.lightBlueAccent,
-                  text: messages.newmail,
+                  text: messages.newMessageButton,
                   onPressed: () => Navigator.pushNamed(context, 'AddMessage'),
                 ),
                 FabMiniMenuItemWidget(

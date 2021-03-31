@@ -82,8 +82,8 @@ class AddInviteToLeagueDialog extends Dialog {
                   showDialog<bool>(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text(Messages.of(context).invalidemail),
-                      content: Text(Messages.of(context).invalidemail),
+                      title: Text(Messages.of(context).invalidEmail),
+                      content: Text(Messages.of(context).invalidEmail),
                       actions: <Widget>[
                         FlatButton(
                           onPressed: () => Navigator.pop(context, true),

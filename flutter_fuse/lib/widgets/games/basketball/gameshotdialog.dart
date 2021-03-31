@@ -125,7 +125,7 @@ class _GameShotDialogState extends State<GameShotDialog> {
       // Verify the form first.
       if (_selectedIncoming == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(Messages.of(context).formerror)));
+            SnackBar(content: Text(Messages.of(context).formError)));
         return;
       }
     }

@@ -84,7 +84,7 @@ class _TeamScreenState extends State<TeamScreen> {
         builder: (context, state) {
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
-            return Text(Messages.of(context).teamdeleted);
+            return Text(Messages.of(context).teamDeleted);
           }
           if (state is SingleTeamUninitialized) {
             return LoadingWidget();
@@ -146,7 +146,7 @@ class _TeamScreenState extends State<TeamScreen> {
                       value: 'archive',
                       child: ListTile(
                         leading: Icon(Icons.archive),
-                        title: Text(Messages.of(context).archiveteam),
+                        title: Text(Messages.of(context).archiveTeam),
                       ),
                     )
                   ];

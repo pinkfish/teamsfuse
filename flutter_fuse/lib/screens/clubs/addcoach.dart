@@ -61,7 +61,7 @@ class _AddCoachScreenState extends State<AddCoachScreen> {
       _coachBloc.add(
           AddCoachEventCommit(coach: _coachToAdd, imageFile: _imageFileToAdd));
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -80,7 +80,7 @@ class _AddCoachScreenState extends State<AddCoachScreen> {
             _detailsStepState = StepState.error;
             _createStepStage = StepState.disabled;
           });
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         _coachToAdd = _formKey.currentState.validateAndCreate().build();
@@ -89,7 +89,7 @@ class _AddCoachScreenState extends State<AddCoachScreen> {
             _detailsStepState = StepState.error;
             _createStepStage = StepState.disabled;
           });
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         _imageFileToAdd = _formKey.currentState.getImageFile();
@@ -226,7 +226,7 @@ class _AddCoachScreenState extends State<AddCoachScreen> {
         if (state is AddItemDone) {
           Navigator.pop(context);
         } else if (state is AddItemSaveFailed) {
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
         }
       },
       child: Scaffold(

@@ -71,7 +71,7 @@ class PlacesFormField extends FormField<PlaceAndTimezone> {
   static String _renderPlaceName(BuildContext context, PlaceAndTimezone loc) {
     if (loc.place.name == null || loc.place.name.isEmpty) {
       if (loc.place.address == null || loc.place.address.isEmpty) {
-        return Messages.of(context).selectplace;
+        return Messages.of(context).selectPlace;
       }
       return loc.place.address;
     }

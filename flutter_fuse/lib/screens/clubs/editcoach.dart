@@ -47,7 +47,7 @@ class _EditCoachScreenState extends State<EditCoachScreen> {
         singleCoachBloc
             .add(SingleClubCoachUpdate(coach: coach.build(), image: imageFile));
       } else {
-        _showInSnackBar(Messages.of(context).formerror);
+        _showInSnackBar(Messages.of(context).formError);
       }
     } finally {}
   }

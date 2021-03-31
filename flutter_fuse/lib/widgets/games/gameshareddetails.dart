@@ -291,7 +291,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
         body.add(
           ListTile(
             leading: Icon(MdiIcons.bookOpenVariant),
-            title: Text(Messages.of(context).gametype),
+            title: Text(Messages.of(context).gameType),
           ),
         );
       } else {
@@ -359,7 +359,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
             children: <Widget>[
               FlatButton(
                 onPressed: _editResult,
-                child: Text(Messages.of(context).editbuttontext),
+                child: Text(Messages.of(context).editButton),
               ),
             ],
           ));
@@ -371,14 +371,14 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
         body.add(
           ListTile(
             leading: const Icon(Icons.train),
-            title: Text(Messages.of(context).trainingtype),
+            title: Text(Messages.of(context).trainingType),
           ),
         );
       } else if (widget.game.type == EventType.Event) {
         body.add(
           ListTile(
             leading: const Icon(Icons.plus_one),
-            title: Text(Messages.of(context).eventtype),
+            title: Text(Messages.of(context).eventType),
           ),
         );
       }

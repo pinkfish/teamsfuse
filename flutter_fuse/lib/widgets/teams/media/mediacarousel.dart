@@ -311,8 +311,8 @@ class _MediaCarouselState extends State<MediaCarousel> {
                                         '/Season/Media/'
                                         '${widget.media.seasonUid}/'
                                         '${widget.media.uid}'),
-                                    child: Text(
-                                        Messages.of(context).editbuttontext),
+                                    child:
+                                        Text(Messages.of(context).editButton),
                                   )
                                 ],
                               )

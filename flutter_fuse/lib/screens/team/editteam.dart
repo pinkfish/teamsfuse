@@ -50,7 +50,7 @@ class _EditTeamScreenState extends State<EditTeamScreen> {
       var imageFile = _formKey.currentState.getImageFile();
       singleTeamBloc.add(SingleTeamUpdate(team: team, image: imageFile));
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -68,7 +68,7 @@ class _EditTeamScreenState extends State<EditTeamScreen> {
             Navigator.pop(context, widget.teamUid);
           }
           if (state is SingleTeamSaveFailed) {
-            _showInSnackBar(Messages.of(context).formerror);
+            _showInSnackBar(Messages.of(context).formError);
           }
         },
         child: BlocBuilder(

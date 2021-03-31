@@ -49,7 +49,7 @@ class _SignupScreenState extends State<SignupScreen> {
     var form = _formKey.currentState;
     if (!form.validate()) {
       _autovalidate = true; // Start validating on every change.
-      showInSnackBar(Messages.of(context).formerror);
+      showInSnackBar(Messages.of(context).formError);
     } else {
       form.save();
       //email = _email;
@@ -65,7 +65,7 @@ class _SignupScreenState extends State<SignupScreen> {
   String _validatePassword(String value) {
     var old = _passwordFieldKey.currentState.value;
     if (value != old) {
-      return Messages.of(context).passwordsnotmatching;
+      return Messages.of(context).passwordsNotMatching;
     }
     return null;
   }
@@ -81,12 +81,12 @@ class _SignupScreenState extends State<SignupScreen> {
         bloc: BlocProvider.of<AuthenticationBloc>(context),
         listener: (context, state) {
           if (state is AuthenticationFailed) {
-            showInSnackBar(Messages.of(context).errorcreatinguser);
+            showInSnackBar(Messages.of(context).errorCreatingUser);
           } else if (state is AuthenticationDone) {
             showDialog<bool>(
               context: context,
               builder: (context) => AlertDialog(
-                content: Text(Messages.of(context).createdaccount),
+                content: Text(Messages.of(context).createdAccount),
                 actions: <Widget>[
                   TextButton(
                       onPressed: () {
@@ -145,7 +145,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   decoration: InputDecoration(
                                       icon: const Icon(Icons.account_box),
                                       hintText:
-                                          Messages.of(context).displaynamehint,
+                                          Messages.of(context).displayNameHint,
                                       labelText: Messages.of(context).name),
                                   keyboardType: TextInputType.text,
                                   obscureText: false,
@@ -165,7 +165,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   decoration: InputDecoration(
                                     icon: const Icon(Icons.email),
                                     hintText:
-                                        Messages.of(context).youremailHint,
+                                        Messages.of(context).yourEmailHint,
                                     labelText: Messages.of(context).email,
                                   ),
                                   keyboardType: TextInputType.emailAddress,
@@ -186,8 +186,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                   decoration: InputDecoration(
                                     icon: const Icon(Icons.phone),
                                     hintText: Messages.of(context)
-                                        .phonenumberhintoptional,
-                                    labelText: Messages.of(context).phonenumber,
+                                        .phoneNumberHintOptional,
+                                    labelText: Messages.of(context).phoneNumber,
                                   ),
                                   keyboardType: TextInputType.phone,
                                   obscureText: false,
@@ -227,9 +227,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                   decoration: InputDecoration(
                                     icon: const Icon(Icons.lock),
                                     hintText:
-                                        Messages.of(context).verifypassword,
+                                        Messages.of(context).verifyPassword,
                                     labelText:
-                                        Messages.of(context).verifypassword,
+                                        Messages.of(context).verifyPassword,
                                   ),
                                   focusNode: _focusNodePasswordVerify,
                                   obscureText: true,
@@ -246,7 +246,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   key: Key('SUBMIT'),
                                   onPressed: _handleSubmitted,
                                   child:
-                                      Text(Messages.of(context).createaccount),
+                                      Text(Messages.of(context).createButton),
                                 ),
                               ),
                             ],

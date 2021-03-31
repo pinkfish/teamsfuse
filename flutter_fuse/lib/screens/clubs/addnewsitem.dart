@@ -58,7 +58,7 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
     if (_newsItemToAdd != null) {
       _newsItemBloc.add(AddNewsItemEventCommit(newsItem: _newsItemToAdd));
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -77,7 +77,7 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
             _detailsStepState = StepState.error;
             _createStepStage = StepState.disabled;
           });
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         _newsItemToAdd = _formKey.currentState.validateAndCreate().build();
@@ -86,7 +86,7 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
             _detailsStepState = StepState.error;
             _createStepStage = StepState.disabled;
           });
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         setState(() {
@@ -209,7 +209,7 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
         if (state is AddItemDone) {
           Navigator.pop(context);
         } else if (state is AddItemSaveFailed) {
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
         }
       },
       child: Scaffold(

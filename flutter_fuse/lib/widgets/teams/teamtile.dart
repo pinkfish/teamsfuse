@@ -50,7 +50,7 @@ class TeamTile extends StatelessWidget {
           if (teamState is SingleTeamDeleted) {
             return ListTile(
                 leading: Icon(Icons.delete),
-                title: Text(Messages.of(context).teamdeleted));
+                title: Text(Messages.of(context).teamDeleted));
           }
           if (teamState is SingleTeamUninitialized) {
             return ListTile(

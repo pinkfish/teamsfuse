@@ -46,7 +46,7 @@ class _EditNewsItemScreenState extends State<EditNewsItemScreen> {
         singleNewsItemBloc
             .add(SingleNewsItemUpdate(newsItem: newsItem.build()));
       } else {
-        _showInSnackBar(Messages.of(context).formerror);
+        _showInSnackBar(Messages.of(context).formError);
       }
     } finally {}
   }

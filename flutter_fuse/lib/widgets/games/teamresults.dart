@@ -46,7 +46,7 @@ class TeamResultsByOpponent extends StatelessWidget {
             }
             if (!state.gamesLoaded) {
               return Center(
-                child: Text(Messages.of(context).nogames),
+                child: Text(Messages.of(context).noGames),
               );
             } else {
               var newData = <Widget>[];
@@ -105,7 +105,7 @@ class TeamResultsByOpponent extends StatelessWidget {
               }
 
               if (newData.isEmpty) {
-                newData.add(Text(Messages.of(context).nogames));
+                newData.add(Text(Messages.of(context).noGames));
               }
               return Column(
                 children: newData,
@@ -151,7 +151,7 @@ class TeamResultsBySeason extends StatelessWidget {
           builder: (context, state) {
             if (state is SingleOpponentDeleted) {
               return Center(
-                child: Text(Messages.of(context).teamdeleted),
+                child: Text(Messages.of(context).teamDeleted),
               );
             }
             if (!state.loadedGames) {
@@ -222,7 +222,7 @@ class TeamResultsBySeason extends StatelessWidget {
               }
 
               if (newData.isEmpty) {
-                newData.add(Text(Messages.of(context).nogames));
+                newData.add(Text(Messages.of(context).noGames));
               }
               return Column(
                 children: newData,

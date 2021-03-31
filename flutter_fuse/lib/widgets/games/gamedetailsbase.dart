@@ -160,7 +160,7 @@ class GameDetailsBase extends StatelessWidget {
 
     if (official) {
       title = TextSpan(
-          text: '${Messages.of(context).offical}\n',
+          text: '${Messages.of(context).official}\n',
           style:
               theme.textTheme.subtitle1.copyWith(fontWeight: FontWeight.w600),
           children: <TextSpan>[title]);
@@ -176,7 +176,7 @@ class GameDetailsBase extends StatelessWidget {
       title: RichText(text: title),
       subtitle: dontMatch
           ? Text(
-              Messages.of(context).officialdontmatch,
+              Messages.of(context).officialDontMatch,
               style: Theme.of(context)
                   .textTheme
                   .bodyText2
@@ -306,7 +306,7 @@ class GameDetailsBase extends StatelessWidget {
         body.add(
           ListTile(
             leading: Icon(MdiIcons.bookOpenVariant),
-            title: Text(Messages.of(context).gametype),
+            title: Text(Messages.of(context).gameType),
           ),
         );
       } else {
@@ -359,7 +359,7 @@ class GameDetailsBase extends StatelessWidget {
                   FlatButton(
                     onPressed: () =>
                         copyOfficalResult(game.sharedData, officalData),
-                    child: Text(Messages.of(context).useofficialresultbutton),
+                    child: Text(Messages.of(context).useOfficialResultButton),
                   ),
                 ],
               ));
@@ -373,14 +373,14 @@ class GameDetailsBase extends StatelessWidget {
         body.add(
           ListTile(
             leading: const Icon(Icons.train),
-            title: Text(Messages.of(context).trainingtype),
+            title: Text(Messages.of(context).trainingType),
           ),
         );
       } else if (game.sharedData.type == EventType.Event) {
         body.add(
           ListTile(
             leading: const Icon(Icons.plus_one),
-            title: Text(Messages.of(context).eventtype),
+            title: Text(Messages.of(context).eventType),
           ),
         );
       }
@@ -442,7 +442,7 @@ class GameDetailsBase extends StatelessWidget {
               Text(
                 opponent != null
                     ? Messages.of(context)
-                        .opponentwinrecord(opponent, game.seasonUid, seasonName)
+                        .opponentWinRecord(opponent, game.seasonUid, seasonName)
                     : Messages.of(context).loading,
               ),
             ],
@@ -476,7 +476,7 @@ class GameDetailsBase extends StatelessWidget {
             cols.add(
               Text(
                 opponent != null
-                    ? Messages.of(context).opponentwinrecord(
+                    ? Messages.of(context).opponentWinRecord(
                         opponent, otherSeason.uid, seasonName)
                     : Messages.of(context).loading,
               ),

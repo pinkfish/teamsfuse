@@ -8,11 +8,11 @@ class Validations {
   /// Validate a name is correct.
   String validateName(BuildContext context, String value) {
     if (value.isEmpty) {
-      return Messages.of(context).namerequired;
+      return Messages.of(context).nameRequired;
     }
     var nameExp = RegExp(r'^[A-za-z ]+$');
     if (!nameExp.hasMatch(value)) {
-      return Messages.of(context).invalidname;
+      return Messages.of(context).invalidName;
     }
     return null;
   }
@@ -20,7 +20,7 @@ class Validations {
   /// Validates a display name is correct.
   String validateDisplayName(BuildContext context, String value) {
     if (value.isEmpty) {
-      return Messages.of(context).namerequired;
+      return Messages.of(context).nameRequired;
     }
     return null;
   }
@@ -36,11 +36,11 @@ class Validations {
   /// Validate an email is correct.
   String validateEmail(BuildContext context, String value) {
     if (value.isEmpty) {
-      return Messages.of(context).emailrequired;
+      return Messages.of(context).emailRequired;
     }
     var nameExp = RegExp(r'^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$');
     if (!nameExp.hasMatch(value)) {
-      return Messages.of(context).invalidemail;
+      return Messages.of(context).invalidEmail;
     }
     return null;
   }
@@ -48,7 +48,7 @@ class Validations {
   /// Validate a passsword is correct.
   String validatePassword(BuildContext context, String value) {
     if (value.isEmpty) {
-      return Messages.of(context).emptypassword;
+      return Messages.of(context).emptyPassword;
     }
     return null;
   }
@@ -56,7 +56,7 @@ class Validations {
   /// Validate an opponent name is correct.
   String validateOpponent(BuildContext context, String value) {
     if (value == 'none' || value == 'add') {
-      return Messages.of(context).needtoselectopponent;
+      return Messages.of(context).needToSelectOpponent;
     }
     return null;
   }
@@ -64,7 +64,7 @@ class Validations {
   /// Validate the sport is correct.
   String validateSport(BuildContext context, Sport value) {
     if (value == Sport.None) {
-      return Messages.of(context).needtoselectsport;
+      return Messages.of(context).needToSelectSport;
     }
     return null;
   }
@@ -72,7 +72,7 @@ class Validations {
   /// Valdate the season is correct.
   String validateSeason(BuildContext context, String value) {
     if (value.isEmpty) {
-      return Messages.of(context).seasonrequired;
+      return Messages.of(context).seasonRequired;
     }
     return null;
   }
@@ -80,7 +80,7 @@ class Validations {
   /// Validate the role in the team is correct.
   String validateRoleInTeam(BuildContext context, String value) {
     if (value == 'none' || value == 'add') {
-      return Messages.of(context).needtoselectrole;
+      return Messages.of(context).needToSelectRole;
     }
     return null;
   }
@@ -88,7 +88,7 @@ class Validations {
   /// Validate the gender is correct.
   String validateGender(BuildContext context, String value) {
     if (value == 'none') {
-      return Messages.of(context).needtoselectgender;
+      return Messages.of(context).needToSelectGender;
     }
     return null;
   }

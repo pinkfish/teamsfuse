@@ -102,7 +102,7 @@ class TeamDetails extends StatelessWidget {
               ? 1
               : a.name.compareTo(b.name));
       if (seasons.isEmpty) {
-        ret.add(Text(Messages.of(context).noseasons));
+        ret.add(Text(Messages.of(context).noSeasons));
       } else {
         for (final season in seasons) {
           happyData.add(_buildSeasonExpansionTitle(
@@ -199,8 +199,8 @@ class TeamDetails extends StatelessWidget {
               label: teamState.club == null && teamState.team.clubUid != null
                   ? Text(Messages.of(context).loading)
                   : Text(
-                      Messages.of(context).trackattendence(
-                          team.trackAttendence(teamState.club)
+                      Messages.of(context).trackAttendance(
+                          team.trackAttendance(teamState.club)
                               ? Tristate.Yes
                               : Tristate.No),
                     ),

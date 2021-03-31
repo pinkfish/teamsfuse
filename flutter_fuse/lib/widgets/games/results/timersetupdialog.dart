@@ -19,7 +19,7 @@ Future<GamePeriodTime> timerSetupDialog(
       barrierDismissible: false, // user must tap button!
       builder: (context) {
         return AlertDialog(
-          title: Text(mess.deleteinvite),
+          title: Text(mess.deleteInvite),
           content: _TimerDetails(details.time, detailsState),
           actions: <Widget>[
             FlatButton(
@@ -74,7 +74,7 @@ class _TimerDetailsState extends State<_TimerDetails> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               SwitchFormField(
-                label: Messages.of(context).timercountup,
+                label: Messages.of(context).timerCountUp,
                 initialValue: widget._periodTime.timeCountUp,
                 onSaved: (value) => widget._periodTime.timeCountUp = value,
               ),

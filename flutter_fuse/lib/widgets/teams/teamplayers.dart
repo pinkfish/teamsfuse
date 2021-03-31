@@ -75,7 +75,7 @@ class _TeamPlayersState extends State<TeamPlayers> {
                 Row(
                   children: <Widget>[
                     DropdownButton<String>(
-                      hint: Text(messages.seasonselect),
+                      hint: Text(messages.seasonSelect),
                       value: _seasonUid,
                       items: _buildItems(context, teamState),
                       onChanged: (val) {

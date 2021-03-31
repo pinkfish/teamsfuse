@@ -41,7 +41,7 @@ class _TeamMediaScreenState extends State<TeamMediaScreen> {
           builder: (context, teamState) {
             if (teamState is SingleTeamDeleted) {
               Navigator.pop(context);
-              return Text(Messages.of(context).teamdeleted);
+              return Text(Messages.of(context).teamDeleted);
             }
             if (teamState is SingleTeamUninitialized) {
               return LoadingWidget();

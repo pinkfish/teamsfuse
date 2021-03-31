@@ -32,7 +32,7 @@ class TeamHomeScreen extends StatelessWidget {
             Container(
               margin: EdgeInsets.all(5.0),
               child: Text(
-                Messages.of(context).archivedteams,
+                Messages.of(context).archivedTeams,
                 textAlign: TextAlign.start,
                 style: Theme.of(context)
                     .textTheme

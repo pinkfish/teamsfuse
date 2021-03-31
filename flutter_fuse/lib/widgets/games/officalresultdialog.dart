@@ -18,7 +18,7 @@ class OfficialResultDialog extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          Messages.of(context).gameend,
+          Messages.of(context).gameEnd,
           overflow: TextOverflow.clip,
         ),
       ),

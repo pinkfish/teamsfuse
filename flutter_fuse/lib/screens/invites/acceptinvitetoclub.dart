@@ -71,7 +71,7 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
             bloc: _singleInviteBloc,
             listener: (context, state) {
               if (state is SingleInviteSaveFailed) {
-                _showInSnackBar(Messages.of(context).formerror);
+                _showInSnackBar(Messages.of(context).formError);
               } else if (state is SingleInviteDeleted) {
                 Navigator.pop(context);
               }
@@ -105,7 +105,7 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
                             TextButton(
                               onPressed: () =>
                                   showDeleteInvite(context, _singleInviteBloc),
-                              child: Text(messages.deleteinvite),
+                              child: Text(messages.deleteInvite),
                             ),
                           ],
                         ),

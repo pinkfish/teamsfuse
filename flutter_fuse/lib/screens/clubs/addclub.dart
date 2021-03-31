@@ -50,7 +50,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
       _clubBloc.add(
           AddClubEventCommit(club: _clubToAdd, imageFile: _imageFileToAdd));
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -69,7 +69,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
             _detailsStepState = StepState.error;
             _createStepStage = StepState.disabled;
           });
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         _clubToAdd = _formKey.currentState.validateAndCreate().build();
@@ -78,7 +78,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
             _detailsStepState = StepState.error;
             _createStepStage = StepState.disabled;
           });
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
           return false;
         }
         _imageFileToAdd = _formKey.currentState.getImageFile();
@@ -139,12 +139,12 @@ class _AddClubScreenState extends State<AddClubScreen> {
           ListTile(
             leading: Icon(Icons.timer),
             title: Text(
-                Messages.of(context).arrivebefore(_clubToAdd.arriveBeforeGame)),
+                Messages.of(context).arriveBefore(_clubToAdd.arriveBeforeGame)),
           ),
           ListTile(
             leading: Icon(Icons.check),
             title: Text(Messages.of(context)
-                .trackattendence(_clubToAdd.trackAttendence)),
+                .trackAttendance(_clubToAdd.trackAttendence)),
           ),
         ],
       ),
@@ -203,7 +203,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
         if (state is AddItemDone) {
           Navigator.pop(context);
         } else if (state is AddItemSaveFailed) {
-          _showInSnackBar(Messages.of(context).formerror);
+          _showInSnackBar(Messages.of(context).formError);
         }
       },
       child: Scaffold(

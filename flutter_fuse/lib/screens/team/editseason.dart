@@ -52,7 +52,7 @@ class _EditSeasonScreenState extends State<EditSeasonScreen> {
       var season = state.season.rebuild((b) => b..name = _seasonName);
       bloc.add(SingleSeasonUpdate(season: season));
     } else {
-      _showInSnackBar(Messages.of(context).formerror);
+      _showInSnackBar(Messages.of(context).formError);
     }
   }
 
@@ -68,7 +68,7 @@ class _EditSeasonScreenState extends State<EditSeasonScreen> {
             decoration: InputDecoration(
               icon: const Icon(Icons.event_note),
               hintText: Messages.of(context).season,
-              labelText: Messages.of(context).newseasonhint,
+              labelText: Messages.of(context).newSeasonHint,
             ),
             validator: (s) {
               return _validations.validateDisplayName(context, s);

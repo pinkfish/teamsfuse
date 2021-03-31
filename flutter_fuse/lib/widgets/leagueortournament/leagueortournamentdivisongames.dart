@@ -77,7 +77,7 @@ class _LeagueOrTournamentDivisonDetailsState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Text(Messages.of(context).nogames),
+                    Text(Messages.of(context).noGames),
                     Align(
                       alignment: Alignment.topLeft,
                       child: FlatButton(
@@ -94,7 +94,7 @@ class _LeagueOrTournamentDivisonDetailsState
             } else {
               return Container(
                 margin: EdgeInsets.all(5.0),
-                child: Text(Messages.of(context).nogames),
+                child: Text(Messages.of(context).noGames),
               );
             }
           }

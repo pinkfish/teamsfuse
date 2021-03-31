@@ -36,7 +36,7 @@ class TeamName extends StatelessWidget {
           if (teamState is SingleTeamUninitialized) {
             inner = Text(Messages.of(context).loading, style: style);
           } else if (teamState is SingleTeamDeleted) {
-            inner = Text(Messages.of(context).teamdeleted, style: style);
+            inner = Text(Messages.of(context).teamDeleted, style: style);
           } else {
             inner = Text(teamState.team.name, style: style);
           }

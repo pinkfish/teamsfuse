@@ -55,7 +55,7 @@ class AddSeasonDialog extends Dialog {
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
               labelText: Messages.of(context).season,
-              hintText: Messages.of(context).newseasonhint,
+              hintText: Messages.of(context).newSeasonHint,
             ),
           ),
         ),
