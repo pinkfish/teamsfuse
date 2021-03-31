@@ -30,6 +30,15 @@ void main() async {
   final trace = AnalyticsSubsystemImpl.instance.newTrace('startup');
   trace.start();
 
+  // Trace the errors to crashalytics early in the process.
+  var loggingData = LoggingData();
+  unawaited(AnalyticsSubsystemImpl.analytics.logAppOpen());
+
+  // Send error logs up to crashalytics.
+  FlutterError.onError = (details) {
+    loggingData.logFlutterError(details);
+  };
+
   Bloc.observer = _SimpleBlocDelegate();
   var storageDirectory = Directory('');
   if (!kIsWeb) {
@@ -94,15 +103,6 @@ void main() async {
   // Load notifications after the app config has loaded.
   var config = AppConfiguration();
   unawaited(config.load());
-
-  var loggingData = LoggingData();
-
-  unawaited(AnalyticsSubsystemImpl.analytics.logAppOpen());
-
-  // Send error logs up to crashalytics.
-  FlutterError.onError = (details) {
-    loggingData.logFlutterError(details);
-  };
 
   // License for the freepik picture.
   LicenseRegistry.addLicense(() async* {

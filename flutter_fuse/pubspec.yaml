@@ -14,22 +14,23 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  cloud_firestore: ^1.0.1
+  cloud_firestore: ^1.0.3
   firebase_auth: ^1.0.1
-  firebase_core: ^1.0.1
-  firebase_storage: ^8.0.0
+  firebase_core: ^1.0.2
+  firebase_storage: ^8.0.1
   firebase_analytics: ^7.1.1
-  firebase_performance: ^0.6.0
+  firebase_performance: ^0.6.0+1
   firebase_crashlytics: ^1.0.0
-  firebase_messaging: ^9.0.0
-  cached_network_image: ^2.5.1
+  firebase_messaging: ^9.1.0
+  firebase_remote_config: ^0.9.0-dev.1
+  cached_network_image: ^3.0.0
   charts_flutter:
     git:
       url: https://github.com/pinkfish/charts.git
       path: charts_flutter
   flutter_bloc: ^7.0.0
   flutter_svg: ^0.21.0-nullsafety.0
-  video_player: ^2.0.2
+  video_player: ^2.1.0
   material_design_icons_flutter: ^4.0.5955
   bloc: ^7.0.0
   shared_preferences: ^2.0.5
@@ -40,21 +41,21 @@ dependencies:
   uuid: any
   url_launcher: ^6.0.2
   flutter_native_timezone: ^1.0.10
-  google_maps_flutter: ^2.0.1
+  google_maps_flutter: ^2.0.2
   geolocator: ^7.0.1
   google_api_headers: ^1.0.0
   fusemodel:
     path: ../fusemodel
   sqflite: any
   badges: ^1.2.0
-  universal_io: ^2.0.1
+  universal_io: ^2.0.3
 
   fluro: any
-  image_picker: ^0.7.3
-  timezone: ^0.7.0-nullsafety.0
+  image_picker: ^0.7.4
+  timezone: ^0.7.0
   tuple: any
   sliver_calendar: ^0.4.2
-  flutter_cache_manager: ^2.1.2
+  flutter_cache_manager: ^3.0.1
   flutter_keyboard_visibility: ^5.0.0
 
   cupertino_icons: ^1.0.2
@@ -63,25 +64,21 @@ dependencies:
   built_collection: ^5.0.0
   pedantic: ^1.11.0
   carousel_slider: ^3.0.0
-  exif: ^1.0.3
+  exif: ^2.0.0
 
 dependency_overrides:
-  analyzer: ^1.2.0
-  mockito: ^5.0.2
+  analyzer: ^1.3.0
   intl: ^0.17.0
-  xml: ^5.0.2
-  crypto: ^3.0.0
-  convert: ^3.0.0
   petitparser: ^4.0.2
+  intl_translation: ^0.17.10+1
+  args: ^2.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   intl_translation: ^0.17.10+1
-  flutter_driver:
-    sdk: flutter
   test: any
-  mockito: ^5.0.2
+  mockito: ^5.0.3
   golden_toolkit: ^0.9.0
 
 flutter:
