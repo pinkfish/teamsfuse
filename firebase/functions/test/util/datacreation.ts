@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { DocumentSnapshot } from '@google-cloud/firestore';
+import { DateTime } from 'luxon';
 
 interface TeamAndSeason {
     team: DocumentSnapshot;
@@ -149,4 +150,59 @@ export async function createClub(members = ['member'], admins = ['waffles'], uid
             members: userData,
         });
     return await admin.firestore().collection('Clubs').doc(clubDocId).get();
+}
+
+export async function createOpponent(teamUid: string): Promise<DocumentSnapshot> {
+    const opponentUid = uuid();
+
+    await admin.firestore().collection('Teams').doc(teamUid).collection('Opponents').doc(opponentUid).set({
+        teamUid: teamUid,
+        uid: opponentUid,
+        name: 'Test Opponent',
+    });
+
+    return admin.firestore().collection('Teams').doc(teamUid).collection('Opponents').doc(opponentUid).get();
+}
+
+export async function createGame(
+    teamUid: string,
+    seasonUid: string,
+    arriveTime: DateTime,
+    opponentUid: string,
+    name: string | undefined,
+): Promise<DocumentSnapshot> {
+    const gameDocId = uuid();
+    const sharedGameDocId = uuid();
+
+    await admin
+        .firestore()
+        .collection('Games')
+        .doc(gameDocId)
+        .set({
+            name: name ?? 'Game',
+            uid: gameDocId,
+            teamUid: teamUid,
+            seasonUid: seasonUid,
+            sharedDataUid: sharedGameDocId,
+            sharedData: {
+                name: name ?? 'Game',
+                place: {
+                    address: '1502 west test drive',
+                    name: 'Test High School',
+                    lat: 12,
+                    long: 34,
+                },
+                uid: sharedGameDocId,
+                time: arriveTime.valueOf(),
+                type: 'Game',
+                timezone: 'America/Los_Angeles',
+            },
+            notes: 'Do not drive backwards',
+            uniform: 'white/red/black',
+            endTime: arriveTime.valueOf() + 3000,
+            arrivalTime: arriveTime.valueOf(),
+            opponentUid: opponentUid,
+        });
+
+    return admin.firestore().collection('Games').doc(gameDocId).get();
 }

@@ -1,20 +1,18 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import * as moment from 'moment-timezone';
+import { DateTime, Duration } from 'luxon';
 import { notifyForGame, PayloadData } from '../util/notifyforgame';
 
 const db = admin.firestore();
 
 // 2 hours.
-const CUT_OFF_DURATION = moment.duration({ hours: 2 });
-const LOOK_AHEAD_DURATION = moment.duration({ hours: 2 });
+const CUT_OFF_DURATION = Duration.fromObject({ hours: 2 });
+const LOOK_AHEAD_DURATION = Duration.fromObject({ hours: 2 });
 
 export const onHourlyPublish = functions.pubsub.topic('hourly-tick').onPublish(async (data, context) => {
-    console.log('Doing the hours work.');
-
     // Do something useful every hour.
-    const now = moment.utc().add(LOOK_AHEAD_DURATION);
-    const cutoff = moment.utc().subtract(CUT_OFF_DURATION);
+    const now = DateTime.now().toUTC().plus(LOOK_AHEAD_DURATION);
+    const cutoff = DateTime.now().toUTC().minus(CUT_OFF_DURATION);
     const snapshot = await db
         .collection('Games')
         .where('arrivalTime', '>', cutoff.valueOf())
@@ -33,14 +31,13 @@ export const onHourlyPublish = functions.pubsub.topic('hourly-tick').onPublish(a
                 continue;
             }
             // Get the shared data for the game too.
-            const sharedGame = await db.collection('GamesShared').doc(doc.data().sharedDataUid).get();
             // Send notification to users, get all the players.
             // Get all the players users.
             // Send notifications.
             const timeToLive = 7200;
-            const sharedGameData = sharedGame.data();
+            const sharedGameData = docData.sharedData;
             if (sharedGameData === null || sharedGameData === undefined) {
-                console.log('Already notified about ' + doc.id);
+                console.log('Cannot find shared data ' + doc.id);
                 continue;
             }
             const message: admin.messaging.MessagingOptions = {
@@ -57,13 +54,13 @@ export const onHourlyPublish = functions.pubsub.topic('hourly-tick').onPublish(a
                 title: '',
                 body: '',
             };
-            if (sharedGameData.type === 'EventType.Practice') {
+            if (sharedGameData.type === 'Practice') {
                 message.title = 'Practice for {{team.name}}';
                 message.body = 'Starting at {{arrivalTime}} to {{endTime}}';
-            } else if (sharedGameData.type === 'EventType.Game') {
+            } else if (sharedGameData.type === 'Game') {
                 message.title = 'Game vs {{opponent.name}} for {{team.name}}';
                 message.body = 'Arrive by {{arrivalTime}}, game at {{gameTime}}';
-            } else if (sharedGameData.type === 'EventType.Event') {
+            } else if (sharedGameData.type === 'Event') {
                 message.title = 'Event for {{team.name}}';
                 message.body = 'Arrive by {{arrivalTime}}';
             }
@@ -83,8 +80,6 @@ export const onHourlyPublish = functions.pubsub.topic('hourly-tick').onPublish(a
             }
 
             if (payload) {
-                console.log(payload);
-
                 await notifyForGame(doc, payload, message, '', false);
             }
         } else {

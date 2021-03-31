@@ -16,7 +16,7 @@ export interface PayloadData {
     from?: string;
     uniform?: string;
     text?: string;
-    ts?: string;
+    ts?: number;
     k?: string;
     p?: string;
     a?: string;

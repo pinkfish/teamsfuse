@@ -32,16 +32,18 @@ export const onPublish = functions.pubsub.topic('daily-tick').onPublish(async (d
 
         const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
         console.log(projectId);
-        const databaseName = client.databasePath(projectId, '(default)');
-        console.log(databaseName);
-        const responses = await client.exportDocuments({
-            name: databaseName,
-            outputUriPrefix: 'gs://fusefirestorebucket/teamsfuse',
-            // Backup the whole database.
-            collectionIds: [],
-        });
-        const response = responses[0];
-        console.log(`Operation Name: ${response['name']}`);
+        if (projectId !== undefined) {
+            const databaseName = client.databasePath(projectId, '(default)');
+            console.log(databaseName);
+            const responses = await client.exportDocuments({
+                name: databaseName,
+                outputUriPrefix: 'gs://fusefirestorebucket/teamsfuse',
+                // Backup the whole database.
+                collectionIds: [],
+            });
+            const response = responses[0];
+            console.log(`Operation Name: ${response['name']}`);
+        }
     } catch (err) {
         console.error(err);
     }
