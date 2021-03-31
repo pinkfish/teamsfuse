@@ -215,7 +215,7 @@ class GameDetailsBase extends StatelessWidget {
     if (game.sharedData.timezone != local.name) {
       var abbr = getLocation(game.sharedData.timezone)
           .timeZone(game.sharedData.time.millisecondsSinceEpoch)
-          .abbr;
+          .abbreviation;
 
       tzShortName = ' ($abbr)';
     }

@@ -63,7 +63,7 @@ class GameSharedCard extends StatelessWidget {
     if (game.timezone != local.name) {
       tzShortName = getLocation(game.timezone)
           .timeZone(game.time.millisecondsSinceEpoch)
-          .abbr;
+          .abbreviation;
     }
 
     if (game.time != game.endTime) {

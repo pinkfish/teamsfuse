@@ -86,7 +86,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     if (widget.game.timezone != local.name) {
       var abbr = getLocation(widget.game.timezone)
           .timeZone(widget.game.time.millisecondsSinceEpoch)
-          .abbr;
+          .abbreviation;
       tzShortName = ' ($abbr)';
     }
 

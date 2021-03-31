@@ -71,7 +71,7 @@ class GameTitle extends StatelessWidget {
     if (game.sharedData.timezone != local.name) {
       tzShortName = getLocation(game.sharedData.timezone)
           .timeZone(game.sharedData.time.millisecondsSinceEpoch)
-          .abbr;
+          .abbreviation;
     }
 
     if (game.sharedData.time != game.sharedData.endTime) {
