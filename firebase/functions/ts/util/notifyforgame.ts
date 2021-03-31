@@ -47,42 +47,43 @@ export async function notifyForGame(
     excludeUser: string,
     onlyGames: boolean,
 ) {
-    console.log('Processing game ' + game.id);
+    const gameData = game.data();
     // Send notification to users, get all the players.
     // Get all the players users.
     // Send notifications.
-    const gameData = game.data();
     if (gameData === undefined || gameData === null) {
         console.error('Invalid game data ' + game.id);
         return;
     }
+    console.log('Processing game ' + game.id + ' [' + gameData.seasonUid + ']');
     const season = await db.collection('Seasons').doc(gameData.seasonUid).get();
-    const teamRef = await db.collection('Teams').doc(gameData.teamUid);
-    const team = await teamRef.get();
-    const sharedGame = await db.collection('GamesShared').doc(gameData.sharedDataUid).get();
     const seasonData = season.data();
     if (seasonData === null || seasonData === undefined) {
-        console.error('Invalid game data, season missing ' + gameData.seasonUid + ' game ' + gameData.uid);
+        console.error('Invalid game data, season missing [' + gameData.seasonUid + '] game ' + gameData.uid);
         return;
     }
+    const teamRef = db.collection('Teams').doc(gameData.teamUid);
+    const team = await teamRef.get();
     const teamData = team.data();
     if (teamData === null || teamData === undefined) {
-        console.error('Invalid game data, season missing ' + gameData.teamUid + ' game ' + gameData.uid);
+        console.error('Invalid game data, team missing ' + gameData.teamUid + ' game ' + gameData.uid);
         return;
     }
-    const sharedGameData = sharedGame.data();
+    const sharedGameData = gameData.sharedData;
     if (sharedGameData === null || sharedGameData === undefined) {
-        console.error('Invalid game data, season missing ' + gameData.sharedDataUid + ' game ' + gameData.uid);
+        console.error('Invalid game data, shared game missing ' + gameData.sharedDataUid + ' game ' + gameData.uid);
         return;
     }
 
     let opponent: functions.firestore.DocumentSnapshot | null = null;
+    let opponentData: { [field: string]: any } | undefined = undefined;
     if (payload.title) {
         payload.titleComp = handlebars.compile<{ [name: string]: any }>(payload.title);
         payload.bodyComp = handlebars.compile<{ [name: string]: any }>(payload.body);
     }
     if (gameData.opponentUid !== null && gameData.opponentUid !== '') {
         opponent = await teamRef.collection('Opponents').doc(gameData.opponentUid).get();
+        opponentData = opponent.data();
     }
 
     // Put in all the default pieces.  This will mean we always open a game for these
@@ -102,8 +103,10 @@ export async function notifyForGame(
         }
     }
     console.log('Checking season ' + season.id);
+    console.log(seasonData.players);
     // Now get the players.
     for (const playerId in seasonData.players) {
+        console.log('Looking at ' + playerId);
         if (Object.prototype.hasOwnProperty.call(seasonData.players, playerId)) {
             // Send the notification to this player.
             const players = await db.collection('Players').doc(playerId).get();
@@ -120,7 +123,16 @@ export async function notifyForGame(
                 if (Object.prototype.hasOwnProperty.call(player.user, userId)) {
                     if (excludeUser !== userId) {
                         const user = await db.collection('UserData').doc(userId).get();
-                        await handleTokens(user, game, team, opponent, season, sharedGame, payload, options);
+                        await handleTokens(
+                            user,
+                            gameData,
+                            teamData,
+                            opponentData,
+                            seasonData,
+                            sharedGameData,
+                            payload,
+                            options,
+                        );
                         console.log('Tokens for  ' + userId);
                     } else {
                         console.log('Excluding ' + userId);
@@ -135,41 +147,21 @@ export async function notifyForGame(
 
 async function handleTokens(
     user: functions.firestore.DocumentSnapshot,
-    game: functions.firestore.DocumentSnapshot,
-    team: functions.firestore.DocumentSnapshot,
-    opponent: functions.firestore.DocumentSnapshot | null,
-    season: functions.firestore.DocumentSnapshot,
-    sharedGame: functions.firestore.DocumentSnapshot,
+    gameData: { [field: string]: any },
+    teamData: { [field: string]: any },
+    opponentData: { [field: string]: any } | undefined,
+    seasonData: { [field: string]: any },
+    sharedGameData: { [field: string]: any },
     payload: PayloadData,
     options: admin.messaging.MessagingOptions,
 ) {
+    console.log(user);
     if (user.exists) {
         const userData = user.data();
         if (userData === null || userData === undefined) {
-            console.error('Invalid game data, user missing ' + user.id + ' game ' + game.id);
+            console.log('User Data not found');
             return;
         }
-        const seasonData = season.data();
-        if (seasonData === null || seasonData === undefined) {
-            console.error('Invalid game data, season missing ' + season.id + ' game ' + game.id);
-            return;
-        }
-        const teamData = team.data();
-        if (teamData === null || teamData === undefined) {
-            console.error('Invalid game data, season missing ' + team.id + ' game ' + game.id);
-            return;
-        }
-        const sharedGameData = sharedGame.data();
-        if (sharedGameData === null || sharedGameData === undefined) {
-            console.error('Invalid game data, season missing ' + sharedGame.id + ' game ' + game.id);
-            return;
-        }
-        const gameData = game.data();
-        if (gameData === null || gameData === undefined) {
-            console.error('Invalid game data, game ' + game.id);
-            return;
-        }
-
         console.log('Processing user ' + user.id);
 
         // Setup the context and do the templates.
@@ -177,21 +169,27 @@ async function handleTokens(
         const gameTime = moment.utc(sharedGameData.time).tz(sharedGameData.timezone).format('ddd MMM D LTS');
         const endTime = moment.utc(sharedGameData.endTime).tz(sharedGameData.timezone).format('ddd MMM D LTS');
         console.log(
-            'Game ' + game.id + ' ' + arrivalTime + ' ' + gameTime + ' ' + endTime + ' ' + sharedGameData.timezone,
+            'Game ' + gameData.Uid + ' ' + arrivalTime + ' ' + gameTime + ' ' + endTime + ' ' + sharedGameData.timezone,
         );
         console.log(
-            'Game ' + game.id + ' ' + gameData.arrivalTime + ' ' + sharedGameData.time + ' ' + sharedGameData.endTime,
+            'Game ' +
+                gameData.Uid +
+                ' ' +
+                gameData.arrivalTime +
+                ' ' +
+                sharedGameData.time +
+                ' ' +
+                sharedGameData.endTime,
         );
-        const opponentData = opponent ? opponent.data() : undefined;
         const context = {
             arrivalTime: arrivalTime,
             endTime: endTime,
             gameTime: gameTime,
-            game: game.data(),
-            team: team.data(),
+            game: gameData,
+            team: teamData,
             sharedGame: sharedGameData,
             opponent: opponentData,
-            season: season.data(),
+            season: seasonData,
         };
 
         const sendMessage: admin.messaging.MessagingPayload = {
@@ -213,12 +211,12 @@ async function handleTokens(
 
         if (sendMessage['data'] === null || sendMessage['data'] === undefined) {
             sendMessage['data'] = {
-                gameUid: game.id,
+                gameUid: gameData.Uid,
                 action: 'openGame',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };
         } else {
-            sendMessage['data']['gameUid'] = game.id;
+            sendMessage['data']['gameUid'] = gameData.Uid;
             sendMessage['data']['click_action'] = 'FLUTTER_NOTIFICATION_CLICK';
         }
 
@@ -249,7 +247,7 @@ async function handleTokens(
             await handleNotifyResponse(user, response);
         }
     } else {
-        console.log('No tokens for ' + user.id);
+        console.log('No user ' + user.id);
     }
 
     return;

@@ -92,6 +92,16 @@ export async function createSeasonAndTeam(
                     admin: true,
                 },
             },
+            players: {
+                player: {
+                    me: true,
+                    added: true,
+                    public: false,
+                    jerseyNumber: '42',
+                    playerUid: 'player',
+                    role: 'Player',
+                },
+            },
         });
 
     return {
@@ -174,6 +184,22 @@ export async function createGame(
     const gameDocId = uuid();
     const sharedGameDocId = uuid();
 
+    const sharedData = {
+        name: name ?? 'Game',
+        place: {
+            address: '1502 west test drive',
+            name: 'Test High School',
+            lat: 12,
+            long: 34,
+        },
+        uid: sharedGameDocId,
+        time: arriveTime.valueOf(),
+        type: 'Game',
+        timezone: 'America/Los_Angeles',
+    };
+
+    await admin.firestore().collection('GamesShared').doc(sharedGameDocId).set(sharedData);
+
     await admin
         .firestore()
         .collection('Games')
@@ -184,19 +210,7 @@ export async function createGame(
             teamUid: teamUid,
             seasonUid: seasonUid,
             sharedDataUid: sharedGameDocId,
-            sharedData: {
-                name: name ?? 'Game',
-                place: {
-                    address: '1502 west test drive',
-                    name: 'Test High School',
-                    lat: 12,
-                    long: 34,
-                },
-                uid: sharedGameDocId,
-                time: arriveTime.valueOf(),
-                type: 'Game',
-                timezone: 'America/Los_Angeles',
-            },
+            sharedData: sharedData,
             notes: 'Do not drive backwards',
             uniform: 'white/red/black',
             endTime: arriveTime.valueOf() + 3000,
