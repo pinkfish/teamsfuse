@@ -25,7 +25,7 @@ test.mockConfig({
     },
 });
 
-import { onDailyPublish } from '../../../ts/cron/daily.f';
+import { onDailyPublish, testExport } from '../../../ts/cron/daily.f';
 
 describe('Cron tests - daily', () => {
     let spy: sinon.SinonStub<
@@ -37,9 +37,11 @@ describe('Cron tests - daily', () => {
         ],
         Promise<void>
     >;
+    let backupDb: sinon.SinonStub<[databaseName: string], Promise<void>>;
 
     before(() => {
         spy = sinon.stub(notifyforgame, 'emailForGame');
+        backupDb = sinon.stub(testExport, 'doExport');
         Settings.now = () => new Date(2018, 4, 25, 12, 0).valueOf();
         return;
     });
@@ -57,6 +59,8 @@ describe('Cron tests - daily', () => {
         const seasonDocId = teamAndSeason.season.id;
         // Just make sure creating a club actually works.
         await test.wrap(onDailyPublish)(null, undefined);
+        sinon.assert.calledWith(backupDb, 'projects/teamsfuse/databases/(default)');
+
         sinon.assert.notCalled(spy);
         await admin.firestore().collection('Teams').doc(teamDocId).delete();
         await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
@@ -74,21 +78,80 @@ describe('Cron tests - daily', () => {
         // Just make sure creating a club actually works.
         try {
             await test.wrap(onDailyPublish)(null, undefined);
+            sinon.assert.calledWith(backupDb, 'projects/teamsfuse/databases/(default)');
+
             sinon.assert.calledWith(
                 spy,
                 sinon.match.any,
                 {
-                    ts: 1527249600000,
-                    k: gameDoc.id,
-                    a: '1502 west test drive',
-                    p: undefined,
-                    click_action: 'GAME',
-                    tag: gameDoc.id,
-                    title: '',
-                    body: '',
+                    from: 'noreply@email.teamsfuse.com',
+                    title: '[{{team.name}}] Game at {{startTime}} vs {{opponent.name}}',
+                    text:
+                        '\n' +
+                        'Reminder for upcoming game with {{team.name}}, details below:\n' +
+                        '\n' +
+                        'Arrive At   : {{arrivalTime}}\n' +
+                        'Start Time  : {{startTime}}\n' +
+                        'Address     : {{sharedGame.place.address}}\n' +
+                        'PlaceName   : {{sharedGame.place.name}}\n' +
+                        'PlaceNotes  : {{sharedGame.place.notes}}\n' +
+                        'Uniform     : {{game.uniform}}\n' +
+                        'Notes       : {{game.notes}}\n' +
+                        '\n' +
+                        'Availability\n' +
+                        '{{textAvailability}}\n' +
+                        '\n' +
+                        'To disable these emails, update your user settings to turn off email for upcoming games.\n' +
+                        '\n' +
+                        'Map: {{directionsUrl}}\n' +
+                        '\n' +
+                        'http://www.teamsfuses.com/event/{{team.uid}}/{{game.uid}}\n' +
+                        '\n' +
+                        '---\n' +
+                        'Sent by TeamsFuse http://www.teamsfuse.com\n',
+                    body:
+                        '\n' +
+                        'Reminder for upcoming game with <b>{{team.name}}</b>, details below:\n' +
+                        '\n' +
+                        '<img src="{{teamPhotoUrl}}" width=100 height=100>\n' +
+                        '\n' +
+                        '<h4><a href="http://www.teamsfuses.com/event/{{team.uid}}/{{game.uid}}">Details</a></h4>\n' +
+                        '<table>\n' +
+                        '<tr>\n' +
+                        '<td>Arrive At</td><td>{{arrivalTime}}</td>\n' +
+                        '</tr>\n' +
+                        '<tr>\n' +
+                        '<td>Start Time</td><td>{{startTime}}</td>\n' +
+                        '</tr>\n' +
+                        '<tr>\n' +
+                        '<td>Address     </td><td><a href="{{directionsUrl}}">{{sharedGame.place.address}}</a></td>\n' +
+                        '</tr>\n' +
+                        '<tr>\n' +
+                        '<td>PlaceName   </td><td> {{sharedGame.place.name}}</td>\n' +
+                        '</tr>\n' +
+                        '<tr>\n' +
+                        '<td>PlaceNotes  </td><td> {{sharedGame.place.notes}}</td>\n' +
+                        '</tr>\n' +
+                        '<tr>\n' +
+                        '<td>Uniform     </td><td> {{game.uniform}}</td>\n' +
+                        '</tr>\n' +
+                        '<tr>\n' +
+                        '<td>Notes       </td><td> {{game.notes}}</td>\n' +
+                        '</tr>\n' +
+                        '</table>\n' +
+                        '\n' +
+                        '<h4>Availability</h4>\n' +
+                        '{{htmlAvailability}}\n' +
+                        '\n' +
+                        '<p>\n' +
+                        'To disable these emails, update your user settings to turn off email for upcoming games.\n' +
+                        '<p>\n' +
+                        'Sent by <a href="http://www.teamsfuse.com"><i>TeamsFuse</i></a>\n',
+                    tag: 'email',
+                    click_action: 'openGame',
                 },
                 '',
-                '',
+                'emailUpcoming',
             );
         } finally {
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
@@ -116,21 +179,79 @@ describe('Cron tests - daily', () => {
         try {
             await test.wrap(onDailyPublish)(null, undefined);
             for (const idx in gameDocs) {
+                console.log(idx);
                 sinon.assert.calledWith(
                     spy,
                     sinon.match.any,
                     {
-                        ts: 1527249600000,
-                        k: gameDocs[idx].id,
-                        a: '1502 west test drive',
-                        p: undefined,
-                        click_action: 'GAME',
-                        tag: gameDocs[idx].id,
-                        title: '',
-                        body: '',
+                        from: 'noreply@email.teamsfuse.com',
+                        title: '[{{team.name}}] Game at {{startTime}} vs {{opponent.name}}',
+                        text:
+                            '\n' +
+                            'Reminder for upcoming game with {{team.name}}, details below:\n' +
+                            '\n' +
+                            'Arrive At   : {{arrivalTime}}\n' +
+                            'Start Time  : {{startTime}}\n' +
+                            'Address     : {{sharedGame.place.address}}\n' +
+                            'PlaceName   : {{sharedGame.place.name}}\n' +
+                            'PlaceNotes  : {{sharedGame.place.notes}}\n' +
+                            'Uniform     : {{game.uniform}}\n' +
+                            'Notes       : {{game.notes}}\n' +
+                            '\n' +
+                            'Availability\n' +
+                            '{{textAvailability}}\n' +
+                            '\n' +
+                            'To disable these emails, update your user settings to turn off email for upcoming games.\n' +
+                            '\n' +
+                            'Map: {{directionsUrl}}\n' +
+                            '\n' +
+                            'http://www.teamsfuses.com/event/{{team.uid}}/{{game.uid}}\n' +
+                            '\n' +
+                            '---\n' +
+                            'Sent by TeamsFuse http://www.teamsfuse.com\n',
+                        body:
+                            '\n' +
+                            'Reminder for upcoming game with <b>{{team.name}}</b>, details below:\n' +
+                            '\n' +
+                            '<img src="{{teamPhotoUrl}}" width=100 height=100>\n' +
+                            '\n' +
+                            '<h4><a href="http://www.teamsfuses.com/event/{{team.uid}}/{{game.uid}}">Details</a></h4>\n' +
+                            '<table>\n' +
+                            '<tr>\n' +
+                            '<td>Arrive At</td><td>{{arrivalTime}}</td>\n' +
+                            '</tr>\n' +
+                            '<tr>\n' +
+                            '<td>Start Time</td><td>{{startTime}}</td>\n' +
+                            '</tr>\n' +
+                            '<tr>\n' +
+                            '<td>Address     </td><td><a href="{{directionsUrl}}">{{sharedGame.place.address}}</a></td>\n' +
+                            '</tr>\n' +
+                            '<tr>\n' +
+                            '<td>PlaceName   </td><td> {{sharedGame.place.name}}</td>\n' +
+                            '</tr>\n' +
+                            '<tr>\n' +
+                            '<td>PlaceNotes  </td><td> {{sharedGame.place.notes}}</td>\n' +
+                            '</tr>\n' +
+                            '<tr>\n' +
+                            '<td>Uniform     </td><td> {{game.uniform}}</td>\n' +
+                            '</tr>\n' +
+                            '<tr>\n' +
+                            '<td>Notes       </td><td> {{game.notes}}</td>\n' +
+                            '</tr>\n' +
+                            '</table>\n' +
+                            '\n' +
+                            '<h4>Availability</h4>\n' +
+                            '{{htmlAvailability}}\n' +
+                            '\n' +
+                            '<p>\n' +
+                            'To disable these emails, update your user settings to turn off email for upcoming games.\n' +
+                            '<p>\n' +
+                            'Sent by <a href="http://www.teamsfuse.com"><i>TeamsFuse</i></a>\n',
+                        tag: 'email',
+                        click_action: 'openGame',
                     },
                     '',
-                    '',
+                    'emailUpcoming',
                 );
             }
         } finally {
@@ -164,7 +285,7 @@ describe('Cron tests - daily', () => {
             seasonDocId,
             DateTime.now()
                 .toUTC()
-                .plus(Duration.fromObject({ day: 2 })),
+                .plus(Duration.fromObject({ day: 6 })),
             opponent.id,
             'Froggy',
         );
