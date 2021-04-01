@@ -1,10 +1,20 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as handlebars from 'handlebars';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { sendMail } from './mailgun';
 
 const db = admin.firestore();
+
+// Exposed for testing.
+export const sendToDevice = {
+    sendToDevice: (
+        registrationToken: string | string[],
+        payload: admin.messaging.MessagingPayload,
+        options?: admin.messaging.MessagingOptions | undefined,
+    ): Promise<admin.messaging.MessagingDevicesResponse> =>
+        admin.messaging().sendToDevice(registrationToken, payload, options),
+};
 
 export interface PayloadNotification {
     title?: string;
@@ -55,7 +65,6 @@ export async function notifyForGame(
         console.error('Invalid game data ' + game.id);
         return;
     }
-    console.log('Processing game ' + game.id + ' [' + gameData.seasonUid + ']');
     const season = await db.collection('Seasons').doc(gameData.seasonUid).get();
     const seasonData = season.data();
     if (seasonData === null || seasonData === undefined) {
@@ -102,11 +111,8 @@ export async function notifyForGame(
             return [];
         }
     }
-    console.log('Checking season ' + season.id);
-    console.log(seasonData.players);
     // Now get the players.
     for (const playerId in seasonData.players) {
-        console.log('Looking at ' + playerId);
         if (Object.prototype.hasOwnProperty.call(seasonData.players, playerId)) {
             // Send the notification to this player.
             const players = await db.collection('Players').doc(playerId).get();
@@ -119,8 +125,8 @@ export async function notifyForGame(
                 console.error('Cannot find player ' + playerId);
                 continue;
             }
-            for (const userId in player.user) {
-                if (Object.prototype.hasOwnProperty.call(player.user, userId)) {
+            for (const userId in player.users) {
+                if (Object.prototype.hasOwnProperty.call(player.users, userId)) {
                     if (excludeUser !== userId) {
                         const user = await db.collection('UserData').doc(userId).get();
                         await handleTokens(
@@ -133,14 +139,12 @@ export async function notifyForGame(
                             payload,
                             options,
                         );
-                        console.log('Tokens for  ' + userId);
                     } else {
                         console.log('Excluding ' + userId);
                     }
                 }
             }
         }
-        console.log('Found player  ' + playerId);
     }
     return;
 }
@@ -155,32 +159,17 @@ async function handleTokens(
     payload: PayloadData,
     options: admin.messaging.MessagingOptions,
 ) {
-    console.log(user);
     if (user.exists) {
         const userData = user.data();
         if (userData === null || userData === undefined) {
             console.log('User Data not found');
             return;
         }
-        console.log('Processing user ' + user.id);
 
         // Setup the context and do the templates.
         const arrivalTime = moment.utc(gameData.arrivalTime).tz(sharedGameData.timezone).format('ddd MMM D LTS');
         const gameTime = moment.utc(sharedGameData.time).tz(sharedGameData.timezone).format('ddd MMM D LTS');
         const endTime = moment.utc(sharedGameData.endTime).tz(sharedGameData.timezone).format('ddd MMM D LTS');
-        console.log(
-            'Game ' + gameData.Uid + ' ' + arrivalTime + ' ' + gameTime + ' ' + endTime + ' ' + sharedGameData.timezone,
-        );
-        console.log(
-            'Game ' +
-                gameData.Uid +
-                ' ' +
-                gameData.arrivalTime +
-                ' ' +
-                sharedGameData.time +
-                ' ' +
-                sharedGameData.endTime,
-        );
         const context = {
             arrivalTime: arrivalTime,
             endTime: endTime,
@@ -202,7 +191,6 @@ async function handleTokens(
             },
             data: { ...payload.data },
         };
-        console.log(sendMessage.notification);
 
         if (sendMessage.notification === null || sendMessage.notification === undefined) {
             console.error('No notification section');
@@ -216,16 +204,14 @@ async function handleTokens(
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };
         } else {
-            sendMessage['data']['gameUid'] = gameData.Uid;
+            sendMessage['data']['gameUid'] = gameData.uid;
             sendMessage['data']['click_action'] = 'FLUTTER_NOTIFICATION_CLICK';
         }
 
-        console.log(sendMessage);
         const newTokens = [];
         for (const tokenKey in userData.tokens) {
-            if (Object.prototype.hasOwnProperty.call(userData.tokens, tokenKey)) {
-                const myData = userData.tokens[tokenKey];
-                if (myData) {
+            if (userData.tokens.hasOwnProperty(tokenKey)) {
+                if (tokenKey) {
                     newTokens.push(tokenKey);
                 } else {
                     console.log('Token cancelled ' + tokenKey);
@@ -237,13 +223,11 @@ async function handleTokens(
             }
         }
         if (newTokens.length > 0) {
-            console.log('Sending to tokens');
-            console.log(newTokens);
             const mess: admin.messaging.MessagingPayload = {
                 ...sendMessage,
             };
 
-            const response = await admin.messaging().sendToDevice(newTokens, mess, options);
+            const response = await sendToDevice.sendToDevice(newTokens, mess, options);
             await handleNotifyResponse(user, response);
         }
     } else {
@@ -334,7 +318,6 @@ export async function emailForGame(
     excludeUser: string,
     userFlag: string,
 ) {
-    console.log('Processing game ' + game.id);
     const gameData = game.data();
     if (gameData === null || gameData === undefined) {
         console.error('Invalid game data, game ' + game.id);
@@ -382,7 +365,6 @@ export async function emailForGame(
         click_action: 'FLUTTER_NOTIFICATION_CLICK',
     };
 
-    console.log('Checking season ' + season.id);
     // Now get the players.
     for (const playerId in seasonData.players) {
         if (Object.prototype.hasOwnProperty.call(seasonData.players, playerId)) {
@@ -411,14 +393,12 @@ export async function emailForGame(
                             } catch (error) {
                                 console.error('There was an error while sending the notification:', error);
                             }
-                            console.log('UserData for  ' + userId);
                         } else {
                             console.log('Excluding ' + userId);
                         }
                     }
                 }
             }
-            console.log('Found player  ' + playerId);
         }
     }
 }
@@ -434,7 +414,6 @@ async function doTheNotification(
     userFlag: string,
 ) {
     if (user.exists) {
-        console.log('Processing user ' + user.id + ' ' + userFlag);
         const gameData = game.data();
         if (gameData === null || gameData === undefined) {
             console.error('Shared game data is empty ' + game.id);
@@ -456,7 +435,6 @@ async function doTheNotification(
             return;
         }
         const userData = user.data();
-        console.log(userData);
         if (userData === null || userData === undefined) {
             console.error('Invalid user data ' + user.id);
             return;
@@ -519,19 +497,6 @@ async function doTheNotification(
             availabilityText += result.text;
             availabilityHtml += result.html;
 
-            console.log(
-                'Game ' + game.id + ' ' + arrivalTime + ' ' + gameTime + ' ' + endTime + ' ' + gameData.timezone,
-            );
-            console.log(
-                'Game ' +
-                    game.id +
-                    ' ' +
-                    gameData.arrivalTime +
-                    ' ' +
-                    sharedGameData.time +
-                    ' ' +
-                    sharedGameData.endTime,
-            );
             const opponentData = opponent ? opponent.data() : undefined;
             const context = {
                 arrivalTime: arrivalTime,
@@ -555,8 +520,6 @@ async function doTheNotification(
                 from: payload.fromComp === undefined ? '' : payload.fromComp(context),
                 to: userData.email,
             };
-            console.log(sendPayload);
-            console.log('Emailing to user  ' + userData.email + ' ' + userData.email);
             try {
                 await sendMail(sendPayload);
             } catch (error) {

@@ -133,6 +133,30 @@ export async function createPlayer(users: string[], uid?: string): Promise<Docum
     return await admin.firestore().collection('Players').doc(playerDocId).get();
 }
 
+export async function createUser(tokens: string[], uid?: string): Promise<DocumentSnapshot> {
+    const userDocId = uid ?? uuid();
+    const tokenData: Record<string, boolean> = {};
+    for (const idx in tokens) {
+        const t = tokens[idx];
+        tokenData[t] = true;
+    }
+
+    await admin
+        .firestore()
+        .collection('UserData')
+        .doc(userDocId)
+        .set({
+            displayName: 'User ' + userDocId,
+            uid: userDocId,
+            emailOnUpdates: true,
+            emailUpcoming: true,
+            phone: '425-339-1234',
+            email: 'test@test.com',
+            tokens: tokenData,
+        });
+    return await admin.firestore().collection('UserData').doc(userDocId).get();
+}
+
 export async function createClub(members = ['member'], admins = ['waffles'], uid?: string): Promise<DocumentSnapshot> {
     const clubDocId = uid ?? uuid();
     const userData: Record<string, any> = {};

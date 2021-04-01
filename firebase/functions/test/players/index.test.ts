@@ -62,15 +62,15 @@ describe('Player Tests', () => {
 
     it('update add user, in a team', async () => {
         // Just make sure creating a player actually works.
-        const player = await createPlayer(['me', 'other'], 'player');
+        const player = await createPlayer(['me', 'other'], 'addplayer');
         const teamAndSeason = await createSeasonAndTeam(false, false);
         const playerDocId = player.id;
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
 
         // Add the player to the team.
-        await teamAndSeason.season.ref.update('players.player.added', true);
-        await teamAndSeason.season.ref.update('players.player.me', true);
+        await teamAndSeason.season.ref.update('players.addplayer.added', true);
+        await teamAndSeason.season.ref.update('players.addplayer.me', true);
 
         const oldData = player.data()!;
         oldData['users'] = {};
@@ -103,18 +103,26 @@ describe('Player Tests', () => {
                     me: {
                         added: true,
                         admin: true,
-                        player: true,
+                        addplayer: true,
                     },
                     other: {
                         added: true,
-                        player: true,
+                        addplayer: true,
                     },
                 });
                 expect(myData.players).to.deep.equal({
-                    player: {
+                    addplayer: {
                         added: true,
                         me: true,
                         other: true,
+                    },
+                    player: {
+                        added: true,
+                        jerseyNumber: '42',
+                        me: true,
+                        playerUid: 'player',
+                        public: false,
+                        role: 'Player',
                     },
                 });
             }
@@ -129,11 +137,11 @@ describe('Player Tests', () => {
                     me: {
                         added: true,
                         admin: true,
-                        player: true,
+                        addplayer: true,
                     },
                     other: {
                         added: true,
-                        player: true,
+                        addplayer: true,
                     },
                 });
             }
