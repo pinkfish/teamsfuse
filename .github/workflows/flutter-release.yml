@@ -108,6 +108,12 @@ jobs:
         working-directory: flutter_fuse/lib/services
         if: ${{ matrix.os == 'ios' }}
 
+      # Web specific actions
+      - run: |
+          echo final String googleMapsApiKey = \"${{ secrets.GOOGLE_MAPS_WEB }}\"\; > apikeys.dart
+        working-directory: flutter_fuse/lib/services
+        if: ${{ matrix.os == 'web' }}
+
       # Run the ios and android build.
       - run: |
           flutter packages get
@@ -149,10 +155,6 @@ jobs:
           APPLE_KEY_CONTENT: "${{ secrets.APPLE_APP_API_P8 }}"
 
       # Web specific actions
-      - run: |
-          echo final String googleMapsApiKey = \"${{ secrets.GOOGLE_MAPS_WEB }}\"\; > apikeys.dart
-        working-directory: flutter_fuse/lib/services
-        if: ${{ matrix.os == 'web' }}
       - run: |
           flutter config --enable-web
           flutter build web
