@@ -295,7 +295,7 @@ describe('Notify for games - tests', () => {
                 false,
             );
             const updatedUserDoc = await admin.firestore().collection('UserData').doc(userDoc.id).get();
-            expect(updatedUserDoc.data()!.tokens).to.equal({});
+            expect(updatedUserDoc.data()!.tokens).to.deep.equal({});
             sinon.assert.calledWith(
                 spy,
                 ['1234'],
