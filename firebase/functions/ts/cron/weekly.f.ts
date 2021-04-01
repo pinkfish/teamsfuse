@@ -58,15 +58,15 @@ export const onPublish = functions.pubsub.topic('weekly-tick').onPublish(async (
             };
         }
         const res = doc.data().result.result;
-        if (res === 'GameResult.Win') {
+        if (res === 'Win') {
             seasonScores.win++;
             seasonScores.opponents[doc.data().opponentUid].win++;
         }
-        if (res === 'GameResult.Loss') {
+        if (res === 'Loss') {
             seasonScores.loss++;
             seasonScores.opponents[doc.data().opponentUid].loss++;
         }
-        if (res === 'GameResult.Tie') {
+        if (res === 'Tie') {
             seasonScores.tie++;
             seasonScores.opponents[doc.data().opponentUid].tie++;
         }

@@ -25,22 +25,21 @@ test.mockConfig({
     },
 });
 
-import { onHourlyPublish } from '../../../ts/cron/hourly.f';
+import { onDailyPublish } from '../../../ts/cron/daily.f';
 
-describe('Cron tests - hourly', () => {
+describe('Cron tests - daily', () => {
     let spy: sinon.SinonStub<
         [
             game: functions.firestore.DocumentSnapshot,
             payload: notifyforgame.PayloadData,
-            options: admin.messaging.MessagingOptions,
             excludeUser: string,
-            onlyGames: boolean,
+            userFlag: string,
         ],
-        Promise<never[] | undefined>
+        Promise<void>
     >;
 
     before(() => {
-        spy = sinon.stub(notifyforgame, 'notifyForGame');
+        spy = sinon.stub(notifyforgame, 'emailForGame');
         Settings.now = () => new Date(2018, 4, 25, 12, 0).valueOf();
         return;
     });
@@ -57,7 +56,7 @@ describe('Cron tests - hourly', () => {
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
         // Just make sure creating a club actually works.
-        await test.wrap(onHourlyPublish)(null, undefined);
+        await test.wrap(onDailyPublish)(null, undefined);
         sinon.assert.notCalled(spy);
         await admin.firestore().collection('Teams').doc(teamDocId).delete();
         await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
@@ -74,7 +73,7 @@ describe('Cron tests - hourly', () => {
 
         // Just make sure creating a club actually works.
         try {
-            await test.wrap(onHourlyPublish)(null, undefined);
+            await test.wrap(onDailyPublish)(null, undefined);
             sinon.assert.calledWith(
                 spy,
                 sinon.match.any,
@@ -88,15 +87,8 @@ describe('Cron tests - hourly', () => {
                     title: '',
                     body: '',
                 },
-                {
-                    timeToLive: 7200,
-                    collapseKey: gameDoc.id,
-                    title: 'Game vs {{opponent.name}} for {{team.name}}',
-                    body:
-                        'Arrive by {{arrivalTime}}, game at {{gameTime}} for {{team.name}} located {{game.place.address}} wear {{game.uniform}}',
-                },
                 '',
-                false,
+                '',
             );
         } finally {
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
@@ -122,7 +114,7 @@ describe('Cron tests - hourly', () => {
 
         // Just make sure creating a club actually works.
         try {
-            await test.wrap(onHourlyPublish)(null, undefined);
+            await test.wrap(onDailyPublish)(null, undefined);
             for (const idx in gameDocs) {
                 sinon.assert.calledWith(
                     spy,
@@ -137,15 +129,8 @@ describe('Cron tests - hourly', () => {
                         title: '',
                         body: '',
                     },
-                    {
-                        timeToLive: 7200,
-                        collapseKey: gameDocs[idx].id,
-                        title: 'Game vs {{opponent.name}} for {{team.name}}',
-                        body:
-                            'Arrive by {{arrivalTime}}, game at {{gameTime}} for {{team.name}} located {{game.place.address}} wear {{game.uniform}}',
-                    },
                     '',
-                    false,
+                    '',
                 );
             }
         } finally {
@@ -186,7 +171,7 @@ describe('Cron tests - hourly', () => {
 
         try {
             // Just make sure creating a club actually works.
-            await test.wrap(onHourlyPublish)(null, undefined);
+            await test.wrap(onDailyPublish)(null, undefined);
             sinon.assert.notCalled(spy);
         } finally {
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();

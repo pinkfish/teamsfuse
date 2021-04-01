@@ -13,7 +13,7 @@ const client = new v1.FirestoreAdminClient();
 const CUT_OFF_DURATION = moment.duration({ days: 5 });
 const LOOK_AHEAD_DURATION = moment.duration({ days: 1 });
 
-export const onPublish = functions.pubsub.topic('daily-tick').onPublish(async (data, context) => {
+export const onDailyPublish = functions.pubsub.topic('daily-tick').onPublish(async (data, context) => {
     console.log('Doing the days work.');
 
     // Do something useful every day.
@@ -83,4 +83,4 @@ export const onPublish = functions.pubsub.topic('daily-tick').onPublish(async (d
     return;
 });
 
-export default onPublish;
+export default onDailyPublish;

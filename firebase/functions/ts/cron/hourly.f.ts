@@ -21,7 +21,6 @@ export const onHourlyPublish = functions.pubsub.topic('hourly-tick').onPublish(a
     for (const index in snapshot.docs) {
         if (Object.prototype.hasOwnProperty.call(snapshot.docs, index)) {
             const doc = snapshot.docs[index];
-            console.log('Processing game ' + doc.id);
             if (doc.data().notifiedHour) {
                 console.log('Already notified about ' + doc.id);
                 continue;

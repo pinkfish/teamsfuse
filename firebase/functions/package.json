@@ -15,7 +15,7 @@
         "build": "npm run copytemplate && npm run buildnotemplate",
         "buildnotemplate": "./node_modules/.bin/tslint -p tslint.json && ./node_modules/.bin/tsc",
         "eslintcheck": "eslint --print-config lib/ts/index.js | eslint-config-prettier-check",
-        "test": "npm run build && cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:8080' && firebase emulators:exec --only firestore \"mocha lib/test/**/*.js --no-opts --config './.mocharc.yml'\""
+        "test": "npm run build && cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:8080' && firebase emulators:exec --only firestore \"mocha lib/test/**/*.js lib/test/**/*/*.js  --no-opts --config './.mocharc.yml'\""
     },
     "dependencies": {
         "12": "^1.0.2",
