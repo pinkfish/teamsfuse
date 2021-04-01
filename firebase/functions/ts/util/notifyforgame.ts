@@ -264,52 +264,44 @@ async function handleNotifyResponse(
     return;
 }
 
-interface HtmlOrText {
-    html: string;
-    text: string;
+interface NameAndRole {
+    name: string;
+    role: string;
 }
 
-function formatAvailability(input: string[], season: functions.firestore.DocumentSnapshot): HtmlOrText {
-    let availabilityHtml = '';
-    let availabilityText = '';
-    let extraBitsHtml = '';
-    let extraBitsText = '';
-    const seasonData = season.data();
-    if (seasonData === null || seasonData === undefined) {
-        console.error('Invalid season ' + season.id);
-        return {
-            html: '',
-            text: '',
-        };
-    }
-    for (const playerUid in input) {
-        if (Object.prototype.hasOwnProperty.call(seasonData.players, playerUid)) {
-            const seasonPlayer = seasonData.players[playerUid];
-            if (seasonPlayer.role === 'Player') {
-                availabilityHtml += '<li>' + seasonPlayer.displayName;
-                availabilityText += seasonPlayer.displayName;
-                if (seasonPlayer.jerseyNumber !== null && seasonPlayer.jerseyNumber !== '') {
-                    availabilityHtml += ' (#' + seasonPlayer.jerseyNumber + ')';
-                    availabilityText += ' (#' + seasonPlayer.jerseyNumber + ')\n';
-                }
+async function formatAvailability(input: Set<string>, seasonData: { [field: string]: any }): Promise<NameAndRole[]> {
+    const roles: NameAndRole[] = [];
+
+    console.log(input);
+    for (const playerUid of input) {
+        console.log('here ' + playerUid);
+        const seasonPlayer = seasonData.players[playerUid];
+        // Get the player from the database.seasonData
+        const player = await db.collection('Players').doc(playerUid).get();
+        const playerData = player.data();
+        let playerName = 'unknown';
+        if (playerData !== null && playerData !== undefined) {
+            playerName = playerData.name;
+        }
+        if (seasonPlayer.role === 'Player') {
+            if (seasonPlayer.jerseyNumber !== null && seasonPlayer.jerseyNumber !== '') {
+                playerName += ' (#' + seasonPlayer.jerseyNumber + ')';
+            }
+            roles.push({ name: playerName, role: '' });
+        } else {
+            if (seasonPlayer.role === 'Coach') {
+                roles.push({ name: playerName, role: 'Coach' });
+            } else if (seasonPlayer.role === 'NonPlayer') {
+                roles.push({ name: playerName, role: 'Non Player' });
             } else {
-                extraBitsHtml += '<li>' + seasonPlayer.displayName;
-                extraBitsText += seasonPlayer.displayName;
-                if (seasonPlayer.role === 'Coach') {
-                    extraBitsHtml += ' <b>(Coach)</b>';
-                    extraBitsText += ' COACH\n';
-                } else if (seasonPlayer.role === 'NonPlayer') {
-                    extraBitsHtml += ' <b>(Non player</b>';
-                    extraBitsText += ' NON PLAYER\n';
-                }
+                roles.push({ name: playerName, role: 'Unknown' });
             }
         }
     }
 
-    return {
-        html: availabilityHtml + extraBitsHtml,
-        text: availabilityText + extraBitsText,
-    };
+    roles.sort((a, b) => a.name.localeCompare(b.name));
+
+    return roles;
 }
 
 export async function emailForGame(
@@ -329,7 +321,6 @@ export async function emailForGame(
     const season = await db.collection('Seasons').doc(gameData.seasonUid).get();
     const teamRef = await db.collection('Teams').doc(gameData.teamUid);
     const team = await teamRef.get();
-    const sharedGame = await db.collection('GamesShared').doc(gameData.sharedDataUid).get();
 
     const seasonData = season.data();
     if (seasonData === null || seasonData === undefined) {
@@ -338,12 +329,12 @@ export async function emailForGame(
     }
     const teamData = team.data();
     if (teamData === null || teamData === undefined) {
-        console.error('Invalid game data, season missing ' + team.id + ' game ' + game.id);
+        console.error('Invalid game data, team missing ' + team.id + ' game ' + game.id);
         return;
     }
-    const sharedGameData = sharedGame.data();
+    const sharedGameData = gameData.sharedData;
     if (sharedGameData === null || sharedGameData === undefined) {
-        console.error('Invalid game data, season missing ' + sharedGame.id + ' game ' + game.id);
+        console.error('Invalid game data, shared data ' + gameData.sharedDataUid + ' game ' + game.id);
         return;
     }
 
@@ -352,9 +343,10 @@ export async function emailForGame(
     payload.bodyComp = handlebars.compile(payload.body);
     payload.fromComp = handlebars.compile(payload.from);
 
-    let opponent: functions.firestore.DocumentSnapshot | null = null;
+    let opponentData: { [field: string]: any } | undefined = undefined;
     if (gameData.opponentUid !== null && gameData.opponentUid !== '') {
-        opponent = await teamRef.collection('Opponents').doc(gameData.opponentUid).get();
+        const opponent = await teamRef.collection('Opponents').doc(gameData.opponentUid).get();
+        opponentData = opponent.data();
     }
 
     // Put in all the default pieces.  This will mean we always open a game for these
@@ -367,7 +359,7 @@ export async function emailForGame(
 
     // Now get the players.
     for (const playerId in seasonData.players) {
-        if (Object.prototype.hasOwnProperty.call(seasonData.players, playerId)) {
+        if (seasonData.players.hasOwnProperty(playerId)) {
             // Send the notification to this player.
             const players = await db.collection('Players').doc(playerId).get();
             if (players.exists) {
@@ -375,18 +367,23 @@ export async function emailForGame(
                 if (player === null || player === undefined) {
                     continue;
                 }
-                for (const userId in player.user) {
-                    if (Object.prototype.hasOwnProperty.call(player.user, userId)) {
+                for (const userId in player.users) {
+                    if (player.users.hasOwnProperty(userId)) {
                         if (excludeUser !== userId) {
                             const user = await db.collection('UserData').doc(userId).get();
+                            const userData = user.data();
+                            if (userData === null || userData === undefined) {
+                                console.error('Invalid user data,  ' + userId + ' game ' + game.id);
+                                continue;
+                            }
                             try {
                                 await doTheNotification(
-                                    user,
-                                    game,
-                                    team,
-                                    opponent,
-                                    season,
-                                    sharedGame,
+                                    userData,
+                                    gameData,
+                                    teamData,
+                                    opponentData,
+                                    seasonData,
+                                    sharedGameData,
                                     payload,
                                     userFlag,
                                 );
@@ -404,129 +401,91 @@ export async function emailForGame(
 }
 
 async function doTheNotification(
-    user: functions.firestore.DocumentSnapshot,
-    game: functions.firestore.DocumentSnapshot,
-    team: functions.firestore.DocumentSnapshot,
-    opponent: functions.firestore.DocumentSnapshot | null,
-    season: functions.firestore.DocumentSnapshot,
-    sharedGame: functions.firestore.DocumentSnapshot,
+    userData: { [field: string]: any },
+    gameData: { [field: string]: any },
+    teamData: { [field: string]: any },
+    opponentData: { [field: string]: any } | undefined,
+    seasonData: { [field: string]: any },
+    sharedGameData: { [field: string]: any },
     payload: PayloadData,
     userFlag: string,
 ) {
-    if (user.exists) {
-        const gameData = game.data();
-        if (gameData === null || gameData === undefined) {
-            console.error('Shared game data is empty ' + game.id);
-            return;
+    if (userData.email && userData[userFlag]) {
+        // Setup the context and do the templates.
+        const arrivalTime = moment.utc(gameData.arrivalTime).tz(sharedGameData.timezone).format('ddd MMM D LTS');
+        const gameTime = moment.utc(sharedGameData.time).tz(sharedGameData.timezone).format('ddd MMM D LTS');
+        const endTime = moment.utc(sharedGameData.endTime).tz(sharedGameData.timezone).format('ddd MMM D LTS');
+        let directionsUrl =
+            'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(sharedGameData.place.address);
+        if (sharedGameData.place.placeId !== null) {
+            directionsUrl += '&destination_place_id=' + encodeURIComponent(sharedGameData.place.placeId);
         }
-        const seasonData = season.data();
-        if (seasonData === null || seasonData === undefined) {
-            console.error('Invalid game data, season missing ' + season.id + ' game ' + game.id);
-            return;
-        }
-        const teamData = team.data();
-        if (teamData === null || teamData === undefined) {
-            console.error('Invalid game data, season missing ' + team.id + ' game ' + game.id);
-            return;
-        }
-        const sharedGameData = sharedGame.data();
-        if (sharedGameData === null || sharedGameData === undefined) {
-            console.error('Invalid game data, season missing ' + sharedGame.id + ' game ' + game.id);
-            return;
-        }
-        const userData = user.data();
-        if (userData === null || userData === undefined) {
-            console.error('Invalid user data ' + user.id);
-            return;
-        }
-        if (userData.email && userData[userFlag]) {
-            // Setup the context and do the templates.
-            const arrivalTime = moment.utc(gameData.arrivalTime).tz(sharedGameData.timezone).format('ddd MMM D LTS');
-            const gameTime = moment.utc(sharedGameData.time).tz(sharedGameData.timezone).format('ddd MMM D LTS');
-            const endTime = moment.utc(sharedGameData.endTime).tz(sharedGameData.timezone).format('ddd MMM D LTS');
-            let directionsUrl =
-                'https://www.google.com/maps/dir/?api=1&destination=' +
-                encodeURIComponent(sharedGameData.place.address);
-            if (sharedGameData.place.placeId !== null) {
-                directionsUrl += '&destination_place_id=' + encodeURIComponent(sharedGameData.place.placeId);
-            }
-            let availabilityHtml = '';
-            let availabilityText = '';
 
-            // Make the availability details.
-            const yes = [];
-            const no = [];
-            const maybe = [];
-            for (const playerUid in gameData.attendance) {
-                if (Object.prototype.hasOwnProperty.call(gameData.attendance, playerUid)) {
-                    const attend = gameData.attendance[playerUid];
-                    if (attend['value'] === 'Attendence.Yes') {
-                        yes.push(playerUid);
-                    } else if (attend['value'] === 'Attendence.No') {
-                        no.push(playerUid);
-                    } else {
-                        maybe.push(playerUid);
-                    }
+        // Make the availability details.
+        const yes = new Set<string>();
+        const no = new Set<string>();
+        const maybe = new Set<string>();
+        for (const playerUid in gameData.attendance) {
+            if (gameData.attendance.hasOwnProperty(playerUid)) {
+                const attend = gameData.attendance[playerUid];
+                if (attend['value'] === 'Attendence.Yes') {
+                    yes.add(playerUid);
+                } else if (attend['value'] === 'Attendence.No') {
+                    no.add(playerUid);
+                } else {
+                    maybe.add(playerUid);
                 }
             }
-
-            let teamPhotoUrl: string;
-            if (teamData.photoUrl !== null && teamData.photoUrl !== '') {
-                teamPhotoUrl = teamData.photoUrl;
-            } else {
-                // Make it based on the sport.
-                teamPhotoUrl = 'https://www.teamsfuse.com/assets/' + teamData.sport + '.png';
-            }
-
-            // Create a nice layout thingy.
-            availabilityHtml = '<b>Yes</b><br><ul>';
-            availabilityText = 'YES\n';
-            let result = formatAvailability(yes, season);
-            availabilityText += result.text;
-            availabilityHtml += result.html;
-
-            availabilityHtml += '<br><b>Maybe</b><br><ul>';
-            availabilityText = '\nMAYBE\n';
-            result = formatAvailability(no, season);
-            availabilityText += result.text;
-            availabilityHtml += result.html;
-
-            availabilityHtml += '<br><b>No</b><br><ul>';
-            availabilityText = '\nNO\n';
-            result = formatAvailability(no, season);
-            availabilityText += result.text;
-            availabilityHtml += result.html;
-
-            const opponentData = opponent ? opponent.data() : undefined;
-            const context = {
-                arrivalTime: arrivalTime,
-                endTime: endTime,
-                gameTime: gameTime,
-                game: game.data(),
-                team: team.data(),
-                sharedGame: sharedGame.data(),
-                opponent: opponentData,
-                season: season.data(),
-                directionsUrl: directionsUrl,
-                availabilityHtml: availabilityHtml,
-                availabilityText: availabilityText,
-                teamPhotoUrl: teamPhotoUrl,
-            };
-
-            const sendPayload = {
-                subject: payload.titleComp === undefined ? '' : payload.titleComp(context),
-                text: payload.textComp === undefined ? '' : payload.textComp(context),
-                html: payload.bodyComp === undefined ? '' : payload.bodyComp(context),
-                from: payload.fromComp === undefined ? '' : payload.fromComp(context),
-                to: userData.email,
-            };
-            try {
-                await sendMail(sendPayload);
-            } catch (error) {
-                console.log('Error mailing ' + error);
+        }
+        // Update all the ones not in the list as maybe.
+        for (const playerUid in seasonData.players) {
+            if (seasonData.players.hasOwnProperty(playerUid)) {
+                if (!yes.has(playerUid) && !no.has(playerUid)) {
+                    maybe.add(playerUid);
+                }
             }
         }
-    } else {
-        console.log('No tokens for ' + user.id);
+
+        let teamPhotoUrl: string;
+        if (teamData.photoUrl !== null && teamData.photoUrl !== '') {
+            teamPhotoUrl = teamData.photoUrl;
+        } else {
+            // Make it based on the sport.
+            teamPhotoUrl = 'https://www.teamsfuse.com/assets/' + teamData.sport + '.png';
+        }
+
+        // Create a nice layout thingy.
+        const availability = {
+            yes: await formatAvailability(yes, seasonData),
+            no: await formatAvailability(no, seasonData),
+            maybe: await formatAvailability(maybe, seasonData),
+        };
+
+        const context = {
+            arrivalTime: arrivalTime,
+            endTime: endTime,
+            gameTime: gameTime,
+            game: gameData,
+            team: teamData,
+            sharedGame: sharedGameData,
+            opponent: opponentData,
+            season: seasonData,
+            directionsUrl: directionsUrl,
+            availability: availability,
+            teamPhotoUrl: teamPhotoUrl,
+        };
+
+        const sendPayload = {
+            subject: payload.titleComp === undefined ? '' : payload.titleComp(context),
+            text: payload.textComp === undefined ? '' : payload.textComp(context),
+            html: payload.bodyComp === undefined ? '' : payload.bodyComp(context),
+            from: payload.fromComp === undefined ? '' : payload.fromComp(context),
+            to: userData.email,
+        };
+        try {
+            await sendMail(sendPayload);
+        } catch (error) {
+            console.log('Error mailing ' + error);
+        }
     }
 }

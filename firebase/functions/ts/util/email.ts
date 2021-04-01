@@ -10,7 +10,30 @@ Uniform     : {{game.uniform}}
 Notes       : {{game.notes}}
 
 Availability
-{{textAvailability}}
+{{#availability}}
+{{#if yes.length}}
+YES
+{{#yes}}
+  {{name}} {{role}}
+{{/yes}}
+{{else}}
+  No one is going
+{{/if}}
+
+{{#if no.length}}
+NO
+{{#no}}
+  {{name}} {{role}}
+{{/no}}
+{{/if}}
+
+{{#if maybe.length}}
+MAYBE
+{{#maybe}}
+  {{name}} {{role}}
+{{/maybe}}
+{{/if}}
+{{/availability}}
 
 To disable these emails, update your user settings to turn off email for upcoming games.
 
@@ -53,7 +76,33 @@ Reminder for upcoming game with <b>{{team.name}}</b>, details below:
 </table>
 
 <h4>Availability</h4>
-{{htmlAvailability}}
+{{#availability}}
+{{#if yes.length}}
+<b>Yes</b>
+<ul>
+{{#yes}}
+<li>{{name}} <i>{{role}}</i>
+{{/yes}}
+</ul>
+{{else}}
+<b>No one is going</b>
+{{/if}}
+{{#if no.length}}
+<b>No</b>
+<ul>
+{{#no}}
+<li>{{name}} <i>{{role}}</i>
+{{/no}}
+{{/if}}
+{{#if maybe.length}}
+<b>Maybe</b>
+</ol>
+{{#maybe}}
+<li>{{name}} <i>{{role}}</i>
+{{/maybe}}
+{{/if}}
+{{/availability}}
+</ol>
 
 <p>
 To disable these emails, update your user settings to turn off email for upcoming games.

@@ -41,7 +41,7 @@ abstract class SeasonPlayer
   /// The jersey number for the player in the season/
   @BuiltValueField(wireName: jerseyNumberField)
   String get jerseyNumber;
-  //String get position;
+
   /// The summary for the data associated with the season
   SeasonPlayerSummary get summary;
 
