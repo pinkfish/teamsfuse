@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-03-25T01:20:43.610329",
+  "@@last_modified": "2021-04-01T19:32:25.712984",
   "About": "About",
   "@About": {
     "type": "text",
@@ -164,8 +164,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "Add Tournamwent": "Add Tournamwent",
-  "@Add Tournamwent": {
+  "Add Tournament": "Add Tournament",
+  "@Add Tournament": {
     "type": "text",
     "placeholders": {}
   },
@@ -175,8 +175,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "Adminstrator": "Adminstrator",
-  "@Adminstrator": {
+  "Administrator": "Administrator",
+  "@Administrator": {
     "type": "text",
     "placeholders": {}
   },
@@ -277,25 +277,25 @@
   },
   "Not making it": "Not making it",
   "@Not making it": {
-    "description": "Negative attendence for the game",
+    "description": "Negative attendance for the game",
     "type": "text",
     "placeholders": {}
   },
-  "Attendence": "Attendence",
-  "@Attendence": {
+  "Attendance": "Attendance",
+  "@Attendance": {
     "description": "Are you attending the game title",
     "type": "text",
     "placeholders": {}
   },
   "Will be there": "Will be there",
   "@Will be there": {
-    "description": "Positive attendence for the game",
+    "description": "Positive attendance for the game",
     "type": "text",
     "placeholders": {}
   },
   "Maybe": "Maybe",
   "@Maybe": {
-    "description": "Maybe attendence for the game",
+    "description": "Maybe attendance for the game",
     "type": "text",
     "placeholders": {}
   },
@@ -372,8 +372,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administators of the club will also be adminstragtors for the team.": "To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administators of the club will also be adminstragtors for the team.",
-  "@To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administators of the club will also be adminstragtors for the team.": {
+  "To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administrators of the club will also be administrators for the team.": "To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administrators of the club will also be administrators for the team.",
+  "@To setup a club for a team you need to be an administrator for both the club and for the team.  This will let you connect the both together.  Once connected all administrators of the club will also be administrators for the team.": {
     "type": "text",
     "placeholders": {}
   },
@@ -397,7 +397,7 @@
   },
   "Name of the coach": "Name of the coach",
   "@Name of the coach": {
-    "description": "Hint text for a form field for the coachs name",
+    "description": "Hint text for a form field for the coaches name",
     "type": "text",
     "placeholders": {}
   },
@@ -432,7 +432,7 @@
   },
   "Current": "Current",
   "@Current": {
-    "description": "Subtitle to markt he season as current",
+    "description": "Subtitle to mark the season as current",
     "type": "text",
     "placeholders": {}
   },
@@ -465,7 +465,7 @@
   },
   "DELETE": "DELETE",
   "@DELETE": {
-    "description": "Button text to delete an iteam",
+    "description": "Button text to delete an item",
     "type": "text",
     "placeholders": {}
   },
@@ -521,7 +521,7 @@
   },
   "Delete Player": "Delete Player",
   "@Delete Player": {
-    "description": "Dialog title for deleting a playern",
+    "description": "Dialog title for deleting a player",
     "type": "text",
     "placeholders": {}
   },
@@ -548,8 +548,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "Divison": "Divison",
-  "@Divison": {
+  "Division": "Division",
+  "@Division": {
     "type": "text",
     "placeholders": {}
   },
@@ -660,7 +660,7 @@
   },
   "Final score": "Final score",
   "@Final score": {
-    "description": "Final score dialofg title",
+    "description": "Final score dialog title",
     "type": "text",
     "placeholders": {}
   },
@@ -712,8 +712,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "Foul Flagrent": "Foul Flagrent",
-  "@Foul Flagrent": {
+  "Foul Flagrant": "Foul Flagrant",
+  "@Foul Flagrant": {
     "description": "Flagrant foul on player",
     "type": "text",
     "placeholders": {}
@@ -755,7 +755,7 @@
   },
   "Availability": "Availability",
   "@Availability": {
-    "description": "Availability for the game, botton tab bar title",
+    "description": "Availability for the game, bottom tab bar title",
     "type": "text",
     "placeholders": {}
   },
@@ -918,7 +918,7 @@
   },
   "Jersey Number": "Jersey Number",
   "@Jersey Number": {
-    "description": "Jersey number for the playerr",
+    "description": "Jersey number for the player",
     "type": "text",
     "placeholders": {}
   },
@@ -1029,7 +1029,7 @@
   },
   "Please choose an opponent.": "Please choose an opponent.",
   "@Please choose an opponent.": {
-    "description": "Message to suggest they need to select an oppoent",
+    "description": "Message to suggest they need to select an opponent",
     "type": "text",
     "placeholders": {}
   },
@@ -1056,8 +1056,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "New Divison Name": "New Divison Name",
-  "@New Divison Name": {
+  "New Division Name": "New Division Name",
+  "@New Division Name": {
     "type": "text",
     "placeholders": {}
   },
@@ -1113,9 +1113,9 @@
     "type": "text",
     "placeholders": {}
   },
-  "All events": "All events",
-  "@All events": {
-    "description": "Drop down for all the events",
+  "No event": "No event",
+  "@No event": {
+    "description": "No events to display",
     "type": "text",
     "placeholders": {}
   },
@@ -1189,12 +1189,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "All Games": "All Games",
-  "@All Games": {
-    "description": "Drop down for all the games",
-    "type": "text",
-    "placeholders": {}
-  },
   "No seasons": "No seasons",
   "@No seasons": {
     "type": "text",
@@ -1238,13 +1232,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "Offical": "Offical",
-  "@Offical": {
+  "Official": "Official",
+  "@Official": {
     "type": "text",
     "placeholders": {}
   },
-  "Offical results don't match": "Offical results don't match",
-  "@Offical results don't match": {
+  "Official results don't match": "Official results don't match",
+  "@Official results don't match": {
     "type": "text",
     "placeholders": {}
   },
@@ -1330,7 +1324,7 @@
   },
   "Period": "Period",
   "@Period": {
-    "description": "Dialog title for sertting the current period",
+    "description": "Dialog title for setting the current period",
     "type": "text",
     "placeholders": {}
   },
@@ -1505,13 +1499,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "Don't track attendence": "Don't track attendence",
-  "@Don't track attendence": {
+  "Don't track attendance": "Don't track attendance",
+  "@Don't track attendance": {
     "type": "text",
     "placeholders": {}
   },
-  "Track attendence": "Track attendence",
-  "@Track attendence": {
+  "Track attendance": "Track attendance",
+  "@Track attendance": {
     "type": "text",
     "placeholders": {}
   },
@@ -1595,13 +1589,13 @@
   },
   "Select relationship": "Select relationship",
   "@Select relationship": {
-    "description": "Label to select the relatiobship from a drop down",
+    "description": "Label to select the relationship from a drop down",
     "type": "text",
     "placeholders": {}
   },
   "Repeat": "Repeat",
   "@Repeat": {
-    "description": "Repeat title for the traning create steps",
+    "description": "Repeat title for the training create steps",
     "type": "text",
     "placeholders": {}
   },
@@ -1658,7 +1652,7 @@
   },
   "Searching...": "Searching...",
   "@Searching...": {
-    "description": "The searching text in the search box when the search is inprogress.",
+    "description": "The searching text in the search box when the search is in progress.",
     "type": "text",
     "placeholders": {}
   },
@@ -1778,12 +1772,12 @@
   },
   "Shots": "Shots",
   "@Shots": {
-    "description": "Heading for the shots sectionn",
+    "description": "Heading for the shots section",
     "type": "text",
     "placeholders": {}
   },
-  "Signout": "Signout",
-  "@Signout": {
+  "Sign out": "Sign out",
+  "@Sign out": {
     "type": "text",
     "placeholders": {}
   },
@@ -1837,13 +1831,13 @@
   },
   "Start Game": "Start Game",
   "@Start Game": {
-    "description": "Start game dialofg title",
+    "description": "Start game dialog title",
     "type": "text",
     "placeholders": {}
   },
   "Do you want to start the game?": "Do you want to start the game?",
   "@Do you want to start the game?": {
-    "description": "Start game dialofg body text",
+    "description": "Start game dialog body text",
     "type": "text",
     "placeholders": {}
   },
@@ -1913,9 +1907,9 @@
     "type": "text",
     "placeholders": {}
   },
-  "Subsitution": "Subsitution",
-  "@Subsitution": {
-    "description": "Subsitiution of player",
+  "Substitution": "Substitution",
+  "@Substitution": {
+    "description": "Substitution of player",
     "type": "text",
     "placeholders": {}
   },
@@ -1993,8 +1987,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "Attendence is from team": "Attendence is from team",
-  "@Attendence is from team": {
+  "Attendance is from team": "Attendance is from team",
+  "@Attendance is from team": {
     "type": "text",
     "placeholders": {}
   },
@@ -2018,13 +2012,13 @@
   },
   "Training times": "Training times",
   "@Training times": {
-    "description": "HEader for the extra training times in a repeat event",
+    "description": "Header for the extra training times in a repeat event",
     "type": "text",
     "placeholders": {}
   },
   "Training": "Training",
   "@Training": {
-    "description": "Drop down foronlhy the training events",
+    "description": "Drop down for only the training events",
     "type": "text",
     "placeholders": {}
   },
@@ -2093,19 +2087,19 @@
     "type": "text",
     "placeholders": {}
   },
-  "USE OFFICAL": "USE OFFICAL",
-  "@USE OFFICAL": {
-    "description": "Button to pull the offical results in from the shared game",
+  "USE OFFICIAL": "USE OFFICIAL",
+  "@USE OFFICIAL": {
+    "description": "Button to pull the official results in from the shared game",
     "type": "text",
     "placeholders": {}
   },
-  "Use the results of the offical game for this game?": "Use the results of the offical game for this game?",
-  "@Use the results of the offical game for this game?": {
+  "Use the results of the official game for this game?": "Use the results of the official game for this game?",
+  "@Use the results of the official game for this game?": {
     "type": "text",
     "placeholders": {}
   },
-  "No account found for email or internal error occured": "No account found for email or internal error occured",
-  "@No account found for email or internal error occured": {
+  "No account found for email or internal error occurred": "No account found for email or internal error occurred",
+  "@No account found for email or internal error occurred": {
     "type": "text",
     "placeholders": {}
   },
@@ -2163,11 +2157,11 @@
     "type": "text",
     "placeholders": {}
   },
-  "arrivebefore": "Arrive {mins} mins before games",
-  "@arrivebefore": {
+  "arriveBefore": "Arrive {minutes} mins before games",
+  "@arriveBefore": {
     "type": "text",
     "placeholders": {
-      "mins": {}
+      "minutes": {}
     }
   },
   "cardResultInProgressFinal": "{ptsFor} - {ptsAgainst}",
@@ -2456,8 +2450,8 @@
       "tzShortName": {}
     }
   },
-  "finalOfficalScoreBodyOvertime": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nOvertime Home: {overtimeFor} Away: {overtimeAgainst}",
-  "@finalOfficalScoreBodyOvertime": {
+  "finalOfficialScoreBodyOvertime": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nOvertime Home: {overtimeFor} Away: {overtimeAgainst}",
+  "@finalOfficialScoreBodyOvertime": {
     "type": "text",
     "placeholders": {
       "resultString": {},
@@ -2467,8 +2461,8 @@
       "overtimeAgainst": {}
     }
   },
-  "finalOfficalScoreBodyOvertimePenalty": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nOvertime Home: {overtimeFor} Away: {overtimeAgainst}Penalty Home: {penaltyFor} Away: {penaltyAgainst}",
-  "@finalOfficalScoreBodyOvertimePenalty": {
+  "finalOfficialScoreBodyOvertimePenalty": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nOvertime Home: {overtimeFor} Away: {overtimeAgainst}Penalty Home: {penaltyFor} Away: {penaltyAgainst}",
+  "@finalOfficialScoreBodyOvertimePenalty": {
     "type": "text",
     "placeholders": {
       "resultString": {},
@@ -2480,8 +2474,8 @@
       "penaltyAgainst": {}
     }
   },
-  "finalOfficalScoreBodyPenalty": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nPenalty Home: {penaltyFor} Away: {penaltyAgainst}",
-  "@finalOfficalScoreBodyPenalty": {
+  "finalOfficialScoreBodyPenalty": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nPenalty Home: {penaltyFor} Away: {penaltyAgainst}",
+  "@finalOfficialScoreBodyPenalty": {
     "type": "text",
     "placeholders": {
       "resultString": {},
@@ -2493,7 +2487,7 @@
   },
   "finalScoreBody": "Do you want to set {ptsFor} {ptsAgainst} {result} as the final score?",
   "@finalScoreBody": {
-    "description": "Start game dialofg body text",
+    "description": "Start game dialog body text",
     "type": "text",
     "placeholders": {
       "ptsFor": {},
@@ -2745,8 +2739,8 @@
       "periodNumber": {}
     }
   },
-  "periodStart": "Start of {periodName}",
-  "@periodStart": {
+  "periodStartText": "Start of {periodName}",
+  "@periodStartText": {
     "description": "Start of period",
     "type": "text",
     "placeholders": {
@@ -2804,7 +2798,7 @@
       "ptsAgainst": {}
     }
   },
-  "periodStopOvertimeBreakBreakout": "Stop overttime break Score: {ptsFor} - {ptsAgainst}",
+  "periodStopOvertimeBreakBreakout": "Stop overtime break Score: {ptsFor} - {ptsAgainst}",
   "@periodStopOvertimeBreakBreakout": {
     "description": "the stop for the overtime break in the logs",
     "type": "text",
@@ -2813,7 +2807,7 @@
       "ptsAgainst": {}
     }
   },
-  "periodStopOvertimeBreakout": "Stop overttime {periodNumber} Score: {ptsFor} - {ptsAgainst}",
+  "periodStopOvertimeBreakout": "Stop overtime {periodNumber} Score: {ptsFor} - {ptsAgainst}",
   "@periodStopOvertimeBreakout": {
     "description": "the stop for the overtime  in the logs",
     "type": "text",
@@ -2834,7 +2828,7 @@
   },
   "periodStopRegulationBreakout": "Stop period {periodNumber} Score: {ptsFor} - {ptsAgainst}",
   "@periodStopRegulationBreakout": {
-    "description": "the stop for the regulation perod in the logs",
+    "description": "the stop for the regulation period in the logs",
     "type": "text",
     "placeholders": {
       "periodNumber": {},
@@ -3028,7 +3022,7 @@
   },
   "seasonSummaryExpanded": "Pts {points} Blks {blocks} Stls {steals}",
   "@seasonSummaryExpanded": {
-    "description": "Subtitle to markt he season as current",
+    "description": "Subtitle to mark he season as current",
     "type": "text",
     "placeholders": {
       "points": {},
