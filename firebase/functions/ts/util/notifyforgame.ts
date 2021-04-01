@@ -425,12 +425,16 @@ async function doTheNotification(
         const yes = new Set<string>();
         const no = new Set<string>();
         const maybe = new Set<string>();
+        console.log('Happy frog');
+        console.log(gameData.attendance);
         for (const playerUid in gameData.attendance) {
+            console.log('attend: ' + playerUid);
             if (gameData.attendance.hasOwnProperty(playerUid)) {
                 const attend = gameData.attendance[playerUid];
-                if (attend['value'] === 'Attendence.Yes') {
+                console.log(attend === 'Yes');
+                if (attend === 'Yes') {
                     yes.add(playerUid);
-                } else if (attend['value'] === 'Attendence.No') {
+                } else if (attend === 'No') {
                     no.add(playerUid);
                 } else {
                     maybe.add(playerUid);
