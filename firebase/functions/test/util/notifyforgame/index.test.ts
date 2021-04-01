@@ -1,8 +1,14 @@
 import * as sinon from 'sinon';
-import { firebaseTest } from '../util/firebase';
+import { firebaseTest } from '../../test_util/firebase';
 import { expect } from 'chai';
 import * as admin from 'firebase-admin';
-import { createSeasonAndTeam, createGame, createOpponent, createPlayer, createUser } from '../util/datacreation';
+import {
+    createSeasonAndTeam,
+    createGame,
+    createOpponent,
+    createPlayer,
+    createUser,
+} from '../../test_util/datacreation';
 //import * as functions from 'firebase-functions';
 import { DateTime, Settings } from 'luxon';
 
@@ -24,7 +30,7 @@ test.mockConfig({
     },
 });
 
-import { notifyForGame, sendToDevice } from '../../ts/util/notifyforgame';
+import { notifyForGame, sendToDevice } from '../../../ts/util/notifyforgame';
 
 describe('Notify for games - tests', () => {
     let spy: sinon.SinonStub<

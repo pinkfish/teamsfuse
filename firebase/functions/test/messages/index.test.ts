@@ -1,5 +1,5 @@
 import * as sinon from 'sinon';
-import { firebaseTest } from '../util/firebase';
+import { firebaseTest } from '../test_util/firebase';
 import { expect } from 'chai';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';

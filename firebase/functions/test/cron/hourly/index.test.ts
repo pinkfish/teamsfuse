@@ -1,9 +1,9 @@
 import * as sinon from 'sinon';
-import { firebaseTest } from '../util/firebase';
+import { firebaseTest } from '../../test_util/firebase';
 //import { expect } from 'chai';
 import * as admin from 'firebase-admin';
-import { createSeasonAndTeam, createGame, createOpponent } from '../util/datacreation';
-import * as notifyforgame from '../../ts/util/notifyforgame';
+import { createSeasonAndTeam, createGame, createOpponent } from '../../test_util/datacreation';
+import * as notifyforgame from '../../../ts/util/notifyforgame';
 import * as functions from 'firebase-functions';
 import { DateTime, Duration, Settings } from 'luxon';
 
@@ -25,7 +25,7 @@ test.mockConfig({
     },
 });
 
-import { onHourlyPublish } from '../../ts/cron/hourly.f';
+import { onHourlyPublish } from '../../../ts/cron/hourly.f';
 
 describe('Cron tests', () => {
     let spy: sinon.SinonStub<

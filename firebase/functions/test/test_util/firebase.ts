@@ -1,7 +1,7 @@
 import firebaseFunctionsTest from 'firebase-functions-test';
 import * as admin from 'firebase-admin';
 
-// Ignore the firebase app intiialize errors
+// Ignore the firebase app initialize errors
 admin.initializeApp();
 
 export function firebaseTest(projectId: string) {

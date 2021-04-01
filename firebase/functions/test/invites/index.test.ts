@@ -4,7 +4,7 @@ import * as nodemailer from 'nodemailer';
 import { AxiosInstance } from 'axios';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
-import { firebaseTest } from '../util/firebase';
+import { firebaseTest } from '../test_util/firebase';
 
 const projectName = 'teamsfuse';
 

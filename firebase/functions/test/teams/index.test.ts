@@ -1,9 +1,9 @@
 import * as sinon from 'sinon';
-import { firebaseTest } from '../util/firebase';
+import { firebaseTest } from '../test_util/firebase';
 import { expect } from 'chai';
 import * as admin from 'firebase-admin';
 import { DocumentSnapshot } from '@google-cloud/firestore';
-import { createSeasonAndTeam, createSeason, createClub } from '../util/datacreation';
+import { createSeasonAndTeam, createSeason, createClub } from '../test_util/datacreation';
 
 const projectName = 'teamsfuse';
 
