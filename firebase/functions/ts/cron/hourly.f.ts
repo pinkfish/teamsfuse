@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { DateTime, Duration } from 'luxon';
 import { notifyForGame, PayloadData } from '../util/notifyforgame';
+import { DataNodeCache } from '../util/datacache';
 
 const db = admin.firestore();
 
@@ -18,72 +19,77 @@ export const onHourlyPublish = functions.pubsub.topic('hourly-tick').onPublish(a
         .where('arrivalTime', '>', cutoff.valueOf())
         .where('arrivalTime', '<', now.valueOf())
         .get();
-    for (const index in snapshot.docs) {
-        if (Object.prototype.hasOwnProperty.call(snapshot.docs, index)) {
-            const doc = snapshot.docs[index];
-            if (doc.data().notifiedHour) {
-                console.log('Already notified about ' + doc.id);
-                continue;
-            }
-            const docData = doc.data();
-            if (docData === null || docData === undefined) {
-                continue;
-            }
-            // Get the shared data for the game too.
-            // Send notification to users, get all the players.
-            // Get all the players users.
-            // Send notifications.
-            const timeToLive = 7200;
-            const sharedGameData = docData.sharedData;
-            if (sharedGameData === null || sharedGameData === undefined) {
-                console.log('Cannot find shared data ' + doc.id);
-                continue;
-            }
-            const message: admin.messaging.MessagingOptions = {
-                timeToLive: timeToLive,
-                collapseKey: doc.id,
-            };
-            const payload: PayloadData = {
-                ts: docData.arrivalTime,
-                k: doc.id,
-                a: sharedGameData.place.address,
-                p: sharedGameData.place.placeId,
-                click_action: 'GAME',
-                tag: doc.id,
-                title: '',
-                body: '',
-            };
-            if (sharedGameData.type === 'Practice') {
-                message.title = 'Practice for {{team.name}}';
-                message.body = 'Starting at {{arrivalTime}} to {{endTime}}';
-            } else if (sharedGameData.type === 'Game') {
-                message.title = 'Game vs {{opponent.name}} for {{team.name}}';
-                message.body = 'Arrive by {{arrivalTime}}, game at {{gameTime}}';
-            } else if (sharedGameData.type === 'Event') {
-                message.title = 'Event for {{team.name}}';
-                message.body = 'Arrive by {{arrivalTime}}';
-            }
-            if (message.body === undefined || message.body === null) {
-                console.log('no body, dropping out.');
-                continue;
-            }
-            message.body += ' for {{team.name}}';
-            message.body += ' located {{game.place.address}}';
-            if (docData.uniform !== '') {
-                message.body += ' wear {{game.uniform}}';
-            }
+    const cache = new DataNodeCache();
+    try {
+        for (const index in snapshot.docs) {
+            if (Object.prototype.hasOwnProperty.call(snapshot.docs, index)) {
+                const doc = snapshot.docs[index];
+                if (doc.data().notifiedHour) {
+                    console.log('Already notified about ' + doc.id);
+                    continue;
+                }
+                const docData = doc.data();
+                if (docData === null || docData === undefined) {
+                    continue;
+                }
+                // Get the shared data for the game too.
+                // Send notification to users, get all the players.
+                // Get all the players users.
+                // Send notifications.
+                const timeToLive = 7200;
+                const sharedGameData = docData.sharedData;
+                if (sharedGameData === null || sharedGameData === undefined) {
+                    console.log('Cannot find shared data ' + doc.id);
+                    continue;
+                }
+                const message: admin.messaging.MessagingOptions = {
+                    timeToLive: timeToLive,
+                    collapseKey: doc.id,
+                };
+                const payload: PayloadData = {
+                    ts: docData.arrivalTime,
+                    k: doc.id,
+                    a: sharedGameData.place.address,
+                    p: sharedGameData.place.placeId,
+                    click_action: 'GAME',
+                    tag: doc.id,
+                    title: '',
+                    body: '',
+                };
+                if (sharedGameData.type === 'Practice') {
+                    message.title = 'Practice for {{team.name}}';
+                    message.body = 'Starting at {{arrivalTime}} to {{endTime}}';
+                } else if (sharedGameData.type === 'Game') {
+                    message.title = 'Game vs {{opponent.name}} for {{team.name}}';
+                    message.body = 'Arrive by {{arrivalTime}}, game at {{gameTime}}';
+                } else if (sharedGameData.type === 'Event') {
+                    message.title = 'Event for {{team.name}}';
+                    message.body = 'Arrive by {{arrivalTime}}';
+                }
+                if (message.body === undefined || message.body === null) {
+                    console.log('no body, dropping out.');
+                    continue;
+                }
+                message.body += ' for {{team.name}}';
+                message.body += ' located {{game.place.address}}';
+                if (docData.uniform !== '') {
+                    message.body += ' wear {{game.uniform}}';
+                }
 
-            if (sharedGameData.place !== null) {
-                payload.a = sharedGameData.place.address;
-                payload.p = sharedGameData.place.placeId;
-            }
+                if (sharedGameData.place !== null) {
+                    payload.a = sharedGameData.place.address;
+                    payload.p = sharedGameData.place.placeId;
+                }
 
-            if (payload) {
-                await notifyForGame(doc, payload, message, '', false);
+                if (payload) {
+                    await notifyForGame(doc, payload, message, '', false, cache);
+                }
+            } else {
+                console.log('Already notified for index ' + index);
             }
-        } else {
-            console.log('Already notified for index ' + index);
         }
+    } finally {
+        cache.close();
     }
 });
 

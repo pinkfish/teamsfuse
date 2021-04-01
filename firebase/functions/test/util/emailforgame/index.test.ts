@@ -14,6 +14,7 @@ import { DateTime, Settings } from 'luxon';
 import * as nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import * as email from '../../../ts/util/email';
+import { DataNodeCache } from '../../../ts/util/datacache';
 
 const projectName = 'teamsfuse';
 
@@ -62,6 +63,7 @@ describe('Email for games', () => {
         const gameDoc = await createGame(teamDocId, seasonDocId, DateTime.now().toUTC(), opponent.id, 'Froggy');
 
         // Just make sure creating a club actually works.
+        const cache = new DataNodeCache();
         try {
             await emailForGame(
                 gameDoc,
@@ -75,9 +77,11 @@ describe('Email for games', () => {
                 },
                 '',
                 'emailUpcoming',
+                cache,
             );
             sinon.assert.notCalled(spy);
         } finally {
+            cache.close();
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
             await admin.firestore().collection('Opponents').doc(opponent.id).delete();
             await admin.firestore().collection('Teams').doc(teamDocId).delete();
@@ -99,6 +103,7 @@ describe('Email for games', () => {
         await userDoc.ref.update({ emailUpcoming: false });
 
         // Just make sure creating a club actually works.
+        const cache = new DataNodeCache();
         try {
             await emailForGame(
                 gameDoc,
@@ -112,9 +117,11 @@ describe('Email for games', () => {
                 },
                 '',
                 'emailUpcoming',
+                cache,
             );
             sinon.assert.notCalled(spy);
         } finally {
+            cache.close();
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
             await admin.firestore().collection('Opponents').doc(opponent.id).delete();
             await admin.firestore().collection('Teams').doc(teamDocId).delete();
@@ -136,6 +143,7 @@ describe('Email for games', () => {
         const userDoc = await createUser(['1234'], 'me');
 
         // Just make sure creating a club actually works.
+        const cache = new DataNodeCache();
         try {
             await emailForGame(
                 gameDoc,
@@ -149,6 +157,7 @@ describe('Email for games', () => {
                 },
                 '',
                 'emailUpcoming',
+                cache,
             );
             sinon.assert.calledWith(spy, {
                 subject: '[Lookup TeamName] Game at  vs Test Opponent',
@@ -225,6 +234,7 @@ describe('Email for games', () => {
                 to: 'test@test.com',
             });
         } finally {
+            cache.close();
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
             await admin.firestore().collection('Opponents').doc(opponent.id).delete();
             await admin.firestore().collection('Teams').doc(teamDocId).delete();
@@ -295,6 +305,7 @@ describe('Email for games', () => {
             });
 
         // Just make sure creating a club actually works.
+        const cache = new DataNodeCache();
         try {
             await emailForGame(
                 await gameDoc.ref.get(),
@@ -308,6 +319,7 @@ describe('Email for games', () => {
                 },
                 '',
                 'emailUpcoming',
+                cache,
             );
             sinon.assert.calledWith(spy, {
                 subject: '[Lookup TeamName] Game at  vs Test Opponent',
@@ -395,6 +407,7 @@ describe('Email for games', () => {
                 to: 'test@test.com',
             });
         } finally {
+            cache.close();
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
             await admin.firestore().collection('Opponents').doc(opponent.id).delete();
             await admin.firestore().collection('Teams').doc(teamDocId).delete();

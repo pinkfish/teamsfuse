@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { notifyForGame, PayloadData } from '../../util/notifyforgame';
+import { DataNodeCache } from '../../util/datacache';
 
 export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate(async (inputData, context) => {
     const data = inputData.after.data();
@@ -118,7 +119,12 @@ export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate
         console.log('Notifying about');
         console.log(payload);
 
-        await notifyForGame(inputData.after, payload, options, userId, true);
+        const cache = new DataNodeCache();
+        try {
+            await notifyForGame(inputData.after, payload, options, userId, true, cache);
+        } finally {
+            cache.close();
+        }
     }
     return;
 });

@@ -7,6 +7,7 @@ import * as notifyforgame from '../../../ts/util/notifyforgame';
 import * as functions from 'firebase-functions';
 import { DateTime, Duration, Settings } from 'luxon';
 import * as email from '../../../ts/util/email';
+import { DataNodeCache } from '../../../ts/util/datacache';
 
 const projectName = 'teamsfuse';
 
@@ -35,6 +36,7 @@ describe('Cron tests - daily', () => {
             payload: notifyforgame.PayloadData,
             excludeUser: string,
             userFlag: string,
+            cache: DataNodeCache,
         ],
         Promise<void>
     >;
@@ -94,6 +96,7 @@ describe('Cron tests - daily', () => {
                 },
                 '',
                 'emailUpcoming',
+                sinon.match.any,
             );
         } finally {
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
@@ -135,6 +138,7 @@ describe('Cron tests - daily', () => {
                     },
                     '',
                     'emailUpcoming',
+                    sinon.match.any,
                 );
             }
         } finally {

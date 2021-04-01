@@ -9,8 +9,8 @@ import {
     createPlayer,
     createUser,
 } from '../../test_util/datacreation';
-//import * as functions from 'firebase-functions';
 import { DateTime, Settings } from 'luxon';
+import { DataNodeCache } from '../../../ts/util/datacache';
 
 const projectName = 'teamsfuse';
 
@@ -80,6 +80,7 @@ describe('Notify for games - tests', () => {
         const gameDoc = await createGame(teamDocId, seasonDocId, DateTime.now().toUTC(), opponent.id, 'Froggy');
 
         // Just make sure creating a club actually works.
+        const cache = new DataNodeCache();
         try {
             await notifyForGame(
                 gameDoc,
@@ -102,9 +103,11 @@ describe('Notify for games - tests', () => {
                 },
                 '',
                 false,
+                cache,
             );
             sinon.assert.notCalled(spy);
         } finally {
+            cache.close();
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
             await admin.firestore().collection('Opponents').doc(opponent.id).delete();
             await admin.firestore().collection('Teams').doc(teamDocId).delete();
@@ -124,6 +127,7 @@ describe('Notify for games - tests', () => {
         await createUser([], 'me');
 
         // Just make sure creating a club actually works.
+        const cache = new DataNodeCache();
         try {
             await notifyForGame(
                 gameDoc,
@@ -146,9 +150,11 @@ describe('Notify for games - tests', () => {
                 },
                 '',
                 false,
+                cache,
             );
             sinon.assert.notCalled(spy);
         } finally {
+            cache.close();
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
             await admin.firestore().collection('Opponents').doc(opponent.id).delete();
             await admin.firestore().collection('Teams').doc(teamDocId).delete();
@@ -184,6 +190,7 @@ describe('Notify for games - tests', () => {
         const userDoc = await createUser(['1234'], 'me');
 
         // Just make sure creating a club actually works.
+        const cache = new DataNodeCache();
         try {
             await notifyForGame(
                 gameDoc,
@@ -206,6 +213,7 @@ describe('Notify for games - tests', () => {
                 },
                 '',
                 false,
+                cache,
             );
             sinon.assert.calledWith(
                 spy,
@@ -233,6 +241,7 @@ describe('Notify for games - tests', () => {
                 },
             );
         } finally {
+            cache.close();
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
             await admin.firestore().collection('Opponents').doc(opponent.id).delete();
             await admin.firestore().collection('Teams').doc(teamDocId).delete();
@@ -277,6 +286,7 @@ describe('Notify for games - tests', () => {
         const userDoc = await createUser(['1234'], 'me');
 
         // Just make sure creating a club actually works.
+        const cache = new DataNodeCache();
         try {
             await notifyForGame(
                 gameDoc,
@@ -299,6 +309,7 @@ describe('Notify for games - tests', () => {
                 },
                 '',
                 false,
+                cache,
             );
             const updatedUserDoc = await admin.firestore().collection('UserData').doc(userDoc.id).get();
             expect(updatedUserDoc.data()!.tokens).to.deep.equal({});
@@ -328,6 +339,7 @@ describe('Notify for games - tests', () => {
                 },
             );
         } finally {
+            cache.close();
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
             await admin.firestore().collection('Opponents').doc(opponent.id).delete();
             await admin.firestore().collection('Teams').doc(teamDocId).delete();

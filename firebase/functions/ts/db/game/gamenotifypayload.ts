@@ -3,6 +3,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 import { notifyForGame, PayloadData } from '../../util/notifyforgame';
+import { DataNodeCache } from '../../util/datacache';
 
 export async function notifyPayload(payload: PayloadData, snap: functions.firestore.DocumentSnapshot): Promise<void> {
     if (payload) {
@@ -28,7 +29,12 @@ export async function notifyPayload(payload: PayloadData, snap: functions.firest
             collapseKey: snap.id + 'change',
         };
 
-        await notifyForGame(snap, payload, options, '', false);
+        const cache = new DataNodeCache();
+        try {
+            await notifyForGame(snap, payload, options, '', false, cache);
+        } finally {
+            cache.close();
+        }
     }
     return;
 }

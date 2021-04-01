@@ -1,12 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
-//const settings = { timestampsInSnapshots: true };
-
 const db = admin.firestore();
-
-// 8 days.
-//const CUT_OFF_TIME = 8 * 24 * 60 * 60 * 1000;
 
 interface OpponentData {
     win: number;

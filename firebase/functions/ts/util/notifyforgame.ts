@@ -3,6 +3,7 @@ import * as admin from 'firebase-admin';
 import * as handlebars from 'handlebars';
 import * as moment from 'moment-timezone';
 import { sendMail } from './mailgun';
+import { DataNodeCache } from './datacache';
 
 const db = admin.firestore();
 
@@ -56,6 +57,7 @@ export async function notifyForGame(
     options: admin.messaging.MessagingOptions,
     excludeUser: string,
     onlyGames: boolean,
+    cache: DataNodeCache,
 ) {
     const gameData = game.data();
     // Send notification to users, get all the players.
@@ -65,14 +67,13 @@ export async function notifyForGame(
         console.error('Invalid game data ' + game.id);
         return;
     }
-    const season = await db.collection('Seasons').doc(gameData.seasonUid).get();
+    const season = await cache.getSeason(gameData.seasonUid);
     const seasonData = season.data();
     if (seasonData === null || seasonData === undefined) {
         console.error('Invalid game data, season missing [' + gameData.seasonUid + '] game ' + gameData.uid);
         return;
     }
-    const teamRef = db.collection('Teams').doc(gameData.teamUid);
-    const team = await teamRef.get();
+    const team = await cache.getTeam(gameData.teamUid);
     const teamData = team.data();
     if (teamData === null || teamData === undefined) {
         console.error('Invalid game data, team missing ' + gameData.teamUid + ' game ' + gameData.uid);
@@ -91,7 +92,7 @@ export async function notifyForGame(
         payload.bodyComp = handlebars.compile<{ [name: string]: any }>(payload.body);
     }
     if (gameData.opponentUid !== null && gameData.opponentUid !== '') {
-        opponent = await teamRef.collection('Opponents').doc(gameData.opponentUid).get();
+        opponent = await cache.getOpponent(gameData.teamUid, gameData.opponentUid);
         opponentData = opponent.data();
     }
 
@@ -115,7 +116,7 @@ export async function notifyForGame(
     for (const playerId in seasonData.players) {
         if (Object.prototype.hasOwnProperty.call(seasonData.players, playerId)) {
             // Send the notification to this player.
-            const players = await db.collection('Players').doc(playerId).get();
+            const players = await cache.getPlayer(playerId);
             if (!players.exists) {
                 console.log('No player ' + playerId);
                 continue;
@@ -128,7 +129,7 @@ export async function notifyForGame(
             for (const userId in player.users) {
                 if (Object.prototype.hasOwnProperty.call(player.users, userId)) {
                     if (excludeUser !== userId) {
-                        const user = await db.collection('UserData').doc(userId).get();
+                        const user = await cache.getUser(userId);
                         await handleTokens(
                             user,
                             gameData,
@@ -138,6 +139,7 @@ export async function notifyForGame(
                             sharedGameData,
                             payload,
                             options,
+                            cache,
                         );
                     } else {
                         console.log('Excluding ' + userId);
@@ -158,6 +160,7 @@ async function handleTokens(
     sharedGameData: { [field: string]: any },
     payload: PayloadData,
     options: admin.messaging.MessagingOptions,
+    cache: DataNodeCache,
 ) {
     if (user.exists) {
         const userData = user.data();
@@ -309,6 +312,7 @@ export async function emailForGame(
     payload: PayloadData,
     excludeUser: string,
     userFlag: string,
+    cache: DataNodeCache,
 ) {
     const gameData = game.data();
     if (gameData === null || gameData === undefined) {
@@ -318,9 +322,8 @@ export async function emailForGame(
     // Send notification to users, get all the players.
     // Get all the players users.
     // Send notifications.
-    const season = await db.collection('Seasons').doc(gameData.seasonUid).get();
-    const teamRef = await db.collection('Teams').doc(gameData.teamUid);
-    const team = await teamRef.get();
+    const season = await cache.getSeason(gameData.seasonUid);
+    const team = await cache.getTeam(gameData.teamUid);
 
     const seasonData = season.data();
     if (seasonData === null || seasonData === undefined) {
@@ -345,7 +348,7 @@ export async function emailForGame(
 
     let opponentData: { [field: string]: any } | undefined = undefined;
     if (gameData.opponentUid !== null && gameData.opponentUid !== '') {
-        const opponent = await teamRef.collection('Opponents').doc(gameData.opponentUid).get();
+        const opponent = await cache.getOpponent(gameData.teamUid, gameData.opponentUid);
         opponentData = opponent.data();
     }
 
@@ -361,7 +364,7 @@ export async function emailForGame(
     for (const playerId in seasonData.players) {
         if (seasonData.players.hasOwnProperty(playerId)) {
             // Send the notification to this player.
-            const players = await db.collection('Players').doc(playerId).get();
+            const players = await cache.getPlayer(playerId);
             if (players.exists) {
                 const player = players.data();
                 if (player === null || player === undefined) {
@@ -370,7 +373,7 @@ export async function emailForGame(
                 for (const userId in player.users) {
                     if (player.users.hasOwnProperty(userId)) {
                         if (excludeUser !== userId) {
-                            const user = await db.collection('UserData').doc(userId).get();
+                            const user = await cache.getUser(userId);
                             const userData = user.data();
                             if (userData === null || userData === undefined) {
                                 console.error('Invalid user data,  ' + userId + ' game ' + game.id);

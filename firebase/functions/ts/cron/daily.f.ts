@@ -5,6 +5,7 @@ import { v1 } from '@google-cloud/firestore';
 
 import { DateTime, Duration } from 'luxon';
 import * as notifyforgame from '../util/notifyforgame';
+import { DataNodeCache } from '../util/datacache';
 
 const db = admin.firestore();
 // Exported for testing.
@@ -58,33 +59,38 @@ export const onDailyPublish = functions.pubsub.topic('daily-tick').onPublish(asy
         .where('arrivalTime', '<', now.valueOf())
         .where('sharedData.type', '==', 'Game')
         .get();
-    for (const index in snapshot.docs) {
-        if (Object.prototype.hasOwnProperty.call(snapshot.docs, index)) {
-            const doc = snapshot.docs[index];
-            const docData = doc.data();
-            if (docData.notifiedEmail) {
-                console.log('Already notified about ' + doc.id);
-                continue;
-            }
-            // Only email about games.
-            const sharedGameData = docData.sharedData;
-            if (sharedGameData === null || sharedGameData === undefined) {
-                console.log('Cannot find shared data ' + doc.id);
-                continue;
-            }
+    const cache = new DataNodeCache();
+    try {
+        for (const index in snapshot.docs) {
+            if (Object.prototype.hasOwnProperty.call(snapshot.docs, index)) {
+                const doc = snapshot.docs[index];
+                const docData = doc.data();
+                if (docData.notifiedEmail) {
+                    console.log('Already notified about ' + doc.id);
+                    continue;
+                }
+                // Only email about games.
+                const sharedGameData = docData.sharedData;
+                if (sharedGameData === null || sharedGameData === undefined) {
+                    console.log('Cannot find shared data ' + doc.id);
+                    continue;
+                }
 
-            if (sharedGameData.type === 'Game') {
-                const payload: notifyforgame.PayloadData = {
-                    from: 'noreply@email.teamsfuse.com',
-                    title: '[{{team.name}}] Game at {{startTime}} vs {{opponent.name}}',
-                    text: email.TEXT_BODY,
-                    body: email.HTML_BODY,
-                    tag: 'email',
-                    click_action: 'openGame',
-                };
-                await notifyforgame.emailForGame(doc, payload, '', 'emailUpcoming');
+                if (sharedGameData.type === 'Game') {
+                    const payload: notifyforgame.PayloadData = {
+                        from: 'noreply@email.teamsfuse.com',
+                        title: '[{{team.name}}] Game at {{startTime}} vs {{opponent.name}}',
+                        text: email.TEXT_BODY,
+                        body: email.HTML_BODY,
+                        tag: 'email',
+                        click_action: 'openGame',
+                    };
+                    await notifyforgame.emailForGame(doc, payload, '', 'emailUpcoming', cache);
+                }
             }
         }
+    } finally {
+        cache.close();
     }
     return;
 });

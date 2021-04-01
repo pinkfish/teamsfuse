@@ -6,6 +6,7 @@ import { createSeasonAndTeam, createGame, createOpponent } from '../../test_util
 import * as notifyforgame from '../../../ts/util/notifyforgame';
 import * as functions from 'firebase-functions';
 import { DateTime, Duration, Settings } from 'luxon';
+import { DataNodeCache } from '../../../ts/util/datacache';
 
 const projectName = 'teamsfuse';
 
@@ -35,6 +36,7 @@ describe('Cron tests - hourly', () => {
             options: admin.messaging.MessagingOptions,
             excludeUser: string,
             onlyGames: boolean,
+            cache: DataNodeCache,
         ],
         Promise<never[] | undefined>
     >;
@@ -97,6 +99,7 @@ describe('Cron tests - hourly', () => {
                 },
                 '',
                 false,
+                sinon.match.any,
             );
         } finally {
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
@@ -146,6 +149,7 @@ describe('Cron tests - hourly', () => {
                     },
                     '',
                     false,
+                    sinon.match.any,
                 );
             }
         } finally {
