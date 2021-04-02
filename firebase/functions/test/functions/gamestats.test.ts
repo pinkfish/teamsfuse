@@ -48,7 +48,7 @@ describe('functions - game stats', () => {
         await gameStats((req as unknown) as Request, (res as unknown) as Response<any>);
 
         sinon.assert.calledWith(res.end as any);
-        sinon.assert.calledWith(res.send, '<b>Unable to find player/season undefined</b>');
+        sinon.assert.calledWith(res.send, '<b>Unable to find player/season undefined/undefined</b>');
         sinon.assert.calledWith(res.status, 405);
     });
 
@@ -59,21 +59,16 @@ describe('functions - game stats', () => {
 
         const req = stubInterface<Request>();
         const res = stubInterface<Response>();
-        try {
-            req.method = 'POST';
-            req.body = {
-                playerUid: '1234',
-                seasonUid: seasonDocId,
-            };
-            await gameStats((req as unknown) as Request, (res as unknown) as Response<any>);
+        req.method = 'POST';
+        req.body = {
+            playerUid: '1234',
+            seasonUid: seasonDocId,
+        };
+        await gameStats((req as unknown) as Request, (res as unknown) as Response<any>);
 
-            sinon.assert.calledWith(res.end as any);
-            sinon.assert.calledWith(res.send, '<b>Unable to find player/season undefined</b>');
-            sinon.assert.calledWith(res.status, 405);
-        } finally {
-            await admin.firestore().collection('Teams').doc(teamDocId).delete();
-            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
-        }
+        sinon.assert.calledWith(res.end as any);
+        sinon.assert.calledWith(res.send, '<b>Unable to find player/season undefined/undefined</b>');
+        sinon.assert.calledWith(res.status, 405);
     });
 
     it('no games', async () => {
@@ -85,22 +80,16 @@ describe('functions - game stats', () => {
 
         const req = stubInterface<Request>();
         const res = stubInterface<Response>();
-        try {
-            req.method = 'POST';
-            req.body = {
-                playerUid: 'player',
-                seasonUid: seasonDocId,
-            };
-            await gameStats((req as unknown) as Request, (res as unknown) as Response<any>);
+        req.method = 'POST';
+        req.body = {
+            playerUid: 'player',
+            seasonUid: seasonDocId,
+        };
+        await gameStats((req as unknown) as Request, (res as unknown) as Response<any>);
 
-            sinon.assert.calledWith(res.end as any);
-            sinon.assert.calledWith(res.send, '<b>Unable to find player/season undefined</b>');
-            sinon.assert.calledWith(res.status, 405);
-        } finally {
-            await admin.firestore().collection('Teams').doc(teamDocId).delete();
-            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
-            await admin.firestore().collection('Players').doc(player.id).delete();
-        }
+        sinon.assert.calledWith(res.end as any);
+        sinon.assert.calledWith(res.send, '<b>Unable to find player/season undefined/undefined</b>');
+        sinon.assert.calledWith(res.status, 405);
     });
 
     it('no games - public', async () => {
@@ -112,26 +101,20 @@ describe('functions - game stats', () => {
 
         const req = stubInterface<Request>();
         const res = stubInterface<Response>();
-        try {
-            req.method = 'POST';
-            req.body = {
-                playerUid: 'player',
-                seasonUid: seasonDocId,
-            };
-            await gameStats((req as unknown) as Request, (res as unknown) as Response<any>);
+        req.method = 'POST';
+        req.body = {
+            playerUid: 'player',
+            seasonUid: seasonDocId,
+        };
+        await gameStats((req as unknown) as Request, (res as unknown) as Response<any>);
 
-            sinon.assert.calledWith(res.status, 200);
-            sinon.assert.calledWith(res.end as any);
-            sinon.assert.calledWith(res.json, {
-                playerUid: 'player',
-                seasonUid: seasonDocId,
-                games: [],
-            });
-        } finally {
-            await admin.firestore().collection('Teams').doc(teamDocId).delete();
-            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
-            await admin.firestore().collection('Players').doc(player.id).delete();
-        }
+        sinon.assert.calledWith(res.status, 200);
+        sinon.assert.calledWith(res.end as any);
+        sinon.assert.calledWith(res.json, {
+            playerUid: 'player',
+            seasonUid: seasonDocId,
+            games: [],
+        });
     });
     it('one game - public', async () => {
         const teamAndSeason = await createSeasonAndTeam(true, true);
@@ -145,57 +128,49 @@ describe('functions - game stats', () => {
 
         const req = stubInterface<Request>();
         const res = stubInterface<Response>();
-        try {
-            req.method = 'POST';
-            req.body = {
-                playerUid: 'player',
-                seasonUid: seasonDocId,
-            };
-            await gameStats((req as unknown) as Request, (res as unknown) as Response<any>);
+        req.method = 'POST';
+        req.body = {
+            playerUid: 'player',
+            seasonUid: seasonDocId,
+        };
+        await gameStats((req as unknown) as Request, (res as unknown) as Response<any>);
 
-            sinon.assert.calledWith(res.status, 200);
-            sinon.assert.calledWith(res.end as any);
-            sinon.assert.calledWith(res.json, {
-                playerUid: 'player',
-                seasonUid: seasonDocId,
-                games: [
-                    {
-                        uid: game.id,
-                        arrivalTime: arriveTime.valueOf(),
-                        seasonUid: seasonDocId,
-                        result: {
+        sinon.assert.calledWith(res.status, 200);
+        sinon.assert.calledWith(res.end as any);
+        sinon.assert.calledWith(res.json, {
+            playerUid: 'player',
+            seasonUid: seasonDocId,
+            games: [
+                {
+                    uid: game.id,
+                    arrivalTime: arriveTime.valueOf(),
+                    seasonUid: seasonDocId,
+                    result: {
+                        result: 'Unknown',
+                        inProgress: 'NotStarted',
+                        currentPeriod: 'NotStarted--0',
+                        divisions: 'Quarters',
+                        scores: {},
+                    },
+                    playerSummary: undefined,
+                    players: { player: {} },
+                    sharedData: {
+                        name: '',
+                        time: arriveTime.valueOf(),
+                        timezone: 'America/Los_Angeles',
+                        place: {
+                            address: '1502 west test drive',
+                            name: 'Test High School',
+                            lat: 12,
+                            long: 34,
+                        },
+                        officialResult: {
                             result: 'Unknown',
-                            inProgress: 'NotStarted',
-                            currentPeriod: 'NotStarted--0',
-                            divisions: 'Quarters',
                             scores: {},
                         },
-                        playerSummary: undefined,
-                        players: { player: {} },
-                        sharedData: {
-                            name: '',
-                            time: arriveTime.valueOf(),
-                            timezone: 'America/Los_Angeles',
-                            place: {
-                                address: '1502 west test drive',
-                                name: 'Test High School',
-                                lat: 12,
-                                long: 34,
-                            },
-                            officialResult: {
-                                result: 'Unknown',
-                                scores: {},
-                            },
-                        },
                     },
-                ],
-            });
-        } finally {
-            await admin.firestore().collection('Teams').doc(teamDocId).delete();
-            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
-            await admin.firestore().collection('Players').doc(player.id).delete();
-            await admin.firestore().collection('Games').doc(game.id).delete();
-            //await admin.firestore().collection('GamesShared').doc(game.sharedDataUid).delete();
-        }
+                },
+            ],
+        });
     });
 });

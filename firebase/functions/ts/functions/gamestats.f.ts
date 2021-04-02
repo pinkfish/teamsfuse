@@ -7,9 +7,6 @@ const db = admin.firestore();
 // Figure out the game stats.
 export const gameStats = functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
-        // This object will accumulate all the fields, keyed by their name
-        const fields: Record<string, string> = {};
-
         console.log(req.body);
         const playerUid = req.body['playerUid'];
         const seasonUid = req.body['seasonUid'];
