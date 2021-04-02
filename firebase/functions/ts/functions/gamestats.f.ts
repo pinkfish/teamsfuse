@@ -25,7 +25,7 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
                         const games = await db
                             .collection('Games')
                             .where('seasonUid', '==', seasonUid)
-                            .where('type', '==', 'Game')
+                            .where('sharedData.type', '==', 'Game')
                             .get();
                         for (const doc of games.docs) {
                             const docData = doc.data();

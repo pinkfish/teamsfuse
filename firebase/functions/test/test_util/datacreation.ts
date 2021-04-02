@@ -232,6 +232,7 @@ export async function createGame(
         },
         uid: sharedGameDocId,
         time: arriveTime.valueOf(),
+        endTime: arriveTime.valueOf(),
         type: 'Game',
         timezone: 'America/Los_Angeles',
         officialResult: {

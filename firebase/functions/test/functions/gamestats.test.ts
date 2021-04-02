@@ -120,7 +120,6 @@ describe('functions - game stats', () => {
         const opponent = await createOpponent(teamDocId, 'fluff');
         const arriveTime = DateTime.now().toUTC();
         const game = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id);
-        // Just make sure creating a club actually works.
 
         const req = stubInterface<Request>();
         const res = stubInterface<Response>();
@@ -141,6 +140,7 @@ describe('functions - game stats', () => {
                     uid: game.id,
                     arrivalTime: arriveTime.valueOf(),
                     seasonUid: seasonDocId,
+                    teamUid: teamDocId,
                     result: {
                         result: 'Unknown',
                         inProgress: 'NotStarted',
@@ -150,10 +150,16 @@ describe('functions - game stats', () => {
                     },
                     playerSummary: undefined,
                     players: { player: {} },
+                    uniform: '',
+                    notes: '',
+                    sharedDataUid: game.data()!.sharedData.uid,
                     sharedData: {
+                        uid: game.data()!.sharedData.uid,
                         name: '',
                         time: arriveTime.valueOf(),
+                        endTime: arriveTime.valueOf(),
                         timezone: 'America/Los_Angeles',
+                        type: 'Game',
                         place: {
                             address: '1502 west test drive',
                             name: 'Test High School',
