@@ -120,6 +120,11 @@ class PublicPlayerDetails extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () => Navigator.pushNamed(context,
+                          '/Player/${PublicPlayerTab.stats.name}/$playerUid'),
+                      child: Text(Messages.of(context).statsButton),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pushNamed(context,
                           '/Team/${PublicTeamTab.team.name}/${season.teamUid}'),
                       child: Text(Messages.of(context).teamButton),
                     ),

@@ -10,6 +10,8 @@ import 'package:flutter_fuse/widgets/teams/teamimage.dart';
 import 'package:flutter_fuse/widgets/teams/teamname.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:public_ux/screens/publicplayer.dart';
+import 'package:public_ux/services/messagespublic.dart';
 import 'package:public_ux/services/publicgames.dart';
 import 'package:public_ux/widgets/publicplayerdetails.dart';
 import 'package:built_collection/built_collection.dart';
@@ -28,64 +30,71 @@ class PublicPlayerStats extends StatelessWidget {
   PublicPlayerStats(this.bloc, this.size);
 
   Widget _buildCurrentSeason(BuildContext context, Season season) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            TeamImage(teamUid: season.teamUid, width: 20, height: 20),
-            SizedBox(width: 5),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      TeamName(
-                        teamUid: season.teamUid,
-                        style: Theme.of(context).textTheme.bodyText1.copyWith(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 20,
+    return Card(
+      color: Theme.of(context).cardColor.withBlue(230),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(height: 20),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              TeamImage(teamUid: season.teamUid, width: 20, height: 20),
+              SizedBox(width: 5),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        TeamName(
+                          teamUid: season.teamUid,
+                          style: Theme.of(context).textTheme.bodyText1.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 20,
+                              ),
+                        ),
+                        SizedBox(width: 15),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: Text(
+                              '${season.name} W:${season.record.win} L:${season.record.loss} T:${season.record.tie}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1
+                                  .copyWith(
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 15,
+                                  ),
                             ),
-                      ),
-                      SizedBox(width: 15),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.topRight,
-                          child: Text(
-                            '${season.name} W:${season.record.win} L:${season.record.loss} T:${season.record.tie}',
-                            style:
-                                Theme.of(context).textTheme.bodyText1.copyWith(
-                                      fontStyle: FontStyle.italic,
-                                      fontSize: 15,
-                                    ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 5),
-        SeasonPlayerHeader(
-          style: Theme.of(context)
-              .textTheme
-              .bodyText1
-              .copyWith(fontWeight: FontWeight.w100),
-          showName: false,
-        ),
-        _gamesList(season),
-      ],
+            ],
+          ),
+          SizedBox(height: 5),
+          SeasonPlayerHeader(
+            style: Theme.of(context)
+                .textTheme
+                .bodyText1
+                .copyWith(fontWeight: FontWeight.w100),
+            showName: false,
+          ),
+          _gamesList(season),
+          SizedBox(height: 20),
+        ],
+      ),
     );
   }
 
@@ -166,7 +175,29 @@ class PublicPlayerStats extends StatelessWidget {
                 ),
               ],
             ),
-            ...seasons,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: seasons,
+                ),
+              ),
+            ),
+            ButtonBar(
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pushNamed(context,
+                      '/Player/${PublicPlayerTab.media.name}/${bloc.playerUid}'),
+                  child: Text(MessagesPublic.of(context).mediaButton),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pushNamed(context,
+                      '/Player/${PublicPlayerTab.stats.name}/${bloc.playerUid}'),
+                  child: Text(Messages.of(context).statsButton),
+                ),
+              ],
+            ),
           ],
         );
       },
