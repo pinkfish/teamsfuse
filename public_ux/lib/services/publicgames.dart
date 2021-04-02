@@ -27,8 +27,8 @@ class PublicGames {
         'functionsGamestats',
       ),
       body: jsonEncode({
-        playerUid: playerUid,
-        seasonUid: seasonUid,
+        'playerUid': playerUid,
+        'seasonUid': seasonUid,
       }),
     );
     print('Calling data ${res.body} ${res.statusCode}');

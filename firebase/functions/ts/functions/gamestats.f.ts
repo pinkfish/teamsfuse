@@ -18,11 +18,14 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
         if (playerUid && seasonUid) {
             const seasonDoc = await db.collection('Seasons').doc(seasonUid).get();
             const seasonData = seasonDoc.data();
+            console.log(`Season ${seasonDoc.exists}`);
             if (seasonData !== null && seasonData !== undefined) {
                 const playerDoc = await db.collection('Players').doc(playerUid).get();
                 const playerData = playerDoc.data();
+                console.log(`Player ${playerDoc.exists}`);
                 if (playerData !== null && playerData !== undefined) {
                     // Only for public players.
+                    console.log(`Player ${playerData.isPublic} ${seasonData.isPublic}`);
                     if (playerData.isPublic && seasonData.isPublic) {
                         handled = true;
                         // Get the games and then the stats by player.
@@ -72,7 +75,7 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
             });
         } else {
             res.status(405);
-            res.send('<b>Unable to find player/season ' + fields['playerUid'] + '</b>');
+            res.send(`<b>Unable to find player/season ${playerUid}/${seasonUid}</b>`);
         }
         res.end();
     } else {
