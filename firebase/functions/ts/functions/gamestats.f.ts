@@ -53,9 +53,8 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
                                     notes: '',
                                     teamUid: docData.teamUid,
                                     uniform: '',
-
                                     sharedData: {
-                                        uid: doc.sharedData.uid,
+                                        uid: docData.sharedData.uid,
                                         name: '',
                                         time: docData.sharedData.time,
                                         endTime: docData.sharedData.endTime,
