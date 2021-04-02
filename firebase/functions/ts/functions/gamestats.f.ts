@@ -10,6 +10,7 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
         // This object will accumulate all the fields, keyed by their name
         const fields: Record<string, string> = {};
 
+        console.log(req.body);
         const playerUid = req.body['playerUid'];
         const seasonUid = req.body['seasonUid'];
         let handled = false;
