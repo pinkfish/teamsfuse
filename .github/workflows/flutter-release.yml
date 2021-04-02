@@ -35,9 +35,10 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: "12.x"
-      - uses: actions/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "2.7.2"
+          bundler-cache: true
       - name: Branch name
         id: branch_name
         run: |
