@@ -16,6 +16,7 @@ import 'package:pedantic/pedantic.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:public_ux/screens/publicclubhome.dart';
 
 import 'screens/publichome.dart';
 import 'services/algolia.dart';
@@ -40,6 +41,14 @@ void main() async {
     HydratedBloc.storage = _EmptyHydratedStorage();
   }
 
+  unawaited(AnalyticsSubsystemImpl.instance.logAppOpen());
+
+  // Send error logs up to crashalytics.
+  FlutterError.onError = (details) {
+    AnalyticsSubsystemImpl.instance
+        .recordException(details.exception, details.stack);
+  };
+
   runApp(PublicTeamsFuse());
 }
 
@@ -53,16 +62,22 @@ class PublicTeamsFuse extends StatelessWidget {
     final theme = ThemeData(
       primarySwatch: Colors.green,
     );
-    final route = 'Home';
+    var route = 'Home';
     final wrapper = Firestore();
 
-    unawaited(AnalyticsSubsystemImpl.instance.logAppOpen());
-
-    // Send error logs up to crashalytics.
-    FlutterError.onError = (details) {
-      AnalyticsSubsystemImpl.instance
-          .recordException(details.exception, details.stack);
-    };
+    // Figure out if we know what the base uri is.
+    if (Uri.base.host.isNotEmpty) {
+      // Split it and work it out.
+      final bits = Uri.base.host.split('.');
+      switch (bits[0]) {
+        case 'nwblasers':
+          route = 'Club/${PublicClubTab.club}/-LFYVrTV145zE21C4O24';
+          break;
+        default:
+          route = 'Home';
+          break;
+      }
+    }
 
     return MultiRepositoryProvider(
       providers: [
@@ -107,6 +122,7 @@ class PublicTeamsFuse extends StatelessWidget {
 
   Route<dynamic> _buildRoute(
       BuildContext context, RouteSettings routeSettings) {
+    print(routeSettings.name);
     // States on routes.
     final router = RepositoryProvider.of<fluro.FluroRouter>(context);
     return router.generator(routeSettings);
