@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-04-14T19:11:57.720722",
+  "@@last_modified": "2021-04-15T22:50:08.207206",
   "About": "About",
   "@About": {
     "type": "text",
@@ -3155,6 +3155,12 @@
   "PLAYER": "PLAYER",
   "@PLAYER": {
     "description": "The button to visit the player",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Player deleted": "Player deleted",
+  "@Player deleted": {
+    "description": "Text to show the player is deleted",
     "type": "text",
     "placeholders": {}
   }
