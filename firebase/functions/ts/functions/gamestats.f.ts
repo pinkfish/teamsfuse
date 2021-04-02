@@ -12,7 +12,8 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
         const seasonUid = req.body['seasonUid'];
         let handled = false;
         const retGames: Record<string, any>[] = [];
-        if (playerUid && seasonUid) {
+        console.log('Got ${playerUid}  ${seasonUid}');
+        if (playerUid !== undefined && seasonUid !== undefined) {
             const seasonDoc = await db.collection('Seasons').doc(seasonUid).get();
             const seasonData = seasonDoc.data();
             console.log(`Season ${seasonDoc.exists}`);
