@@ -265,7 +265,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     if (ret != null) {
       // Save the state update.
       setState(() {
-        _details.divisons = ret;
+        _details.divisions = ret;
         _details.inProgress = GameInProgress.InProgress;
         _details.time.currentPeriodStartInternal = null;
         _details.time.currentOffsetInternal = 0;
@@ -306,7 +306,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     if (ret != null && ret == true) {
       // Save the state update.
       setState(() {
-        _details.divisons = GameDivisionsType.Halves;
+        _details.divisions = GameDivisionsType.Halves;
         _details.inProgress = GameInProgress.InProgress;
         // Timer not running.
         _details.time.currentPeriodStartInternal = null;
@@ -520,7 +520,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       var children = <Widget>[
         PeriodSelector(
           currentPeriod: _details.currentPeriod.build(),
-          divisionsType: _details.divisons,
+          divisionsType: _details.divisions,
           team: widget.team,
           onChanged: _periodChanged,
         )

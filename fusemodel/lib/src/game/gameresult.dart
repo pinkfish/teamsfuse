@@ -140,7 +140,7 @@ abstract class GameResultDetails
   static void _initializeBuilder(GameResultDetailsBuilder b) => b
     ..currentPeriod = GamePeriod.regulation1.toBuilder()
     ..inProgress = GameInProgress.NotStarted
-    ..divisons = GameDivisionsType.Quarters;
+    ..divisions = GameDivisionsType.Quarters;
 
   /// Serialize the data.
   Map<String, dynamic> toMap() {

@@ -12,7 +12,7 @@ Game makeTestGame(
     ..result = GameResult.Win
     ..time.currentOffsetInternal = 0
     ..currentPeriod = GamePeriod.notStarted.toBuilder()
-    ..divisons = GameDivisionsType.Quarters;
+    ..divisions = GameDivisionsType.Quarters;
   var shared = GameSharedDataBuilder()
     ..uid = sharedGameUid
     ..time = start ?? DateTime.now().toUtc()
