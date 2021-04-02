@@ -144,6 +144,7 @@ class PublicPlayerDetails extends StatelessWidget {
       bloc: bloc,
       builder: (context, singlePlayerState) {
         final seasons = <Widget>[];
+
         if (!singlePlayerState.loadedSeasons) {
           bloc.add(SinglePlayerLoadSeasons());
           seasons.add(Text(Messages.of(context).loading));

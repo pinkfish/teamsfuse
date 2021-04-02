@@ -65,7 +65,7 @@ abstract class GameSharedData
   @nullable
   String get leagueUid;
 
-  /// The divison in the league assocoiated with this game, null if there is none.
+  /// The division in the league associated with this game, null if there is none.
   @nullable
   String get leagueDivisionUid;
 
@@ -93,7 +93,7 @@ abstract class GameSharedData
   TZDateTime get tzTime => TZDateTime.from(time, location);
   TZDateTime get tzEndTime => TZDateTime.from(time, location);
 
-  static const String OFFICIALRESULT = 'officialResult';
-  static const String TYPE = 'type';
-  static const String LEAGUEDIVISIONUID = 'leagueDivisonUid';
+  static const String officialResultField = 'officialResult';
+  static const String typeField = 'type';
+  static const String leagueDivisionUidField = 'leagueDivisionUid';
 }

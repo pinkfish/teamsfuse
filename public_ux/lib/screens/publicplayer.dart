@@ -141,9 +141,12 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
             return Text(Messages.of(context).loading);
           }
           if (state is SinglePlayerDeleted) {
-            return Text(Messages.of(context).clubDeleted);
+            return Text(Messages.of(context).playerDeleted);
           }
-          return Text(state.player.name);
+          return Text(
+            state.player.name,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
       bottom: ColoredTabBar(
@@ -186,8 +189,10 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
             if (state is SinglePlayerDeleted) {
               return Text(Messages.of(context).clubDeleted);
             }
-            return Text(state.player.name,
-                style: Theme.of(context).textTheme.headline4);
+            return Text(
+              state.player.name,
+              overflow: TextOverflow.fade,
+            );
           },
         ),
       ),
@@ -207,10 +212,13 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
                     }
                     return Column(
                       children: [
-                        PlayerImage(playerUid: playerUid, radius: 100),
+                        PlayerImage(playerUid: playerUid, radius: 50),
                         Text(
                           state.player.name,
-                          style: Theme.of(context).textTheme.headline5,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline5
+                              .copyWith(color: Colors.white),
                         ),
                       ],
                     );

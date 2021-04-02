@@ -3369,6 +3369,9 @@ class Messages {
   String get playerButton => Intl.message('PLAYER',
       desc: 'The button to visit the player', locale: locale);
 
+  String get playerDeleted => Intl.message('Player deleted',
+      desc: 'Text to show the player is deleted', locale: locale);
+
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {
     var name =

@@ -177,7 +177,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         _wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
 
     var data = <String, dynamic>{};
-    data[GameSharedData.OFFICIALRESULT] = result.toMap();
+    data[GameSharedData.officialResultField] = result.toMap();
     _analytics.logEvent(name: 'updateOfficalGameResult');
 
     return ref.updateData(data);
@@ -1605,9 +1605,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Stream<BuiltList<GameSharedData>> getLeagueGamesForDivison(
       String leagueDivisonUid) async* {
-    var query = _wrapper
-        .collection(GAMES_SHARED_COLLECTION)
-        .where(GameSharedData.LEAGUEDIVISIONUID, isEqualTo: leagueDivisonUid);
+    var query = _wrapper.collection(GAMES_SHARED_COLLECTION).where(
+        GameSharedData.leagueDivisionUidField,
+        isEqualTo: leagueDivisonUid);
 
     // Snapshot and the main query.
     var wrap = await query.getDocuments();
@@ -1623,10 +1623,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<GameSharedData>> getLeagueGamesForTeam(
       String leagueTeamUid) async* {
     var queryHome = _wrapper.collection(GAMES_SHARED_COLLECTION).where(
-        '${GameSharedData.OFFICIALRESULT}.${GameOfficialResults.HOMETEAMUID}',
+        '${GameSharedData.officialResultField}.${GameOfficialResults.HOMETEAMUID}',
         isEqualTo: leagueTeamUid);
     var queryAway = _wrapper.collection(GAMES_SHARED_COLLECTION).where(
-        '${GameSharedData.OFFICIALRESULT}.${GameOfficialResults.AWAYTEAMUID}',
+        '${GameSharedData.officialResultField}.${GameOfficialResults.AWAYTEAMUID}',
         isEqualTo: leagueTeamUid);
 
     // Snapshot and the main query.

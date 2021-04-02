@@ -158,7 +158,10 @@ class PublicTeamDetailsScreen extends StatelessWidget {
           if (state is SingleTeamDeleted) {
             return Text(Messages.of(context).teamDeleted);
           }
-          return Text(state.team.name);
+          return Text(
+            state.team.name,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
       bottom: ColoredTabBar(
@@ -225,6 +228,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
                 SizedBox(width: 10),
                 Text(
                   state.team.name,
+                  overflow: TextOverflow.fade,
                 ),
               ],
             );
@@ -257,7 +261,10 @@ class PublicTeamDetailsScreen extends StatelessWidget {
                         TeamImage(teamUid: teamUid, width: 100, height: 100),
                         Text(
                           state.team.name,
-                          style: Theme.of(context).textTheme.headline5,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline5
+                              .copyWith(color: Colors.white),
                         ),
                       ],
                     );
