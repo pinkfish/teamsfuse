@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
-
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/clubs/coachimage.dart';
-import 'package:public_ux/screens/publicclubhome.dart';
-import 'package:public_ux/services/messagespublic.dart';
+
+import '../screens/publicclubhome.dart';
+import '../services/messagespublic.dart';
 
 ///
 /// Shows the details about the coaches in a specific club.

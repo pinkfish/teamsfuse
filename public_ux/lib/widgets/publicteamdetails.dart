@@ -13,10 +13,11 @@ import 'package:flutter_fuse/widgets/util/deleted.dart';
 import 'package:flutter_fuse/widgets/util/handsandtrophy.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:public_ux/screens/publicclubhome.dart';
-import 'package:public_ux/screens/publicteam.dart';
-import 'package:public_ux/services/messagespublic.dart';
-import 'package:public_ux/widgets/publicseasonplayers.dart';
+
+import '../screens/publicclubhome.dart';
+import '../screens/publicteam.dart';
+import '../services/messagespublic.dart';
+import '../widgets/publicseasonplayers.dart';
 
 ///
 /// Shows the public details of the team and the current season (only showing

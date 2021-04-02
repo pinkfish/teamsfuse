@@ -9,8 +9,8 @@ import 'package:flutter_fuse/widgets/util/coloredtabbar.dart';
 import 'package:flutter_fuse/widgets/util/responsivewidget.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:public_ux/widgets/publicplayermedia.dart';
 
+import '../widgets/publicplayermedia.dart';
 import '../services/messagespublic.dart';
 import '../widgets/publicplayerdetails.dart';
 

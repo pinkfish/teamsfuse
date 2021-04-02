@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/handsandtrophy.dart';
-import 'package:public_ux/services/messagespublic.dart';
 
+import '../services/messagespublic.dart';
 import '../widgets/appleplaystore.dart';
 import '../widgets/googleplaystore.dart';
 import '../widgets/searchdelegate.dart';

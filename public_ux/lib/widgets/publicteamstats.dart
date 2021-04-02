@@ -9,9 +9,9 @@ import 'package:flutter_fuse/widgets/teams/stats/teamseasonstats.dart';
 import 'package:flutter_fuse/widgets/util/deleted.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:public_ux/screens/publicclubhome.dart';
-import 'package:public_ux/screens/publicteam.dart';
-import 'package:public_ux/services/messagespublic.dart';
+import '../screens/publicclubhome.dart';
+import '../screens/publicteam.dart';
+import '../services/messagespublic.dart';
 
 ///
 /// Shows statistics for the overall team, showing trends over

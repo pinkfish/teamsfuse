@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:markdown/markdown.dart' as md;
-
 import 'package:flutter_fuse/widgets/clubs/clubimage.dart';
-import 'package:public_ux/screens/publicclubhome.dart';
-import 'package:public_ux/services/messagespublic.dart';
+
+import '../screens/publicclubhome.dart';
+import '../services/messagespublic.dart';
 
 ///
-/// Shows the details fo the club publically
+/// Shows the details of the club publicly
 ///
 class PublicClub extends StatelessWidget {
   /// Constructor.

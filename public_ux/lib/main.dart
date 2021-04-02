@@ -16,8 +16,8 @@ import 'package:pedantic/pedantic.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:public_ux/screens/publicclubhome.dart';
 
+import 'screens/publicclubhome.dart';
 import 'screens/publichome.dart';
 import 'services/algolia.dart';
 import 'services/approuter.dart';

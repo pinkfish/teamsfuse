@@ -4,8 +4,8 @@ import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/clubs/clubnewscard.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:public_ux/screens/publicclubhome.dart';
-import 'package:public_ux/services/messagespublic.dart';
+import '../screens/publicclubhome.dart';
+import '../services/messagespublic.dart';
 
 ///
 /// Shows the news articles for the club.

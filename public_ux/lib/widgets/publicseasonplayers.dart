@@ -6,7 +6,7 @@ import 'package:flutter_fuse/widgets/teams/stats/seasonplayerlist.dart';
 import 'package:flutter_fuse/widgets/util/deleted.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:public_ux/screens/publicplayer.dart';
+import '../screens/publicplayer.dart';
 
 ///
 /// Shows the public details of the team and the current season (only showing

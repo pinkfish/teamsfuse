@@ -8,8 +8,8 @@ import 'package:flutter_fuse/widgets/teams/media/mediacarousel.dart';
 import 'package:flutter_fuse/widgets/util/deleted.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:public_ux/screens/publicplayer.dart';
-import 'package:public_ux/screens/publicteam.dart';
+import '../screens/publicplayer.dart';
+import '../screens/publicteam.dart';
 
 ///
 /// Show the media for the team.

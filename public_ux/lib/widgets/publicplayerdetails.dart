@@ -11,10 +11,11 @@ import 'package:flutter_fuse/widgets/teams/stats/seasonplayerheader.dart';
 import 'package:flutter_fuse/widgets/teams/teamname.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:public_ux/screens/publicclubhome.dart';
-import 'package:public_ux/screens/publicplayer.dart';
-import 'package:public_ux/screens/publicteam.dart';
-import 'package:public_ux/services/messagespublic.dart';
+
+import '../screens/publicclubhome.dart';
+import '../screens/publicplayer.dart';
+import '../screens/publicteam.dart';
+import '../services/messagespublic.dart';
 
 ///
 /// The size of the widget.
