@@ -104,7 +104,13 @@ class PublicPlayerStats extends StatelessWidget {
     return FutureBuilder<BuiltList<Game>>(
         future: public.getGames(),
         builder: (context, state) {
+          print('no data ${state.hasData} ${state.hasError}');
+          if (state.hasError) {
+            print(state.error);
+            print(state.stackTrace);
+          }
           if (state.hasData) {
+            print('Got data ${state.hasData}');
             // Show all the games.
             if (state.data.isEmpty) {
               return Text(Messages.of(context).noGames,
