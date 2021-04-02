@@ -12,7 +12,7 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
         const seasonUid = req.body['seasonUid'];
         let handled = false;
         const retGames: Record<string, any>[] = [];
-        console.log(`Got ${playerUid}  ${seasonUid} ` + playerUid);
+        console.log(`Got ${playerUid}  ${seasonUid} ` + playerUid + ' -- ' + seasonUid);
         if (playerUid !== undefined && seasonUid !== undefined) {
             const seasonDoc = await db.collection('Seasons').doc(seasonUid).get();
             const seasonData = seasonDoc.data();
