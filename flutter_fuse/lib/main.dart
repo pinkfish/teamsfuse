@@ -11,7 +11,9 @@ import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pedantic/pedantic.dart';
-import 'package:timezone/timezone.dart';
+import 'package:timezone/data/latest_all.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
+
 import 'package:clock/clock.dart';
 
 import 'flutterfuseapp.dart';
@@ -20,6 +22,10 @@ import 'services/appconfiguration.dart';
 import 'services/firestore/firestore.dart' as fs;
 import 'services/loggingdata.dart';
 import 'util/async_hydrated_bloc/asyncstorage.dart';
+
+void setLocalLocation(String tzName) {
+  tz.setLocalLocation(tz.getLocation(tzName));
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,46 +60,39 @@ void main() async {
   }
 
   String currentTimeZone;
-  ByteData loadedData;
-  await Future.wait<dynamic>(<Future<dynamic>>[
-    rootBundle.load('assets/timezone/2018c.tzf').then<ByteData>((data) {
-      loadedData = data;
-      return data;
-    }),
-    !kIsWeb
-        ? FlutterNativeTimezone.getLocalTimezone()
-            .then<String>((str) => currentTimeZone = str)
-        : Future.value(true)
-  ]);
+  tz_data.initializeTimeZones();
+  if (!kIsWeb) {
+    currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
+  }
+
   if (kIsWeb) {
     var dt = clock.now();
     currentTimeZone = dt.timeZoneName;
   }
 
   // Timezone
-  initializeDatabase(loadedData.buffer.asUint8List());
   try {
     if (currentTimeZone == 'GMT' || currentTimeZone == 'Etc/UTC') {
       currentTimeZone = 'Europe/London';
-      setLocalLocation(getLocation(currentTimeZone));
+      setLocalLocation(currentTimeZone);
     } else if (currentTimeZone == 'Pacific Standard Time') {
       currentTimeZone = 'America/Los_Angeles';
-      setLocalLocation(getLocation(currentTimeZone));
+      setLocalLocation(currentTimeZone);
     } else if (currentTimeZone == 'Mountain Standard Time') {
       currentTimeZone = 'America/Detroit';
-      setLocalLocation(getLocation(currentTimeZone));
+      setLocalLocation(currentTimeZone);
     } else if (currentTimeZone == 'Coordinated Universal Time') {
       currentTimeZone = 'Europe/London';
-      setLocalLocation(getLocation(currentTimeZone));
+      setLocalLocation(currentTimeZone);
     } else {
-      setLocalLocation(getLocation(currentTimeZone));
+      setLocalLocation(currentTimeZone);
     }
   } catch (e, stack) {
     AnalyticsSubsystemImpl.instance.recordException(e, stack);
     currentTimeZone = 'America/Los_Angeles';
-    setLocalLocation(getLocation(currentTimeZone));
+    setLocalLocation(currentTimeZone);
   }
-  print('$currentTimeZone ${local.toString()}');
+  print('$currentTimeZone ');
 
   var firestoreWrapper = fs.Firestore();
   //UserDatabaseData.instance = new UserDatabaseData(Analytics.instance,

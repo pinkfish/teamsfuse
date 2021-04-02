@@ -7,29 +7,26 @@ const db = admin.firestore();
 // Figure out the game stats.
 export const gameStats = functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
-        console.log(req.body);
-        console.log(req.body['playerUid']);
-        console.log(req.body.playerUid);
-        const playerUid = req.body.playerUid;
-        const seasonUid = req.body.seasonUid;
+        const playerUid = req.body['playerUid'];
+        const seasonUid = req.body['seasonUid'];
         let handled = false;
         const retGames: Record<string, any>[] = [];
-        console.log(`Got ${playerUid}  ${seasonUid} ` + playerUid + ' -- ' + seasonUid);
         if (playerUid !== undefined && seasonUid !== undefined) {
             const seasonDoc = await db.collection('Seasons').doc(seasonUid).get();
             const seasonData = seasonDoc.data();
-            console.log(`Season ${seasonDoc.exists}`);
             if (seasonData !== null && seasonData !== undefined) {
                 const playerDoc = await db.collection('Players').doc(playerUid).get();
                 const playerData = playerDoc.data();
-                console.log(`Player ${playerDoc.exists}`);
                 if (playerData !== null && playerData !== undefined) {
                     // Only for public players.
-                    console.log(`Player ${playerData.isPublic} ${seasonData.isPublic}`);
                     if (playerData.isPublic && seasonData.isPublic) {
                         handled = true;
                         // Get the games and then the stats by player.
-                        const games = await db.collection('Games').where('seasonUid', '==', seasonUid).get();
+                        const games = await db
+                            .collection('Games')
+                            .where('seasonUid', '==', seasonUid)
+                            .where('type', '==', 'Game')
+                            .get();
                         for (const doc of games.docs) {
                             const docData = doc.data();
                             if (docData !== null && docData !== undefined) {
@@ -52,9 +49,17 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
                                     result: docData.result,
                                     playerSummary: docData.playerSummary,
                                     players: details,
+                                    sharedDataUid: docData.sharedDataUid,
+                                    notes: '',
+                                    teamUid: docData.teamUid,
+                                    uniform: '',
+
                                     sharedData: {
+                                        uid: doc.sharedData.uid,
                                         name: '',
                                         time: docData.sharedData.time,
+                                        endTime: docData.sharedData.endTime,
+                                        type: docData.sharedData.type,
                                         timezone: docData.sharedData.timezone,
                                         place: docData.sharedData.place,
                                         officialResult: docData.sharedData.officialResult,

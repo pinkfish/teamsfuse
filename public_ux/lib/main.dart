@@ -16,6 +16,7 @@ import 'package:pedantic/pedantic.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
 
 import 'screens/publicclubhome.dart';
 import 'screens/publichome.dart';
@@ -40,6 +41,8 @@ void main() async {
   } else {
     HydratedBloc.storage = _EmptyHydratedStorage();
   }
+
+  tz.initializeTimeZones();
 
   unawaited(AnalyticsSubsystemImpl.instance.logAppOpen());
 
