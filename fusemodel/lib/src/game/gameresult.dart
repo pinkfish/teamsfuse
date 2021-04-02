@@ -114,7 +114,8 @@ abstract class GameResultDetails
   GamePeriod get currentPeriod;
 
   /// How many divisons in the game.
-  GameDivisionsType get divisons; // = GameDivisionsType.Halves;
+  GameDivisionsType get divisions;
+
   /// The time the period started at.
   GamePeriodTime get time;
 

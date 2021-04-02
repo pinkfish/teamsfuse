@@ -34,8 +34,6 @@ class OfficialResult extends EnumClass {
 ///
 abstract class GameOfficialResults
     implements Built<GameOfficialResults, GameOfficialResultsBuilder> {
-  //final CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> scores =
-  //    new CanonicalizedMap((GamePeriod p) => p.toIndex());
   @BuiltValueField(wireName: 'scores')
   BuiltMap<String, GameResultPerPeriod> get scoresInternal;
 
@@ -63,8 +61,8 @@ abstract class GameOfficialResults
         return b;
       }));
 
-  static const String HOMETEAMUID = 'homeTeamUid';
-  static const String AWAYTEAMUID = 'awayTeamUid';
+  static const String homeTeamUidField = 'homeTeamUid';
+  static const String awayTeamUidField = 'awayTeamUid';
 
   GameOfficialResults._();
   factory GameOfficialResults(

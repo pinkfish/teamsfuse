@@ -58,7 +58,7 @@ abstract class GameSharedData
   /// The place the event is held at.
   GamePlace get place;
 
-  /// The offical results for this game (only in a league/tournament).
+  /// The official results for this game (only in a league/tournament).
   GameOfficialResults get officialResult;
 
   /// The league associated with this game, null if there is none.

@@ -110,7 +110,7 @@ export async function createSeasonAndTeam(
     };
 }
 
-export async function createPlayer(users: string[], uid?: string): Promise<DocumentSnapshot> {
+export async function createPlayer(users: string[], uid?: string, isPublic?: boolean): Promise<DocumentSnapshot> {
     const playerDocId = uid ?? uuid();
     const userData: Record<string, any> = {};
     for (const idx in users) {
@@ -129,6 +129,7 @@ export async function createPlayer(users: string[], uid?: string): Promise<Docum
             uid: playerDocId,
             users: userData,
             playerType: 'player',
+            isPublic: isPublic ?? false,
         });
     return await admin.firestore().collection('Players').doc(playerDocId).get();
 }
@@ -193,14 +194,20 @@ export async function createClub(members = ['member'], admins = ['waffles'], uid
     return await admin.firestore().collection('Clubs').doc(clubDocId).get();
 }
 
-export async function createOpponent(teamUid: string): Promise<DocumentSnapshot> {
+export async function createOpponent(teamUid: string, name?: string): Promise<DocumentSnapshot> {
     const opponentUid = uuid();
 
-    await admin.firestore().collection('Teams').doc(teamUid).collection('Opponents').doc(opponentUid).set({
-        teamUid: teamUid,
-        uid: opponentUid,
-        name: 'Test Opponent',
-    });
+    await admin
+        .firestore()
+        .collection('Teams')
+        .doc(teamUid)
+        .collection('Opponents')
+        .doc(opponentUid)
+        .set({
+            teamUid: teamUid,
+            uid: opponentUid,
+            name: name ?? 'Test Opponent',
+        });
 
     return admin.firestore().collection('Teams').doc(teamUid).collection('Opponents').doc(opponentUid).get();
 }
@@ -210,7 +217,7 @@ export async function createGame(
     seasonUid: string,
     arriveTime: DateTime,
     opponentUid: string,
-    name: string | undefined,
+    name?: string,
 ): Promise<DocumentSnapshot> {
     const gameDocId = uuid();
     const sharedGameDocId = uuid();
@@ -227,6 +234,10 @@ export async function createGame(
         time: arriveTime.valueOf(),
         type: 'Game',
         timezone: 'America/Los_Angeles',
+        officialResult: {
+            result: 'Unknown',
+            scores: {},
+        },
     };
 
     await admin.firestore().collection('GamesShared').doc(sharedGameDocId).set(sharedData);
@@ -247,6 +258,15 @@ export async function createGame(
             endTime: arriveTime.valueOf() + 3000,
             arrivalTime: arriveTime.valueOf(),
             opponentUid: opponentUid,
+            result: {
+                result: 'Unknown',
+                inProgress: 'NotStarted',
+                currentPeriod: 'NotStarted--0',
+                divisions: 'Quarters',
+                scores: {},
+            },
+            // Empty, no data for the player for this game.
+            players: {},
         });
 
     return admin.firestore().collection('Games').doc(gameDocId).get();

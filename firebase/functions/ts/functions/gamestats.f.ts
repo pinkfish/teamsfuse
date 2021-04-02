@@ -4,6 +4,7 @@ import * as admin from 'firebase-admin';
 // db to write the feedback too.
 const db = admin.firestore();
 
+// Figure out the game stats.
 export const gameStats = functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
         // This object will accumulate all the fields, keyed by their name
@@ -29,18 +30,24 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
                             const docData = doc.data();
                             if (docData !== null && docData !== undefined) {
                                 let playerSummary: Record<string, any>;
-                                if (docData.players.has(playerUid)) {
-                                    playerSummary = docData.players[playerUid];
+                                if (
+                                    docData.players !== undefined &&
+                                    docData.players !== null &&
+                                    docData.players.hasOwnProperty(playerUid)
+                                ) {
+                                    playerSummary = docData.players[playerUid] ?? {};
                                 } else {
                                     playerSummary = {};
                                 }
+                                const details: Record<string, any> = {};
+                                details[playerUid] = playerSummary;
                                 retGames.push({
                                     uid: docData.uid,
                                     arrivalTime: docData.arrivalTime,
                                     seasonUid: docData.seasonUid,
                                     result: docData.result,
                                     playerSummary: docData.playerSummary,
-                                    players: playerSummary,
+                                    players: details,
                                     sharedData: {
                                         name: '',
                                         time: docData.sharedData.time,
@@ -57,6 +64,7 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
         }
         if (handled) {
             res.status(200);
+            console.log(retGames);
             res.json({
                 playerUid: playerUid,
                 seasonUid: seasonUid,
@@ -70,7 +78,8 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
     } else {
         res.send('<b>Not a post message</b>');
         // Return a "method not allowed" error
-        res.status(405).end();
+        res.status(405);
+        res.end();
     }
     return;
 });

@@ -346,7 +346,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                         child: SwitchFormField(
                           icon: MdiIcons.home,
                           label: Messages.of(context).homeAway,
-                          initialValue: widget.game.homegame,
+                          initialValue: widget.game.homeGame,
                           onSaved: (value) {
                             if (value) {
                               _builder.sharedData.officialResult

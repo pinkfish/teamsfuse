@@ -153,7 +153,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(GAMES_COLLECTION).document(game.uid);
 
     var data = <String, dynamic>{};
-    data['${Game.ATTENDANCE}.$playerUid'] = attend.toString();
+    data['${Game.attendanceField}.$playerUid'] = attend.toString();
     _analytics.logEvent(name: 'updateGameAttendance');
 
     return ref.updateData(data).then((a) => print('Done stuff'));
@@ -165,7 +165,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
 
     var data = <String, dynamic>{};
-    data[Game.RESULT] = result.toMap();
+    data[Game.resultField] = result.toMap();
     _analytics.logEvent(name: 'updateGameResult');
     return ref.updateData(data);
   }
@@ -388,8 +388,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(GAMES_COLLECTION);
     // See if the games for the season.
     var snap = ref
-        .where(Game.TEAMUID, isEqualTo: opponent.teamUid)
-        .where(Game.OPPONENTUID, isEqualTo: opponent.uid);
+        .where(Game.teamUidField, isEqualTo: opponent.teamUid)
+        .where(Game.opponentUidField, isEqualTo: opponent.uid);
     var query = await snap.getDocuments();
     var g = <Game>[];
     for (var doc in query.documents) {
@@ -628,7 +628,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       {DateTime start, DateTime end, String teamUid, String seasonUid}) async* {
     var gameQuery = _wrapper
         .collection(GAMES_COLLECTION)
-        .where(Game.TEAMUID, isEqualTo: teamUid);
+        .where(Game.teamUidField, isEqualTo: teamUid);
     if (start != null) {
       print('Start ${start.microsecondsSinceEpoch}');
       gameQuery = gameQuery
@@ -636,16 +636,16 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .where(ARRIVALTIME, isLessThan: end.microsecondsSinceEpoch);
     }
     if (seasonUid != null) {
-      gameQuery = gameQuery.where(Game.SEASONUID, isEqualTo: seasonUid);
+      gameQuery = gameQuery.where(Game.seasonUidField, isEqualTo: seasonUid);
     }
     var queryGameSnap = await gameQuery.getDocuments();
 
     var data = <Game>{};
     for (var snap in queryGameSnap.documents) {
-      var sharedGameUid = snap.data[Game.SHAREDDATAUID];
+      var sharedGameUid = snap.data[Game.sharedDataUidField];
       if (sharedGameUid == null || sharedGameUid.isEmpty) {
         // Missing shared data uid.
-        snap.data[Game.GAMESHAREDDATA] = snap.data;
+        snap.data[Game.gameSharedDataField] = snap.data;
       }
       print(snap.documentID);
       var g = Game.fromMap(snap.data);
@@ -658,9 +658,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       var data = <Game>{};
       for (var snap in queryGameSnap.documents) {
         String sharedGameUid;
-        sharedGameUid = snap.data[Game.SHAREDDATAUID] as String;
+        sharedGameUid = snap.data[Game.sharedDataUidField] as String;
         if (sharedGameUid == null || sharedGameUid.isEmpty) {
-          snap.data[Game.GAMESHAREDDATA] = snap.data;
+          snap.data[Game.gameSharedDataField] = snap.data;
         }
 
         var newGame = Game.fromMap(snap.data);
@@ -1623,10 +1623,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<GameSharedData>> getLeagueGamesForTeam(
       String leagueTeamUid) async* {
     var queryHome = _wrapper.collection(GAMES_SHARED_COLLECTION).where(
-        '${GameSharedData.officialResultField}.${GameOfficialResults.HOMETEAMUID}',
+        '${GameSharedData.officialResultField}.${GameOfficialResults.homeTeamUidField}',
         isEqualTo: leagueTeamUid);
     var queryAway = _wrapper.collection(GAMES_SHARED_COLLECTION).where(
-        '${GameSharedData.officialResultField}.${GameOfficialResults.AWAYTEAMUID}',
+        '${GameSharedData.officialResultField}.${GameOfficialResults.awayTeamUidField}',
         isEqualTo: leagueTeamUid);
 
     // Snapshot and the main query.

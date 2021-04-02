@@ -46,7 +46,7 @@ abstract class Game implements Built<Game, GameBuilder> {
   String get uid;
 
   /// The data uid for the shared parts of this.
-  @BuiltValueField(wireName: SHAREDDATAUID)
+  @BuiltValueField(wireName: sharedDataUidField)
   String get sharedDataUid;
 
   /// When people should arrive.
@@ -56,14 +56,14 @@ abstract class Game implements Built<Game, GameBuilder> {
   String get notes;
 
   /// The opponent for the game
-  @BuiltValueField(wireName: OPPONENTUID)
+  @BuiltValueField(wireName: opponentUidField)
   String get opponentUid;
 
   /// The season for the game
   String get seasonUid;
 
   /// The team the game is associated with.
-  @BuiltValueField(wireName: TEAMUID)
+  @BuiltValueField(wireName: teamUidField)
   String get teamUid;
 
   /// The uniforms for the team
@@ -74,7 +74,7 @@ abstract class Game implements Built<Game, GameBuilder> {
   String get seriesId;
 
   /// The result of the game, broken down by period.
-  @BuiltValueField(wireName: RESULT)
+  @BuiltValueField(wireName: resultField)
   GameResultDetails get result;
 
   /// If people attended the game
@@ -150,23 +150,48 @@ abstract class Game implements Built<Game, GameBuilder> {
   }
 
   Game._();
+
+  /// The factory to create the game.
   factory Game([Function(GameBuilder b) updates]) = _$Game;
 
-  bool get homegame => sharedData.officialResult.homeTeamLeagueUid == teamUid;
+  /// If this is a home game or not.
+  bool get homeGame => sharedData.officialResult.homeTeamLeagueUid == teamUid;
 
+  /// The arrival time for the game in the right timezone.
   TZDateTime get tzArriveTime =>
       TZDateTime.from(arrivalTime, sharedData.location);
 
-  static const String SEASONUID = 'seasonUid';
-  static const String RESULT = 'result';
-  static const String ATTENDANCE = 'attendance';
-  static const String ATTENDANCEVALUE = 'value';
-  static const String TEAMUID = 'teamUid';
-  static const String OPPONENTUID = 'opponentUid';
-  static const String SHAREDDATAUID = 'sharedDataUid';
-  static const String LEAGUEOPPONENTUID = 'leagueOpponentUid';
-  static const String GAMESHAREDDATA = 'sharedData';
+  /// The field for the seasonUid.
+  static const String seasonUidField = 'seasonUid';
+
+  /// The field for the result.
+  static const String resultField = 'result';
+
+  /// The field for the attendance.
+  static const String attendanceField = 'attendance';
+
+  /// The field for the attendance value.
+  static const String attendanceValueField = 'value';
+
+  /// The field for the teamUid.
+  static const String teamUidField = 'teamUid';
+
+  /// The field for the oppponentUid
+  static const String opponentUidField = 'opponentUid';
+
+  /// The field for the sharedDataUid
+  static const String sharedDataUidField = 'sharedDataUid';
+
+  /// The field for the leagueOpponentUid.
+  static const String leagueOpponentUidField = 'leagueOpponentUid';
+
+  /// The field for the game shared data.
+  static const String gameSharedDataField = 'sharedData';
+
+  /// The field for the opponents.
   static const String opponentField = 'opponents';
+
+  /// The field for the players.
   static const String playersField = 'players';
 
   /// Defaults for the state.  Always default to no games loaded.
@@ -178,14 +203,17 @@ abstract class Game implements Built<Game, GameBuilder> {
     ..playerSummary = GamePlayerSummaryBuilder()
     ..opponentSummary = GamePlayerSummaryBuilder();
 
+  /// Serialize the game to a map.
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(Game.serializer, this);
   }
 
+  /// Deserialize the game from a map.
   static Game fromMap(Map<String, dynamic> jsonData) {
     return dataSerializers.deserializeWith(Game.serializer, jsonData);
   }
 
+  /// The serializer to use.
   static Serializer<Game> get serializer => _$gameSerializer;
 
   @override

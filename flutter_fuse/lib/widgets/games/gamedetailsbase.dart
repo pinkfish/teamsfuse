@@ -273,7 +273,7 @@ class GameDetailsBase extends StatelessWidget {
                 ? Text('arrive at $arriveAtTimeStr',
                     style: theme.textTheme.subtitle1)
                 : null,
-        trailing: game.homegame ? const Icon(Icons.home) : null,
+        trailing: game.homeGame ? const Icon(Icons.home) : null,
       ),
     );
 

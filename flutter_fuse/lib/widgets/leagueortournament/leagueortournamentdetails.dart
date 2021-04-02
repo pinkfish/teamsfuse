@@ -46,7 +46,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
             return Text(Messages.of(context).loading);
           }
 
-          if (seasonState.divisons.length == 0) {
+          if (seasonState.divisions.length == 0) {
             if (admin) {
               return Container(
                 margin: EdgeInsets.all(5.0),
@@ -75,7 +75,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
             }
           }
 
-          var sortedDivisons = seasonState.divisons.values.toList();
+          var sortedDivisons = seasonState.divisions.values.toList();
           sortedDivisons.sort(
               (LeagueOrTournamentDivison d1, LeagueOrTournamentDivison d2) =>
                   d1.name.compareTo(d2.name));
