@@ -10,8 +10,8 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
         console.log(req.body);
         console.log(req.body['playerUid']);
         console.log(req.body.playerUid);
-        const playerUid = req.body['playerUid'];
-        const seasonUid = req.body['seasonUid'];
+        const playerUid = req.body.playerUid;
+        const seasonUid = req.body.seasonUid;
         let handled = false;
         const retGames: Record<string, any>[] = [];
         console.log(`Got ${playerUid}  ${seasonUid} ` + playerUid + ' -- ' + seasonUid);
