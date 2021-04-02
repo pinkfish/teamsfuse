@@ -19,8 +19,15 @@ class MediaCarousel extends StatefulWidget {
   /// All the media we could display.
   final BuiltList<MediaInfo> allMedia;
 
+  /// Called when the player button is clicked.
+  final ValueSetter<String> onPlayerPressed;
+
+  /// Called when the team button is clicked.
+  final ValueSetter<String> onTeamPressed;
+
   /// Create a media carousel.
-  MediaCarousel(this.media, {this.allMedia});
+  MediaCarousel(this.media,
+      {this.allMedia, this.onPlayerPressed, this.onTeamPressed});
 
   @override
   State<StatefulWidget> createState() {
@@ -305,6 +312,25 @@ class _MediaCarouselState extends State<MediaCarousel> {
                               ),
                               ButtonBar(
                                 children: [
+                                  _currentMedia.playerUid.isNotEmpty &&
+                                          widget.onPlayerPressed != null
+                                      ? TextButton(
+                                          onPressed: () =>
+                                              widget.onPlayerPressed(
+                                                  _currentMedia.playerUid),
+                                          child: Text(Messages.of(context)
+                                              .playerButton),
+                                        )
+                                      : SizedBox(width: 0),
+                                  _currentMedia.teamUid.isNotEmpty &&
+                                          widget.onTeamPressed != null
+                                      ? TextButton(
+                                          onPressed: () => widget.onTeamPressed(
+                                              _currentMedia.teamUid),
+                                          child: Text(
+                                              Messages.of(context).teamButton),
+                                        )
+                                      : SizedBox(width: 0),
                                   TextButton(
                                     onPressed: () => Navigator.pushNamed(
                                         context,
@@ -313,7 +339,7 @@ class _MediaCarouselState extends State<MediaCarousel> {
                                         '${widget.media.uid}'),
                                     child:
                                         Text(Messages.of(context).editButton),
-                                  )
+                                  ),
                                 ],
                               )
                             ],

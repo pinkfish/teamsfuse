@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/blocs/single/singleseasonbloc.dart';
 import 'package:flutter_fuse/services/blocs/single/singleteambloc.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/blocs/singleseasonprovider.dart';
 import 'package:flutter_fuse/widgets/player/playerdropdown.dart';
 import 'package:flutter_fuse/widgets/teams/stats/teamseasonstats.dart';
 import 'package:flutter_fuse/widgets/util/deleted.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:public_ux/screens/publicclubhome.dart';
+import 'package:public_ux/screens/publicteam.dart';
+import 'package:public_ux/services/messagespublic.dart';
 
 ///
 /// Shows statistics for the overall team, showing trends over
@@ -17,8 +21,12 @@ class PublicTeamStatsWidget extends StatefulWidget {
   /// The team bloc to use for this ux
   final SingleTeamBloc teamBloc;
 
+  /// If this is a small display.
+  final bool smallDisplay;
+
   PublicTeamStatsWidget({
     @required this.teamBloc,
+    this.smallDisplay = false,
   });
 
   @override
@@ -95,6 +103,44 @@ class _TeamStatsWidgetState extends State<PublicTeamStatsWidget> {
                       );
                     }),
               ),
+              widget.smallDisplay
+                  ? ButtonBar(
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(
+                              context,
+                              '/Club/'
+                              '${PublicClubTab.club.name}/'
+                              '${state.team.clubUid}'),
+                          child: Text(
+                            Messages.of(context).clubButton,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(
+                              context,
+                              '/Team/'
+                              '${PublicTeamTab.media.name}/'
+                              '${state.team.uid}'),
+                          child: Text(
+                            MessagesPublic.of(context).mediaButton,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(
+                              context,
+                              '/Team/'
+                              '${PublicTeamTab.team.name}/'
+                              '${state.team.uid}'),
+                          child: Text(
+                            MessagesPublic.of(context).aboutButton,
+                          ),
+                        ),
+                      ],
+                    )
+                  : SizedBox(
+                      height: 0,
+                    ),
             ],
           ),
         );

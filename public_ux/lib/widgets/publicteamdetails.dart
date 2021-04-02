@@ -15,6 +15,7 @@ import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:public_ux/screens/publicclubhome.dart';
 import 'package:public_ux/screens/publicteam.dart';
+import 'package:public_ux/services/messagespublic.dart';
 import 'package:public_ux/widgets/publicseasonplayers.dart';
 
 ///
@@ -22,8 +23,13 @@ import 'package:public_ux/widgets/publicseasonplayers.dart';
 /// the one season).
 ///
 class PublicTeamDetails extends StatelessWidget {
+  final bool smallDisplay;
+
   /// Constructor.
-  PublicTeamDetails(this.singleTeamBloc);
+  PublicTeamDetails(
+    this.singleTeamBloc, {
+    this.smallDisplay = false,
+  });
 
   /// The teamUid to show the details for.
   final SingleTeamBloc singleTeamBloc;
@@ -186,35 +192,53 @@ class PublicTeamDetails extends StatelessWidget {
                           SizedBox(height: 10),
                           _buildCurrentSeason(
                               context, teamState, singleSeasonBloc),
-                          ButtonBar(
-                            children: [
-                              TextButton(
-                                onPressed: () => Navigator.pushNamed(
-                                    context,
-                                    '/Club/'
-                                    '${PublicClubTab.club.name}/'
-                                    '${teamState.team.clubUid}'),
-                                child: Text(Messages.of(context).clubButton),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.pushNamed(
-                                    context,
-                                    '/Team/'
-                                    '${PublicTeamTab.stats.name}/'
-                                    '${teamState.team.uid}'),
-                                child: Text(Messages.of(context).statsButton),
-                              ),
-                            ],
-                          ),
                         ],
                       ),
                     ),
                   ),
                 ],
               ),
-              PublicSeasonPlayers(
-                singleTeamBloc,
+              Expanded(
+                child: SingleChildScrollView(
+                  child: PublicSeasonPlayers(
+                    singleTeamBloc,
+                  ),
+                ),
               ),
+              smallDisplay
+                  ? ButtonBar(
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(
+                              context,
+                              '/Club/'
+                              '${PublicClubTab.club.name}/'
+                              '${teamState.team.clubUid}'),
+                          child: Text(Messages.of(context).clubButton),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(
+                              context,
+                              '/Team/'
+                              '${PublicTeamTab.media.name}/'
+                              '${teamState.team.uid}'),
+                          child: Text(MessagesPublic.of(context).mediaButton),
+                        ),
+                        smallDisplay
+                            ? TextButton(
+                                onPressed: () => Navigator.pushNamed(
+                                    context,
+                                    '/Team/'
+                                    '${PublicTeamTab.stats.name}/'
+                                    '${teamState.team.uid}'),
+                                child: Text(Messages.of(context).statsButton),
+                              )
+                            : SizedBox(width: 0),
+                      ],
+                    )
+                  : SizedBox(
+                      height: 0,
+                    ),
             ],
           ),
         );

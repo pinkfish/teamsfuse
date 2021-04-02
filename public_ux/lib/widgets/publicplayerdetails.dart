@@ -12,7 +12,9 @@ import 'package:flutter_fuse/widgets/teams/teamname.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:public_ux/screens/publicclubhome.dart';
+import 'package:public_ux/screens/publicplayer.dart';
 import 'package:public_ux/screens/publicteam.dart';
+import 'package:public_ux/services/messagespublic.dart';
 
 ///
 /// The size of the widget.
@@ -110,6 +112,11 @@ class PublicPlayerDetails extends StatelessWidget {
                 bloc: teamBloc,
                 builder: (context, singleTeamState) => ButtonBar(
                   children: [
+                    TextButton(
+                      onPressed: () => Navigator.pushNamed(context,
+                          '/Player/${PublicPlayerTab.media.name}/$playerUid'),
+                      child: Text(MessagesPublic.of(context).mediaButton),
+                    ),
                     TextButton(
                       onPressed: () => Navigator.pushNamed(context,
                           '/Team/${PublicTeamTab.team.name}/${season.teamUid}'),

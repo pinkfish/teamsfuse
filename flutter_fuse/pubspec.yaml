@@ -14,14 +14,14 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  cloud_firestore: ^1.0.3
-  firebase_auth: ^1.0.1
-  firebase_core: ^1.0.2
-  firebase_storage: ^8.0.1
+  cloud_firestore: ^1.0.4
+  firebase_auth: ^1.1.0
+  firebase_core: ^1.0.3
+  firebase_storage: ^8.0.3
   firebase_analytics: ^7.1.1
   firebase_performance: ^0.7.0
-  firebase_crashlytics: ^1.0.0
-  firebase_messaging: ^9.1.0
+  firebase_crashlytics: ^2.0.0
+  firebase_messaging: ^9.1.1
   firebase_remote_config: ^0.9.0-dev.2
   cached_network_image: ^3.0.0
   charts_flutter:
@@ -78,7 +78,7 @@ dev_dependencies:
     sdk: flutter
   intl_translation: ^0.17.10+1
   test: any
-  mockito: ^5.0.3
+  mockito: ^5.0.4
   golden_toolkit: ^0.9.0
 
 flutter:

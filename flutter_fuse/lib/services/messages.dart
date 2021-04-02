@@ -547,13 +547,11 @@ class Messages {
     );
   }
 
-  String get gameNotesHint {
-    return Intl.message(
-      'Notes for the game',
-      desc: 'The hint text for notes associated with the game',
-      locale: locale,
-    );
-  }
+  String get gameNotesHint => Intl.message(
+        'Notes for the game',
+        desc: 'The hint text for notes associated with the game',
+        locale: locale,
+      );
 
   String get gameResultAwayTeamWon =>
       Intl.message('Away team won', locale: locale);
@@ -3367,6 +3365,9 @@ class Messages {
           name: 'winRecordBreakout',
           args: [win, loss, tie],
           locale: locale);
+
+  String get playerButton => Intl.message('PLAYER',
+      desc: 'The button to visit the player', locale: locale);
 
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {

@@ -39,7 +39,7 @@ class PublicTournamentWidget extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
                 Text(
-                  MessagesPublic.of(context).tournamentDetailsAdditonalDetails,
+                  MessagesPublic.of(context).tournamentDetailsAdditionalDetails,
                   maxLines: 10,
                   textScaleFactor: 1.5,
                   style: Theme.of(context).textTheme.bodyText1,

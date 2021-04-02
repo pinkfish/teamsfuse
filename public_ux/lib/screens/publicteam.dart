@@ -9,23 +9,23 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/coloredtabbar.dart';
 import 'package:flutter_fuse/widgets/util/responsivewidget.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:public_ux/services/messagespublic.dart';
-import 'package:public_ux/widgets/publicteamstats.dart';
-import 'package:public_ux/widgets/searchdelegate.dart';
 
+import '../services/messagespublic.dart';
 import '../widgets/publicteamdetails.dart';
-import '../widgets/publicseasonplayers.dart';
+import '../widgets/publicteammedia.dart';
+import '../widgets/publicteamstats.dart';
+import '../widgets/searchdelegate.dart';
 
 /// Which of the tabs in the public view are selected.
 enum PublicTeamTab {
   /// The team tab.
   team,
 
-  /// Players for the team
-  players,
-
   /// The states for the team.
   stats,
+
+  /// The media for the team.
+  media,
 }
 
 extension PublicTeamTabExtension on PublicTeamTab {
@@ -34,8 +34,8 @@ extension PublicTeamTabExtension on PublicTeamTab {
     switch (this) {
       case PublicTeamTab.team:
         return 'team';
-      case PublicTeamTab.players:
-        return 'players';
+      case PublicTeamTab.media:
+        return 'media';
       case PublicTeamTab.stats:
         return 'stats';
       default:
@@ -48,7 +48,7 @@ extension PublicTeamTabExtension on PublicTeamTab {
     switch (this) {
       case PublicTeamTab.team:
         return 0;
-      case PublicTeamTab.players:
+      case PublicTeamTab.media:
         return 1;
       case PublicTeamTab.stats:
         return 2;
@@ -112,11 +112,14 @@ class PublicTeamDetailsScreen extends StatelessWidget {
               return Text(Messages.of(context).loading);
             }
             if (singleTeamState is SingleTeamDeleted) {
-              return Text(Messages.of(context).clubDeleted);
+              return Center(
+                child: Text(Messages.of(context).teamDeleted,
+                    style: Theme.of(context).textTheme.subtitle1),
+              );
             }
             return AnimatedSwitcher(
               duration: Duration(milliseconds: 500),
-              child: _buildStuff(context, singleTeamState.team, bloc),
+              child: _buildStuff(context, singleTeamState.team, bloc, false),
             );
           },
         ),
@@ -129,15 +132,16 @@ class PublicTeamDetailsScreen extends StatelessWidget {
         .navigateTo(context, newRoute, transition: fluro.TransitionType.fadeIn);
   }
 
-  Widget _buildStuff(
-      BuildContext context, Team team, SingleTeamBloc singleTeamBloc) {
+  Widget _buildStuff(BuildContext context, Team team,
+      SingleTeamBloc singleTeamBloc, bool smallDisplay) {
     switch (tabSelected) {
       case PublicTeamTab.team:
-        return PublicTeamDetails(singleTeamBloc);
-      case PublicTeamTab.players:
-        return PublicSeasonPlayers(singleTeamBloc);
+        return PublicTeamDetails(singleTeamBloc, smallDisplay: smallDisplay);
+      case PublicTeamTab.media:
+        return PublicTeamMedia(singleTeamBloc);
       case PublicTeamTab.stats:
-        return PublicTeamStatsWidget(teamBloc: singleTeamBloc);
+        return PublicTeamStatsWidget(
+            teamBloc: singleTeamBloc, smallDisplay: smallDisplay);
     }
     return SizedBox(height: 0);
   }
@@ -152,7 +156,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
             return Text(Messages.of(context).loading);
           }
           if (state is SingleTeamDeleted) {
-            return Text(Messages.of(context).clubDeleted);
+            return Text(Messages.of(context).teamDeleted);
           }
           return Text(state.team.name);
         },
@@ -171,8 +175,8 @@ class PublicTeamDetailsScreen extends StatelessWidget {
               text: Messages.of(context).about,
             ),
             Tab(
-              icon: Icon(Icons.people),
-              text: Messages.of(context).players,
+              icon: Icon(Icons.image),
+              text: MessagesPublic.of(context).media,
             ),
             Tab(
               icon: Icon(MdiIcons.graph),
@@ -209,7 +213,7 @@ class PublicTeamDetailsScreen extends StatelessWidget {
               return Text(Messages.of(context).loading);
             }
             if (state is SingleTeamDeleted) {
-              return Text(Messages.of(context).clubDeleted);
+              return Text(Messages.of(context).teamDeleted);
             }
             return Row(
               children: [
@@ -269,12 +273,15 @@ class PublicTeamDetailsScreen extends StatelessWidget {
                   '/$teamUid'),
             ),
             ListTile(
-              leading: Icon(Icons.people),
-              title: Text(Messages.of(context).players),
+              leading: Icon(Icons.image),
               onTap: () => _navigateTo(
                   context,
-                  '/Team/${PublicTeamTab.players.name}'
-                  '/$teamUid'),
+                  '/Team/'
+                  '${PublicTeamTab.media.name}/'
+                  '$teamUid'),
+              title: Text(
+                MessagesPublic.of(context).media,
+              ),
             ),
             ListTile(
               leading: Icon(MdiIcons.graph),
@@ -295,9 +302,13 @@ class PublicTeamDetailsScreen extends StatelessWidget {
             return Text(Messages.of(context).loading);
           }
           if (singleTeamState is SingleTeamDeleted) {
-            return Text(Messages.of(context).clubDeleted);
+            return Center(
+              child: Text(Messages.of(context).teamDeleted,
+                  style: Theme.of(context).textTheme.subtitle1),
+            );
           }
-          return _buildStuff(context, singleTeamState.team, singleTeamBloc);
+          return _buildStuff(
+              context, singleTeamState.team, singleTeamBloc, true);
         },
       ),
     );

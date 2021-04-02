@@ -21,7 +21,7 @@ class MessagesPublic {
       'TeamsFuse is a cross platform app that '
       'makes dealing with your sports teams easy and simple. '
       'It handles things in a simple consistent manner, allowing for '
-      'multiuple players and teams to interact simply and easily with '
+      'multiple players and teams to interact simply and easily with '
       'the main calendar view.',
       desc: 'Description for the app',
       locale: locale);
@@ -30,7 +30,7 @@ class MessagesPublic {
       Intl.message('COACHES', desc: 'Button to show the coaches in a club');
 
   String get detailsLeagueControlInformation =>
-      Intl.message('\u2022 League control allowing shared offical results',
+      Intl.message('\u2022 League control allowing shared official results',
           desc: 'Feature description for the app in a list', locale: locale);
 
   String get detailsMobileFirstInformation =>
@@ -58,7 +58,7 @@ class MessagesPublic {
       Intl.message('League', desc: 'League section header');
 
   String get headerTournament =>
-      Intl.message('Tournament', desc: 'Tounament section header');
+      Intl.message('Tournament', desc: 'Tournament section header');
 
   String get leagueDescription => Intl.message(
       ' Leagues allow the organization of teams and games into a league. The team can '
@@ -71,21 +71,21 @@ class MessagesPublic {
 
   String get leagueDetailsGameControl =>
       Intl.message('\u2022 League controlled game time/place details',
-          desc: 'Feaute of the leagues in the app', locale: locale);
+          desc: 'Feature of the leagues in the app', locale: locale);
 
   String get leagueDetailsLeagueOlder =>
       Intl.message('\u2022 Older season details for comparison',
-          desc: 'Feaute of the leagues in the app', locale: locale);
+          desc: 'Feature of the leagues in the app', locale: locale);
 
   String get leagueDetailsLeagueStats =>
       Intl.message('\u2022 Team win records and ranking',
-          desc: 'Feaute of the leagues in the app', locale: locale);
+          desc: 'Feature of the leagues in the app', locale: locale);
   String get leagueDetailsResults =>
       Intl.message('\u2022 Official results and team results',
-          desc: 'Feaute of the leagues in the app', locale: locale);
+          desc: 'Feature of the leagues in the app', locale: locale);
   String get leagueDetailsTeamInterface => Intl.message(
       '\u2022 Team controlled additional information and roster details',
-      desc: 'Feaute of the leagues in the app',
+      desc: 'Feature of the leagues in the app',
       locale: locale);
 
   String get media => Intl.message('Media', desc: 'Media section header');
@@ -106,18 +106,18 @@ class MessagesPublic {
   String get teamsButton =>
       Intl.message('TEAMS', desc: 'Button to show the teams in a club');
 
-  String get tournamentDetailsAdditonalDetails => Intl.message(
+  String get tournamentDetailsAdditionalDetails => Intl.message(
       '\u2022 Team controlled additional information and roster details',
       desc: 'Feature of the leagues in the app',
       locale: locale);
 
   String get tournamentDetailsPerTeam =>
       Intl.message('\u2022 Multiple tournaments/leagues per team/season',
-          desc: 'Feaute of the leagues in the app', locale: locale);
+          desc: 'Feature of the leagues in the app', locale: locale);
 
   String get tournamentDetailsRanking =>
       Intl.message('\u2022 Team win records and ranking',
-          desc: 'Feaute of the leagues in the app', locale: locale);
+          desc: 'Feature of the leagues in the app', locale: locale);
 
   String get tournamentDetailsResults =>
       Intl.message('\u2022 Official results and team results',
@@ -134,7 +134,10 @@ class MessagesPublic {
       'locations. The tournament can control and setup official results, also '
       'allowing the teams to record their own results during games.',
       locale: locale,
-      desc: 'Description of the tourament details');
+      desc: 'Description of the tournament details');
+
+  String get mediaButton => Intl.message('MEDIA',
+      locale: locale, desc: 'Button to show the media for the team/player');
 
   /// Load the messages for the specific locale.
   static Future<MessagesPublic> load(Locale locale) async {

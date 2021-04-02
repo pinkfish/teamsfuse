@@ -9,6 +9,7 @@ import 'package:flutter_fuse/widgets/util/coloredtabbar.dart';
 import 'package:flutter_fuse/widgets/util/responsivewidget.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:public_ux/widgets/publicplayermedia.dart';
 
 import '../services/messagespublic.dart';
 import '../widgets/publicplayerdetails.dart';
@@ -123,7 +124,7 @@ class PublicPlayerDetailsScreen extends StatelessWidget {
       case PublicPlayerTab.details:
         return PublicPlayerDetails(singlePlayerBloc, size);
       case PublicPlayerTab.media:
-        return SizedBox(height: 0);
+        return PublicPlayerMedia(singlePlayerBloc);
       case PublicPlayerTab.stats:
         return SizedBox(height: 0);
     }

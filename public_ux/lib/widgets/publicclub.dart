@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:markdown/markdown.dart' as md;
 
 import 'package:flutter_fuse/widgets/clubs/clubimage.dart';
 import 'package:public_ux/screens/publicclubhome.dart';
@@ -46,9 +47,10 @@ class PublicClub extends StatelessWidget {
                     club.name,
                     style: Theme.of(context).textTheme.headline4,
                   ),
-                  Text(
-                    club.about,
-                    style: Theme.of(context).textTheme.bodyText1,
+                  SizedBox(height: 10),
+                  MarkdownBody(
+                    data: club.about,
+                    //style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ],
               ),
