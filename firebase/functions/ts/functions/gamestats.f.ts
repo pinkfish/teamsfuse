@@ -9,6 +9,7 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
         console.log(req.body);
         console.log(req.body['playerUid']);
+        console.log(req.body.playerUid);
         const playerUid = req.body['playerUid'];
         const seasonUid = req.body['seasonUid'];
         let handled = false;
