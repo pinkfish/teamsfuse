@@ -64,7 +64,6 @@ export const gameStats = functions.https.onRequest(async (req, res) => {
         }
         if (handled) {
             res.status(200);
-            console.log(retGames);
             res.json({
                 playerUid: playerUid,
                 seasonUid: seasonUid,
