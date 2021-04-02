@@ -41,9 +41,12 @@ class PublicGames {
         if (myData['playerUid'] == playerUid &&
             myData['seasonUid'] == seasonUid) {
           // Decode the games.
-          return BuiltList.of(myData['games'].map<Game>((d) {
+          final games = myData['games'].map<Game>((d) {
             return Game.fromMap(d);
-          }).toList());
+          }).toList();
+          games.sort((Game g1, Game g2) =>
+              g1.sharedData.time.compareTo(g2.sharedData.time));
+          return BuiltList.of(games);
         }
       } catch (e) {
         print(e);

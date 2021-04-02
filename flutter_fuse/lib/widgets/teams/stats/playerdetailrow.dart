@@ -21,10 +21,13 @@ class PlayerDetailRow extends StatelessWidget {
   /// The summary data to display.
   final PlayerSummaryData summaryData;
 
+  /// What to show for the name.
+  final String nameOverride;
+
   /// Constructor for the class.
   PlayerDetailRow(this.constraints, this.orientation, this.playerUid,
       this.seasonPlayer, this.summaryData,
-      {this.showName = true});
+      {this.showName = true, this.nameOverride});
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +44,20 @@ class PlayerDetailRow extends StatelessWidget {
                 ),
                 SizedBox(
                   width: width * 2 - 5,
-                  child: PlayerName(
-                    playerUid: playerUid,
-                    textScaleFactor: scale,
-                    fallback: seasonPlayer.jerseyNumber,
-                    overflow: TextOverflow.fade,
-                    maxLines: 1,
-                  ),
+                  child: nameOverride == null
+                      ? PlayerName(
+                          playerUid: playerUid,
+                          textScaleFactor: scale,
+                          fallback: seasonPlayer.jerseyNumber,
+                          overflow: TextOverflow.fade,
+                          maxLines: 1,
+                        )
+                      : Text(
+                          nameOverride,
+                          overflow: TextOverflow.fade,
+                          textScaleFactor: scale,
+                          maxLines: 1,
+                        ),
                 ),
               ]
             : [],

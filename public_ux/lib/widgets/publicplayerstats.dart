@@ -15,6 +15,7 @@ import 'package:public_ux/services/messagespublic.dart';
 import 'package:public_ux/services/publicgames.dart';
 import 'package:public_ux/widgets/publicplayerdetails.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:intl/intl.dart';
 
 ///
 /// Show the stats for the player for public team/seasons.
@@ -89,7 +90,7 @@ class PublicPlayerStats extends StatelessWidget {
                 .textTheme
                 .bodyText1
                 .copyWith(fontWeight: FontWeight.w100),
-            showName: false,
+            showName: true,
           ),
           _gamesList(season),
           SizedBox(height: 20),
@@ -117,18 +118,44 @@ class PublicPlayerStats extends StatelessWidget {
                   style: Theme.of(context).textTheme.subtitle1);
             }
             final seasonPlayer = season.playersData[bloc.playerUid];
+            int lastYear = 0;
             return LayoutBuilder(
                 builder: (context, constraints) => Column(
-                    children: state.data
-                        .map((g) => PlayerDetailRow(
-                              constraints,
-                              Orientation.portrait,
-                              bloc.playerUid,
-                              seasonPlayer,
-                              g.getPlayerSummary(bloc.playerUid).fullData,
-                              showName: false,
-                            ))
-                        .toList()));
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: state.data.expand((g) {
+                      if (lastYear != g.sharedData.time.year) {
+                        lastYear = g.sharedData.time.year;
+                        return [
+                          Text(DateFormat.y().format(g.sharedData.time),
+                              style: Theme.of(context).textTheme.headline6),
+                          SizedBox(height: 5),
+                          PlayerDetailRow(
+                            constraints,
+                            Orientation.portrait,
+                            bloc.playerUid,
+                            seasonPlayer,
+                            g.getPlayerSummary(bloc.playerUid).fullData,
+                            showName: true,
+                            nameOverride: DateFormat('MMM d H:mm')
+                                .format(g.sharedData.time),
+                          ),
+                        ];
+                      } else {
+                        return [
+                          PlayerDetailRow(
+                            constraints,
+                            Orientation.portrait,
+                            bloc.playerUid,
+                            seasonPlayer,
+                            g.getPlayerSummary(bloc.playerUid).fullData,
+                            showName: true,
+                            nameOverride: DateFormat('MMM d H:mm')
+                                .format(g.sharedData.time),
+                          ),
+                        ];
+                      }
+                    }).toList()));
           }
           return LoadingWidget();
         });
