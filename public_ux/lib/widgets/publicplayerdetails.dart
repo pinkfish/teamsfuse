@@ -173,11 +173,11 @@ class PublicPlayerDetails extends StatelessWidget {
                 ),
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(singlePlayerState.player.name,
-                          style: Theme.of(context).textTheme.headline2),
+                          style: Theme.of(context).textTheme.headline4),
                       ...(size != PublicPlayerSize.small ? seasons : []),
                     ],
                   ),

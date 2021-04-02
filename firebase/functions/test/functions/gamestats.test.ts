@@ -1,7 +1,6 @@
 import sinon, { stubInterface } from 'ts-sinon';
 import { firebaseTest } from '../test_util/firebase';
 //import { expect } from 'chai';
-import * as admin from 'firebase-admin';
 import { createSeasonAndTeam, createPlayer, createOpponent, createGame } from '../test_util/datacreation';
 import { Settings, DateTime } from 'luxon';
 import { Request, Response } from 'express';
@@ -54,7 +53,6 @@ describe('functions - game stats', () => {
 
     it('no player', async () => {
         const teamAndSeason = await createSeasonAndTeam(false, false);
-        const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
 
         const req = stubInterface<Request>();
@@ -67,15 +65,14 @@ describe('functions - game stats', () => {
         await gameStats((req as unknown) as Request, (res as unknown) as Response<any>);
 
         sinon.assert.calledWith(res.end as any);
-        sinon.assert.calledWith(res.send, '<b>Unable to find player/season undefined/undefined</b>');
+        sinon.assert.calledWith(res.send, `<b>Unable to find player/season 1234/${seasonDocId}</b>`);
         sinon.assert.calledWith(res.status, 405);
     });
 
     it('no games', async () => {
         const teamAndSeason = await createSeasonAndTeam(false, false);
-        const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
-        const player = await createPlayer(['me'], 'player');
+        await createPlayer(['me'], 'player');
         // Just make sure creating a club actually works.
 
         const req = stubInterface<Request>();
@@ -88,15 +85,14 @@ describe('functions - game stats', () => {
         await gameStats((req as unknown) as Request, (res as unknown) as Response<any>);
 
         sinon.assert.calledWith(res.end as any);
-        sinon.assert.calledWith(res.send, '<b>Unable to find player/season undefined/undefined</b>');
+        sinon.assert.calledWith(res.send, `<b>Unable to find player/season player/${seasonDocId}</b>`);
         sinon.assert.calledWith(res.status, 405);
     });
 
     it('no games - public', async () => {
         const teamAndSeason = await createSeasonAndTeam(true, true);
-        const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
-        const player = await createPlayer(['me'], 'player', true);
+        await createPlayer(['me'], 'player', true);
         // Just make sure creating a club actually works.
 
         const req = stubInterface<Request>();
@@ -120,7 +116,7 @@ describe('functions - game stats', () => {
         const teamAndSeason = await createSeasonAndTeam(true, true);
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
-        const player = await createPlayer(['me'], 'player', true);
+        await createPlayer(['me'], 'player', true);
         const opponent = await createOpponent(teamDocId, 'fluff');
         const arriveTime = DateTime.now().toUTC();
         const game = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id);

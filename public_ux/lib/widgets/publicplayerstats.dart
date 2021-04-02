@@ -4,7 +4,10 @@ import 'package:flutter_fuse/services/blocs/single/singleplayerbloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/player/playerimage.dart';
 import 'package:flutter_fuse/widgets/teams/stats/playerdetailrow.dart';
+import 'package:flutter_fuse/widgets/teams/stats/seasonplayerdetail.dart';
 import 'package:flutter_fuse/widgets/teams/stats/seasonplayerheader.dart';
+import 'package:flutter_fuse/widgets/teams/teamimage.dart';
+import 'package:flutter_fuse/widgets/teams/teamname.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:public_ux/services/publicgames.dart';
@@ -25,6 +28,68 @@ class PublicPlayerStats extends StatelessWidget {
   PublicPlayerStats(this.bloc, this.size);
 
   Widget _buildCurrentSeason(BuildContext context, Season season) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            TeamImage(teamUid: season.teamUid, width: 20, height: 20),
+            SizedBox(width: 5),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TeamName(
+                        teamUid: season.teamUid,
+                        style: Theme.of(context).textTheme.bodyText1.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                            ),
+                      ),
+                      SizedBox(width: 15),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: Text(
+                            '${season.name} W:${season.record.win} L:${season.record.loss} T:${season.record.tie}',
+                            style:
+                                Theme.of(context).textTheme.bodyText1.copyWith(
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 15,
+                                    ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 5),
+        SeasonPlayerHeader(
+          style: Theme.of(context)
+              .textTheme
+              .bodyText1
+              .copyWith(fontWeight: FontWeight.w100),
+          showName: false,
+        ),
+        _gamesList(season),
+      ],
+    );
+  }
+
+  Widget _gamesList(Season season) {
     final public = PublicGames(season.uid, bloc.playerUid);
 
     return FutureBuilder<BuiltList<Game>>(
@@ -33,31 +98,22 @@ class PublicPlayerStats extends StatelessWidget {
           if (state.hasData) {
             // Show all the games.
             if (state.data.isEmpty) {
-              return Text(Messages.of(context).noGames);
+              return Text(Messages.of(context).noGames,
+                  style: Theme.of(context).textTheme.subtitle1);
             }
             final seasonPlayer = season.playersData[bloc.playerUid];
             return LayoutBuilder(
                 builder: (context, constraints) => Column(
-                      children: [
-                        SeasonPlayerHeader(
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyText1
-                              .copyWith(fontWeight: FontWeight.w100),
-                          showName: false,
-                        ),
-                        ...state.data
-                            .map((g) => PlayerDetailRow(
-                                  constraints,
-                                  Orientation.portrait,
-                                  bloc.playerUid,
-                                  seasonPlayer,
-                                  g.getPlayerSummary(bloc.playerUid).fullData,
-                                  showName: false,
-                                ))
-                            .toList()
-                      ],
-                    ));
+                    children: state.data
+                        .map((g) => PlayerDetailRow(
+                              constraints,
+                              Orientation.portrait,
+                              bloc.playerUid,
+                              seasonPlayer,
+                              g.getPlayerSummary(bloc.playerUid).fullData,
+                              showName: false,
+                            ))
+                        .toList()));
           }
           return LoadingWidget();
         });
@@ -69,6 +125,10 @@ class PublicPlayerStats extends StatelessWidget {
       bloc: bloc,
       builder: (context, singlePlayerState) {
         final seasons = <Widget>[];
+
+        if (singlePlayerState is SinglePlayerUninitialized) {
+          return LoadingWidget();
+        }
 
         if (!singlePlayerState.loadedSeasons) {
           bloc.add(SinglePlayerLoadSeasons());
@@ -90,22 +150,23 @@ class PublicPlayerStats extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.all(5),
                   child: PlayerImage(
-                      playerUid: singlePlayerState.player.uid, radius: 100),
+                      playerUid: singlePlayerState.player.uid, radius: 75),
                 ),
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(singlePlayerState.player.name,
-                          style: Theme.of(context).textTheme.headline2),
-                      ...(size != PublicPlayerSize.small ? seasons : []),
+                      SizedBox(height: 20),
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Text(singlePlayerState.player.name,
+                            style: Theme.of(context).textTheme.headline4),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
-            ...(size == PublicPlayerSize.small ? seasons : []),
+            ...seasons,
           ],
         );
       },
