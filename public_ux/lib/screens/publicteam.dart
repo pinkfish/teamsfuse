@@ -21,11 +21,11 @@ enum PublicTeamTab {
   /// The team tab.
   team,
 
-  /// The states for the team.
-  stats,
-
   /// The media for the team.
   media,
+
+  /// The stats for the team.
+  stats,
 }
 
 extension PublicTeamTabExtension on PublicTeamTab {
