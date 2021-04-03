@@ -1,18 +1,18 @@
 import * as functions from 'firebase-functions';
 import { notifyPayload } from './gamenotifypayload';
-import * as moment from 'moment-timezone';
 import { PayloadData } from '../../util/notifyforgame';
+import { DateTime } from 'luxon';
 
-export const onDelete = functions.firestore.document('/Games/{gameid}').onDelete(async (snap, context) => {
+export const onGameDelete = functions.firestore.document('/Games/{gameid}').onDelete(async (snap, context) => {
     const data = snap.data();
 
     // Only notify if less then 7 days before the event.
-    const arrivalTime = moment.utc(data.arrivalTime);
-    const nowTime = moment.utc();
+    const arrivalTime = DateTime.fromMillis(data.arrivalTime).toUTC();
+    const nowTime = DateTime.now().toUTC();
     const diff = arrivalTime.diff(nowTime, 'days');
     let payload: PayloadData | null = null;
     console.log('on change ' + snap.id + ' diff ' + diff);
-    if (diff <= 7 && nowTime.valueOf() < data.time) {
+    if (diff.days <= 7 && nowTime.valueOf() < data.time) {
         console.log('Changed in here');
         // Notify the user of the new event/training/game.
         if (data.type === 'Practice') {
@@ -45,4 +45,4 @@ export const onDelete = functions.firestore.document('/Games/{gameid}').onDelete
     return;
 });
 
-export default onDelete;
+export default onGameDelete;

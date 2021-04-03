@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as handlebars from 'handlebars';
-import * as moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 import { sendMail } from './mailgun';
 import { DataNodeCache } from './datacache';
 
@@ -170,9 +170,9 @@ async function handleTokens(
         }
 
         // Setup the context and do the templates.
-        const arrivalTime = moment.utc(gameData.arrivalTime).tz(sharedGameData.timezone).format('ddd MMM D LTS');
-        const gameTime = moment.utc(sharedGameData.time).tz(sharedGameData.timezone).format('ddd MMM D LTS');
-        const endTime = moment.utc(sharedGameData.endTime).tz(sharedGameData.timezone).format('ddd MMM D LTS');
+        const arrivalTime = DateTime.fromMillis(gameData.arrivalTime).setZone(sharedGameData.timezone).toFormat('ffff');
+        const gameTime = DateTime.fromMillis(sharedGameData.time).setZone(sharedGameData.timezone).toFormat('ffff');
+        const endTime = DateTime.fromMillis(sharedGameData.endTime).setZone(sharedGameData.timezone).toFormat('ffff');
         const context = {
             arrivalTime: arrivalTime,
             endTime: endTime,
@@ -415,9 +415,9 @@ async function doTheNotification(
 ) {
     if (userData.email && userData[userFlag]) {
         // Setup the context and do the templates.
-        const arrivalTime = moment.utc(gameData.arrivalTime).tz(sharedGameData.timezone).format('ddd MMM D LTS');
-        const gameTime = moment.utc(sharedGameData.time).tz(sharedGameData.timezone).format('ddd MMM D LTS');
-        const endTime = moment.utc(sharedGameData.endTime).tz(sharedGameData.timezone).format('ddd MMM D LTS');
+        const arrivalTime = DateTime.fromMillis(gameData.arrivalTime).setZone(sharedGameData.timezone).toFormat('ffff');
+        const gameTime = DateTime.fromMillis(sharedGameData.time).setZone(sharedGameData.timezone).toFormat('ffff');
+        const endTime = DateTime.fromMillis(sharedGameData.endTime).setZone(sharedGameData.timezone).toFormat('ffff');
         let directionsUrl =
             'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(sharedGameData.place.address);
         if (sharedGameData.place.placeId !== null) {

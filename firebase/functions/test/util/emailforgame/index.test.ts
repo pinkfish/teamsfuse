@@ -165,7 +165,7 @@ describe('Email for games', () => {
                     '\n' +
                     'Reminder for upcoming game with Lookup TeamName, details below:\n' +
                     '\n' +
-                    'Arrive At   : Fri May 25 5:00:00 AM\n' +
+                    'Arrive At   : Friday, May 25, 2018, 5:00 AM Pacific Daylight Time\n' +
                     'Start Time  : \n' +
                     'Address     : 1502 west test drive\n' +
                     'PlaceName   : Test High School\n' +
@@ -197,7 +197,7 @@ describe('Email for games', () => {
                     `<h4><a href="http://www.teamsfuses.com/event/${teamDocId}/${gameDoc.id}">Details</a></h4>\n` +
                     '<table>\n' +
                     '<tr>\n' +
-                    '<td>Arrive At</td><td>Fri May 25 5:00:00 AM</td>\n' +
+                    '<td>Arrive At</td><td>Friday, May 25, 2018, 5:00 AM Pacific Daylight Time</td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
                     '<td>Start Time</td><td></td>\n' +
@@ -327,7 +327,7 @@ describe('Email for games', () => {
                     '\n' +
                     'Reminder for upcoming game with Lookup TeamName, details below:\n' +
                     '\n' +
-                    'Arrive At   : Fri May 25 5:00:00 AM\n' +
+                    'Arrive At   : Friday, May 25, 2018, 5:00 AM Pacific Daylight Time\n' +
                     'Start Time  : \n' +
                     'Address     : 1502 west test drive\n' +
                     'PlaceName   : Test High School\n' +
@@ -363,7 +363,7 @@ describe('Email for games', () => {
                     `<h4><a href="http://www.teamsfuses.com/event/${teamDocId}/${gameDoc.id}">Details</a></h4>\n` +
                     '<table>\n' +
                     '<tr>\n' +
-                    '<td>Arrive At</td><td>Fri May 25 5:00:00 AM</td>\n' +
+                    '<td>Arrive At</td><td>Friday, May 25, 2018, 5:00 AM Pacific Daylight Time</td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
                     '<td>Start Time</td><td></td>\n' +

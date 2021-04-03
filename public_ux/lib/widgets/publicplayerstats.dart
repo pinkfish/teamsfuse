@@ -119,43 +119,47 @@ class PublicPlayerStats extends StatelessWidget {
             }
             final seasonPlayer = season.playersData[bloc.playerUid];
             int lastYear = 0;
-            return LayoutBuilder(
+            return OrientationBuilder(
+              builder: (context, orientation) => LayoutBuilder(
                 builder: (context, constraints) => Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: state.data.expand((g) {
-                      if (lastYear != g.sharedData.time.year) {
-                        lastYear = g.sharedData.time.year;
-                        return [
-                          Text(DateFormat.y().format(g.sharedData.time),
-                              style: Theme.of(context).textTheme.headline6),
-                          SizedBox(height: 5),
-                          PlayerDetailRow(
-                            constraints,
-                            Orientation.portrait,
-                            bloc.playerUid,
-                            seasonPlayer,
-                            g.getPlayerSummary(bloc.playerUid).fullData,
-                            showName: true,
-                            nameOverride: DateFormat('MMM d H:mm')
-                                .format(g.sharedData.time),
-                          ),
-                        ];
-                      } else {
-                        return [
-                          PlayerDetailRow(
-                            constraints,
-                            Orientation.portrait,
-                            bloc.playerUid,
-                            seasonPlayer,
-                            g.getPlayerSummary(bloc.playerUid).fullData,
-                            showName: true,
-                            nameOverride: DateFormat('MMM d H:mm')
-                                .format(g.sharedData.time),
-                          ),
-                        ];
-                      }
-                    }).toList()));
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: state.data.expand((g) {
+                    if (lastYear != g.sharedData.time.year) {
+                      lastYear = g.sharedData.time.year;
+                      return [
+                        Text(DateFormat.y().format(g.sharedData.time),
+                            style: Theme.of(context).textTheme.headline6),
+                        SizedBox(height: 5),
+                        PlayerDetailRow(
+                          constraints,
+                          orientation,
+                          bloc.playerUid,
+                          seasonPlayer,
+                          g.getPlayerSummary(bloc.playerUid).fullData,
+                          showName: true,
+                          nameOverride: DateFormat('MMM d H:mm')
+                              .format(g.sharedData.time),
+                        ),
+                      ];
+                    } else {
+                      return [
+                        PlayerDetailRow(
+                          constraints,
+                          orientation,
+                          bloc.playerUid,
+                          seasonPlayer,
+                          g.getPlayerSummary(bloc.playerUid).fullData,
+                          showName: true,
+                          nameOverride: DateFormat('MMM d H:mm')
+                              .format(g.sharedData.time),
+                        ),
+                      ];
+                    }
+                  }).toList(),
+                ),
+              ),
+            );
           }
           return LoadingWidget();
         });
