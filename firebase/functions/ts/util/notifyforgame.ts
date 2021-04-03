@@ -229,7 +229,6 @@ async function handleTokens(
                 if (tokenKey) {
                     newTokens.push(tokenKey);
                 } else {
-                    console.log('Token cancelled ' + tokenKey);
                     await db
                         .collection('UserData')
                         .doc(user.id)
@@ -267,7 +266,6 @@ async function handleNotifyResponse(
                 error.code === 'messaging/invalid-registration-token' ||
                 error.code === 'messaging/registration-token-not-registered'
             ) {
-                console.log('Removing ' + result.canonicalRegistrationToken);
                 await db
                     .collection('UserData')
                     .doc(user.id)
@@ -287,9 +285,7 @@ interface NameAndRole {
 async function formatAvailability(input: Set<string>, seasonData: { [field: string]: any }): Promise<NameAndRole[]> {
     const roles: NameAndRole[] = [];
 
-    console.log(input);
     for (const playerUid of input) {
-        console.log('here ' + playerUid);
         const seasonPlayer = seasonData.players[playerUid];
         // Get the player from the database.seasonData
         const player = await db.collection('Players').doc(playerUid).get();
@@ -458,13 +454,9 @@ async function doTheNotification(
         const yes = new Set<string>();
         const no = new Set<string>();
         const maybe = new Set<string>();
-        console.log('Happy frog');
-        console.log(gameData.attendance);
         for (const playerUid in gameData.attendance) {
-            console.log('attend: ' + playerUid);
             if (gameData.attendance.hasOwnProperty(playerUid)) {
                 const attend = gameData.attendance[playerUid];
-                console.log(attend === 'Yes');
                 if (attend === 'Yes') {
                     yes.add(playerUid);
                 } else if (attend === 'No') {
