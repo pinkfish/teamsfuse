@@ -1,10 +1,10 @@
 import * as functions from 'firebase-functions';
 import { notifyPayload } from './gamenotifypayload';
 import { PayloadData } from '../../util/notifyforgame';
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import { DataNodeCache } from '../../util/datacache';
 
-export const notifyOnCreate = functions.firestore.document('/Games/{gameid}').onCreate((snap, context) => {
+export const onGameCreate = functions.firestore.document('/Games/{gameid}').onCreate((snap, context) => {
     const data = snap.data();
 
     // Only notify if less then 7 days before the event.
@@ -13,27 +13,27 @@ export const notifyOnCreate = functions.firestore.document('/Games/{gameid}').on
     const diff = arrivalTime.diff(nowTime, 'days');
     let payload: PayloadData | null = null;
     console.log('on create ' + snap.id + ' diff ' + diff);
-    if (diff.days <= 7 && nowTime.valueOf() < data.time) {
+    if (diff.days <= 7 && nowTime.minus(Duration.fromObject({ minutes: 30 })).valueOf() < data.sharedData.time) {
         console.log('Changed in here');
         // Notify the user of the new event/training/game.
-        if (data.type === 'EventType.Practice') {
+        if (data.sharedData.type === 'Practice') {
             payload = {
-                title: 'New practice for {{team.name}}',
-                body: 'New practice at {{arrivalTime}}',
+                title: 'New Practice for {{team.name}}',
+                body: 'New practice at {{arrivalTime}} {{game.place.address}}',
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };
-        } else if (data.type === 'Game') {
+        } else if (data.sharedData.type === 'Game') {
             payload = {
                 title: 'New Game vs {{opponent.name}}',
-                body: 'New game at {{arrivalTime}}',
+                body: 'New game {{arrivalTime}} ' + 'for {{team.name}} ' + 'at {{game.place.address}}',
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };
-        } else if (data.type === 'Event') {
+        } else if (data.sharedData.type === 'Event') {
             payload = {
-                title: 'New event for {{team.name}}',
-                body: 'New event at {{arrivalTime}}',
+                title: 'New Event for {{team.name}}',
+                body: 'New event {{arrivalTime}} at {{game.place.address}}',
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };
@@ -48,4 +48,4 @@ export const notifyOnCreate = functions.firestore.document('/Games/{gameid}').on
     return data;
 });
 
-export default notifyOnCreate;
+export default onGameCreate;
