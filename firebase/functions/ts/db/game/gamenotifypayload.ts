@@ -21,7 +21,7 @@ export async function notifyPayload(payload: PayloadData, snap: functions.firest
             payload.body += ' wear {{game.uniform}}';
         }
 
-        const gameTime = DateTime.fromMillis(data.time).plus(Duration.fromObject({ hours: 3 }));
+        const gameTime = DateTime.fromMillis(data.sharedData.time).plus(Duration.fromObject({ hours: 3 }));
         const diffGameTime = gameTime.diff(nowTime, 'seconds');
 
         const options: admin.messaging.MessagingOptions = {
