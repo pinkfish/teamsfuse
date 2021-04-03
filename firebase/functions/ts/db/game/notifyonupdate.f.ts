@@ -1,19 +1,19 @@
 import * as functions from 'firebase-functions';
 import { notifyPayload } from './gamenotifypayload';
-import * as moment from 'moment-timezone';
 import { PayloadData } from '../../util/notifyforgame';
+import { DateTime } from 'luxon';
 
 export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate(async (inputData, context) => {
     const data = inputData.after.data();
     const previousData = inputData.before.data();
 
     // Only notify if less then 7 days before the event.
-    const arrivalTime = moment.utc(data.arrivalTime);
-    const nowTime = moment.utc();
+    const arrivalTime = DateTime.fromMillis(data.arrivalTime);
+    const nowTime = DateTime.now().toUTC();
     const diff = arrivalTime.diff(nowTime, 'days');
     let payload: PayloadData | null = null;
     console.log('on change ' + inputData.after.id + ' diff ' + diff);
-    if (diff <= 7 && nowTime.valueOf() < data.arrivalTime.valueOf() - 1000 * 60 * 60) {
+    if (diff.days <= 7 && nowTime.valueOf() < data.arrivalTime.valueOf() - 1000 * 60 * 60) {
         console.log('Changed in here');
         // Notify the user of the new event/training/game.
         // Only mention big changes, address change, time change.
