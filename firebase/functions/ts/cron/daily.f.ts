@@ -85,18 +85,23 @@ export const onDailyPublish = functions.pubsub.topic('daily-tick').onPublish(asy
                         tag: 'email',
                         click_action: 'openGame',
                     };
-                    await notifyforgame.emailForGame(
-                        doc,
-                        payload,
-                        '',
-                        'emailUpcoming',
-                        cache,
-                        new notifyforgame.ChangedData(),
-                    );
-                    // Write out that we notified for this games.ChangedData
-                    await db.collection('Games').doc(doc.id).update({
-                        notifiedEmail: true,
-                    });
+                    try {
+                        await notifyforgame.emailForGame(
+                            doc,
+                            payload,
+                            '',
+                            'emailUpcoming',
+                            cache,
+                            new notifyforgame.ChangedData(),
+                        );
+                        // Write out that we notified for this games.ChangedData
+                        await db.collection('Games').doc(doc.id).update({
+                            notifiedEmail: true,
+                        });
+                    } catch (e) {
+                        console.error('Error sending mail for ' + doc.id);
+                        console.error(e);
+                    }
                 }
             }
         }
