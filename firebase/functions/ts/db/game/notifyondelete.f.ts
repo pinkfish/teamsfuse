@@ -12,26 +12,26 @@ export const onGameDelete = functions.firestore.document('/Games/{gameid}').onDe
     const diff = arrivalTime.diff(nowTime, 'days');
     let payload: PayloadData | null = null;
     if (diff.days <= 7 && nowTime.minus(Duration.fromObject({ minutes: 30 })).valueOf() < data.sharedData.time) {
-        console.log('Changed in here');
         // Notify the user of the new event/training/game.
         if (data.sharedData.type === 'Practice') {
             payload = {
-                title: 'CANCELLED practice for {{team.name}}',
-                body: 'Cancelled practice at {[arrivalTime}}',
+                title: 'CANCELLED Practice for {{team.name}}',
+                body: 'Cancelled practice at {{arrivalTime}} located {{game.place.address}}',
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };
         } else if (data.sharedData.type === 'Game') {
             payload = {
                 title: 'CANCELLED Game vs {{opponent.name}}',
-                body: 'Cancelled game at {{arrivalTime}}',
+                body: 'Cancelled game at {{arrivalTime}} ' + 'for {{team.name}} ' + 'located {{game.place.address}}',
+
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };
-        } else if (data.sharedData.type === 'EventType.Event') {
+        } else if (data.sharedData.type === 'Event') {
             payload = {
-                title: 'DELETE event for {{team.name}}',
-                body: 'Delete event at {{arrivalTime}}',
+                title: 'CANCELLED Event for {{team.name}}',
+                body: 'Cancelled event at {{arrivalTime}} located {{game.place.address}}',
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };

@@ -218,6 +218,7 @@ export async function createGame(
     arriveTime: DateTime,
     opponentUid: string,
     name?: string,
+    type?: string,
 ): Promise<DocumentSnapshot> {
     const gameDocId = uuid();
     const sharedGameDocId = uuid();
@@ -233,7 +234,7 @@ export async function createGame(
         uid: sharedGameDocId,
         time: arriveTime.valueOf(),
         endTime: arriveTime.valueOf(),
-        type: 'Game',
+        type: type ?? 'Game',
         timezone: 'America/Los_Angeles',
         officialResult: {
             result: 'Unknown',

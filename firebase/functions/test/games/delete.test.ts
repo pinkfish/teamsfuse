@@ -96,9 +96,7 @@ describe('Games Tests (delete)', () => {
             sinon.match.any,
             {
                 title: 'CANCELLED Game vs {{opponent.name}}',
-                body:
-                    'Cancelled game at {{arrivalTime}} for {{team.name}} ' +
-                    'located {{game.place.address}} wear {{game.uniform}}',
+                body: 'Cancelled game at {{arrivalTime}} for {{team.name}} ' + 'located {{game.place.address}}',
                 tag: `${game.id}change`,
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             },
@@ -110,6 +108,86 @@ describe('Games Tests (delete)', () => {
             false,
             sinon.match.any,
         );
+        return;
+    });
+
+    it('delete practice - now', async () => {
+        spy.reset();
+        const teamAndSeason = await createSeasonAndTeam(true, true);
+        const teamDocId = teamAndSeason.team.id;
+        const seasonDocId = teamAndSeason.season.id;
+        await createPlayer(['me'], 'player', true);
+        const opponent = await createOpponent(teamDocId, 'fluff');
+        const arriveTime = DateTime.now().toUTC();
+        const game = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id, undefined, 'Practice');
+
+        await test.wrap(onGameDelete)(game, undefined);
+
+        sinon.assert.calledWith(
+            spy,
+            sinon.match.any,
+            {
+                title: 'CANCELLED Practice for {{team.name}}',
+                body: 'Cancelled practice at {{arrivalTime}} located {{game.place.address}}',
+                tag: `${game.id}change`,
+                click_action: 'FLUTTER_NOTIFICATION_CLICK',
+            },
+            {
+                timeToLive: 10800000,
+                collapseKey: `${game.id}change`,
+            },
+            '',
+            false,
+            sinon.match.any,
+        );
+        return;
+    });
+
+    it('delete event - now', async () => {
+        spy.reset();
+        const teamAndSeason = await createSeasonAndTeam(true, true);
+        const teamDocId = teamAndSeason.team.id;
+        const seasonDocId = teamAndSeason.season.id;
+        await createPlayer(['me'], 'player', true);
+        const opponent = await createOpponent(teamDocId, 'fluff');
+        const arriveTime = DateTime.now().toUTC();
+        const game = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id, undefined, 'Event');
+
+        await test.wrap(onGameDelete)(game, undefined);
+
+        sinon.assert.calledWith(
+            spy,
+            sinon.match.any,
+            {
+                title: 'CANCELLED Event for {{team.name}}',
+                body: 'Cancelled event at {{arrivalTime}} located {{game.place.address}}',
+                tag: `${game.id}change`,
+                click_action: 'FLUTTER_NOTIFICATION_CLICK',
+            },
+            {
+                timeToLive: 10800000,
+                collapseKey: `${game.id}change`,
+            },
+            '',
+            false,
+            sinon.match.any,
+        );
+        return;
+    });
+
+    it('delete other - now', async () => {
+        spy.reset();
+        const teamAndSeason = await createSeasonAndTeam(true, true);
+        const teamDocId = teamAndSeason.team.id;
+        const seasonDocId = teamAndSeason.season.id;
+        await createPlayer(['me'], 'player', true);
+        const opponent = await createOpponent(teamDocId, 'fluff');
+        const arriveTime = DateTime.now().toUTC();
+        const game = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id, undefined, 'Other');
+
+        await test.wrap(onGameDelete)(game, undefined);
+
+        sinon.assert.notCalled(spy);
         return;
     });
 });

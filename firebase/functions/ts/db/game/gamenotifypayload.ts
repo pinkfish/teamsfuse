@@ -15,12 +15,6 @@ export async function notifyPayload(payload: PayloadData, snap: functions.firest
             return;
         }
 
-        payload.body += ' for {{team.name}}';
-        payload.body += ' located {{game.place.address}}';
-        if (data.uniform !== '') {
-            payload.body += ' wear {{game.uniform}}';
-        }
-
         const gameTime = DateTime.fromMillis(data.sharedData.time).plus(Duration.fromObject({ hours: 3 }));
         const diffGameTime = gameTime.diff(nowTime, 'seconds');
 
