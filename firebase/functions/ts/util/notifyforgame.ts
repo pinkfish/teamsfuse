@@ -48,6 +48,18 @@ export interface PayloadData {
     fromComp?: HandlebarsTemplateDelegate<{ [name: string]: any }>;
 }
 
+export class ChangedData {
+    arrival: boolean = false;
+    startTime: boolean = false;
+    place: {
+        name: boolean;
+        address: boolean;
+        notes: boolean;
+    } = { name: false, address: false, notes: false };
+    notes: boolean = false;
+    uniform: boolean = false;
+}
+
 // This notifies everyone following the game of the specific payload.
 // The game here is a DocumentSnapshot from firebase.
 // It returns a promise with the evaluation chain.
@@ -313,6 +325,7 @@ export async function emailForGame(
     excludeUser: string,
     userFlag: string,
     cache: DataNodeCache,
+    changedData: ChangedData,
 ) {
     const gameData = game.data();
     if (gameData === null || gameData === undefined) {
@@ -345,6 +358,21 @@ export async function emailForGame(
     payload.textComp = handlebars.compile(payload.text);
     payload.bodyComp = handlebars.compile(payload.body);
     payload.fromComp = handlebars.compile(payload.from);
+
+    handlebars.registerHelper('changedText', function (check) {
+        if (check) {
+            return ' [changed]</b>';
+        }
+        return '';
+    });
+
+    handlebars.registerHelper('changed', function (check, options) {
+        const ret = options.fn(options.data.root);
+        if (check) {
+            return new handlebars.SafeString('<b>' + ret + ' [changed]</b>');
+        }
+        return new handlebars.SafeString(ret);
+    });
 
     let opponentData: { [field: string]: any } | undefined = undefined;
     if (gameData.opponentUid !== null && gameData.opponentUid !== '') {
@@ -389,6 +417,7 @@ export async function emailForGame(
                                     sharedGameData,
                                     payload,
                                     userFlag,
+                                    changedData,
                                 );
                             } catch (error) {
                                 console.error('There was an error while sending the notification:', error);
@@ -412,6 +441,7 @@ async function doTheNotification(
     sharedGameData: { [field: string]: any },
     payload: PayloadData,
     userFlag: string,
+    changedData: ChangedData,
 ) {
     if (userData.email && userData[userFlag]) {
         // Setup the context and do the templates.
@@ -480,6 +510,7 @@ async function doTheNotification(
             directionsUrl: directionsUrl,
             availability: availability,
             teamPhotoUrl: teamPhotoUrl,
+            change: changedData,
         };
 
         const sendPayload = {

@@ -37,6 +37,7 @@ describe('Cron tests - daily', () => {
             excludeUser: string,
             userFlag: string,
             cache: DataNodeCache,
+            changed: notifyforgame.ChangedData,
         ],
         Promise<void>
     >;
@@ -97,6 +98,7 @@ describe('Cron tests - daily', () => {
                 '',
                 'emailUpcoming',
                 sinon.match.any,
+                new notifyforgame.ChangedData(),
             );
         } finally {
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();
@@ -139,6 +141,7 @@ describe('Cron tests - daily', () => {
                     '',
                     'emailUpcoming',
                     sinon.match.any,
+                    new notifyforgame.ChangedData(),
                 );
             }
         } finally {

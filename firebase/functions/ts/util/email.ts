@@ -1,13 +1,13 @@
 export const TEXT_BODY: string = `
 Reminder for upcoming game with {{team.name}}, details below:
 
-Arrive At   : {{arrivalTime}}
-Start Time  : {{startTime}}
-Address     : {{sharedGame.place.address}}
-PlaceName   : {{sharedGame.place.name}}
-PlaceNotes  : {{sharedGame.place.notes}}
-Uniform     : {{game.uniform}}
-Notes       : {{game.notes}}
+Arrive At   : {{arrivalTime}}{{changedText change.arrival}}
+Start Time  : {{startTime}}{{changedText change.startTime}}
+Address     : {{sharedGame.place.address}}{{changedText change.place.address}}
+PlaceName   : {{sharedGame.place.name}}{{changedText change.place.name}}
+PlaceNotes  : {{sharedGame.place.notes}}{{changedText change.place.notes}}
+Uniform     : {{game.uniform}}{{changedText change.uniform}}
+Notes       : {{game.notes}}{{changedText change.notes}}
 
 Availability
 {{#availability}}
@@ -53,25 +53,25 @@ Reminder for upcoming game with <b>{{team.name}}</b>, details below:
 <h4><a href="http://www.teamsfuses.com/event/{{team.uid}}/{{game.uid}}">Details</a></h4>
 <table>
 <tr>
-<td>Arrive At</td><td>{{arrivalTime}}</td>
+<td>Arrive At</td><td>{{#changed change.arrival}}{{arrivalTime}}{{/changed}}</td>
 </tr>
 <tr>
-<td>Start Time</td><td>{{startTime}}</td>
+<td>Start Time</td><td>{{#changed change.startTime}}{{startTime}}{{/changed}}</td>
 </tr>
 <tr>
-<td>Address     </td><td><a href="{{directionsUrl}}">{{sharedGame.place.address}}</a></td>
+<td>Address</td><td>{{#changed change.place.address}}<a href="{{directionsUrl}}">{{sharedGame.place.address}}</a>{{/changed}}</td>
 </tr>
 <tr>
-<td>PlaceName   </td><td> {{sharedGame.place.name}}</td>
+<td>Place Name</td><td>{{#changed change.place.name}}{{sharedGame.place.name}}{{/changed}}</td>
 </tr>
 <tr>
-<td>PlaceNotes  </td><td> {{sharedGame.place.notes}}</td>
+<td>Place Notes</td><td>{{#changed change.place.notes}}{{sharedGame.place.notes}}{{/changed}}</td>
 </tr>
 <tr>
-<td>Uniform     </td><td> {{game.uniform}}</td>
+<td>Uniform</td><td>{{#changed change.uniform}}{{game.uniform}}{{/changed}}</td>
 </tr>
 <tr>
-<td>Notes       </td><td> {{game.notes}}</td>
+<td>Notes</td><td>{{#changed change.notes}}{{game.notes}}{{/changed}}</td>
 </tr>
 </table>
 

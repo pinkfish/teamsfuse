@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin';
 import { notifyForGame, PayloadData } from '../../util/notifyforgame';
 import { DataNodeCache } from '../../util/datacache';
 
-export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate(async (inputData, context) => {
+export const onGameUpdate = functions.firestore.document('/Games/{gameid}').onUpdate(async (inputData, context) => {
     const data = inputData.after.data();
     let previousData = inputData.before.data();
 
@@ -129,4 +129,4 @@ export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate
     return;
 });
 
-export default onUpdate;
+export default onGameUpdate;

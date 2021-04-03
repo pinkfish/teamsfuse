@@ -34,7 +34,7 @@ test.mockConfig({
     },
 });
 
-import { emailForGame } from '../../../ts/util/notifyforgame';
+import { emailForGame, ChangedData } from '../../../ts/util/notifyforgame';
 import * as mailgun from '../../../ts/util/mailgun';
 
 describe('Email for games', () => {
@@ -78,6 +78,7 @@ describe('Email for games', () => {
                 '',
                 'emailUpcoming',
                 cache,
+                new ChangedData(),
             );
             sinon.assert.notCalled(spy);
         } finally {
@@ -118,6 +119,7 @@ describe('Email for games', () => {
                 '',
                 'emailUpcoming',
                 cache,
+                new ChangedData(),
             );
             sinon.assert.notCalled(spy);
         } finally {
@@ -158,6 +160,7 @@ describe('Email for games', () => {
                 '',
                 'emailUpcoming',
                 cache,
+                new ChangedData(),
             );
             sinon.assert.calledWith(spy, {
                 subject: '[Lookup TeamName] Game at  vs Test Opponent',
@@ -203,19 +206,19 @@ describe('Email for games', () => {
                     '<td>Start Time</td><td></td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
-                    '<td>Address     </td><td><a href="https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined">1502 west test drive</a></td>\n' +
+                    '<td>Address</td><td><a href="https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined">1502 west test drive</a></td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
-                    '<td>PlaceName   </td><td> Test High School</td>\n' +
+                    '<td>Place Name</td><td>Test High School</td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
-                    '<td>PlaceNotes  </td><td> </td>\n' +
+                    '<td>Place Notes</td><td></td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
-                    '<td>Uniform     </td><td> white/red/black</td>\n' +
+                    '<td>Uniform</td><td>white/red/black</td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
-                    '<td>Notes       </td><td> Do not drive backwards</td>\n' +
+                    '<td>Notes</td><td>Do not drive backwards</td>\n' +
                     '</tr>\n' +
                     '</table>\n' +
                     '\n' +
@@ -320,6 +323,7 @@ describe('Email for games', () => {
                 '',
                 'emailUpcoming',
                 cache,
+                new ChangedData(),
             );
             sinon.assert.calledWith(spy, {
                 subject: '[Lookup TeamName] Game at  vs Test Opponent',
@@ -369,19 +373,19 @@ describe('Email for games', () => {
                     '<td>Start Time</td><td></td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
-                    '<td>Address     </td><td><a href="https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined">1502 west test drive</a></td>\n' +
+                    '<td>Address</td><td><a href="https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined">1502 west test drive</a></td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
-                    '<td>PlaceName   </td><td> Test High School</td>\n' +
+                    '<td>Place Name</td><td>Test High School</td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
-                    '<td>PlaceNotes  </td><td> </td>\n' +
+                    '<td>Place Notes</td><td></td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
-                    '<td>Uniform     </td><td> white/red/black</td>\n' +
+                    '<td>Uniform</td><td>white/red/black</td>\n' +
                     '</tr>\n' +
                     '<tr>\n' +
-                    '<td>Notes       </td><td> Do not drive backwards</td>\n' +
+                    '<td>Notes</td><td>Do not drive backwards</td>\n' +
                     '</tr>\n' +
                     '</table>\n' +
                     '\n' +

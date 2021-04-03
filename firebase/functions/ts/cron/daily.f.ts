@@ -85,7 +85,14 @@ export const onDailyPublish = functions.pubsub.topic('daily-tick').onPublish(asy
                         tag: 'email',
                         click_action: 'openGame',
                     };
-                    await notifyforgame.emailForGame(doc, payload, '', 'emailUpcoming', cache);
+                    await notifyforgame.emailForGame(
+                        doc,
+                        payload,
+                        '',
+                        'emailUpcoming',
+                        cache,
+                        new notifyforgame.ChangedData(),
+                    );
                 }
             }
         }
