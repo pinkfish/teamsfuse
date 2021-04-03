@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import { notifyPayload } from './gamenotifypayload';
 import { PayloadData } from '../../util/notifyforgame';
 import { DateTime } from 'luxon';
+import { DataNodeCache } from '../../util/datacache';
 
 export const notifyOnCreate = functions.firestore.document('/Games/{gameid}').onCreate((snap, context) => {
     const data = snap.data();
@@ -40,7 +41,9 @@ export const notifyOnCreate = functions.firestore.document('/Games/{gameid}').on
     }
 
     if (payload) {
-        return notifyPayload(payload, snap);
+        const cache = new DataNodeCache();
+
+        return notifyPayload(payload, snap, cache);
     }
     return data;
 });

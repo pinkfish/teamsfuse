@@ -1,7 +1,8 @@
 import * as functions from 'firebase-functions';
-import { notifyPayload } from './gamenotifypayload';
+import { notifyPayload, notifyOfResults } from './gamenotifypayload';
 import { PayloadData } from '../../util/notifyforgame';
 import { DateTime } from 'luxon';
+import { DataNodeCache } from '../../util/datacache';
 
 export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate(async (inputData, context) => {
     const data = inputData.after.data();
@@ -72,9 +73,13 @@ export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate
         console.log('Ignoring game out of range');
     }
 
+    const cache = new DataNodeCache();
+
     if (payload) {
-        await notifyPayload(payload, inputData.after);
+        await notifyPayload(payload, inputData.after, cache);
     }
+
+    await notifyOfResults(inputData.after, previousData, cache, context.auth?.uid ?? '');
 
     return;
 });

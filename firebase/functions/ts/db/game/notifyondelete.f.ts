@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import { notifyPayload } from './gamenotifypayload';
 import { PayloadData } from '../../util/notifyforgame';
 import { DateTime, Duration } from 'luxon';
+import { DataNodeCache } from '../../util/datacache';
 
 export const onGameDelete = functions.firestore.document('/Games/{gameid}').onDelete(async (snap, context) => {
     const data = snap.data();
@@ -39,7 +40,9 @@ export const onGameDelete = functions.firestore.document('/Games/{gameid}').onDe
     }
 
     if (payload) {
-        await notifyPayload(payload, snap);
+        const cache = new DataNodeCache();
+
+        await notifyPayload(payload, snap, cache);
     }
     return;
 });
