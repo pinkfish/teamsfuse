@@ -76,4 +76,43 @@ describe('Games Tests (update)', () => {
         sinon.assert.notCalled(spy);
         return;
     });
+
+    it('update game - change arrival', async () => {
+        spy.reset();
+        const teamAndSeason = await createSeasonAndTeam(true, true);
+        const teamDocId = teamAndSeason.team.id;
+        const seasonDocId = teamAndSeason.season.id;
+        await createPlayer(['me'], 'player', true);
+        const opponent = await createOpponent(teamDocId, 'fluff');
+        const arriveTime = DateTime.now().toUTC();
+        const game = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id);
+        const oldData = game.data();
+        oldData!['arrivalTime'] = 1234;
+        const oldGame = {
+            id: game.id,
+            data: () => oldData,
+        };
+
+        await test.wrap(onGameUpdate)(test.makeChange(oldGame, game), undefined);
+
+        sinon.assert.calledWith(
+            spy,
+            sinon.match.any,
+            {
+                title: 'Game change vs {{opponent.name}}',
+                body: 'Arrive by {{arrivalTime}} at {{placeName}}',
+                tag: `${game.id}change`,
+                click_action: 'FLUTTER_NOTIFICATION_CLICK',
+            },
+            {
+                timeToLive: 10800000,
+                collapseKey: `${game.id}change`,
+            },
+            '',
+            false,
+            sinon.match.any,
+        );
+
+        return;
+    });
 });
