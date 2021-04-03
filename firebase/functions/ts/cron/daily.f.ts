@@ -93,6 +93,10 @@ export const onDailyPublish = functions.pubsub.topic('daily-tick').onPublish(asy
                         cache,
                         new notifyforgame.ChangedData(),
                     );
+                    // Write out that we notified for this games.ChangedData
+                    await db.collection('Games').doc(doc.id).update({
+                        notifiedEmail: true,
+                    });
                 }
             }
         }

@@ -357,7 +357,7 @@ export async function emailForGame(
 
     handlebars.registerHelper('changedText', function (check) {
         if (check) {
-            return ' [changed]</b>';
+            return ' [changed]';
         }
         return '';
     });
@@ -365,7 +365,7 @@ export async function emailForGame(
     handlebars.registerHelper('changed', function (check, options) {
         const ret = options.fn(options.data.root);
         if (check) {
-            return new handlebars.SafeString('<b>' + ret + ' [changed]</b>');
+            return new handlebars.SafeString('<b>' + ret + ' <i>[changed]</i></b>');
         }
         return new handlebars.SafeString(ret);
     });

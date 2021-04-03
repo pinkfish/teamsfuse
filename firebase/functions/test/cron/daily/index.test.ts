@@ -8,6 +8,7 @@ import * as functions from 'firebase-functions';
 import { DateTime, Duration, Settings } from 'luxon';
 import * as email from '../../../ts/util/email';
 import { DataNodeCache } from '../../../ts/util/datacache';
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
 
 const projectName = 'teamsfuse';
 
@@ -56,6 +57,12 @@ describe('Cron tests - daily', () => {
         return;
     });
 
+    afterEach(async () => {
+        await clearFirestoreData({
+            projectId: projectName,
+        });
+    });
+
     it('no games', async () => {
         spy.resetHistory();
         const teamAndSeason = await createSeasonAndTeam(false, false);
@@ -77,35 +84,66 @@ describe('Cron tests - daily', () => {
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
         const opponent = await createOpponent(teamDocId);
-        const gameDoc = await createGame(teamDocId, seasonDocId, DateTime.now().toUTC(), opponent.id, 'Froggy');
+        await createGame(teamDocId, seasonDocId, DateTime.now().toUTC(), opponent.id, 'Froggy');
 
         // Just make sure creating a club actually works.
-        try {
-            await test.wrap(onDailyPublish)(null, undefined);
-            sinon.assert.calledWith(backupDb, 'projects/teamsfuse/databases/(default)');
+        await test.wrap(onDailyPublish)(null, undefined);
+        sinon.assert.calledWith(backupDb, 'projects/teamsfuse/databases/(default)');
 
-            sinon.assert.calledWith(
-                spy,
-                sinon.match.any,
-                {
-                    from: 'noreply@email.teamsfuse.com',
-                    title: '[{{team.name}}] Game at {{startTime}} vs {{opponent.name}}',
-                    text: email.TEXT_BODY,
-                    body: email.HTML_BODY,
-                    tag: 'email',
-                    click_action: 'openGame',
-                },
-                '',
-                'emailUpcoming',
-                sinon.match.any,
-                new notifyforgame.ChangedData(),
-            );
-        } finally {
-            await admin.firestore().collection('Games').doc(gameDoc.id).delete();
-            await admin.firestore().collection('Opponents').doc(opponent.id).delete();
-            await admin.firestore().collection('Teams').doc(teamDocId).delete();
-            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
-        }
+        sinon.assert.calledWith(
+            spy,
+            sinon.match.any,
+            {
+                from: 'noreply@email.teamsfuse.com',
+                title: '[{{team.name}}] Game at {{startTime}} vs {{opponent.name}}',
+                text: email.TEXT_BODY,
+                body: email.HTML_BODY,
+                tag: 'email',
+                click_action: 'openGame',
+            },
+            '',
+            'emailUpcoming',
+            sinon.match.any,
+            new notifyforgame.ChangedData(),
+        );
+    });
+
+    it('one games to alert - only sent once', async () => {
+        spy.reset();
+
+        const teamAndSeason = await createSeasonAndTeam(false, false);
+        const teamDocId = teamAndSeason.team.id;
+        const seasonDocId = teamAndSeason.season.id;
+        const opponent = await createOpponent(teamDocId);
+        await createGame(teamDocId, seasonDocId, DateTime.now().toUTC(), opponent.id, 'Froggy');
+
+        // Just make sure creating a club actually works.
+        await test.wrap(onDailyPublish)(null, undefined);
+        sinon.assert.calledWith(backupDb, 'projects/teamsfuse/databases/(default)');
+
+        sinon.assert.calledWith(
+            spy,
+            sinon.match.any,
+            {
+                from: 'noreply@email.teamsfuse.com',
+                title: '[{{team.name}}] Game at {{startTime}} vs {{opponent.name}}',
+                text: email.TEXT_BODY,
+                body: email.HTML_BODY,
+                tag: 'email',
+                click_action: 'openGame',
+            },
+            '',
+            'emailUpcoming',
+            sinon.match.any,
+            new notifyforgame.ChangedData(),
+        );
+
+        // Update and now check again.
+        spy.reset();
+        await test.wrap(onDailyPublish)(null, undefined);
+        sinon.assert.calledWith(backupDb, 'projects/teamsfuse/databases/(default)');
+
+        sinon.assert.notCalled(spy);
     });
 
     it('multiple games to alert', async () => {
@@ -123,34 +161,25 @@ describe('Cron tests - daily', () => {
         ];
 
         // Just make sure creating a club actually works.
-        try {
-            await test.wrap(onDailyPublish)(null, undefined);
-            for (const idx in gameDocs) {
-                console.log(idx);
-                sinon.assert.calledWith(
-                    spy,
-                    sinon.match.any,
-                    {
-                        from: 'noreply@email.teamsfuse.com',
-                        title: '[{{team.name}}] Game at {{startTime}} vs {{opponent.name}}',
-                        text: email.TEXT_BODY,
-                        body: email.HTML_BODY,
-                        tag: 'email',
-                        click_action: 'openGame',
-                    },
-                    '',
-                    'emailUpcoming',
-                    sinon.match.any,
-                    new notifyforgame.ChangedData(),
-                );
-            }
-        } finally {
-            for (const idx in gameDocs) {
-                await admin.firestore().collection('Games').doc(gameDocs[idx].id).delete();
-            }
-            await admin.firestore().collection('Opponents').doc(opponent.id).delete();
-            await admin.firestore().collection('Teams').doc(teamDocId).delete();
-            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
+        await test.wrap(onDailyPublish)(null, undefined);
+        for (const idx in gameDocs) {
+            console.log(idx);
+            sinon.assert.calledWith(
+                spy,
+                sinon.match.any,
+                {
+                    from: 'noreply@email.teamsfuse.com',
+                    title: '[{{team.name}}] Game at {{startTime}} vs {{opponent.name}}',
+                    text: email.TEXT_BODY,
+                    body: email.HTML_BODY,
+                    tag: 'email',
+                    click_action: 'openGame',
+                },
+                '',
+                'emailUpcoming',
+                sinon.match.any,
+                new notifyforgame.ChangedData(),
+            );
         }
     });
 
@@ -161,7 +190,7 @@ describe('Cron tests - daily', () => {
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
         const opponent = await createOpponent(teamDocId);
-        const gameDoc = await createGame(
+        await createGame(
             teamDocId,
             seasonDocId,
             DateTime.now()
@@ -170,7 +199,7 @@ describe('Cron tests - daily', () => {
             opponent.id,
             'Froggy',
         );
-        const gameDoc2 = await createGame(
+        await createGame(
             teamDocId,
             seasonDocId,
             DateTime.now()
@@ -180,16 +209,8 @@ describe('Cron tests - daily', () => {
             'Froggy',
         );
 
-        try {
-            // Just make sure creating a club actually works.
-            await test.wrap(onDailyPublish)(null, undefined);
-            sinon.assert.notCalled(spy);
-        } finally {
-            await admin.firestore().collection('Games').doc(gameDoc.id).delete();
-            await admin.firestore().collection('Games').doc(gameDoc2.id).delete();
-            await admin.firestore().collection('Opponents').doc(opponent.id).delete();
-            await admin.firestore().collection('Teams').doc(teamDocId).delete();
-            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
-        }
+        // Just make sure creating a club actually works.
+        await test.wrap(onDailyPublish)(null, undefined);
+        sinon.assert.notCalled(spy);
     });
 });
