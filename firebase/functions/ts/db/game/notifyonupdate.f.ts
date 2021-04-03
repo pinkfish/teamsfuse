@@ -4,7 +4,7 @@ import { PayloadData } from '../../util/notifyforgame';
 import { DateTime, Duration } from 'luxon';
 import { DataNodeCache } from '../../util/datacache';
 
-export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate(async (inputData, context) => {
+export const onGameUpdate = functions.firestore.document('/Games/{gameid}').onUpdate(async (inputData, context) => {
     const data = inputData.after.data();
     const previousData = inputData.before.data();
 
@@ -18,52 +18,32 @@ export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate
         console.log('Changed in here');
         // Notify the user of the new event/training/game.
         // Only mention big changes, address change, time change.
-        if (previousData.place === null) {
-            previousData.place = {};
+        if (previousData.sharedData.place === null) {
+            previousData.sharedData.place = {};
         }
-        const bing = true;
-        if (data.uniform !== previousData.uniform || data.opponentUid !== previousData.opponentUid || bing) {
+        const bing =
+            data.sharedData.place.address !== previousData.sharedData.place.address ||
+            data.opponentUid !== previousData.opponentUid ||
+            data.arrivalTime !== previousData.arrivalTime;
+        if (bing) {
             if (data.sharedData.type === 'Practice') {
                 payload = {
-                    title: 'Practice location {{team.name}}',
-                    body: 'Arrive at {{arrivalTime}}',
+                    title: 'Practice change {{team.name}}',
+                    body: 'Arrive br {{arrivalTime}} at {{placeName}}',
                     tag: inputData.after.id + 'change',
                     click_action: 'FLUTTER_NOTIFICATION_CLICK',
                 };
             } else if (data.sharedData.type === 'Game') {
                 payload = {
-                    title: 'Game Location vs {{opponent.name}}',
-                    body: 'Arrive by {{arrivalTime}}',
+                    title: 'Game change vs {{opponent.name}}',
+                    body: 'Arrive by {{arrivalTime}} at {{placeName}}',
                     tag: inputData.after.id + 'change',
                     click_action: 'FLUTTER_NOTIFICATION_CLICK',
                 };
             } else if (data.sharedData.type === 'Event') {
                 payload = {
-                    title: 'Event location for {{team.name}}',
-                    body: 'Arrive by {{arrivalTime}}',
-                    tag: inputData.after.id + 'change',
-                    click_action: 'FLUTTER_NOTIFICATION_CLICK',
-                };
-            }
-        } else if (data.arrivalTime !== previousData.arrivalTime) {
-            if (data.sharedData.type === 'Practice') {
-                payload = {
-                    title: 'Practice time {{team.name}}',
-                    body: 'Arrive at {{arrivalTime}}',
-                    tag: inputData.after.id + 'change',
-                    click_action: 'FLUTTER_NOTIFICATION_CLICK',
-                };
-            } else if (data.sharedData.type === 'Game') {
-                payload = {
-                    title: 'Game time vs {{opponent.name}}',
-                    body: 'Arrive by {{arrivalTime}}',
-                    tag: inputData.after.id + 'change',
-                    click_action: 'FLUTTER_NOTIFICATION_CLICK',
-                };
-            } else if (data.sharedData.type === 'Event') {
-                payload = {
-                    title: 'Event time for {{team.name}}',
-                    body: 'Arrive by {{arrivalTime}}',
+                    title: 'Event change for {{team.name}}',
+                    body: 'Arrive by {{arrivalTime}} at {{placeName}}',
                     tag: inputData.after.id + 'change',
                     click_action: 'FLUTTER_NOTIFICATION_CLICK',
                 };
@@ -84,4 +64,4 @@ export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate
     return;
 });
 
-export default onUpdate;
+export default onGameUpdate;

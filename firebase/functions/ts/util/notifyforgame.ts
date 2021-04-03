@@ -193,6 +193,7 @@ async function handleTokens(
             team: teamData,
             sharedGame: sharedGameData,
             opponent: opponentData,
+            placeName: gameData.sharedData.place.name ?? gameData.sharedData.place.address,
             season: seasonData,
         };
 

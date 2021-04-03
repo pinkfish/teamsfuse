@@ -96,7 +96,7 @@ describe('Games Tests (create)', () => {
             sinon.match.any,
             {
                 title: 'New Game vs {{opponent.name}}',
-                body: 'New game {{arrivalTime}} for {{team.name}} ' + 'at {{game.place.address}}',
+                body: 'New game {{arrivalTime}} for {{team.name}} ' + 'at {{placeName}}',
                 tag: `${game.id}change`,
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             },
@@ -128,7 +128,7 @@ describe('Games Tests (create)', () => {
             sinon.match.any,
             {
                 title: 'New Practice for {{team.name}}',
-                body: 'New practice at {{arrivalTime}} {{game.place.address}}',
+                body: 'New practice at {{arrivalTime}} {{placeName}}',
                 tag: `${game.id}change`,
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             },
@@ -160,7 +160,7 @@ describe('Games Tests (create)', () => {
             sinon.match.any,
             {
                 title: 'New Event for {{team.name}}',
-                body: 'New event {{arrivalTime}} at {{game.place.address}}',
+                body: 'New event {{arrivalTime}} at {{placeName}}',
                 tag: `${game.id}change`,
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             },

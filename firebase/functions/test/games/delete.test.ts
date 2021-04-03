@@ -96,7 +96,7 @@ describe('Games Tests (delete)', () => {
             sinon.match.any,
             {
                 title: 'CANCELLED Game vs {{opponent.name}}',
-                body: 'Cancelled game at {{arrivalTime}} for {{team.name}} ' + 'located {{game.place.address}}',
+                body: 'Cancelled game at {{arrivalTime}} for {{team.name}} ' + 'located {{placeName}}',
                 tag: `${game.id}change`,
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             },
@@ -128,7 +128,7 @@ describe('Games Tests (delete)', () => {
             sinon.match.any,
             {
                 title: 'CANCELLED Practice for {{team.name}}',
-                body: 'Cancelled practice at {{arrivalTime}} located {{game.place.address}}',
+                body: 'Cancelled practice at {{arrivalTime}} located {{placeName}}',
                 tag: `${game.id}change`,
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             },
@@ -160,7 +160,7 @@ describe('Games Tests (delete)', () => {
             sinon.match.any,
             {
                 title: 'CANCELLED Event for {{team.name}}',
-                body: 'Cancelled event at {{arrivalTime}} located {{game.place.address}}',
+                body: 'Cancelled event at {{arrivalTime}} located {{placeName}}',
                 tag: `${game.id}change`,
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             },
