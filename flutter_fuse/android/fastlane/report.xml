@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
   <testsuite name="fastlane.lanes">
-
-
-
-
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.021580076">
-
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.040474633">
+        
       </testcase>
-
-
-      <testcase classname="fastlane.lanes" name="1: Switch to android build_and_push_to_play_store_track_github lane" time="0.000364714">
-
+    
+      
+      <testcase classname="fastlane.lanes" name="1: Switch to android build_and_push_to_play_store_track_github lane" time="0.000335903">
+        
       </testcase>
-
-
-      <testcase classname="fastlane.lanes" name="2: get_github_release" time="0.581813817">
-
+    
+      
+      <testcase classname="fastlane.lanes" name="2: get_github_release" time="0.139193743">
+        
       </testcase>
-
-
-      <testcase classname="fastlane.lanes" name="3: Switch to android create_icons lane" time="0.000338212">
-
+    
+      
+      <testcase classname="fastlane.lanes" name="3: Switch to android create_icons lane" time="0.000323803">
+        
       </testcase>
-
-
-      <testcase classname="fastlane.lanes" name="4: android_appicon" time="1.954841393">
-
+    
+      
+      <testcase classname="fastlane.lanes" name="4: android_appicon" time="1.776979286">
+        
       </testcase>
-
-
-      <testcase classname="fastlane.lanes" name="5: android_appicon" time="23.195485335">
-
+    
+      
+      <testcase classname="fastlane.lanes" name="5: android_appicon" time="21.405023403">
+        
       </testcase>
-
-
-      <testcase classname="fastlane.lanes" name="6: cd ../.. &amp;&amp; flutter build appbundle --target-platform android-arm,android-arm64,android-x64 --build-name=0.9.8 --build-number=447" time="268.924844187">
-
+    
+      
+      <testcase classname="fastlane.lanes" name="6: cd ../.. &amp;&amp; flutter build appbundle --target-platform android-arm,android-arm64,android-x64 --build-name=0.9.12 --build-number=453" time="287.039563164">
+        
       </testcase>
-
-
-      <testcase classname="fastlane.lanes" name="7: upload_to_play_store" time="49.55548269">
-
+    
+      
+      <testcase classname="fastlane.lanes" name="7: upload_to_play_store" time="58.608720859">
+        
       </testcase>
-
+    
   </testsuite>
 </testsuites>
