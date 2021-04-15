@@ -490,6 +490,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "Place notes, ie court #" : MessageLookupByLibrary.simpleMessage("Place notes, ie court #"),
     "Player" : MessageLookupByLibrary.simpleMessage("Player"),
     "Player Name" : MessageLookupByLibrary.simpleMessage("Player Name"),
+    "Player deleted" : MessageLookupByLibrary.simpleMessage("Player deleted"),
     "Player email address" : MessageLookupByLibrary.simpleMessage("Player email address"),
     "Players" : MessageLookupByLibrary.simpleMessage("Players"),
     "Please choose a gender." : MessageLookupByLibrary.simpleMessage("Please choose a gender."),
