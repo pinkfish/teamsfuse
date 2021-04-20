@@ -49,8 +49,8 @@ export async function notifyOfResults(
         return;
     }
 
-    // Check to see if there is any result at all yet.
-    if (data.result === null) {
+    // Check to see if there is any result at all yet or it is not a game.
+    if (data.result === null || data.sharedData.type !== 'Game') {
         // No results.
         console.log('No results');
         return data;
@@ -67,44 +67,29 @@ export async function notifyOfResults(
         };
     }
 
-    console.log('Start ' + data.result.inProgress + ' ' + data.result.result + ' -- ' + previousData.result.result);
     // Loop through the values on scores.
     let diff = false;
-    const diffScoreTypes = [];
-    let curScores = data.result.scores['Regulation'];
-    let result = 0;
     if (previousData.result === null) {
         previousData.result = {
             scores: {},
         };
     }
-    if (curScores === null) {
-        curScores = { ptsFor: 0, ptsAgainst: 0 };
-    }
-    //var currentScoreStr = '';
+    let ptsFor = 0;
+    let ptsAgainst = 0;
     for (const s in data.result.scores) {
-        if (Object.prototype.hasOwnProperty.call(data.result.scores, s)) {
+        if (data.result.scores.hasOwnProperty(s)) {
             const nowScore = data.result.scores[s];
             const beforeScore = previousData.result.scores[s];
-            console.log(nowScore);
-            console.log(s);
-            console.log(beforeScore);
-            if (beforeScore === null || typeof beforeScore === 'undefined') {
+            if (beforeScore === null || beforeScore === undefined) {
                 diff = true;
-                diffScoreTypes.push(s);
-                //currentScoreStr = currentScoreStr + s + ' ' + ptsFor + ' - ' + ptsAgainst + '\n';
-            } else if (beforeScore.ptsAgainst !== nowScore.ptsAgainst || beforeScore.ptsFor !== nowScore.ptsFor) {
+            } else if (
+                beforeScore.score.ptsAgainst !== nowScore.score.ptsAgainst ||
+                beforeScore.score.ptsFor !== nowScore.score.ptsFor
+            ) {
                 diff = true;
-                diffScoreTypes.push(s);
-                //currentScoreStr = currentScoreStr + s + ' ' + ptsFor + ' - ' + ptsAgainst + '\n';
             }
-            if (nowScore.ptsFor > nowScore.ptsAgainst) {
-                curScores = nowScore;
-                result = 1;
-            } else if (nowScore.ptsFor < nowScore.ptsAgainst) {
-                curScores = nowScore;
-                result = 2;
-            }
+            ptsFor += nowScore.score.ptsFor;
+            ptsAgainst += nowScore.score.ptsAgainst;
         }
     }
     if (
@@ -115,18 +100,14 @@ export async function notifyOfResults(
     ) {
         // If we are authenticated then don't tell the person doing the
         // update about this change.
-        console.log(data.result);
-        console.log(curScores);
         let mess = '';
         if (data.result.inProgress === 'Final') {
-            if (result === 0) {
-                console.log(data.result);
-                console.log(curScores);
-                mess = 'Tied at end of game';
-            } else if (result === 1) {
+            if (ptsFor > ptsAgainst) {
                 mess = 'Won the game';
-            } else {
+            } else if (ptsFor < ptsAgainst) {
                 mess = 'Lost the game';
+            } else {
+                mess = 'Tied at end of game';
             }
         } else {
             let inProgress = '';
@@ -135,9 +116,9 @@ export async function notifyOfResults(
             } else if (data.result.period.startsWith('Penalty')) {
                 inProgress = ' in penalty shootout';
             }
-            if (result === 0) {
+            if (ptsFor === ptsAgainst) {
                 mess = 'Game tied' + inProgress;
-            } else if (result === 1) {
+            } else if (ptsFor > ptsAgainst) {
                 mess = 'Winning game' + inProgress;
             } else {
                 mess = 'Losing game' + inProgress;
@@ -145,7 +126,7 @@ export async function notifyOfResults(
         }
 
         const payload: PayloadData = {
-            title: '{{opponent.name}} ' + curScores.ptsFor + ' - ' + curScores.ptsAgainst,
+            title: '{{opponent.name}} ' + ptsFor + ' - ' + ptsAgainst,
             body: mess,
             click_action: 'GAMERESULT',
             tag: after.id + 'result',
@@ -155,9 +136,6 @@ export async function notifyOfResults(
             timeToLive: 259200,
             collapseKey: after.id + 'result',
         };
-
-        console.log('Notifying about');
-        console.log(payload);
 
         try {
             await notifyForGame(after, payload, options, authUid, true, cache);

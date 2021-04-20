@@ -13,9 +13,7 @@ export const onGameUpdate = functions.firestore.document('/Games/{gameid}').onUp
     const nowTime = DateTime.now().toUTC();
     const diff = arrivalTime.diff(nowTime, 'days');
     let payload: PayloadData | null = null;
-    console.log('on change ' + inputData.after.id + ' diff ' + diff);
     if (diff.days <= 7 && nowTime.minus(Duration.fromObject({ minutes: 30 })).valueOf() < data.arrivalTime) {
-        console.log('Changed in here');
         // Notify the user of the new event/training/game.
         // Only mention big changes, address change, time change.
         if (previousData.sharedData.place === null) {
@@ -23,6 +21,7 @@ export const onGameUpdate = functions.firestore.document('/Games/{gameid}').onUp
         }
         const bing =
             data.sharedData.place.address !== previousData.sharedData.place.address ||
+            data.sharedData.place.name !== previousData.sharedData.place.name ||
             data.opponentUid !== previousData.opponentUid ||
             data.arrivalTime !== previousData.arrivalTime;
         if (bing) {
@@ -49,8 +48,6 @@ export const onGameUpdate = functions.firestore.document('/Games/{gameid}').onUp
                 };
             }
         }
-    } else {
-        console.log('Ignoring game out of range');
     }
 
     const cache = new DataNodeCache();

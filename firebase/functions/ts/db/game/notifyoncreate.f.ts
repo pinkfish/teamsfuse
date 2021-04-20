@@ -12,9 +12,7 @@ export const onGameCreate = functions.firestore.document('/Games/{gameid}').onCr
     const nowTime = DateTime.now().toUTC();
     const diff = arrivalTime.diff(nowTime, 'days');
     let payload: PayloadData | null = null;
-    console.log('on create ' + snap.id + ' diff ' + diff);
     if (diff.days <= 7 && nowTime.minus(Duration.fromObject({ minutes: 30 })).valueOf() < data.sharedData.time) {
-        console.log('Changed in here');
         // Notify the user of the new event/training/game.
         if (data.sharedData.type === 'Practice') {
             payload = {

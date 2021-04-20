@@ -193,4 +193,53 @@ describe('Games Tests (update)', () => {
 
         return;
     });
+
+    it('update game - final result', async () => {
+        spy.reset();
+        const teamAndSeason = await createSeasonAndTeam(true, true);
+        const teamDocId = teamAndSeason.team.id;
+        const seasonDocId = teamAndSeason.season.id;
+        await createPlayer(['me'], 'player', true);
+        const opponent = await createOpponent(teamDocId, 'fluff');
+        const arriveTime = DateTime.now().toUTC();
+        const oldGame = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id, 'froggy', 'Game');
+        await oldGame.ref.update({
+            'result.result': 'Win',
+            'result.inProgress': 'Final',
+            'result.scores.Final': {
+                period: 'Final',
+                score: {
+                    ptsFor: 20,
+                    ptsAgainst: 12,
+                },
+            },
+        });
+        const game = await oldGame.ref.get();
+
+        await test.wrap(onGameUpdate)(test.makeChange(oldGame, game), {
+            auth: {
+                uid: '1234',
+            },
+        });
+
+        sinon.assert.calledWith(
+            spy,
+            sinon.match.any,
+            {
+                title: '{{opponent.name}} 20 - 12',
+                body: 'Won the game',
+                click_action: 'GAMERESULT',
+                tag: `${game.id}result`,
+            },
+            {
+                timeToLive: 259200,
+                collapseKey: `${game.id}result`,
+            },
+            '1234',
+            true,
+            sinon.match.any,
+        );
+
+        return;
+    });
 });
