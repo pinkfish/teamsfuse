@@ -28,8 +28,8 @@ export const onGameUpdate = functions.firestore.document('/Games/{gameid}').onUp
         if (bing) {
             if (data.sharedData.type === 'Practice') {
                 payload = {
-                    title: 'Practice change {{team.name}}',
-                    body: 'Arrive br {{arrivalTime}} at {{placeName}}',
+                    title: 'Practice change for {{team.name}}',
+                    body: 'Arrive by {{arrivalTime}} at {{placeName}}',
                     tag: inputData.after.id + 'change',
                     click_action: 'FLUTTER_NOTIFICATION_CLICK',
                 };
@@ -43,7 +43,7 @@ export const onGameUpdate = functions.firestore.document('/Games/{gameid}').onUp
             } else if (data.sharedData.type === 'Event') {
                 payload = {
                     title: 'Event change for {{team.name}}',
-                    body: 'Arrive by {{arrivalTime}} at {{placeName}}',
+                    body: '{{game.name}} arrive by {{arrivalTime}} at {{placeName}}',
                     tag: inputData.after.id + 'change',
                     click_action: 'FLUTTER_NOTIFICATION_CLICK',
                 };

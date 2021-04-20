@@ -19,21 +19,21 @@ export const onGameCreate = functions.firestore.document('/Games/{gameid}').onCr
         if (data.sharedData.type === 'Practice') {
             payload = {
                 title: 'New Practice for {{team.name}}',
-                body: 'New practice at {{arrivalTime}} {{placeName}}',
+                body: 'New practice arrive by {{arrivalTime}} at {{placeName}}',
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };
         } else if (data.sharedData.type === 'Game') {
             payload = {
                 title: 'New Game vs {{opponent.name}}',
-                body: 'New game {{arrivalTime}} ' + 'for {{team.name}} ' + 'at {{placeName}}',
+                body: 'New game arrive by {{arrivalTime}} ' + 'for {{team.name}} ' + 'at {{placeName}}',
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };
         } else if (data.sharedData.type === 'Event') {
             payload = {
                 title: 'New Event for {{team.name}}',
-                body: 'New event {{arrivalTime}} at {{placeName}}',
+                body: 'New event {{game.name}} arrive by {{arrivalTime}} at {{placeName}}',
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };

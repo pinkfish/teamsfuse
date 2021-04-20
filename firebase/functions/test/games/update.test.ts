@@ -115,4 +115,82 @@ describe('Games Tests (update)', () => {
 
         return;
     });
+
+    it('update practice - change arrival', async () => {
+        spy.reset();
+        const teamAndSeason = await createSeasonAndTeam(true, true);
+        const teamDocId = teamAndSeason.team.id;
+        const seasonDocId = teamAndSeason.season.id;
+        await createPlayer(['me'], 'player', true);
+        const opponent = await createOpponent(teamDocId, 'fluff');
+        const arriveTime = DateTime.now().toUTC();
+        const game = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id, 'frog', 'Practice');
+        const oldData = game.data();
+        oldData!['arrivalTime'] = 1234;
+        const oldGame = {
+            id: game.id,
+            data: () => oldData,
+        };
+
+        await test.wrap(onGameUpdate)(test.makeChange(oldGame, game), undefined);
+
+        sinon.assert.calledWith(
+            spy,
+            sinon.match.any,
+            {
+                title: 'Practice change for {{team.name}}',
+                body: 'Arrive by {{arrivalTime}} at {{placeName}}',
+                tag: `${game.id}change`,
+                click_action: 'FLUTTER_NOTIFICATION_CLICK',
+            },
+            {
+                timeToLive: 10800000,
+                collapseKey: `${game.id}change`,
+            },
+            '',
+            false,
+            sinon.match.any,
+        );
+
+        return;
+    });
+
+    it('update event - change arrival', async () => {
+        spy.reset();
+        const teamAndSeason = await createSeasonAndTeam(true, true);
+        const teamDocId = teamAndSeason.team.id;
+        const seasonDocId = teamAndSeason.season.id;
+        await createPlayer(['me'], 'player', true);
+        const opponent = await createOpponent(teamDocId, 'fluff');
+        const arriveTime = DateTime.now().toUTC();
+        const game = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id, 'froggy', 'Event');
+        const oldData = game.data();
+        oldData!['arrivalTime'] = 1234;
+        const oldGame = {
+            id: game.id,
+            data: () => oldData,
+        };
+
+        await test.wrap(onGameUpdate)(test.makeChange(oldGame, game), undefined);
+
+        sinon.assert.calledWith(
+            spy,
+            sinon.match.any,
+            {
+                title: 'Event change for {{team.name}}',
+                body: '{{game.name}} arrive by {{arrivalTime}} at {{placeName}}',
+                tag: `${game.id}change`,
+                click_action: 'FLUTTER_NOTIFICATION_CLICK',
+            },
+            {
+                timeToLive: 10800000,
+                collapseKey: `${game.id}change`,
+            },
+            '',
+            false,
+            sinon.match.any,
+        );
+
+        return;
+    });
 });

@@ -17,14 +17,14 @@ export const onGameDelete = functions.firestore.document('/Games/{gameid}').onDe
         if (data.sharedData.type === 'Practice') {
             payload = {
                 title: 'CANCELLED Practice for {{team.name}}',
-                body: 'Cancelled practice at {{arrivalTime}} located {{placeName}}',
+                body: 'Cancelled practice arrive by {{arrivalTime}} at {{placeName}}',
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };
         } else if (data.sharedData.type === 'Game') {
             payload = {
                 title: 'CANCELLED Game vs {{opponent.name}}',
-                body: 'Cancelled game at {{arrivalTime}} ' + 'for {{team.name}} ' + 'located {{placeName}}',
+                body: 'Cancelled game arrive by {{arrivalTime}} ' + 'for {{team.name}} ' + 'at {{placeName}}',
 
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
@@ -32,7 +32,7 @@ export const onGameDelete = functions.firestore.document('/Games/{gameid}').onDe
         } else if (data.sharedData.type === 'Event') {
             payload = {
                 title: 'CANCELLED Event for {{team.name}}',
-                body: 'Cancelled event at {{arrivalTime}} located {{placeName}}',
+                body: 'Cancelled event {{game.name}} arrive by {{arrivalTime}} at {{placeName}}',
                 tag: snap.id + 'change',
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             };
