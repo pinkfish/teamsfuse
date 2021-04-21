@@ -212,11 +212,7 @@ describe('Email for games', () => {
                     '\n' +
                     'Map: https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined\n' +
                     '\n' +
-                    'http://www.teamsfuses.com/event/' +
-                    teamDocId +
-                    '/' +
-                    gameDoc.id +
-                    '\n' +
+                    `http://www.teamsfuses.com/event/${teamDocId}/${gameDoc.id}\n` +
                     '\n' +
                     '\n' +
                     '-----\n' +
@@ -228,7 +224,7 @@ describe('Email for games', () => {
                 html:
                     'Reminder for upcoming game with <b>Lookup TeamName</b>, details below:\n' +
                     '\n' +
-                    '<img src="cid:teamimg" width=100 height=100>\n' +
+                    '<img src="cid:teamimg" width="100" height="100" />\n' +
                     '\n' +
                     '<h4><a href="http://www.teamsfuse.com/event/' +
                     teamDocId +
@@ -237,37 +233,47 @@ describe('Email for games', () => {
                     '">Details</a></h4>\n' +
                     '<table>\n' +
                     '    <tr>\n' +
-                    '        <td>Arrive At</td><td><b>Friday, May 25, 2018, 5:00 AM Pacific Daylight Time <i>[changed]</i></b></td>\n' +
+                    '        <td>Arrive At</td>\n' +
+                    '        <td><b>Friday, May 25, 2018, 5:00 AM Pacific Daylight Time <i>[changed]</i></b></td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Start Time</td><td></td>\n' +
+                    '        <td>Start Time</td>\n' +
+                    '        <td></td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Address</td><td><a href="https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined">1502 west test drive</a></td>\n' +
+                    '        <td>Address</td>\n' +
+                    '        <td>\n' +
+                    '            <a href="https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined">1502 west test drive</a>\n' +
+                    '        </td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Place Name</td><td>Test High School</td>\n' +
+                    '        <td>Place Name</td>\n' +
+                    '        <td>Test High School</td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Place Notes</td><td></td>\n' +
+                    '        <td>Place Notes</td>\n' +
+                    '        <td></td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Uniform</td><td>white/red/black</td>\n' +
+                    '        <td>Uniform</td>\n' +
+                    '        <td>white/red/black</td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Notes</td><td>Do not drive backwards</td>\n' +
+                    '        <td>Notes</td>\n' +
+                    '        <td>Do not drive backwards</td>\n' +
                     '    </tr>\n' +
                     '</table>\n' +
                     '\n' +
                     '<h4>Availability</h4>\n' +
-                    '    <b>No one is going</b>\n' +
-                    '    <b>Maybe</b>\n' +
-                    '    <ul>\n' +
-                    '        <li>Player player (#42) <i></i></li>\n' +
-                    '      </ul>\n' +
+                    ' <b>No one is going</b>\n' +
+                    '  \n' +
+                    '<b>Maybe</b>\n' +
+                    '<ul>\n' +
+                    '    <li>Player player (#42) <i></i></li>\n' +
+                    '</ul>\n' +
+                    ' \n' +
                     '\n' +
-                    '<p>\n' +
-                    'To disable these emails, update your user settings to turn off email for updates.\n' +
+                    '<p>To disable these emails, update your user settings to turn off email for updates.</p>\n' +
                     '<br clear="both" />\n' +
                     '\n' +
                     '<hr\n' +
@@ -370,7 +376,7 @@ describe('Email for games', () => {
                 html:
                     'Reminder for upcoming game with <b>Lookup TeamName</b>, details below:\n' +
                     '\n' +
-                    '<img src="cid:teamimg" width=100 height=100>\n' +
+                    '<img src="cid:teamimg" width="100" height="100" />\n' +
                     '\n' +
                     '<h4><a href="http://www.teamsfuse.com/event/' +
                     teamDocId +
@@ -379,37 +385,47 @@ describe('Email for games', () => {
                     '">Details</a></h4>\n' +
                     '<table>\n' +
                     '    <tr>\n' +
-                    '        <td>Arrive At</td><td>Friday, May 25, 2018, 5:00 AM Pacific Daylight Time</td>\n' +
+                    '        <td>Arrive At</td>\n' +
+                    '        <td>Friday, May 25, 2018, 5:00 AM Pacific Daylight Time</td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Start Time</td><td></td>\n' +
+                    '        <td>Start Time</td>\n' +
+                    '        <td></td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Address</td><td><a href="https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined">1502 west test drive</a></td>\n' +
+                    '        <td>Address</td>\n' +
+                    '        <td>\n' +
+                    '            <a href="https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined">1502 west test drive</a>\n' +
+                    '        </td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Place Name</td><td>Test High School</td>\n' +
+                    '        <td>Place Name</td>\n' +
+                    '        <td>Test High School</td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Place Notes</td><td></td>\n' +
+                    '        <td>Place Notes</td>\n' +
+                    '        <td></td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Uniform</td><td>white/red/black</td>\n' +
+                    '        <td>Uniform</td>\n' +
+                    '        <td>white/red/black</td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Notes</td><td>Do not drive backwards</td>\n' +
+                    '        <td>Notes</td>\n' +
+                    '        <td>Do not drive backwards</td>\n' +
                     '    </tr>\n' +
                     '</table>\n' +
                     '\n' +
                     '<h4>Availability</h4>\n' +
-                    '    <b>No one is going</b>\n' +
-                    '    <b>Maybe</b>\n' +
-                    '    <ul>\n' +
-                    '        <li>Player player (#42) <i></i></li>\n' +
-                    '      </ul>\n' +
+                    ' <b>No one is going</b>\n' +
+                    '  \n' +
+                    '<b>Maybe</b>\n' +
+                    '<ul>\n' +
+                    '    <li>Player player (#42) <i></i></li>\n' +
+                    '</ul>\n' +
+                    ' \n' +
                     '\n' +
-                    '<p>\n' +
-                    'To disable these emails, update your user settings to turn off email for updates.\n' +
+                    '<p>To disable these emails, update your user settings to turn off email for updates.</p>\n' +
                     '<br clear="both" />\n' +
                     '\n' +
                     '<hr\n' +
@@ -561,7 +577,7 @@ describe('Email for games', () => {
                 html:
                     'Reminder for upcoming game with <b>Lookup TeamName</b>, details below:\n' +
                     '\n' +
-                    '<img src="cid:teamimg" width=100 height=100>\n' +
+                    '<img src="cid:teamimg" width="100" height="100" />\n' +
                     '\n' +
                     '<h4><a href="http://www.teamsfuse.com/event/' +
                     teamDocId +
@@ -570,45 +586,57 @@ describe('Email for games', () => {
                     '">Details</a></h4>\n' +
                     '<table>\n' +
                     '    <tr>\n' +
-                    '        <td>Arrive At</td><td>Friday, May 25, 2018, 5:00 AM Pacific Daylight Time</td>\n' +
+                    '        <td>Arrive At</td>\n' +
+                    '        <td>Friday, May 25, 2018, 5:00 AM Pacific Daylight Time</td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Start Time</td><td></td>\n' +
+                    '        <td>Start Time</td>\n' +
+                    '        <td></td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Address</td><td><a href="https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined">1502 west test drive</a></td>\n' +
+                    '        <td>Address</td>\n' +
+                    '        <td>\n' +
+                    '            <a href="https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined">1502 west test drive</a>\n' +
+                    '        </td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Place Name</td><td>Test High School</td>\n' +
+                    '        <td>Place Name</td>\n' +
+                    '        <td>Test High School</td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Place Notes</td><td></td>\n' +
+                    '        <td>Place Notes</td>\n' +
+                    '        <td></td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Uniform</td><td>white/red/black</td>\n' +
+                    '        <td>Uniform</td>\n' +
+                    '        <td>white/red/black</td>\n' +
                     '    </tr>\n' +
                     '    <tr>\n' +
-                    '        <td>Notes</td><td>Do not drive backwards</td>\n' +
+                    '        <td>Notes</td>\n' +
+                    '        <td>Do not drive backwards</td>\n' +
                     '    </tr>\n' +
                     '</table>\n' +
                     '\n' +
                     '<h4>Availability</h4>\n' +
-                    '    <b>Yes</b>\n' +
-                    '    <ul>\n' +
-                    '        <li>Player frog (#12) <i></i></li>\n' +
-                    '        <li>Player tadpole (#24) <i></i></li>\n' +
-                    '    </ul>\n' +
-                    '    <b>No</b>\n' +
-                    '    <ul>\n' +
-                    '        <li>Player womble (#00) <i></i></li>\n' +
-                    '    </ul>\n' +
-                    '    <b>Maybe</b>\n' +
-                    '    <ul>\n' +
-                    '        <li>Player player (#42) <i></i></li>\n' +
-                    '      </ul>\n' +
+                    ' \n' +
+                    '<b>Yes</b>\n' +
+                    '<ul>\n' +
+                    '    <li>Player frog (#12) <i></i></li>\n' +
+                    '    <li>Player tadpole (#24) <i></i></li>\n' +
+                    '</ul>\n' +
+                    ' \n' +
+                    '<b>No</b>\n' +
+                    '<ul>\n' +
+                    '    <li>Player womble (#00) <i></i></li>\n' +
+                    '</ul>\n' +
+                    ' \n' +
+                    '<b>Maybe</b>\n' +
+                    '<ul>\n' +
+                    '    <li>Player player (#42) <i></i></li>\n' +
+                    '</ul>\n' +
+                    ' \n' +
                     '\n' +
-                    '<p>\n' +
-                    'To disable these emails, update your user settings to turn off email for updates.\n' +
+                    '<p>To disable these emails, update your user settings to turn off email for updates.</p>\n' +
                     '<br clear="both" />\n' +
                     '\n' +
                     '<hr\n' +

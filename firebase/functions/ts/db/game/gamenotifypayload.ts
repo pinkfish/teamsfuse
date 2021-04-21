@@ -179,7 +179,6 @@ export async function sendUpdateEmail(
             from: 'noreply@email.teamsfuse.com',
             text: payloadTxt,
             body: payloadHtml,
-
             title: '[{{team.name}}] ' + subject,
             tag: 'email',
             click_action: 'openGame',

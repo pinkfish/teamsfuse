@@ -8,6 +8,13 @@ import { clearFirestoreData } from '@firebase/rules-unit-testing';
 import * as notifyforgame from '../../ts/util/notifyforgame';
 import * as functions from 'firebase-functions';
 import { DataNodeCache } from '../../ts/util/datacache';
+import chai, { should } from 'chai';
+import SinonChai from 'sinon-chai';
+import * as fs from 'fs';
+
+// Setup chai and sinon.
+chai.use(SinonChai);
+should();
 
 const projectName = 'teamsfuse';
 
@@ -42,8 +49,22 @@ describe('Games Tests (create)', () => {
         Promise<never[] | undefined>
     >;
 
+    let emailSpy: sinon.SinonStub<
+        [
+            game: functions.firestore.DocumentSnapshot,
+            payload: notifyforgame.PayloadData,
+            excludeUser: string,
+            userFlag: string,
+            cache: DataNodeCache,
+            changed: notifyforgame.ChangedData,
+        ],
+        Promise<void>
+    >;
+
     before(() => {
         spy = sinon.stub(notifyforgame, 'notifyForGame');
+
+        emailSpy = sinon.stub(notifyforgame, 'emailForGame');
 
         Settings.now = () => new Date(2018, 4, 25, 12, 0).valueOf();
         return;
@@ -63,6 +84,7 @@ describe('Games Tests (create)', () => {
 
     it('create game - too late', async () => {
         spy.reset();
+        emailSpy.reset();
         const teamAndSeason = await createSeasonAndTeam(true, true);
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
@@ -76,11 +98,13 @@ describe('Games Tests (create)', () => {
         await test.wrap(onGameCreate)(game, undefined);
 
         sinon.assert.notCalled(spy);
+        sinon.assert.notCalled(emailSpy);
         return;
     });
 
     it('create game - now', async () => {
         spy.reset();
+        emailSpy.reset();
         const teamAndSeason = await createSeasonAndTeam(true, true);
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
@@ -113,6 +137,7 @@ describe('Games Tests (create)', () => {
 
     it('create practice - now', async () => {
         spy.reset();
+        emailSpy.reset();
         const teamAndSeason = await createSeasonAndTeam(true, true);
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
@@ -145,6 +170,7 @@ describe('Games Tests (create)', () => {
 
     it('create event - now', async () => {
         spy.reset();
+        emailSpy.reset();
         const teamAndSeason = await createSeasonAndTeam(true, true);
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
@@ -177,6 +203,7 @@ describe('Games Tests (create)', () => {
 
     it('create other - now', async () => {
         spy.reset();
+        emailSpy.reset();
         const teamAndSeason = await createSeasonAndTeam(true, true);
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
@@ -188,6 +215,48 @@ describe('Games Tests (create)', () => {
         await test.wrap(onGameCreate)(game, undefined);
 
         sinon.assert.notCalled(spy);
+        return;
+    });
+
+    it('create game - future', async () => {
+        spy.reset();
+        emailSpy.reset();
+        const teamAndSeason = await createSeasonAndTeam(true, true);
+        const teamDocId = teamAndSeason.team.id;
+        const seasonDocId = teamAndSeason.season.id;
+        await createPlayer(['me'], 'player', true);
+        const opponent = await createOpponent(teamDocId, 'fluff');
+        const arriveTime = DateTime.now()
+            .plus(Duration.fromObject({ days: 3 }))
+            .toUTC();
+        const game = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id);
+
+        await test.wrap(onGameCreate)(game, undefined);
+
+        sinon.assert.notCalled(spy);
+
+        // Check the email was called correctly.
+        const payloadTxt = fs.readFileSync('lib/ts/templates/notify/game.create.txt', 'utf8');
+        const payloadHtml = fs.readFileSync('lib/ts/templates/notify/game.create.html', 'utf8');
+        emailSpy.should.have.been.callCount(1);
+
+        sinon.assert.calledWith(
+            emailSpy,
+            sinon.match.any,
+            {
+                from: 'noreply@email.teamsfuse.com',
+                text: payloadTxt,
+                body: payloadHtml,
+                title: '[{{team.name}}] New {{sharedGame.type}} created for {{team.name}}',
+                tag: 'email',
+                click_action: 'openGame',
+            },
+            '',
+            'emailOnUpdates',
+            sinon.match.any,
+            new notifyforgame.ChangedData(),
+        );
+
         return;
     });
 });
