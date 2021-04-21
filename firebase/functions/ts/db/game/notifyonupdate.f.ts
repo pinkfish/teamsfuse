@@ -62,6 +62,7 @@ export const onGameUpdate = functions.firestore.document('/Games/{gameid}').onUp
     // If the win/loss status has changed, make updates.
     if (
         data.result.result !== previousData.result.result &&
+        data.sharedData.type === 'Game' &&
         (data.result.inProgress === 'Final' || previousData.result.inProgress === 'Final')
     ) {
         // Update the team.

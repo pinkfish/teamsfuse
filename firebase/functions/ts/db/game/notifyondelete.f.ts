@@ -57,7 +57,7 @@ export const onGameDelete = functions.firestore.document('/Games/{gameid}').onDe
         );
     }
 
-    if (data.result.inProgress === 'Final') {
+    if (data.result.inProgress === 'Final' && data.sharedData.type === 'Game') {
         // Update the team.
         await updateTeam(data.teamUid, data.seasonUid, data.opponentUid);
     }

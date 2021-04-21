@@ -16,7 +16,6 @@ async function updateTeamOpponent(teamUid: string, seasonUid: string, opponentUi
         .where('seasonUid', '==', seasonUid)
         .where('result.inProgress', '==', 'Final')
         .get();
-    console.log('Team for season', seasonUid);
     let loss = 0;
     let win = 0;
     let tie = 0;
@@ -36,7 +35,6 @@ async function updateTeamOpponent(teamUid: string, seasonUid: string, opponentUi
     snap['seasons.' + seasonUid + '.win'] = win;
     snap['seasons.' + seasonUid + '.tie'] = tie;
     snap['seasons.' + seasonUid + '.loss'] = loss;
-    console.log(snap);
     await db.collection('Teams').doc(teamUid).collection('Opponents').doc(opponentUid).update(snap);
     return;
 }
@@ -48,7 +46,6 @@ async function updateTeamSeason(teamUid: string, seasonUid: string, opponentUid:
         .where('teamUid', '==', teamUid)
         .where('result.inProgress', '==', 'Final')
         .get();
-    console.log('For season', seasonUid);
     let loss = 0;
     let win = 0;
     let tie = 0;
@@ -68,7 +65,6 @@ async function updateTeamSeason(teamUid: string, seasonUid: string, opponentUid:
     snap2['record.win'] = win;
     snap2['record.tie'] = tie;
     snap2['record.loss'] = loss;
-    console.log(snap2);
     await db.collection('Seasons').doc(seasonUid).update(snap2);
     return;
 }

@@ -8,7 +8,7 @@ import { clearFirestoreData } from '@firebase/rules-unit-testing';
 import * as notifyforgame from '../../ts/util/notifyforgame';
 import * as functions from 'firebase-functions';
 import { DataNodeCache } from '../../ts/util/datacache';
-import chai, { should } from 'chai';
+import chai, { expect, should } from 'chai';
 import SinonChai from 'sinon-chai';
 import * as fs from 'fs';
 
@@ -285,7 +285,7 @@ describe('Games Tests (create)', () => {
         return;
     });
 
-    it('create game - future', async () => {
+    it('create game - no notification', async () => {
         spy.reset();
         emailSpy.reset();
         const teamAndSeason = await createSeasonAndTeam(true, true);
@@ -322,6 +322,101 @@ describe('Games Tests (create)', () => {
             sinon.match.any,
             new notifyforgame.ChangedData(),
         );
+
+        return;
+    });
+
+    it('create game - with Win result', async () => {
+        spy.reset();
+        emailSpy.reset();
+        const teamAndSeason = await createSeasonAndTeam(true, true);
+        const teamDocId = teamAndSeason.team.id;
+        const seasonDocId = teamAndSeason.season.id;
+        await createPlayer(['me'], 'player', true);
+        const opponent = await createOpponent(teamDocId, 'fluff');
+        const arriveTime = DateTime.now()
+            .plus(Duration.fromObject({ days: 3 }))
+            .toUTC();
+        const game = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id);
+        await game.ref.update({
+            'result.result': 'Win',
+            'result.inProgress': 'Final',
+            'result.scores.Final': {
+                period: 'Final',
+                score: {
+                    ptsFor: 20,
+                    ptsAgainst: 12,
+                },
+            },
+        });
+
+        await test.wrap(onGameCreate)(await game.ref.get(), undefined);
+
+        sinon.assert.notCalled(spy);
+
+        // Check the email was called correctly.
+        const payloadTxt = fs.readFileSync('lib/ts/templates/notify/game.create.txt', 'utf8');
+        const payloadHtml = fs.readFileSync('lib/ts/templates/notify/game.create.html', 'utf8');
+        emailSpy.should.have.been.callCount(1);
+        sinon.assert.calledWith(
+            emailSpy,
+            sinon.match.any,
+            {
+                from: 'noreply@email.teamsfuse.com',
+                text: payloadTxt,
+                body: payloadHtml,
+                title: '[{{team.name}}] New {{sharedGame.type}} created for {{team.name}} at {{arrivalTime}}',
+                tag: 'email',
+                click_action: 'openGame',
+            },
+            '',
+            'emailOnUpdates',
+            sinon.match.any,
+            new notifyforgame.ChangedData(),
+        );
+
+        // And the results are updated.
+        const updatedSeason = await teamAndSeason.season.ref.get();
+        const updatedOpponent = await opponent.ref.get();
+        const seasonData: { [field: string]: any } = {};
+        seasonData[seasonDocId] = {
+            win: 1,
+            loss: 0,
+            tie: 0,
+        };
+        expect(updatedOpponent.data()).to.be.deep.equal({
+            teamUid: teamDocId,
+            uid: opponent.id,
+            name: 'fluff',
+            seasons: seasonData,
+        });
+        expect(updatedSeason.data()).to.be.deep.equal({
+            name: 'Current Season',
+            uid: seasonDocId,
+            teamUid: teamDocId,
+            isPublic: true,
+            users: {
+                me: {
+                    added: true,
+                    admin: true,
+                },
+            },
+            players: {
+                player: {
+                    me: true,
+                    added: true,
+                    public: false,
+                    jerseyNumber: '42',
+                    playerUid: 'player',
+                    role: 'Player',
+                },
+            },
+            record: {
+                win: 1,
+                tie: 0,
+                loss: 0,
+            },
+        });
 
         return;
     });

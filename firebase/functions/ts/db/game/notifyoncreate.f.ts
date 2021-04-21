@@ -56,7 +56,7 @@ export const onGameCreate = functions.firestore.document('/Games/{gameid}').onCr
         );
     }
 
-    if (data.result.inProgress === 'Final') {
+    if (data.result.inProgress === 'Final' && data.sharedData.type === 'Game') {
         // Update the team.
         await updateTeam(data.teamUid, data.seasonUid, data.opponentUid);
     }
