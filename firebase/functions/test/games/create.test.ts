@@ -132,6 +132,28 @@ describe('Games Tests (create)', () => {
             false,
             sinon.match.any,
         );
+
+        // Check the email was called correctly.
+        const payloadTxt = fs.readFileSync('lib/ts/templates/notify/game.create.txt', 'utf8');
+        const payloadHtml = fs.readFileSync('lib/ts/templates/notify/game.create.html', 'utf8');
+        emailSpy.should.have.been.callCount(1);
+        sinon.assert.calledWith(
+            emailSpy,
+            sinon.match.any,
+            {
+                from: 'noreply@email.teamsfuse.com',
+                text: payloadTxt,
+                body: payloadHtml,
+                title: '[{{team.name}}] New {{sharedGame.type}} created for {{team.name}}',
+                tag: 'email',
+                click_action: 'openGame',
+            },
+            '',
+            'emailOnUpdates',
+            sinon.match.any,
+            new notifyforgame.ChangedData(),
+        );
+
         return;
     });
 
@@ -165,6 +187,28 @@ describe('Games Tests (create)', () => {
             false,
             sinon.match.any,
         );
+
+        // Check the email was called correctly.
+        const payloadTxt = fs.readFileSync('lib/ts/templates/notify/game.create.txt', 'utf8');
+        const payloadHtml = fs.readFileSync('lib/ts/templates/notify/game.create.html', 'utf8');
+        emailSpy.should.have.been.callCount(1);
+        sinon.assert.calledWith(
+            emailSpy,
+            sinon.match.any,
+            {
+                from: 'noreply@email.teamsfuse.com',
+                text: payloadTxt,
+                body: payloadHtml,
+                title: '[{{team.name}}] New {{sharedGame.type}} created for {{team.name}}',
+                tag: 'email',
+                click_action: 'openGame',
+            },
+            '',
+            'emailOnUpdates',
+            sinon.match.any,
+            new notifyforgame.ChangedData(),
+        );
+
         return;
     });
 
@@ -198,6 +242,28 @@ describe('Games Tests (create)', () => {
             false,
             sinon.match.any,
         );
+
+        // Check the email was called correctly.
+        const payloadTxt = fs.readFileSync('lib/ts/templates/notify/game.create.txt', 'utf8');
+        const payloadHtml = fs.readFileSync('lib/ts/templates/notify/game.create.html', 'utf8');
+        emailSpy.should.have.been.callCount(1);
+        sinon.assert.calledWith(
+            emailSpy,
+            sinon.match.any,
+            {
+                from: 'noreply@email.teamsfuse.com',
+                text: payloadTxt,
+                body: payloadHtml,
+                title: '[{{team.name}}] New {{sharedGame.type}} created for {{team.name}}',
+                tag: 'email',
+                click_action: 'openGame',
+            },
+            '',
+            'emailOnUpdates',
+            sinon.match.any,
+            new notifyforgame.ChangedData(),
+        );
+
         return;
     });
 
@@ -215,6 +281,7 @@ describe('Games Tests (create)', () => {
         await test.wrap(onGameCreate)(game, undefined);
 
         sinon.assert.notCalled(spy);
+        sinon.assert.notCalled(emailSpy);
         return;
     });
 
@@ -239,7 +306,6 @@ describe('Games Tests (create)', () => {
         const payloadTxt = fs.readFileSync('lib/ts/templates/notify/game.create.txt', 'utf8');
         const payloadHtml = fs.readFileSync('lib/ts/templates/notify/game.create.html', 'utf8');
         emailSpy.should.have.been.callCount(1);
-
         sinon.assert.calledWith(
             emailSpy,
             sinon.match.any,
