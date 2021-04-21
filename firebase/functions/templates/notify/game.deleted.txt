@@ -1,4 +1,4 @@
-DELETED {{sharedGame.type}} created for {{team.name}}, details below:
+CANCELLED {{sharedGame.type}} created for {{team.name}}, details below:
 
 Arrive At   : {{arrivalTime}}{{changedText change.arrival}}
 

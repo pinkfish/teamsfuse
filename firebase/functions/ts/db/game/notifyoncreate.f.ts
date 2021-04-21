@@ -48,7 +48,7 @@ export const onGameCreate = functions.firestore.document('/Games/{gameid}').onCr
         return sendUpdateEmail(
             snap,
             'game.create',
-            'New {{sharedGame.type}} created for {{team.name}}',
+            'New {{sharedGame.type}} created for {{team.name}} at {{arrivalTime}}',
             context?.auth?.uid ?? '',
             changes,
             cache,
