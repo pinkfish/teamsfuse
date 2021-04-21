@@ -3,6 +3,7 @@ import { notifyPayload, sendUpdateEmail } from './gamenotifypayload';
 import { PayloadData, ChangedData } from '../../util/notifyforgame';
 import { DateTime, Duration } from 'luxon';
 import { DataNodeCache } from '../../util/datacache';
+import { updateTeam } from './gameresultupdateteam';
 
 export const onGameCreate = functions.firestore.document('/Games/{gameid}').onCreate(async (snap, context) => {
     const data = snap.data();
@@ -45,7 +46,7 @@ export const onGameCreate = functions.firestore.document('/Games/{gameid}').onCr
             await notifyPayload(payload, snap, cache);
         }
         const changes = new ChangedData();
-        return sendUpdateEmail(
+        await sendUpdateEmail(
             snap,
             'game.create',
             'New {{sharedGame.type}} created for {{team.name}} at {{arrivalTime}}',
@@ -54,6 +55,12 @@ export const onGameCreate = functions.firestore.document('/Games/{gameid}').onCr
             cache,
         );
     }
+
+    if (data.result.inProgress === 'Final') {
+        // Update the team.
+        await updateTeam(data.teamUid, data.seasonUid, data.opponentUid);
+    }
+
     return data;
 });
 

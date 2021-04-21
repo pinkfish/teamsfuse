@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import { notifyPayload, notifyOfResults } from './gamenotifypayload';
+import { updateTeam } from './gameresultupdateteam';
 import { PayloadData } from '../../util/notifyforgame';
 import { DateTime, Duration } from 'luxon';
 import { DataNodeCache } from '../../util/datacache';
@@ -57,6 +58,15 @@ export const onGameUpdate = functions.firestore.document('/Games/{gameid}').onUp
     }
 
     await notifyOfResults(inputData.after, previousData, cache, context.auth?.uid ?? '');
+
+    // If the win/loss status has changed, make updates.
+    if (
+        data.result.result !== previousData.result.result &&
+        (data.result.inProgress === 'Final' || previousData.result.inProgress === 'Final')
+    ) {
+        // Update the team.
+        await updateTeam(data.teamUid, data.seasonUid, data.opponentUid);
+    }
 
     return;
 });

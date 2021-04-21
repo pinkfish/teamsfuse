@@ -3,6 +3,7 @@ import { notifyPayload, sendUpdateEmail } from './gamenotifypayload';
 import { PayloadData, ChangedData } from '../../util/notifyforgame';
 import { DateTime, Duration } from 'luxon';
 import { DataNodeCache } from '../../util/datacache';
+import { updateTeam } from './gameresultupdateteam';
 
 export const onGameDelete = functions.firestore.document('/Games/{gameid}').onDelete(async (snap, context) => {
     const data = snap.data();
@@ -46,7 +47,7 @@ export const onGameDelete = functions.firestore.document('/Games/{gameid}').onDe
         }
 
         const changes = new ChangedData();
-        return sendUpdateEmail(
+        await sendUpdateEmail(
             snap,
             'game.deleted',
             'Deleted {{sharedGame.type}} for {{team.name}} at {{arrivalTime}}',
@@ -54,6 +55,11 @@ export const onGameDelete = functions.firestore.document('/Games/{gameid}').onDe
             changes,
             cache,
         );
+    }
+
+    if (data.result.inProgress === 'Final') {
+        // Update the team.
+        await updateTeam(data.teamUid, data.seasonUid, data.opponentUid);
     }
     return;
 });
