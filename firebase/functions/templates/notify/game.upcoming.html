@@ -1,0 +1,65 @@
+Reminder for upcoming game with <b>{{team.name}}</b>, details below:
+
+<img src="{{teamPhotoUrl}}" width="100" height="100" />
+
+<h4><a href="http://www.teamsfuse.com/event/{{game.teamUid}}/{{game.uid}}">Details</a></h4>
+<table>
+    <tr>
+        <td>Arrive At</td>
+        <td>{{#changed change.arrival}}{{arrivalTime}}{{/changed}}</td>
+    </tr>
+    <tr>
+        <td>Start Time</td>
+        <td>{{#changed change.startTime}}{{startTime}}{{/changed}}</td>
+    </tr>
+    <tr>
+        <td>Address</td>
+        <td>
+            {{#changed change.place.address}}<a href="{{directionsUrl}}">{{sharedGame.place.address}}</a>{{/changed}}
+        </td>
+    </tr>
+    <tr>
+        <td>Place Name</td>
+        <td>{{#changed change.place.name}}{{sharedGame.place.name}}{{/changed}}</td>
+    </tr>
+    <tr>
+        <td>Place Notes</td>
+        <td>{{#changed change.place.notes}}{{sharedGame.place.notes}}{{/changed}}</td>
+    </tr>
+    <tr>
+        <td>Uniform</td>
+        <td>{{#changed change.uniform}}{{game.uniform}}{{/changed}}</td>
+    </tr>
+    <tr>
+        <td>Notes</td>
+        <td>{{#changed change.notes}}{{game.notes}}{{/changed}}</td>
+    </tr>
+</table>
+
+<h4>Availability</h4>
+{{#availability}} {{#if yes.length}}
+<b>Yes</b>
+<ul>
+    {{#yes}}
+    <li>{{name}} <i>{{role}}</i></li>
+    {{/yes}}
+</ul>
+{{else}}
+<b>No one is going</b>
+{{/if}} {{#if no.length}}
+<b>No</b>
+<ul>
+    {{#no}}
+    <li>{{name}} <i>{{role}}</i></li>
+    {{/no}}
+</ul>
+{{/if}} {{#if maybe.length}}
+<b>Maybe</b>
+<ul>
+    {{#maybe}}
+    <li>{{name}} <i>{{role}}</i></li>
+    {{/maybe}}
+</ul>
+{{/if}} {{/availability}}
+
+<p>To disable these emails, update your user settings to turn off email for updates.</p>

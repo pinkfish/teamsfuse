@@ -1,0 +1,41 @@
+Reminder for upcoming game with {{team.name}}, details below:
+
+Arrive At   : {{arrivalTime}}{{changedText change.arrival}}
+Start Time  : {{startTime}}{{changedText change.startTime}}
+Address     : {{sharedGame.place.address}}{{changedText change.place.address}}
+PlaceName   : {{sharedGame.place.name}}{{changedText change.place.name}}
+PlaceNotes  : {{sharedGame.place.notes}}{{changedText change.place.notes}}
+Uniform     : {{game.uniform}}{{changedText change.uniform}}
+Notes       : {{game.notes}}{{changedText change.notes}}
+
+Availability
+{{#availability}}
+{{#if yes.length}}
+YES
+{{#yes}}
+  {{name}} {{role}}
+{{/yes}}
+{{else}}
+  No one is going
+{{/if}}
+
+{{#if no.length}}
+NO
+{{#no}}
+  {{name}} {{role}}
+{{/no}}
+{{/if}}
+
+{{#if maybe.length}}
+MAYBE
+{{#maybe}}
+  {{name}} {{role}}
+{{/maybe}}
+{{/if}}
+{{/availability}}
+
+To disable these emails, update your user settings to turn off email for upcoming games.
+
+Map: {{directionsUrl}}
+
+http://www.teamsfuses.com/event/{{game.teamUid}}/{{game.uid}}

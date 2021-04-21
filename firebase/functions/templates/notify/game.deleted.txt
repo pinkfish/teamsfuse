@@ -1,0 +1,6 @@
+DELETED {{sharedGame.type}} created for {{team.name}}, details below:
+
+Arrive At   : {{arrivalTime}}{{changedText change.arrival}}
+
+
+To disable these emails, update your user settings to turn off email for updated games.

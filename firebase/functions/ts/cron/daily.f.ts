@@ -33,7 +33,6 @@ const LOOK_AHEAD_DURATION = Duration.fromObject({ days: 5 });
 export const onDailyPublish = functions.pubsub.topic('daily-tick').onPublish(async (data, context) => {
     // Do something useful every day.
     try {
-        console.log(process.env.FUNCTION_IDENTITY);
         for (const idx in admin.apps) {
             const app = admin.apps[idx];
             if (app === null || app === undefined) {

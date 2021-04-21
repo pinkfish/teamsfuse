@@ -1,9 +1,12 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as handlebars from 'handlebars';
+import * as fs from 'fs';
+
 import { DateTime } from 'luxon';
 import { sendMail } from './mailgun';
 import { DataNodeCache } from './datacache';
+import { getContentType, getImageFromUrl, Attachment } from './sendemail';
 
 const db = admin.firestore();
 
@@ -477,7 +480,7 @@ async function doTheNotification(
         }
 
         let teamPhotoUrl: string;
-        if (teamData.photoUrl !== null && teamData.photoUrl !== '') {
+        if (teamData.photoUrl && teamData.photoUrl !== '') {
             teamPhotoUrl = teamData.photoUrl;
         } else {
             // Make it based on the sport.
@@ -502,16 +505,57 @@ async function doTheNotification(
             season: seasonData,
             directionsUrl: directionsUrl,
             availability: availability,
-            teamPhotoUrl: teamPhotoUrl,
+            teamPhotoUrl: 'cid:teamimg',
             change: changedData,
         };
 
+        const footerTxt = handlebars.compile(fs.readFileSync('lib/ts/templates/footer.txt', 'utf8'));
+        const footerHtml = handlebars.compile(fs.readFileSync('lib/ts/templates/footer.html', 'utf8'));
+        let attachments: Attachment[];
+        try {
+            const image = await getImageFromUrl(teamPhotoUrl);
+            attachments = [
+                {
+                    filename: 'apple-store-badge.png',
+                    path: 'lib/ts/templates/img/apple-store-badge.png',
+                    cid: 'apple-store',
+                },
+                {
+                    filename: 'google-store-badge.png',
+                    path: 'lib/ts/templates/img/google-play-badge.png',
+                    cid: 'google-store',
+                },
+                {
+                    filename: 'team.jpg',
+                    content: Buffer.from(image.data).toString('base64'),
+                    cid: 'teamimg',
+                    contentType: getContentType(image),
+                    encoding: 'base64',
+                },
+            ];
+        } catch (e) {
+            // No team image...
+            attachments = [
+                {
+                    filename: 'apple-store-badge.png',
+                    path: 'lib/ts/templates/img/apple-store-badge.png',
+                    cid: 'apple-store',
+                },
+                {
+                    filename: 'google-store-badge.png',
+                    path: 'lib/ts/templates/img/google-play-badge.png',
+                    cid: 'google-store',
+                },
+            ];
+        }
+
         const sendPayload = {
             subject: payload.titleComp === undefined ? '' : payload.titleComp(context),
-            text: payload.textComp === undefined ? '' : payload.textComp(context),
-            html: payload.bodyComp === undefined ? '' : payload.bodyComp(context),
+            text: (payload.textComp === undefined ? '' : payload.textComp(context)) + footerTxt(context),
+            html: (payload.bodyComp === undefined ? '' : payload.bodyComp(context)) + footerHtml(context),
             from: payload.fromComp === undefined ? '' : payload.fromComp(context),
             to: userData.email,
+            attachments: attachments,
         };
         try {
             await sendMail(sendPayload);

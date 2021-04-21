@@ -2,22 +2,10 @@ import * as functions from 'firebase-functions';
 import * as handlebars from 'handlebars';
 import * as fs from 'fs';
 import * as admin from 'firebase-admin';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { sendMail } from '../../util/mailgun';
-import { apiConfig } from '../../util/axios';
+import { getContentType, getImageFromUrl, Attachment } from '../../util/sendemail';
 
 const db = admin.firestore();
-
-const api = axios.create(apiConfig);
-
-interface Attachment {
-    filename: string;
-    path?: string | undefined;
-    cid: string;
-    content?: string | undefined;
-    contentType?: string | undefined;
-    encoding?: string | undefined;
-}
 
 // Sends an email confirmation when a user changes his mailing list subscription.
 export const onWrite = functions.firestore.document('/Invites/{id}').onWrite(async (inputData, context) => {
@@ -60,17 +48,17 @@ async function mailToSender(
     sentByDoc: functions.firestore.DocumentSnapshot,
 ) {
     const data = inviteDoc.data();
-    const footerTxt = handlebars.compile(fs.readFileSync('lib/ts/templates/invites/footer.txt', 'utf8'));
-    const footerHtml = handlebars.compile(fs.readFileSync('lib/ts/templates/invites/footer.html', 'utf8'));
+    const footerTxt = handlebars.compile(fs.readFileSync('lib/ts/templates/footer.txt', 'utf8'));
+    const footerHtml = handlebars.compile(fs.readFileSync('lib/ts/templates/footer.html', 'utf8'));
     const attachments: Attachment[] = [
         {
             filename: 'apple-store-badge.png',
-            path: 'lib/ts/templates/invites/img/apple-store-badge.png',
+            path: 'lib/ts/templates/img/apple-store-badge.png',
             cid: 'apple-store',
         },
         {
             filename: 'google-store-badge.png',
-            path: 'lib/ts/templates/invites/img/google-play-badge.png',
+            path: 'lib/ts/templates/img/google-play-badge.png',
             cid: 'google-store',
         },
     ];
@@ -127,7 +115,7 @@ async function mailToSender(
             if (teamData.photourl) {
                 url = teamData.photourl;
             } else {
-                url = 'file:lib/ts/templates/invites/img/defaultteam.jpg';
+                url = 'file:lib/ts/templates/img/defaultteam.jpg';
             }
 
             // Building Email message.
@@ -170,7 +158,7 @@ async function mailToSender(
             if (playerData.photourl) {
                 url = playerData.photourl;
             } else {
-                url = 'file:lib/ts/templates/invites/img/defaultplayer.jpg';
+                url = 'file:lib/ts/templates/img/defaultplayer.jpg';
             }
 
             const context = {
@@ -205,7 +193,7 @@ async function mailToSender(
             if (snapData.photourl) {
                 url = snapData.photourl;
             } else {
-                url = 'file:lib/ts/templates/invites/img/defaultleague.jpg';
+                url = 'file:lib/ts/templates/img/defaultleague.jpg';
             }
 
             const context = {
@@ -248,7 +236,7 @@ async function mailToSender(
         if (snappyData.photourl) {
             url = snappyData.photourl;
         } else {
-            url = 'file:lib/ts/templates/invites/img/defaultclub.jpg';
+            url = 'file:lib/ts/templates/img/defaultclub.jpg';
         }
 
         const context = {
@@ -275,41 +263,6 @@ async function mailToSender(
     }
 
     return data;
-}
-
-function getImageFromUrl(url: string): Promise<AxiosResponse> {
-    if (url.startsWith('file:')) {
-        return new Promise(function (resolve, reject) {
-            fs.readFile(url.substring(5), (err, data) => {
-                if (err !== null && err !== undefined) {
-                    reject(err);
-                } else {
-                    // Only need the data since the headers not being there will default
-                    // to jpg.
-                    const response: AxiosResponse = {
-                        data: data,
-                        status: 200,
-                        statusText: 'OK',
-                        headers: { 'content-type': url.endsWith('.png') ? 'image/png' : 'image/jpeg' },
-                        config: {},
-                    };
-                    resolve(response);
-                }
-            });
-        });
-    }
-    const getImageOptions: AxiosRequestConfig = {
-        responseType: 'arraybuffer',
-    };
-    return api.get(url, getImageOptions);
-}
-
-function getContentType(fullBody: AxiosResponse) {
-    const contentType = fullBody.headers['content-type'];
-    if (contentType === 'application/octet-stream') {
-        return 'image/jpeg';
-    }
-    return contentType;
 }
 
 export default onWrite;

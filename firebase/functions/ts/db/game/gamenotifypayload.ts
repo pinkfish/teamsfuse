@@ -1,7 +1,8 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import * as fs from 'fs';
 
-import { notifyForGame, PayloadData } from '../../util/notifyforgame';
+import { emailForGame, notifyForGame, PayloadData, ChangedData } from '../../util/notifyforgame';
 import { DataNodeCache } from '../../util/datacache';
 import { DateTime, Duration } from 'luxon';
 
@@ -144,4 +145,48 @@ export async function notifyOfResults(
         }
     }
     return;
+}
+
+export async function sendUpdateEmail(
+    gameDoc: functions.firestore.DocumentSnapshot,
+    fileName: string,
+    subject: string,
+    excludeUser: string,
+    changedData: ChangedData,
+    cache: DataNodeCache,
+) {
+    const data = gameDoc.data();
+    if (data === null || data === undefined) {
+        console.log('invalid data bits');
+        return;
+    }
+
+    if (!fs.existsSync('lib/ts/templates/notify/' + fileName + '.txt')) {
+        console.log('File ' + 'lib/ts/templates/notify/' + fileName + '.txt' + ' does not exist');
+        return;
+    }
+
+    if (!fs.existsSync('lib/ts/templates/notify/' + fileName + '.html')) {
+        console.log('File ' + 'lib/ts/templates/notify/' + fileName + '.html' + ' does not exist');
+        return;
+    }
+
+    const payloadTxt = fs.readFileSync('lib/ts/templates/notify/' + fileName + '.txt', 'utf8');
+    const payloadHtml = fs.readFileSync('lib/ts/templates/notify/' + fileName + '.html', 'utf8');
+    return emailForGame(
+        gameDoc,
+        {
+            from: 'noreply@email.teamsfuse.com',
+            text: payloadTxt,
+            body: payloadHtml,
+
+            title: '[{{team.name}}] ' + subject,
+            tag: 'email',
+            click_action: 'openGame',
+        },
+        excludeUser,
+        'emailOnUpdates',
+        cache,
+        changedData,
+    );
 }

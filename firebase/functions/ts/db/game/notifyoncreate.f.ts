@@ -1,10 +1,10 @@
 import * as functions from 'firebase-functions';
-import { notifyPayload } from './gamenotifypayload';
-import { PayloadData } from '../../util/notifyforgame';
+import { notifyPayload, sendUpdateEmail } from './gamenotifypayload';
+import { PayloadData, ChangedData } from '../../util/notifyforgame';
 import { DateTime, Duration } from 'luxon';
 import { DataNodeCache } from '../../util/datacache';
 
-export const onGameCreate = functions.firestore.document('/Games/{gameid}').onCreate((snap, context) => {
+export const onGameCreate = functions.firestore.document('/Games/{gameid}').onCreate(async (snap, context) => {
     const data = snap.data();
 
     // Only notify if less then 7 days before the event.
@@ -41,7 +41,18 @@ export const onGameCreate = functions.firestore.document('/Games/{gameid}').onCr
     if (payload) {
         const cache = new DataNodeCache();
 
-        return notifyPayload(payload, snap, cache);
+        if (diff.days <= 1) {
+            await notifyPayload(payload, snap, cache);
+        }
+        const changes = new ChangedData();
+        return sendUpdateEmail(
+            snap,
+            'game.create',
+            'New {{sharedGame.type}} created for {{team.name}}',
+            context?.auth?.uid ?? '',
+            changes,
+            cache,
+        );
     }
     return data;
 });

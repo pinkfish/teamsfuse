@@ -1,0 +1,15 @@
+New {{sharedGame.type}} created for {{team.name}}, details below:
+
+Arrive At   : {{arrivalTime}}{{changedText change.arrival}}
+Start Time  : {{startTime}}{{changedText change.startTime}}
+Address     : {{sharedGame.place.address}}{{changedText change.place.address}}
+PlaceName   : {{sharedGame.place.name}}{{changedText change.place.name}}
+PlaceNotes  : {{sharedGame.place.notes}}{{changedText change.place.notes}}
+Uniform     : {{game.uniform}}{{changedText change.uniform}}
+Notes       : {{game.notes}}{{changedText change.notes}}
+
+To disable these emails, update your user settings to turn off email for updated games.
+
+Map: {{directionsUrl}}
+
+http://www.teamsfuses.com/event/{{team.uid}}/{{game.uid}}
