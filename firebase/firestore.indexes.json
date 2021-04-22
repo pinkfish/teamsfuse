@@ -15,6 +15,20 @@
       ]
     },
     {
+      "collectionGroup": "Games",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "sharedData.type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "arrivalTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "MessageRecipients",
       "queryScope": "COLLECTION",
       "fields": [
