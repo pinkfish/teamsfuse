@@ -4,11 +4,12 @@
     "scripts": {
         "pretty": "prettier --write **/*.js ts/**/*.ts ts/*/*/*.ts test/**/*.ts test/**/*/*.ts",
         "lint": "./node_modules/.bin/tslint -p tslint.json",
-        "lintfix": "ls lib/ts/templates && ./node_modules/.bin/tslint -p tslint.json --fix",
+        "lintfix": "ls lib/ts/templates/notify && ./node_modules/.bin/tslint -p tslint.json --fix",
         "copytemplate": "copyfiles --verbose \"templates/**\" lib/ts",
         "serve": "firebase serve --only functions",
         "shell": "firebase experimental:functions:shell",
         "start": "npm run shell",
+        "deployci": "firebase deploy --non-interactive --only functions --force",
         "deploy": "firebase deploy --only functions",
         "logs": "firebase functions:log",
         "test-mocha": "npm run buildnotemplate && cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:8080' mocha lib/test/**/*.js --no-opts --config './.mocharc.yml'",

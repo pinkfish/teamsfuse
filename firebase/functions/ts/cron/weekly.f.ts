@@ -24,7 +24,7 @@ interface MainData {
     [name: string]: TeamData;
 }
 
-export const onPublish = functions.pubsub.topic('weekly-tick').onPublish(async (data, context) => {
+export const onPublish = functions.pubsub.schedule('every monday 09:00').onRun(async (context) => {
     // Do something useful every week.
 
     const snapshot = await db.collection('Games').where('result.inProgress', '==', 'GameInProgress.Final').get();
