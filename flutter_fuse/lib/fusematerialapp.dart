@@ -1,4 +1,5 @@
 import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +26,7 @@ class FuseMaterialApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final route = 'Home';
 
+    initDynamicLinks(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
@@ -47,6 +49,20 @@ class FuseMaterialApp extends StatelessWidget {
       home: SplashScreen(),
       onGenerateRoute: (settings) => _buildRoute(context, settings),
     );
+  }
+
+  void initDynamicLinks(BuildContext context) async {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+      final deepLink = dynamicLink?.link;
+
+      if (deepLink != null) {
+        await Navigator.pushNamed(context, deepLink.path);
+      }
+    }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });
   }
 
   Route<dynamic> _buildRoute(

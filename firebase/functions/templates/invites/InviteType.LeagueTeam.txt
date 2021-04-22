@@ -1,2 +1,4 @@
 You are invited to join league team {{invite.leagueName}}
 by {{sentBy.displayName}}.
+
+Invite: {{shortInviteLink}}

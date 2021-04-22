@@ -217,8 +217,8 @@ describe('Email for games', () => {
                     'TeamsFuse is an app to help organize your sports teams.\n' +
                     'http://www.teamsfuse.com\n' +
                     '\n' +
-                    'iPhone download: https://testflight.apple.com/join/zTHlWVWv\n' +
-                    'Android download: https://play.google.com/apps/testing/com.teamfuse.flutterfuse\n',
+                    'iPhone download: https://apps.apple.com/us/app/team-fuse/id1374615208\n' +
+                    'Android download: https://play.google.com/store/apps/details?id=com.teamfuse.flutterfuse\n',
                 html:
                     'Reminder for upcoming game with <b>Lookup TeamName</b>, details below:\n' +
                     '\n' +
@@ -291,7 +291,7 @@ describe('Email for games', () => {
                     '        <img src="cid:apple-store" width="160" height="54" />\n' +
                     '    </a>\n' +
                     '    &nbsp;&nbsp;\n' +
-                    '    <a href="https://play.google.com/apps/testing/com.teamfuse.flutterfuse">\n' +
+                    '    <a href="https://play.google.com/store/apps/details?id=com.teamfuse.flutterfuse">\n' +
                     '        <img src="cid:google-store" width="153" height="46" />\n' +
                     '    </a>\n' +
                     '</p>\n',
@@ -369,8 +369,8 @@ describe('Email for games', () => {
                     'TeamsFuse is an app to help organize your sports teams.\n' +
                     'http://www.teamsfuse.com\n' +
                     '\n' +
-                    'iPhone download: https://testflight.apple.com/join/zTHlWVWv\n' +
-                    'Android download: https://play.google.com/apps/testing/com.teamfuse.flutterfuse\n',
+                    'iPhone download: https://apps.apple.com/us/app/team-fuse/id1374615208\n' +
+                    'Android download: https://play.google.com/store/apps/details?id=com.teamfuse.flutterfuse\n',
                 html:
                     'Reminder for upcoming game with <b>Lookup TeamName</b>, details below:\n' +
                     '\n' +
@@ -443,7 +443,7 @@ describe('Email for games', () => {
                     '        <img src="cid:apple-store" width="160" height="54" />\n' +
                     '    </a>\n' +
                     '    &nbsp;&nbsp;\n' +
-                    '    <a href="https://play.google.com/apps/testing/com.teamfuse.flutterfuse">\n' +
+                    '    <a href="https://play.google.com/store/apps/details?id=com.teamfuse.flutterfuse">\n' +
                     '        <img src="cid:google-store" width="153" height="46" />\n' +
                     '    </a>\n' +
                     '</p>\n',

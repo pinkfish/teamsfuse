@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as admin from 'firebase-admin';
 import { sendMail } from '../../util/mailgun';
 import { getContentType, getImageFromUrl, Attachment } from '../../util/sendemail';
+import { getShortLink } from '../../util/dynamiclinks';
 
 const db = admin.firestore();
 
@@ -119,11 +120,16 @@ async function mailToSender(
             }
 
             // Building Email message.
+            const shortInviteLink = await getShortLink(
+                'Invite to team ' + teamData.name,
+                'Invite/View/' + inviteDoc.id,
+            );
             const context = {
                 sentBy: sentByData,
                 invite: data,
                 teamimg: 'cid:teamimg',
                 team: teamData,
+                shortInviteLink: shortInviteLink,
             };
             if (data.type === 'Team') {
                 mailOptions.subject = 'Invitation to join ' + data.teamName;
@@ -161,12 +167,17 @@ async function mailToSender(
                 url = 'file:lib/ts/templates/img/defaultplayer.jpg';
             }
 
+            const shortInviteLink = await getShortLink(
+                'Invite to player ' + playerData.name,
+                'Invite/View/' + inviteDoc.id,
+            );
             const context = {
                 sentBy: sentByData,
                 invite: data,
 
                 player: playerData,
                 playerimg: 'cid:playerimg',
+                shortInviteLink: shortInviteLink,
             };
 
             mailOptions.subject = 'Invitation to join ' + playerData.name;
@@ -196,6 +207,10 @@ async function mailToSender(
                 url = 'file:lib/ts/templates/img/defaultleague.jpg';
             }
 
+            const shortInviteLink = await getShortLink(
+                'Invite to league ' + snapData.name,
+                'Invite/View/' + inviteDoc.id,
+            );
             const context = {
                 sentBy: sentByData,
                 invite: data,
@@ -204,6 +219,7 @@ async function mailToSender(
                 leagueimg: 'cid:leagueimg',
                 'league.gender': snapData.gender.replace('Gender.', '').toLowerCase(),
                 'league.sport': snapData.sport.replace('Sport.', '').toLowerCase(),
+                shortInviteLink: shortInviteLink,
             };
 
             if (data.type === 'LeagueAdmin') {
@@ -239,11 +255,13 @@ async function mailToSender(
             url = 'file:lib/ts/templates/img/defaultclub.jpg';
         }
 
+        const shortInviteLink = await getShortLink('Invite to club ' + snappyData.name, 'Invite/View/' + inviteDoc.id);
         const context = {
             sentBy: sentByData,
             invite: data,
             club: snapshot.data(),
             clubimg: 'cid:clubimg',
+            shortInviteLink: shortInviteLink,
         };
 
         mailOptions.subject = 'Invitation to join club ' + data.clubName;

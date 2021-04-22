@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 import '../../services/analytics.dart';
 import '../../services/messages.dart';
@@ -60,17 +61,25 @@ class SplashScreen extends StatelessWidget {
   // Check the state and navigate after a timeout.
   void _checkState(BuildContext context, AuthenticationState state) {
     if (state is AuthenticationLoggedIn) {
-      Timer(Duration(milliseconds: 1), () {
+      Timer(Duration(milliseconds: 1), () async {
         RepositoryProvider.of<Notifications>(context).initForNotification();
-        Navigator.pushNamedAndRemoveUntil(
-            context, '/Main/Home', ModalRoute.withName('/Main/Home'));
-        AnalyticsSubsystemImpl.analytics.setUserId(state.user.uid);
+
+        await AnalyticsSubsystemImpl.analytics.setUserId(state.user.uid);
         if (AnalyticsSubsystemImpl.instance.debugMode) {
-          AnalyticsSubsystemImpl.analytics
+          await AnalyticsSubsystemImpl.analytics
               .setUserProperty(name: 'developer', value: 'true');
         } else {
-          AnalyticsSubsystemImpl.analytics
+          await AnalyticsSubsystemImpl.analytics
               .setUserProperty(name: 'developer', value: 'false');
+        }
+
+        final data = await FirebaseDynamicLinks.instance.getInitialLink();
+        final deepLink = data?.link;
+        if (deepLink != null) {
+          await Navigator.pushNamed(context, deepLink.path);
+        } else {
+          await Navigator.pushNamedAndRemoveUntil(
+              context, '/Main/Home', ModalRoute.withName('/Main/Home'));
         }
       });
     }

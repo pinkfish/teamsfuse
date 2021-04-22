@@ -1,7 +1,6 @@
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import * as nodemailer from 'nodemailer';
-import { AxiosInstance } from 'axios';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { firebaseTest } from '../test_util/firebase';
@@ -78,10 +77,10 @@ describe('Invite Tests', () => {
         const inviteId: string = uuid();
         inviteData['uid'] = inviteId;
         const getMailTransportOverride = sinon.stub(mailgun.mailTransport, 'transport');
-        const dynamicLinkStub = sinon.stub(dl, 'getShortUrlDynamicLink');
-        dynamicLinkStub.callsFake((url: string, api: AxiosInstance) => {
+        const dynamicLinkStub = sinon.stub(dl, 'getShortLink');
+        dynamicLinkStub.callsFake((subject: string, path: string) => {
             return new Promise((resolve, reject) => {
-                resolve('bits');
+                resolve('http://bits.link/stuff/' + path);
             });
         });
         try {

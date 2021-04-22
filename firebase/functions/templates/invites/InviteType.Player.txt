@@ -1,2 +1,4 @@
 You are invited to join {{player.name}} by {{sentBy.displayName}}.
 This will let you see all the teams and games this player is part of.
+
+Invite: {{shortInviteLink}}

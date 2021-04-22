@@ -1,2 +1,4 @@
 You are invited to join club {{invite.clubName}} {{#if invite.admin}} as an admin{{/if}}
 by {{sentBy.displayName}}.
+
+Invite: {{shortInviteLink}}

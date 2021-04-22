@@ -65,7 +65,8 @@ jobs:
           PROJECT_PATH: firebase
           PROJECT_ID: teamsfuse
       - name: Deploy to Firebase
-        run: firebase use --add teamsfuse
+        run: |
+          firebase use --add teamsfuse
           npm deployci
         working-directory: firebase/functions
         env:
