@@ -10,7 +10,7 @@ const db = admin.firestore();
 const CUT_OFF_DURATION = Duration.fromObject({ hours: 2 });
 const LOOK_AHEAD_DURATION = Duration.fromObject({ hours: 2 });
 
-export const onHourlyPublish = functions.pubsub.schedule('every 1 hour').onRun(async (context) => {
+export const onHourlyPublish = functions.pubsub.schedule('every 1 hours').onRun(async (context) => {
     // Do something useful every hour.
     const now = DateTime.now().toUTC().plus(LOOK_AHEAD_DURATION);
     const cutoff = DateTime.now().toUTC().minus(CUT_OFF_DURATION);
