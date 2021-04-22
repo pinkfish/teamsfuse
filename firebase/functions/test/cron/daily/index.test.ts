@@ -69,7 +69,7 @@ describe('Cron tests - daily', () => {
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
         // Just make sure creating a club actually works.
-        await test.wrap(onDailyPublish)(null, undefined);
+        await test.wrap(onDailyPublish)(undefined);
         sinon.assert.calledWith(backupDb, 'projects/teamsfuse/databases/(default)');
 
         sinon.assert.notCalled(spy);
@@ -87,7 +87,7 @@ describe('Cron tests - daily', () => {
         await createGame(teamDocId, seasonDocId, DateTime.now().toUTC(), opponent.id, 'Froggy');
 
         // Just make sure creating a club actually works.
-        await test.wrap(onDailyPublish)(null, undefined);
+        await test.wrap(onDailyPublish)(undefined);
         sinon.assert.calledWith(backupDb, 'projects/teamsfuse/databases/(default)');
 
         sinon.assert.calledWith(
@@ -118,7 +118,7 @@ describe('Cron tests - daily', () => {
         await createGame(teamDocId, seasonDocId, DateTime.now().toUTC(), opponent.id, 'Froggy');
 
         // Just make sure creating a club actually works.
-        await test.wrap(onDailyPublish)(null, undefined);
+        await test.wrap(onDailyPublish)(undefined);
         sinon.assert.calledWith(backupDb, 'projects/teamsfuse/databases/(default)');
 
         sinon.assert.calledWith(
@@ -140,7 +140,7 @@ describe('Cron tests - daily', () => {
 
         // Update and now check again.
         spy.reset();
-        await test.wrap(onDailyPublish)(null, undefined);
+        await test.wrap(onDailyPublish)(undefined);
         sinon.assert.calledWith(backupDb, 'projects/teamsfuse/databases/(default)');
 
         sinon.assert.notCalled(spy);
@@ -161,7 +161,7 @@ describe('Cron tests - daily', () => {
         ];
 
         // Just make sure creating a club actually works.
-        await test.wrap(onDailyPublish)(null, undefined);
+        await test.wrap(onDailyPublish)(undefined);
         for (const _idx in gameDocs) {
             // eslint-disable-line no-unused-vars
             sinon.assert.calledWith(
@@ -210,7 +210,7 @@ describe('Cron tests - daily', () => {
         );
 
         // Just make sure creating a club actually works.
-        await test.wrap(onDailyPublish)(null, undefined);
+        await test.wrap(onDailyPublish)(undefined);
         sinon.assert.notCalled(spy);
     });
 });

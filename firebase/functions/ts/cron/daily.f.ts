@@ -16,7 +16,7 @@ export const testExport = {
         client
             .exportDocuments({
                 name: databaseName,
-                outputUriPrefix: 'gs://fusefirestorebucket/teamsfuse',
+                outputUriPrefix: 'gs://fusefirestorebucket/teamsfusebackup',
                 // Backup the whole database.
                 collectionIds: [],
             })
@@ -36,7 +36,7 @@ export const testExport = {
 const CUT_OFF_DURATION = Duration.fromObject({ days: 1 });
 const LOOK_AHEAD_DURATION = Duration.fromObject({ days: 5 });
 
-export const onDailyPublish = functions.pubsub.topic('daily-tick').onPublish(async (data, context) => {
+export const onDailyPublish = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
     // Do something useful every day.
     try {
         for (const idx in admin.apps) {
