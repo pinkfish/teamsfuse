@@ -38,4 +38,4 @@ To disable these emails, update your user settings to turn off email for upcomin
 
 Map: {{directionsUrl}}
 
-http://www.teamsfuses.com/event/{{game.teamUid}}/{{game.uid}}
+{{gameUrl}}

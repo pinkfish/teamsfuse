@@ -10,9 +10,9 @@ interface ShortLinkResponse {
 }
 
 function makeDynamicLongLink(subject: string, path: string): string {
-    return urlBuilder('https://link.teamsfuse.com/' + path, {
+    return urlBuilder('https://www.teamsfuse.com/link' + path, {
         queryParams: {
-            link: 'https://www.teamsfuse.com/main/' + path,
+            link: 'https://www.teamsfuse.com/main' + path,
             apn: 'www.teamsfuse.com',
             dfl: 'https://www.teamsfuse.com',
             ibi: 'com.teamfuse.flutterfuse',
@@ -41,6 +41,17 @@ async function getShortUrlDynamicLink(url: string, myApi: AxiosInstance): Promis
 // Returns the show link for the specified url.  The extraUrl should just be the path.
 //
 export async function getShortLink(subject: string, path: string): Promise<string> {
-    const longUrl = makeDynamicLongLink(subject, path);
-    return getShortUrlDynamicLink(longUrl, api);
+    let newPath = path;
+    if (!path.startsWith('/')) {
+        newPath = '/' + newPath;
+    }
+    try {
+        const longUrl = makeDynamicLongLink(subject, newPath);
+        return await getShortUrlDynamicLink(longUrl, api);
+    } catch (err) {
+        console.error('Error creating short link');
+        console.error(err);
+
+        return 'https://www.teamsfuse.com/main' + newPath;
+    }
 }

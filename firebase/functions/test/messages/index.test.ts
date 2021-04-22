@@ -5,6 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { DocumentSnapshot } from '@google-cloud/firestore';
 import * as mailgun from '../../ts/util/mailgun';
 import * as nodemailer from 'nodemailer';
+import * as dl from '../../ts/util/dynamiclinks';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { clearFirestoreData } from '@firebase/rules-unit-testing';
 import chai, { expect, should } from 'chai';
@@ -41,6 +42,13 @@ describe('Messages', () => {
 
     before(() => {
         spy = sinon.stub(mailgun, 'sendMail');
+        const dynamicLinkStub = sinon.stub(dl, 'getShortLink');
+        dynamicLinkStub.callsFake((subject: string, path: string) => {
+            return new Promise((resolve, reject) => {
+                resolve('http://bits.link/stuff' + path);
+            });
+        });
+
         return;
     });
 
@@ -183,6 +191,8 @@ describe('Messages', () => {
                 'Subject: Subject of fluff<\n' +
                 'From:    Player fromPlayer in Lookup TeamName</h4>\n' +
                 'Sent at: Wednesday, December 31, 1969, 4:00 PM Pacific Standard Time</h4>\n' +
+                'Link:    http://bits.link/stuff/Message/View/' +
+                messageRecipient.id +
                 '\n' +
                 '\n' +
                 '&lt;p&gt;Do the body stuff you body &lt;a href&#x3D;&quot;ginging&quot;&gt;\n' +
@@ -190,16 +200,18 @@ describe('Messages', () => {
                 '\n' +
                 '-----\n' +
                 'TeamsFuse is an app to help organize your sports teams.\n' +
-                'http://www.teamsfuse.com\n' +
+                'https://www.teamsfuse.com\n' +
                 '\n' +
-                'iPhone download: https://testflight.apple.com/join/zTHlWVWv\n' +
-                'Android download: https://play.google.com/apps/testing/com.teamfuse.flutterfuse\n',
+                'iPhone download: https://apps.apple.com/us/app/team-fuse/id1374615208\n' +
+                'Android download: https://play.google.com/store/apps/details?id=com.teamfuse.flutterfuse\n',
             html:
                 '<p><img src="" width="200" height="200" style="padding: 0 15px; float: left" /></p>\n' +
                 '\n' +
                 '<p style="margin-top: 20px"></p>\n' +
                 '\n' +
-                '<h2>Subject of fluff</h2>\n' +
+                '<h2><a href="http://bits.link/stuff/Message/View/' +
+                messageRecipient.id +
+                '">Subject of fluff</a></h2>\n' +
                 '<h4>From: Player fromPlayer in Lookup TeamName</h4>\n' +
                 '<h4>Sent at: Wednesday, December 31, 1969, 4:00 PM Pacific Standard Time</h4>\n' +
                 '<p>' +
@@ -214,7 +226,7 @@ describe('Messages', () => {
                 '    "\n' +
                 '/>\n' +
                 '<p>\n' +
-                '    <i><a href="http://www.teamsfuse.com">TeamsFuse</a></i> is an app to help organize your sports teams.\n' +
+                '    <i><a href="https://www.teamsfuse.com">TeamsFuse</a></i> is an app to help organize your sports teams.\n' +
                 '</p>\n' +
                 '\n' +
                 '<p></p>\n' +
@@ -223,7 +235,7 @@ describe('Messages', () => {
                 '        <img src="cid:apple-store" width="160" height="54" />\n' +
                 '    </a>\n' +
                 '    &nbsp;&nbsp;\n' +
-                '    <a href="https://play.google.com/apps/testing/com.teamfuse.flutterfuse">\n' +
+                '    <a href="https://play.google.com/store/apps/details?id=com.teamfuse.flutterfuse">\n' +
                 '        <img src="cid:google-store" width="153" height="46" />\n' +
                 '    </a>\n' +
                 '</p>\n',

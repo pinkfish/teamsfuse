@@ -7,6 +7,7 @@ import { DateTime, Duration, Settings } from 'luxon';
 import { clearFirestoreData } from '@firebase/rules-unit-testing';
 import * as notifyforgame from '../../ts/util/notifyforgame';
 import * as functions from 'firebase-functions';
+import * as dl from '../../ts/util/dynamiclinks';
 import { DataNodeCache } from '../../ts/util/datacache';
 import chai, { expect, should } from 'chai';
 import SinonChai from 'sinon-chai';
@@ -65,6 +66,13 @@ describe('Games Tests (create)', () => {
         spy = sinon.stub(notifyforgame, 'notifyForGame');
 
         emailSpy = sinon.stub(notifyforgame, 'emailForGame');
+
+        const dynamicLinkStub = sinon.stub(dl, 'getShortLink');
+        dynamicLinkStub.callsFake((subject: string, path: string) => {
+            return new Promise((resolve, reject) => {
+                resolve('http://bits.link/stuff/' + path);
+            });
+        });
 
         Settings.now = () => new Date(2018, 4, 25, 12, 0).valueOf();
         return;

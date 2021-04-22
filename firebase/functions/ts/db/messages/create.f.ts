@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import { getContentType, getImageFromUrl, Attachment } from '../../util/sendemail';
 import { sendMail } from '../../util/mailgun';
 import { DateTime } from 'luxon';
+import { getShortLink } from '../../util/dynamiclinks';
 
 const db = admin.firestore();
 
@@ -154,6 +155,7 @@ async function sendTheEmail(
             .setZone(toPlayerData.timezone ?? 'America/Los_Angeles')
             .toFormat('ffff');
 
+        const messageLink = await getShortLink(messageData.subject, '/Message/View/' + data.uid);
         const mailContext = {
             team: teamData,
             playerPhotoUrl: 'cid:playerimg',
@@ -164,6 +166,7 @@ async function sendTheEmail(
             messageBody: messageBodyData.body,
             user: userData,
             sentTime: sentTime,
+            messageLink: messageLink,
         };
 
         let playerPhotoUrl: string;

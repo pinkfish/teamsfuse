@@ -13,6 +13,7 @@ import { DateTime, Settings } from 'luxon';
 import * as nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import * as email from '../../../ts/util/email';
+import * as dl from '../../../ts/util/dynamiclinks';
 import { DataNodeCache } from '../../../ts/util/datacache';
 import { clearFirestoreData } from '@firebase/rules-unit-testing';
 import SinonChai from 'sinon-chai';
@@ -67,6 +68,13 @@ describe('Email for games', () => {
 
     before(() => {
         spy = sinon.stub(mailgun, 'sendMail');
+
+        const dynamicLinkStub = sinon.stub(dl, 'getShortLink');
+        dynamicLinkStub.callsFake((subject: string, path: string) => {
+            return new Promise((resolve, reject) => {
+                resolve('https://www.teamsfuse.com/main' + path);
+            });
+        });
 
         Settings.now = () => new Date(2018, 4, 25, 12, 0).valueOf();
         return;
@@ -210,22 +218,23 @@ describe('Email for games', () => {
                     '\n' +
                     'Map: https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined\n' +
                     '\n' +
-                    `http://www.teamsfuses.com/event/${teamDocId}/${gameDoc.id}\n` +
-                    '\n' +
+                    `https://www.teamsfuse.com/main/Game/View/${seasonDocId}/${gameDoc.id}\n` +
                     '\n' +
                     '-----\n' +
                     'TeamsFuse is an app to help organize your sports teams.\n' +
-                    'http://www.teamsfuse.com\n' +
+                    'https://www.teamsfuse.com\n' +
                     '\n' +
                     'iPhone download: https://apps.apple.com/us/app/team-fuse/id1374615208\n' +
                     'Android download: https://play.google.com/store/apps/details?id=com.teamfuse.flutterfuse\n',
                 html:
-                    'Reminder for upcoming game with <b>Lookup TeamName</b>, details below:\n' +
+                    'Reminder for upcoming game with <b><a href="https://www.teamsfuse.com/main/Team/View/' +
+                    teamDocId +
+                    '">Lookup TeamName</a></b>, details below:\n' +
                     '\n' +
                     '<img src="cid:teamimg" width="100" height="100" />\n' +
                     '\n' +
-                    '<h4><a href="http://www.teamsfuse.com/event/' +
-                    teamDocId +
+                    '<h4><a href="https://www.teamsfuse.com/main/Game/View/' +
+                    seasonDocId +
                     '/' +
                     gameDoc.id +
                     '">Details</a></h4>\n' +
@@ -282,7 +291,7 @@ describe('Email for games', () => {
                     '    "\n' +
                     '/>\n' +
                     '<p>\n' +
-                    '    <i><a href="http://www.teamsfuse.com">TeamsFuse</a></i> is an app to help organize your sports teams.\n' +
+                    '    <i><a href="https://www.teamsfuse.com">TeamsFuse</a></i> is an app to help organize your sports teams.\n' +
                     '</p>\n' +
                     '\n' +
                     '<p></p>\n' +
@@ -358,26 +367,23 @@ describe('Email for games', () => {
                     '\n' +
                     'Map: https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined\n' +
                     '\n' +
-                    'http://www.teamsfuses.com/event/' +
-                    teamDocId +
-                    '/' +
-                    gameDoc.id +
-                    '\n' +
-                    '\n' +
+                    `https://www.teamsfuse.com/main/Game/View/${seasonDocId}/${gameDoc.id}\n` +
                     '\n' +
                     '-----\n' +
                     'TeamsFuse is an app to help organize your sports teams.\n' +
-                    'http://www.teamsfuse.com\n' +
+                    'https://www.teamsfuse.com\n' +
                     '\n' +
                     'iPhone download: https://apps.apple.com/us/app/team-fuse/id1374615208\n' +
                     'Android download: https://play.google.com/store/apps/details?id=com.teamfuse.flutterfuse\n',
                 html:
-                    'Reminder for upcoming game with <b>Lookup TeamName</b>, details below:\n' +
+                    'Reminder for upcoming game with <b><a href="https://www.teamsfuse.com/main/Team/View/' +
+                    teamDocId +
+                    '">Lookup TeamName</a></b>, details below:\n' +
                     '\n' +
                     '<img src="cid:teamimg" width="100" height="100" />\n' +
                     '\n' +
-                    '<h4><a href="http://www.teamsfuse.com/event/' +
-                    teamDocId +
+                    '<h4><a href="https://www.teamsfuse.com/main/Game/View/' +
+                    seasonDocId +
                     '/' +
                     gameDoc.id +
                     '">Details</a></h4>\n' +
@@ -434,7 +440,7 @@ describe('Email for games', () => {
                     '    "\n' +
                     '/>\n' +
                     '<p>\n' +
-                    '    <i><a href="http://www.teamsfuse.com">TeamsFuse</a></i> is an app to help organize your sports teams.\n' +
+                    '    <i><a href="https://www.teamsfuse.com">TeamsFuse</a></i> is an app to help organize your sports teams.\n' +
                     '</p>\n' +
                     '\n' +
                     '<p></p>\n' +
@@ -563,22 +569,23 @@ describe('Email for games', () => {
                     '\n' +
                     'Map: https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined\n' +
                     '\n' +
-                    `http://www.teamsfuses.com/event/${teamDocId}/${gameDoc.id}\n` +
-                    '\n' +
+                    `https://www.teamsfuse.com/main/Game/View/${seasonDocId}/${gameDoc.id}\n` +
                     '\n' +
                     '-----\n' +
                     'TeamsFuse is an app to help organize your sports teams.\n' +
-                    'http://www.teamsfuse.com\n' +
+                    'https://www.teamsfuse.com\n' +
                     '\n' +
-                    'iPhone download: https://testflight.apple.com/join/zTHlWVWv\n' +
-                    'Android download: https://play.google.com/apps/testing/com.teamfuse.flutterfuse\n',
+                    'iPhone download: https://apps.apple.com/us/app/team-fuse/id1374615208\n' +
+                    'Android download: https://play.google.com/store/apps/details?id=com.teamfuse.flutterfuse\n',
                 html:
-                    'Reminder for upcoming game with <b>Lookup TeamName</b>, details below:\n' +
+                    'Reminder for upcoming game with <b><a href="https://www.teamsfuse.com/main/Team/View/' +
+                    teamDocId +
+                    '">Lookup TeamName</a></b>, details below:\n' +
                     '\n' +
                     '<img src="cid:teamimg" width="100" height="100" />\n' +
                     '\n' +
-                    '<h4><a href="http://www.teamsfuse.com/event/' +
-                    teamDocId +
+                    '<h4><a href="https://www.teamsfuse.com/main/Game/View/' +
+                    seasonDocId +
                     '/' +
                     gameDoc.id +
                     '">Details</a></h4>\n' +
@@ -645,7 +652,7 @@ describe('Email for games', () => {
                     '    "\n' +
                     '/>\n' +
                     '<p>\n' +
-                    '    <i><a href="http://www.teamsfuse.com">TeamsFuse</a></i> is an app to help organize your sports teams.\n' +
+                    '    <i><a href="https://www.teamsfuse.com">TeamsFuse</a></i> is an app to help organize your sports teams.\n' +
                     '</p>\n' +
                     '\n' +
                     '<p></p>\n' +
@@ -654,7 +661,7 @@ describe('Email for games', () => {
                     '        <img src="cid:apple-store" width="160" height="54" />\n' +
                     '    </a>\n' +
                     '    &nbsp;&nbsp;\n' +
-                    '    <a href="https://play.google.com/apps/testing/com.teamfuse.flutterfuse">\n' +
+                    '    <a href="https://play.google.com/store/apps/details?id=com.teamfuse.flutterfuse">\n' +
                     '        <img src="cid:google-store" width="153" height="46" />\n' +
                     '    </a>\n' +
                     '</p>\n',

@@ -1,6 +1,6 @@
 Subject: {{message.subject}}<
 From:    {{fromPlayer.name}} in {{team.name}}</h4>
 Sent at: {{sentTime}}</h4>
-
+Link:    {{messageLink}}
 
 {{messageBody}}

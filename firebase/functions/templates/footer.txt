@@ -2,7 +2,7 @@
 
 -----
 TeamsFuse is an app to help organize your sports teams.
-http://www.teamsfuse.com
+https://www.teamsfuse.com
 
 iPhone download: https://apps.apple.com/us/app/team-fuse/id1374615208
 Android download: https://play.google.com/store/apps/details?id=com.teamfuse.flutterfuse
