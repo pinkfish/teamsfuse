@@ -8,6 +8,13 @@ import { clearFirestoreData } from '@firebase/rules-unit-testing';
 import * as notifyforgame from '../../ts/util/notifyforgame';
 import * as functions from 'firebase-functions';
 import { DataNodeCache } from '../../ts/util/datacache';
+import chai, { should } from 'chai';
+import SinonChai from 'sinon-chai';
+import * as fs from 'fs';
+
+// Setup chai and sinon.
+chai.use(SinonChai);
+should();
 
 const projectName = 'teamsfuse';
 
@@ -42,8 +49,22 @@ describe('Games Tests (update)', () => {
         Promise<never[] | undefined>
     >;
 
+    let emailSpy: sinon.SinonStub<
+        [
+            game: functions.firestore.DocumentSnapshot,
+            payload: notifyforgame.PayloadData,
+            excludeUser: string,
+            userFlag: string,
+            cache: DataNodeCache,
+            changed: notifyforgame.ChangedData,
+        ],
+        Promise<void>
+    >;
+
     before(() => {
         spy = sinon.stub(notifyforgame, 'notifyForGame');
+
+        emailSpy = sinon.stub(notifyforgame, 'emailForGame');
 
         Settings.now = () => new Date(2018, 4, 25, 12, 0).valueOf();
         return;
@@ -111,6 +132,27 @@ describe('Games Tests (update)', () => {
             '',
             false,
             sinon.match.any,
+        );
+
+        // Check the email was called correctly.
+        const payloadTxt = fs.readFileSync('lib/ts/templates/notify/game.updated.txt', 'utf8');
+        const payloadHtml = fs.readFileSync('lib/ts/templates/notify/game.updated.html', 'utf8');
+        emailSpy.should.have.been.callCount(1);
+        sinon.assert.calledWith(
+            emailSpy,
+            sinon.match.any,
+            {
+                from: 'noreply@email.teamsfuse.com',
+                text: payloadTxt,
+                body: payloadHtml,
+                title: '[{{team.name}}] Updated {{sharedGame.type}} for {{team.name}} at {{arrivalTime}}',
+                tag: 'email',
+                click_action: 'openGame',
+            },
+            '',
+            'emailOnUpdates',
+            sinon.match.any,
+            new notifyforgame.ChangedData(),
         );
 
         return;

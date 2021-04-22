@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
-import { notifyPayload, notifyOfResults } from './gamenotifypayload';
+import { notifyPayload, notifyOfResults, sendUpdateEmail } from './gamenotifypayload';
 import { updateTeam } from './gameresultupdateteam';
-import { PayloadData } from '../../util/notifyforgame';
+import { PayloadData, ChangedData } from '../../util/notifyforgame';
 import { DateTime, Duration } from 'luxon';
 import { DataNodeCache } from '../../util/datacache';
 
@@ -54,7 +54,19 @@ export const onGameUpdate = functions.firestore.document('/Games/{gameid}').onUp
     const cache = new DataNodeCache();
 
     if (payload) {
-        await notifyPayload(payload, inputData.after, cache);
+        if (diff.days <= 1) {
+            await notifyPayload(payload, inputData.after, cache);
+        }
+
+        const changes = new ChangedData();
+        await sendUpdateEmail(
+            inputData.after,
+            'game.updated',
+            'Updated {{sharedGame.type}} for {{team.name}} at {{arrivalTime}}',
+            context?.auth?.uid ?? '',
+            changes,
+            cache,
+        );
     }
 
     await notifyOfResults(inputData.after, previousData, cache, context.auth?.uid ?? '');
