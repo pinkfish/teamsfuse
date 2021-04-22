@@ -199,13 +199,11 @@ describe('Messages', () => {
                 '\n' +
                 '<p style="margin-top: 20px"></p>\n' +
                 '\n' +
-                '    <h2>Subject of fluff</h2>\n' +
+                '<h2>Subject of fluff</h2>\n' +
                 '<h4>From: Player fromPlayer in Lookup TeamName</h4>\n' +
                 '<h4>Sent at: Wednesday, December 31, 1969, 4:00 PM Pacific Standard Time</h4>\n' +
-                '<p>\n' +
-                '    &lt;p&gt;Do the body stuff you body &lt;a href&#x3D;&quot;ginging&quot;&gt;\n' +
-                '</p>\n' +
-                '\n' +
+                '<p>' +
+                '&lt;p&gt;Do the body stuff you body &lt;a href&#x3D;&quot;ginging&quot;&gt;</p>\n' +
                 '<br clear="both" />\n' +
                 '\n' +
                 '<hr\n' +
