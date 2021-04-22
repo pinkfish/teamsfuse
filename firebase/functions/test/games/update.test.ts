@@ -8,7 +8,7 @@ import { clearFirestoreData } from '@firebase/rules-unit-testing';
 import * as notifyforgame from '../../ts/util/notifyforgame';
 import * as functions from 'firebase-functions';
 import { DataNodeCache } from '../../ts/util/datacache';
-import chai, { should } from 'chai';
+import chai, { expect, should } from 'chai';
 import SinonChai from 'sinon-chai';
 import * as fs from 'fs';
 
@@ -284,7 +284,7 @@ describe('Games Tests (update)', () => {
         return;
     });
 
-    it('update game - final result', async () => {
+    it('update game - update result', async () => {
         spy.reset();
         const teamAndSeason = await createSeasonAndTeam(true, true);
         const teamDocId = teamAndSeason.team.id;
@@ -294,13 +294,13 @@ describe('Games Tests (update)', () => {
         const arriveTime = DateTime.now().toUTC();
         const oldGame = await createGame(teamDocId, seasonDocId, arriveTime, opponent.id, 'froggy', 'Game');
         await oldGame.ref.update({
-            'result.result': 'Win',
+            'result.result': 'Tie',
             'result.inProgress': 'Final',
             'result.scores.Final': {
                 period: 'Final',
                 score: {
                     ptsFor: 20,
-                    ptsAgainst: 12,
+                    ptsAgainst: 20,
                 },
             },
         });
@@ -316,8 +316,8 @@ describe('Games Tests (update)', () => {
             spy,
             sinon.match.any,
             {
-                title: '{{opponent.name}} 20 - 12',
-                body: 'Won the game',
+                title: '{{opponent.name}} 20 - 20',
+                body: 'Tied at end of game',
                 click_action: 'GAMERESULT',
                 tag: `${game.id}result`,
             },
@@ -331,6 +331,49 @@ describe('Games Tests (update)', () => {
         );
 
         emailSpy.should.have.been.callCount(0);
+
+        const updatedSeason = await teamAndSeason.season.ref.get();
+        const updatedOpponent = await opponent.ref.get();
+        const seasonData: { [field: string]: any } = {};
+        seasonData[seasonDocId] = {
+            win: 0,
+            loss: 0,
+            tie: 1,
+        };
+        expect(updatedOpponent.data()).to.be.deep.equal({
+            teamUid: teamDocId,
+            uid: opponent.id,
+            name: 'fluff',
+            seasons: seasonData,
+        });
+
+        expect(updatedSeason.data()).to.be.deep.equal({
+            name: 'Current Season',
+            uid: seasonDocId,
+            teamUid: teamDocId,
+            isPublic: true,
+            users: {
+                me: {
+                    added: true,
+                    admin: true,
+                },
+            },
+            players: {
+                player: {
+                    me: true,
+                    added: true,
+                    public: false,
+                    jerseyNumber: '42',
+                    playerUid: 'player',
+                    role: 'Player',
+                },
+            },
+            record: {
+                win: 0,
+                tie: 1,
+                loss: 0,
+            },
+        });
 
         return;
     });
