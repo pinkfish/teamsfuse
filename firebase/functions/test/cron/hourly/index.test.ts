@@ -59,7 +59,7 @@ describe('Cron tests - hourly', () => {
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
         // Just make sure creating a club actually works.
-        await test.wrap(onHourlyPublish)(null, undefined);
+        await test.wrap(onHourlyPublish)(undefined);
         sinon.assert.notCalled(spy);
         await admin.firestore().collection('Teams').doc(teamDocId).delete();
         await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
@@ -76,7 +76,7 @@ describe('Cron tests - hourly', () => {
 
         // Just make sure creating a club actually works.
         try {
-            await test.wrap(onHourlyPublish)(null, undefined);
+            await test.wrap(onHourlyPublish)(undefined);
             sinon.assert.calledWith(
                 spy,
                 sinon.match.any,
@@ -125,7 +125,7 @@ describe('Cron tests - hourly', () => {
 
         // Just make sure creating a club actually works.
         try {
-            await test.wrap(onHourlyPublish)(null, undefined);
+            await test.wrap(onHourlyPublish)(undefined);
             for (const idx in gameDocs) {
                 sinon.assert.calledWith(
                     spy,
@@ -190,7 +190,7 @@ describe('Cron tests - hourly', () => {
 
         try {
             // Just make sure creating a club actually works.
-            await test.wrap(onHourlyPublish)(null, undefined);
+            await test.wrap(onHourlyPublish)(undefined);
             sinon.assert.notCalled(spy);
         } finally {
             await admin.firestore().collection('Games').doc(gameDoc.id).delete();

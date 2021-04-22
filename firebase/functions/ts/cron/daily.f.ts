@@ -13,10 +13,11 @@ const client = new v1.FirestoreAdminClient();
 
 export const testExport = {
     doExport: async (databaseName: string): Promise<void> => {
+        const now = DateTime.now().toUTC().toISO();
         client
             .exportDocuments({
                 name: databaseName,
-                outputUriPrefix: 'gs://fusefirestorebucket/teamsfusebackup',
+                outputUriPrefix: 'gs://fusefirestorebucket/teamsfusebackup/' + now,
                 // Backup the whole database.
                 collectionIds: [],
             })
