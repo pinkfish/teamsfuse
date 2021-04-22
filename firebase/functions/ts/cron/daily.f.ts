@@ -13,16 +13,22 @@ const client = new v1.FirestoreAdminClient();
 
 export const testExport = {
     doExport: async (databaseName: string): Promise<void> => {
-        const responses = await client.exportDocuments({
-            name: databaseName,
-            outputUriPrefix: 'gs://fusefirestorebucket/teamsfuse',
-            // Backup the whole database.
-            collectionIds: [],
-        });
-        const response = responses[0];
-        console.log(`Operation Name: ${response['name']}`);
+        client
+            .exportDocuments({
+                name: databaseName,
+                outputUriPrefix: 'gs://fusefirestorebucket/teamsfuse',
+                // Backup the whole database.
+                collectionIds: [],
+            })
+            .then((responses) => {
+                const response = responses[0];
+                console.log(`Operation Name: ${response['name']}`);
 
-        return;
+                return;
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     },
 };
 
