@@ -76,6 +76,11 @@ describe('Games Tests (update)', () => {
         return;
     });
 
+    beforeEach(() => {
+        spy.reset();
+        emailSpy.reset();
+    });
+
     afterEach(async () => {
         await clearFirestoreData({
             projectId: projectName,
@@ -83,7 +88,6 @@ describe('Games Tests (update)', () => {
     });
 
     it('update game - no change', async () => {
-        spy.reset();
         const teamAndSeason = await createSeasonAndTeam(true, true);
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
@@ -95,11 +99,13 @@ describe('Games Tests (update)', () => {
         await test.wrap(onGameUpdate)(test.makeChange(game, game), undefined);
 
         sinon.assert.notCalled(spy);
+        sinon.assert.notCalled(emailSpy);
         return;
     });
 
     it('update game - change arrival', async () => {
         spy.reset();
+        emailSpy.reset();
         const teamAndSeason = await createSeasonAndTeam(true, true);
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
@@ -194,6 +200,27 @@ describe('Games Tests (update)', () => {
             sinon.match.any,
         );
 
+        // Check the email was called correctly.
+        const payloadTxt = fs.readFileSync('lib/ts/templates/notify/game.updated.txt', 'utf8');
+        const payloadHtml = fs.readFileSync('lib/ts/templates/notify/game.updated.html', 'utf8');
+        emailSpy.should.have.been.callCount(1);
+        sinon.assert.calledWith(
+            emailSpy,
+            sinon.match.any,
+            {
+                from: 'noreply@email.teamsfuse.com',
+                text: payloadTxt,
+                body: payloadHtml,
+                title: '[{{team.name}}] Updated {{sharedGame.type}} for {{team.name}} at {{arrivalTime}}',
+                tag: 'email',
+                click_action: 'openGame',
+            },
+            '',
+            'emailOnUpdates',
+            sinon.match.any,
+            new notifyforgame.ChangedData(),
+        );
+
         return;
     });
 
@@ -231,6 +258,27 @@ describe('Games Tests (update)', () => {
             '',
             false,
             sinon.match.any,
+        );
+
+        // Check the email was called correctly.
+        const payloadTxt = fs.readFileSync('lib/ts/templates/notify/game.updated.txt', 'utf8');
+        const payloadHtml = fs.readFileSync('lib/ts/templates/notify/game.updated.html', 'utf8');
+        emailSpy.should.have.been.callCount(1);
+        sinon.assert.calledWith(
+            emailSpy,
+            sinon.match.any,
+            {
+                from: 'noreply@email.teamsfuse.com',
+                text: payloadTxt,
+                body: payloadHtml,
+                title: '[{{team.name}}] Updated {{sharedGame.type}} for {{team.name}} at {{arrivalTime}}',
+                tag: 'email',
+                click_action: 'openGame',
+            },
+            '',
+            'emailOnUpdates',
+            sinon.match.any,
+            new notifyforgame.ChangedData(),
         );
 
         return;
@@ -281,6 +329,8 @@ describe('Games Tests (update)', () => {
             true,
             sinon.match.any,
         );
+
+        emailSpy.should.have.been.callCount(0);
 
         return;
     });
