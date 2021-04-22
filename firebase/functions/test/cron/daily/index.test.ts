@@ -162,8 +162,8 @@ describe('Cron tests - daily', () => {
 
         // Just make sure creating a club actually works.
         await test.wrap(onDailyPublish)(null, undefined);
-        for (const idx in gameDocs) {
-            console.log(idx);
+        for (const _idx in gameDocs) {
+            // eslint-disable-line no-unused-vars
             sinon.assert.calledWith(
                 spy,
                 sinon.match.any,

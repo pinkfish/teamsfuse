@@ -25,7 +25,6 @@ export const onHourlyPublish = functions.pubsub.topic('hourly-tick').onPublish(a
             if (Object.prototype.hasOwnProperty.call(snapshot.docs, index)) {
                 const doc = snapshot.docs[index];
                 if (doc.data().notifiedHour) {
-                    console.log('Already notified about ' + doc.id);
                     continue;
                 }
                 const docData = doc.data();
@@ -39,7 +38,7 @@ export const onHourlyPublish = functions.pubsub.topic('hourly-tick').onPublish(a
                 const timeToLive = 7200;
                 const sharedGameData = docData.sharedData;
                 if (sharedGameData === null || sharedGameData === undefined) {
-                    console.log('Cannot find shared data ' + doc.id);
+                    console.error('Cannot find shared data ' + doc.id);
                     continue;
                 }
                 const message: admin.messaging.MessagingOptions = {
@@ -67,7 +66,7 @@ export const onHourlyPublish = functions.pubsub.topic('hourly-tick').onPublish(a
                     message.body = 'Arrive by {{arrivalTime}}';
                 }
                 if (message.body === undefined || message.body === null) {
-                    console.log('no body, dropping out.');
+                    console.error('no body, dropping out.');
                     continue;
                 }
                 message.body += ' for {{team.name}}';
@@ -84,8 +83,6 @@ export const onHourlyPublish = functions.pubsub.topic('hourly-tick').onPublish(a
                 if (payload) {
                     await notifyForGame(doc, payload, message, '', false, cache);
                 }
-            } else {
-                console.log('Already notified for index ' + index);
             }
         }
     } finally {

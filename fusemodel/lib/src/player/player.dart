@@ -81,6 +81,12 @@ abstract class Player implements Built<Player, PlayerBuilder> {
   /// The type of the player.
   PlayerType get playerType;
 
+  /// The timezone to use for sending stuff to the player.
+  String get timezone;
+
+  /// The language code to use for this user.
+  String get languageCode;
+
   /// Url to get the photo from
   @nullable
   @BuiltValueField(wireName: photoUrlField)
@@ -110,7 +116,9 @@ abstract class Player implements Built<Player, PlayerBuilder> {
 
   static void _initializeBuilder(PlayerBuilder b) => b
     ..isPublic = false
-    ..playerType = PlayerType.player;
+    ..playerType = PlayerType.player
+    ..timezone = 'America/Los_Angeles'
+    ..languageCode = 'en-us';
 
   /// The name of the field to serialize for the user data.
   static const String usersField = 'users';

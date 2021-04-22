@@ -8,7 +8,6 @@ export async function updateTeam(teamUid: string, seasonUid: string, opponentUid
 }
 
 async function updateTeamOpponent(teamUid: string, seasonUid: string, opponentUid: string): Promise<void> {
-    console.log('Updating ' + teamUid);
     const snapshot = await db
         .collection('Games')
         .where('opponentUid', '==', opponentUid)

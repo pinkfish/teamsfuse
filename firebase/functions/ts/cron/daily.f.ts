@@ -36,7 +36,7 @@ export const onDailyPublish = functions.pubsub.topic('daily-tick').onPublish(asy
         for (const idx in admin.apps) {
             const app = admin.apps[idx];
             if (app === null || app === undefined) {
-                console.log('Null app');
+                console.error('Null app');
                 continue;
             }
         }
@@ -65,13 +65,12 @@ export const onDailyPublish = functions.pubsub.topic('daily-tick').onPublish(asy
                 const doc = snapshot.docs[index];
                 const docData = doc.data();
                 if (docData.notifiedEmail) {
-                    console.log('Already notified about ' + doc.id);
                     continue;
                 }
                 // Only email about games.
                 const sharedGameData = docData.sharedData;
                 if (sharedGameData === null || sharedGameData === undefined) {
-                    console.log('Cannot find shared data ' + doc.id);
+                    console.error('Cannot find shared data ' + doc.id);
                     continue;
                 }
 

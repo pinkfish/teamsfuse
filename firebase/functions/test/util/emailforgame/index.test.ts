@@ -1,6 +1,5 @@
 import * as sinon from 'sinon';
 import { firebaseTest } from '../../test_util/firebase';
-//import { expect } from 'chai';
 import chai, { should } from 'chai';
 import * as admin from 'firebase-admin';
 import {
@@ -10,7 +9,6 @@ import {
     createPlayer,
     createUser,
 } from '../../test_util/datacreation';
-//import * as functions from 'firebase-functions';
 import { DateTime, Settings } from 'luxon';
 import * as nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
@@ -18,6 +16,7 @@ import * as email from '../../../ts/util/email';
 import { DataNodeCache } from '../../../ts/util/datacache';
 import { clearFirestoreData } from '@firebase/rules-unit-testing';
 import SinonChai from 'sinon-chai';
+import * as mailgun from '../../../ts/util/mailgun';
 
 // Setup chai and sinon.
 chai.use(SinonChai);
@@ -42,7 +41,6 @@ test.mockConfig({
 });
 
 import { emailForGame, ChangedData } from '../../../ts/util/notifyforgame';
-import * as mailgun from '../../../ts/util/mailgun';
 
 const mailAttachments = [
     {

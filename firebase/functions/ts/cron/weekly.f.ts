@@ -26,7 +26,6 @@ interface MainData {
 
 export const onPublish = functions.pubsub.topic('weekly-tick').onPublish(async (data, context) => {
     // Do something useful every week.
-    console.log('Doing the weeks work.');
 
     const snapshot = await db.collection('Games').where('result.inProgress', '==', 'GameInProgress.Final').get();
     const scores: MainData = {};
@@ -70,7 +69,6 @@ export const onPublish = functions.pubsub.topic('weekly-tick').onPublish(async (
     for (const teamUid in scores) {
         if (Object.prototype.hasOwnProperty.call(scores, teamUid)) {
             const teamScores = scores[teamUid];
-            console.log(teamScores);
             for (const seasonUid in teamScores.seasons) {
                 if (Object.prototype.hasOwnProperty.call(teamScores.seasons, seasonUid)) {
                     const seasonScores = teamScores.seasons[seasonUid];

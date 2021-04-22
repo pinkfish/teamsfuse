@@ -16,7 +16,7 @@ export async function notifyPayload(
         const nowTime = DateTime.now().toUTC();
 
         if (data === null || data === undefined) {
-            console.log('Invalid data');
+            console.error('Invalid data');
             return;
         }
 
@@ -46,14 +46,12 @@ export async function notifyOfResults(
     const data = after.data();
 
     if (data === undefined || data === null) {
-        console.log('Nothing to update');
         return;
     }
 
     // Check to see if there is any result at all yet or it is not a game.
     if (data.result === null || data.sharedData.type !== 'Game') {
         // No results.
-        console.log('No results');
         return data;
     }
 
@@ -157,17 +155,17 @@ export async function sendUpdateEmail(
 ) {
     const data = gameDoc.data();
     if (data === null || data === undefined) {
-        console.log('invalid data bits');
+        console.error('invalid data bits');
         return;
     }
 
     if (!fs.existsSync('lib/ts/templates/notify/' + fileName + '.txt')) {
-        console.log('File ' + 'lib/ts/templates/notify/' + fileName + '.txt' + ' does not exist');
+        console.error('File ' + 'lib/ts/templates/notify/' + fileName + '.txt' + ' does not exist');
         return;
     }
 
     if (!fs.existsSync('lib/ts/templates/notify/' + fileName + '.html')) {
-        console.log('File ' + 'lib/ts/templates/notify/' + fileName + '.html' + ' does not exist');
+        console.error('File ' + 'lib/ts/templates/notify/' + fileName + '.html' + ' does not exist');
         return;
     }
 
