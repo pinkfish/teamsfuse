@@ -9,7 +9,7 @@ repos:
     rev: "v2.2.1"
     hooks:
       - id: prettier
-        exclude: "^firebase/(dartangular|public)/.*"
+        exclude: "^firebase/(dartangular|public)/.*|^firebase/functions/templates.*"
   - repo: https://github.com/Cretezy/flutter-format-pre-commit
     rev: "4a1df675bb74dea371c17934933e257e46f8dd98"
     hooks:

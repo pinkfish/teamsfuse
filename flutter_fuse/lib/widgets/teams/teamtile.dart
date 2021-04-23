@@ -140,7 +140,8 @@ class TeamTile extends StatelessWidget {
                             Navigator.pop(context);
                           }
                           RepositoryProvider.of<fluro.FluroRouter>(context)
-                              .navigateTo(context, 'Team/${teamState.team.uid}',
+                              .navigateTo(
+                                  context, 'Team/View/${teamState.team.uid}',
                                   transition: fluro.TransitionType.inFromRight);
                         },
                   ),

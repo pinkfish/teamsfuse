@@ -421,7 +421,7 @@ class GameCard extends StatelessWidget {
 
     var tile = ListTile(
       onTap: () {
-        Navigator.pushNamed(context, '/Game/${game.uid}');
+        Navigator.pushNamed(context, '/Game/View/${game.uid}');
       },
       leading: TeamImage(
         teamUid: game.teamUid,

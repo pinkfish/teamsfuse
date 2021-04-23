@@ -134,7 +134,7 @@ class AppRouter {
         handler: fluro.Handler(
             handlerFunc: (context, values) =>
                 AcceptInviteToLeagueTeamScreen(values['id'][0].toString())));
-    router.define('/Team/:id',
+    router.define('/Team/View/:id',
         handler: fluro.Handler(
             handlerFunc: (context, values) =>
                 TeamScreen(values['id'][0].toString())));
@@ -216,7 +216,7 @@ class AppRouter {
         handler: fluro.Handler(
             handlerFunc: (context, values) =>
                 EditGameScreen(values['id'][0].toString())));
-    router.define('/Game/:id',
+    router.define('/Game/View/:id',
         handler: fluro.Handler(handlerFunc: (context, values) {
       AnalyticsSubsystemImpl.analytics.logViewItem(
           itemId: values['id'][0].toString(),

@@ -218,7 +218,8 @@ describe('Email for games', () => {
                     '\n' +
                     'Map: https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined\n' +
                     '\n' +
-                    `https://www.teamsfuse.com/main/Game/View/${seasonDocId}/${gameDoc.id}\n` +
+                    `https://www.teamsfuse.com/main/Game/View/${gameDoc.id}\n` +
+                    '\n' +
                     '\n' +
                     '-----\n' +
                     'TeamsFuse is an app to help organize your sports teams.\n' +
@@ -234,8 +235,6 @@ describe('Email for games', () => {
                     '<img src="cid:teamimg" width="100" height="100" />\n' +
                     '\n' +
                     '<h4><a href="https://www.teamsfuse.com/main/Game/View/' +
-                    seasonDocId +
-                    '/' +
                     gameDoc.id +
                     '">Details</a></h4>\n' +
                     '<table>\n' +
@@ -367,7 +366,8 @@ describe('Email for games', () => {
                     '\n' +
                     'Map: https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined\n' +
                     '\n' +
-                    `https://www.teamsfuse.com/main/Game/View/${seasonDocId}/${gameDoc.id}\n` +
+                    `https://www.teamsfuse.com/main/Game/View/${gameDoc.id}\n` +
+                    '\n' +
                     '\n' +
                     '-----\n' +
                     'TeamsFuse is an app to help organize your sports teams.\n' +
@@ -383,8 +383,6 @@ describe('Email for games', () => {
                     '<img src="cid:teamimg" width="100" height="100" />\n' +
                     '\n' +
                     '<h4><a href="https://www.teamsfuse.com/main/Game/View/' +
-                    seasonDocId +
-                    '/' +
                     gameDoc.id +
                     '">Details</a></h4>\n' +
                     '<table>\n' +
@@ -569,7 +567,8 @@ describe('Email for games', () => {
                     '\n' +
                     'Map: https://www.google.com/maps/dir/?api&#x3D;1&amp;destination&#x3D;1502%20west%20test%20drive&amp;destination_place_id&#x3D;undefined\n' +
                     '\n' +
-                    `https://www.teamsfuse.com/main/Game/View/${seasonDocId}/${gameDoc.id}\n` +
+                    `https://www.teamsfuse.com/main/Game/View/${gameDoc.id}\n` +
+                    '\n' +
                     '\n' +
                     '-----\n' +
                     'TeamsFuse is an app to help organize your sports teams.\n' +
@@ -585,8 +584,6 @@ describe('Email for games', () => {
                     '<img src="cid:teamimg" width="100" height="100" />\n' +
                     '\n' +
                     '<h4><a href="https://www.teamsfuse.com/main/Game/View/' +
-                    seasonDocId +
-                    '/' +
                     gameDoc.id +
                     '">Details</a></h4>\n' +
                     '<table>\n' +

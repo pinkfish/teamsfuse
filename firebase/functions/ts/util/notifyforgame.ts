@@ -495,10 +495,7 @@ async function doTheNotification(
             maybe: await formatAvailability(maybe, seasonData),
         };
 
-        const gameUrl = await getShortLink(
-            'Game for ' + teamData.name,
-            '/Game/View/' + seasonData.uid + '/' + gameData.uid,
-        );
+        const gameUrl = await getShortLink('Game for ' + teamData.name, '/Game/View/' + gameData.uid);
         const teamUrl = await getShortLink(teamData.name, '/Team/View/' + teamData.uid);
         const context = {
             arrivalTime: arrivalTime,
