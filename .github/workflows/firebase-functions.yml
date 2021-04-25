@@ -67,7 +67,7 @@ jobs:
       - name: Deploy to Firebase
         run: |
           firebase use --add teamsfuse
-          npm deployci
+          npm run deployci
         working-directory: firebase/functions
         env:
           FIREBASE_TOKEN: ${{ secrets.firebaseToken }}
