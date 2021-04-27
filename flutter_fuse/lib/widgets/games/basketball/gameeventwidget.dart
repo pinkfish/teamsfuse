@@ -120,6 +120,7 @@ class GameEventWidget extends StatelessWidget {
       case GameEventType.Sub:
       case GameEventType.TimeoutStart:
       case GameEventType.TimeoutEnd:
+      case GameEventType.ScoreSet:
         return c;
       default:
         throw ArgumentError(gameEvent.type.toString());

@@ -596,7 +596,9 @@ class GameStatsScreen extends StatelessWidget {
                             if (((state.loadedEvents &&
                                         (state.gameEvents.isEmpty ||
                                             state.gameEvents.last.type ==
-                                                GameEventType.PeriodEnd)) ||
+                                                GameEventType.PeriodEnd ||
+                                            state.gameEvents.last.type ==
+                                                GameEventType.ScoreSet)) ||
                                     state.game?.result?.currentPeriod ==
                                         GamePeriod.notStarted) &&
                                 !(state is SingleGameSaving)) {

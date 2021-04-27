@@ -2440,6 +2440,8 @@ class Messages {
         return periodStartText(getPeriodName(p.period));
       case GameEventType.PeriodEnd:
         return periodEnd(getPeriodName(p.period));
+      case GameEventType.ScoreSet:
+        return scoreSet(p.fixedScore);
     }
     return unknown;
   }
@@ -3235,6 +3237,14 @@ class Messages {
   String get finalScoreButton {
     return Intl.message('SET FINAL SCORE',
         desc: 'Button to set the final score', locale: locale);
+  }
+
+  String scoreSet(GameScore score) {
+    return Intl.message('Set score ${score.ptsFor} - ${score.ptsAgainst}',
+        args: [score],
+        name: 'scoreSet',
+        locale: locale,
+        desc: 'The event for setting the score to a specific number.');
   }
 
   /// Load the messages for the specific locale.

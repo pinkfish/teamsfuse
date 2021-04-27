@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/localutilities.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -239,34 +240,39 @@ class PlayerTileBasketball extends StatelessWidget {
     if (compactDisplay) {
       return GestureDetector(
         onTap: () => onTap != null ? onTap(loadedPlayer.uid) : null,
-        child: Container(
-          decoration: BoxDecoration(
-            color: color,
-            border: shape,
-          ),
-          child: Row(
-            children: [
-              ConstrainedBox(
-                constraints: BoxConstraints.tightFor(height: 40.0, width: 40.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Theme.of(context).primaryColor),
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints box) => Container(
+            decoration: BoxDecoration(
+              color: color,
+              border: shape,
+            ),
+            child: Row(
+              children: [
+                ConstrainedBox(
+                  constraints: BoxConstraints.tightFor(
+                    height: min(40.0, box.maxHeight - 6),
+                    width: min(40.0, box.maxHeight - 6),
                   ),
-                  child: Center(
-                    child: Text(
-                      jerseyNumber,
-                      style: Theme.of(context).textTheme.caption.copyWith(
-                            color: Theme.of(context).accentColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
-                          ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Theme.of(context).primaryColor),
+                    ),
+                    child: Center(
+                      child: Text(
+                        jerseyNumber,
+                        style: Theme.of(context).textTheme.caption.copyWith(
+                              color: Theme.of(context).accentColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                            ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              (extra != null ? extra(loadedPlayer.uid) : SizedBox(width: 0)),
-            ],
+                (extra != null ? extra(loadedPlayer.uid) : SizedBox(width: 0)),
+              ],
+            ),
           ),
         ),
       );
@@ -291,6 +297,7 @@ class PlayerTileBasketball extends StatelessWidget {
             textScaleFactor: 1.0,
             maxLines: 2,
           ),
+          /*
           leading: ConstrainedBox(
             constraints: BoxConstraints.tightFor(
                 height: min(40.0, box.maxHeight - 6),
@@ -307,7 +314,31 @@ class PlayerTileBasketball extends StatelessWidget {
                   style: Theme.of(context).textTheme.caption.copyWith(
                         color: contentColor ?? Theme.of(context).accentColor,
                         fontWeight: FontWeight.bold,
-                        fontSize: min(20.0, box.maxHeight - 12),
+                        fontSize: min(40.0, box.maxHeight - 6) / 2,
+                      ),
+                ),
+              ),
+            ),
+          ),
+
+           */
+          leading: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                  color: LocalUtilities.darken(
+                      contentColor ?? Theme.of(context).primaryColor, 40)),
+            ),
+            child: SizedBox(
+              width: box.maxHeight / 2,
+              height: box.maxHeight / 2,
+              child: Center(
+                child: Text(
+                  jerseyNumber ?? 'U',
+                  style: Theme.of(context).textTheme.caption.copyWith(
+                        color: contentColor ?? Theme.of(context).accentColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: min(40.0, box.maxHeight - 6) / 2,
                       ),
                 ),
               ),

@@ -70,13 +70,35 @@ class _StartPeriodState extends State<StartPeriod> {
           SizedBox(
             height: 20.0,
           ),
+          ButtonBar(
+            children: [
+              widget.game.sharedData.time
+                      .isBefore(DateTime.now().subtract(Duration(hours: 2)))
+                  ? TextButton(
+                      onPressed: _editResult,
+                      style: TextButton.styleFrom(),
+                      child: Text(Messages.of(context).finalScoreButton),
+                    )
+                  : SizedBox(height: 0),
+            ],
+          ),
           widget.orientation == Orientation.portrait
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Text(
+                      '${widget.game.result.totalScore.ptsFor}',
+                      textScaleFactor: 3.0,
+                    ),
+                    SizedBox(width: 20),
                     Image.asset(
                       'assets/sports/Sport.Basketball.png',
                       height: 90.0,
+                    ),
+                    SizedBox(width: 20),
+                    Text(
+                      '${widget.game.result.totalScore.ptsAgainst}',
+                      textScaleFactor: 3.0,
                     ),
                   ],
                 )
@@ -86,13 +108,6 @@ class _StartPeriodState extends State<StartPeriod> {
           SizedBox(
             height: 20.0,
           ),
-          widget.game.sharedData.time
-                  .isBefore(DateTime.now().subtract(Duration(hours: 2)))
-              ? TextButton(
-                  onPressed: _editResult,
-                  child: Text(Messages.of(context).finalScoreButton),
-                )
-              : SizedBox(height: 0),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
