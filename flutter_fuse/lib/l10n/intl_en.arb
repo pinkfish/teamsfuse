@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-04-15T22:50:08.207206",
+  "@@last_modified": "2021-04-27T02:32:17.908122",
   "About": "About",
   "@About": {
     "type": "text",
@@ -1829,6 +1829,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "START GAME": "START GAME",
+  "@START GAME": {
+    "description": "Start game dialog button title",
+    "type": "text",
+    "placeholders": {}
+  },
   "Start Game": "Start Game",
   "@Start Game": {
     "description": "Start game dialog title",
@@ -2495,14 +2501,6 @@
       "result": {}
     }
   },
-  "fixScoreBreakout": "Fix score: {ptsFor} - {ptsAgainst}",
-  "@fixScoreBreakout": {
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
   "followPlayer": "Follow {player}",
   "@followPlayer": {
     "type": "text",
@@ -2745,95 +2743,6 @@
     "type": "text",
     "placeholders": {
       "periodName": {}
-    }
-  },
-  "periodStartBreakBreakout": "Start break Score: {ptsFor} - {ptsAgainst}",
-  "@periodStartBreakBreakout": {
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStartOvertimeBreakBreakout": "Start overtime break Score: {ptsFor} - {ptsAgainst}",
-  "@periodStartOvertimeBreakBreakout": {
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStartOvertimeBreakout": "Start overtime {periodNumber} Score: {ptsFor} - {ptsAgainst}",
-  "@periodStartOvertimeBreakout": {
-    "type": "text",
-    "placeholders": {
-      "periodNumber": {},
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStartPenaltyBreakout": "Start penalty Score: {ptsFor} - {ptsAgainst}",
-  "@periodStartPenaltyBreakout": {
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStartRegulationBreakout": "Start period {periodNumber} Score: {ptsFor} - {ptsAgainst}",
-  "@periodStartRegulationBreakout": {
-    "type": "text",
-    "placeholders": {
-      "periodNumber": {},
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStopBreakBreakout": "Stop break Score: {ptsFor} - {ptsAgainst}",
-  "@periodStopBreakBreakout": {
-    "description": "the stop for the regulation break in the logs",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStopOvertimeBreakBreakout": "Stop overtime break Score: {ptsFor} - {ptsAgainst}",
-  "@periodStopOvertimeBreakBreakout": {
-    "description": "the stop for the overtime break in the logs",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStopOvertimeBreakout": "Stop overtime {periodNumber} Score: {ptsFor} - {ptsAgainst}",
-  "@periodStopOvertimeBreakout": {
-    "description": "the stop for the overtime  in the logs",
-    "type": "text",
-    "placeholders": {
-      "periodNumber": {},
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStopPenaltyBreakout": "Stop penalty Score: {ptsFor} - {ptsAgainst}",
-  "@periodStopPenaltyBreakout": {
-    "description": "the stop for the penalty period in the logs",
-    "type": "text",
-    "placeholders": {
-      "ptsFor": {},
-      "ptsAgainst": {}
-    }
-  },
-  "periodStopRegulationBreakout": "Stop period {periodNumber} Score: {ptsFor} - {ptsAgainst}",
-  "@periodStopRegulationBreakout": {
-    "description": "the stop for the regulation period in the logs",
-    "type": "text",
-    "placeholders": {
-      "periodNumber": {},
-      "ptsFor": {},
-      "ptsAgainst": {}
     }
   },
   "playerInviteDesc": "This will follow {name} and allow you to see which games they are in and all the teams they are in.  Please setup your relationship with the player and save.",
@@ -3161,6 +3070,12 @@
   "Player deleted": "Player deleted",
   "@Player deleted": {
     "description": "Text to show the player is deleted",
+    "type": "text",
+    "placeholders": {}
+  },
+  "SET FINAL SCORE": "SET FINAL SCORE",
+  "@SET FINAL SCORE": {
+    "description": "Button to set the final score",
     "type": "text",
     "placeholders": {}
   }
