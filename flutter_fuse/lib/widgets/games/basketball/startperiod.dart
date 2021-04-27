@@ -6,6 +6,7 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../../services/blocs.dart';
 import '../../../services/localutilities.dart';
 import '../../../services/messages.dart';
+import '../editresultdialog.dart';
 import '../gametitle.dart';
 import 'perioddropdown.dart';
 import 'playermultiselect.dart';
@@ -34,6 +35,20 @@ class StartPeriod extends StatefulWidget {
 class _StartPeriodState extends State<StartPeriod> {
   GamePeriod period;
   List<String> selectedPlayers = [];
+
+  void _editResult() async {
+    // Call up a dialog to edit the result.
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return EditResultDialog(widget.game.uid);
+      },
+    );
+    // Means the result was written and we should leave.
+    if (result != null && result == true) {
+      Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +86,13 @@ class _StartPeriodState extends State<StartPeriod> {
           SizedBox(
             height: 20.0,
           ),
+          widget.game.sharedData.time
+                  .isBefore(DateTime.now().subtract(Duration(hours: 2)))
+              ? TextButton(
+                  onPressed: _editResult,
+                  child: Text(Messages.of(context).finalScoreButton),
+                )
+              : SizedBox(height: 0),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -79,13 +101,15 @@ class _StartPeriodState extends State<StartPeriod> {
                 onPeriodChange: (GamePeriod p) => setState(() => period = p),
               ),
               SizedBox(width: 30.0),
-              FlatButton(
-                color: LocalUtilities.isDark(context)
-                    ? Theme.of(context).primaryColor
-                    : LocalUtilities.brighten(
-                        Theme.of(context).accentColor, 80),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+              TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: LocalUtilities.isDark(context)
+                      ? Theme.of(context).primaryColor
+                      : LocalUtilities.brighten(
+                          Theme.of(context).accentColor, 80),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                 ),
                 onPressed: () {
                   // ignore: close_sinks

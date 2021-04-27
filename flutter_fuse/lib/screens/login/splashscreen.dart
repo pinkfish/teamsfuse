@@ -75,11 +75,10 @@ class SplashScreen extends StatelessWidget {
 
         final data = await FirebaseDynamicLinks.instance.getInitialLink();
         final deepLink = data?.link;
+        await Navigator.pushNamedAndRemoveUntil(
+            context, '/Main/Home', ModalRoute.withName('/Main/Home'));
         if (deepLink != null) {
           await Navigator.pushNamed(context, deepLink.path);
-        } else {
-          await Navigator.pushNamedAndRemoveUntil(
-              context, '/Main/Home', ModalRoute.withName('/Main/Home'));
         }
       });
     }

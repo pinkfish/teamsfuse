@@ -113,7 +113,7 @@ class GameEventWidget extends StatelessWidget {
       case GameEventType.Block:
       case GameEventType.Foul:
       case GameEventType.DefensiveRebound:
-      case GameEventType.OffsensiveRebound:
+      case GameEventType.OffensiveRebound:
         return c.withBlue(50);
       case GameEventType.PeriodEnd:
       case GameEventType.PeriodStart:

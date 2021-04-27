@@ -11,6 +11,7 @@ import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
 import 'teambloc.dart';
 
+/// The base class for all the game bloc events.
 abstract class GameBlocEvent extends Equatable {}
 
 class _GameEventLogout extends GameBlocEvent {

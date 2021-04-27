@@ -49,6 +49,9 @@ class PlayerTileBasketball extends StatelessWidget {
   /// Show the chips for the player.
   final bool showChips;
 
+  /// If we should show the summary details for this player.
+  final bool showSummary;
+
   /// The function to make to put extra stuff in.
   final PlayerExtraFunc extra;
 
@@ -68,6 +71,7 @@ class PlayerTileBasketball extends StatelessWidget {
       this.extra,
       this.showChips = false,
       this.compactDisplay = false,
+      this.showSummary = true,
       this.scale = 1.0})
       : assert((playerUid != null && (gameUid != null || seasonUid != null)));
 
@@ -184,7 +188,7 @@ class PlayerTileBasketball extends StatelessWidget {
                 child: ListTile(
                   title: Text(Messages.of(context).loading,
                       style: Theme.of(context).textTheme.caption),
-                  subtitle: summary != null
+                  subtitle: (summary != null && showSummary)
                       ? Text(
                           Messages.of(context).seasonSummary(summary),
                         )
@@ -207,7 +211,7 @@ class PlayerTileBasketball extends StatelessWidget {
               shape: shape,
               child: ListTile(
                 title: Text(Messages.of(context).unknown),
-                subtitle: summary != null
+                subtitle: (summary != null && showSummary)
                     ? Text(
                         Messages.of(context).seasonSummary(summary),
                       )
@@ -285,6 +289,7 @@ class PlayerTileBasketball extends StatelessWidget {
                     Theme.of(context).textTheme.headline6.fontSize)),
             overflow: TextOverflow.ellipsis,
             textScaleFactor: 1.0,
+            maxLines: 2,
           ),
           leading: ConstrainedBox(
             constraints: BoxConstraints.tightFor(
@@ -312,11 +317,11 @@ class PlayerTileBasketball extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _chips(context, loadedPlayer),
-              summary != null
+              summary != null && showSummary
                   ? Text(
                       Messages.of(context).seasonSummary(summary),
                     )
-                  : gameSummary != null
+                  : gameSummary != null && showSummary
                       ? Text(
                           Messages.of(context).gameSummary(gameSummary),
                         )

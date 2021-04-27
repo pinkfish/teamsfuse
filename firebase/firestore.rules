@@ -147,6 +147,7 @@ service cloud.firestore {
          allow update, delete: if isSignedIn();
          allow create: if isSignedIn() && isUidCorrect();
       }
+
       allow read: if isSignedIn() &&
          isUserOrAdmin(get(/databases/$(database)/documents/Seasons/$(existingData().seasonUid)).data);
       allow update, delete: if isSignedIn() &&

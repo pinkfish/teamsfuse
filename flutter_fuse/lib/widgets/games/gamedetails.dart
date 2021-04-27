@@ -48,7 +48,7 @@ class _GameDetailsState extends State<GameDetails> {
     await showDialog<bool>(
       context: context,
       builder: (context) {
-        return EditResultDialog(widget.gameBloc);
+        return EditResultDialog(widget.gameBloc.gameUid);
       },
     );
   }

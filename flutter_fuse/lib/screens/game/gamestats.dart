@@ -239,7 +239,7 @@ class GameStatsScreen extends StatelessWidget {
         ),
       ),
     ];
-    var secondidgets = <Widget>[
+    var secondWidgets = <Widget>[
       RoundButton(
         borderColor: Colors.green,
         size: buttonSize,
@@ -304,7 +304,7 @@ class GameStatsScreen extends StatelessWidget {
             children: firstWidgets,
           ),
           Column(
-            children: secondidgets,
+            children: secondWidgets,
           ),
           Column(
             children: thirdWidgets,
@@ -322,7 +322,7 @@ class GameStatsScreen extends StatelessWidget {
             children: firstWidgets,
           ),
           Row(
-            children: secondidgets,
+            children: secondWidgets,
           ),
           Row(
             children: thirdWidgets,
@@ -351,7 +351,7 @@ class GameStatsScreen extends StatelessWidget {
         borderColor: Colors.red,
         size: buttonSize,
         onPressed: () => _doBasicEvent(
-            context, GameEventType.OffsensiveRebound, singleGameBloc),
+            context, GameEventType.OffensiveRebound, singleGameBloc),
         child: Text(Messages.of(context).offensiveReboundButton),
       ),
       RoundButton(
@@ -553,7 +553,6 @@ class GameStatsScreen extends StatelessWidget {
                                 state.loadedEvents) {
                               var undoBloc =
                                   BlocProvider.of<GameEventUndoStack>(context);
-                              print('undoBloc $undoBloc');
                               if (undoBloc.isGameEmpty) {
                                 // Fill in with all these stats.
                                 for (var ev in state.gameEvents) {
@@ -589,18 +588,18 @@ class GameStatsScreen extends StatelessWidget {
                             if (state is SingleGameLoaded &&
                                 state.game.opponents.isEmpty &&
                                 state.loadedOpponentPlayers) {
-                              print('Adding missing opponent');
                               singleGameBloc.add(
                                 SingleGameAddOpponentPlayer(jerseyNumber: 'xx'),
                               );
                             }
 
-                            if ((state.loadedEvents &&
-                                    (state.gameEvents.isEmpty ||
-                                        state.gameEvents.last.type ==
-                                            GameEventType.PeriodEnd)) ||
-                                state.game?.result?.currentPeriod ==
-                                    GamePeriod.notStarted) {
+                            if (((state.loadedEvents &&
+                                        (state.gameEvents.isEmpty ||
+                                            state.gameEvents.last.type ==
+                                                GameEventType.PeriodEnd)) ||
+                                    state.game?.result?.currentPeriod ==
+                                        GamePeriod.notStarted) &&
+                                !(state is SingleGameSaving)) {
                               return BlocBuilder(
                                 bloc: singleSeasonBloc,
                                 builder: (BuildContext context,
@@ -618,6 +617,7 @@ class GameStatsScreen extends StatelessWidget {
                                           .season.playersData[playerUid];
                                       if (!state.game.players
                                           .containsKey(playerUid)) {
+                                        print('Missing $playerUid');
                                         builder ??= state.game.toBuilder();
                                         builder.players[playerUid] =
                                             GamePlayerSummary((b) => b
@@ -628,6 +628,8 @@ class GameStatsScreen extends StatelessWidget {
                                         if (state.game.players[playerUid]
                                                 .jerseyNumber !=
                                             data.jerseyNumber) {
+                                          print(
+                                              'Wrong jersey $playerUid ${data.jerseyNumber}');
                                           builder ??= state.game.toBuilder();
                                           builder.players[playerUid] = builder
                                               .players[playerUid]
@@ -636,10 +638,14 @@ class GameStatsScreen extends StatelessWidget {
                                                     data.jerseyNumber);
                                         }
                                       }
-                                      if (builder != null) {
-                                        singleGameBloc.add(SingleGameUpdate(
-                                            game: builder.build()));
-                                      }
+                                    }
+                                    // Update the game for all the players with the builder.
+                                    if (builder != null) {
+                                      print(
+                                          'From PLayers ${state.game.players.keys}');
+                                      print('To PLayers ${builder.players}');
+                                      singleGameBloc.add(SingleGameUpdate(
+                                          game: builder.build()));
                                     }
                                   }
                                   return StartPeriod(

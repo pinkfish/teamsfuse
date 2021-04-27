@@ -1394,6 +1394,11 @@ class Messages {
   String get startButton => Intl.message('START',
       desc: 'Text on a button to start the period', locale: locale);
 
+  String get startGameButton {
+    return Intl.message('START GAME',
+        desc: 'Start game dialog button title', locale: locale);
+  }
+
   String get startGame {
     return Intl.message('Start Game',
         desc: 'Start game dialog title', locale: locale);
@@ -2204,13 +2209,6 @@ class Messages {
         locale: locale);
   }
 
-  String fixScore(GameLog log) =>
-      fixScoreBreakout(log.score.ptsFor, log.score.ptsAgainst);
-
-  String fixScoreBreakout(num ptsFor, num ptsAgainst) =>
-      Intl.message('Fix score: $ptsFor - $ptsAgainst',
-          args: [ptsFor, ptsAgainst], name: 'fixScoreBreakout', locale: locale);
-
   String followPlayer(String player) => Intl.message('Follow $player',
       args: [player], name: 'followPlayer', locale: locale);
 
@@ -2428,7 +2426,7 @@ class Messages {
         return foulEventType;
       case GameEventType.Sub:
         return substitutionEventType;
-      case GameEventType.OffsensiveRebound:
+      case GameEventType.OffensiveRebound:
         return offensiveReboundEventType;
       case GameEventType.DefensiveRebound:
         return defensiveReboundEventType;
@@ -2640,144 +2638,6 @@ class Messages {
         desc: 'Start of period',
         locale: locale,
       );
-
-  String periodStart(GameLog period) {
-    switch (period.period.type) {
-      case GamePeriodType.Regulation:
-        return periodStartRegulation(period);
-      case GamePeriodType.OvertimeBreak:
-        return periodStartOvertimeBreak(period);
-      case GamePeriodType.Break:
-        return periodStartBreak(period);
-      case GamePeriodType.Overtime:
-        return periodStartOvertime(period);
-      case GamePeriodType.Penalty:
-        return periodStartPenalty(period);
-    }
-    return unknown;
-  }
-
-  String periodStartBreak(GameLog period) =>
-      periodStartBreakBreakout(period.score.ptsFor, period.score.ptsAgainst);
-
-  String periodStartBreakBreakout(num ptsFor, num ptsAgainst) =>
-      Intl.message('Start break Score: $ptsFor - $ptsAgainst',
-          args: [ptsFor, ptsAgainst],
-          name: 'periodStartBreakBreakout',
-          locale: locale);
-
-  String periodStartOvertime(GameLog period) => periodStartOvertimeBreakout(
-      period.period.periodNumber, period.score.ptsFor, period.score.ptsAgainst);
-
-  String periodStartOvertimeBreak(GameLog period) =>
-      periodStartOvertimeBreakBreakout(
-          period.score.ptsFor, period.score.ptsAgainst);
-
-  String periodStartOvertimeBreakBreakout(num ptsFor, num ptsAgainst) =>
-      Intl.message('Start overtime break Score: $ptsFor - $ptsAgainst',
-          args: [ptsFor, ptsAgainst],
-          name: 'periodStartOvertimeBreakBreakout',
-          locale: locale);
-
-  String periodStartOvertimeBreakout(
-          num periodNumber, num ptsFor, num ptsAgainst) =>
-      Intl.message('Start overtime $periodNumber Score: $ptsFor - $ptsAgainst',
-          args: [periodNumber, ptsFor, ptsAgainst],
-          name: 'periodStartOvertimeBreakout',
-          locale: locale);
-
-  String periodStartPenalty(GameLog period) => periodStartPenaltyBreakout(
-        period.score.ptsFor,
-        period.score.ptsAgainst,
-      );
-
-  String periodStartPenaltyBreakout(num ptsFor, num ptsAgainst) =>
-      Intl.message('Start penalty Score: $ptsFor - $ptsAgainst',
-          args: [ptsFor, ptsAgainst],
-          name: 'periodStartPenaltyBreakout',
-          locale: locale);
-
-  String periodStartRegulation(GameLog period) => periodStartRegulationBreakout(
-        period.period.periodNumber,
-        period.score.ptsFor,
-        period.score.ptsAgainst,
-      );
-
-  String periodStartRegulationBreakout(
-          num periodNumber, num ptsFor, num ptsAgainst) =>
-      Intl.message('Start period $periodNumber Score: $ptsFor - $ptsAgainst',
-          args: [periodNumber, ptsFor, ptsAgainst],
-          name: 'periodStartRegulationBreakout',
-          locale: locale);
-
-  String periodStop(GameLog period) {
-    switch (period.period.type) {
-      case GamePeriodType.Regulation:
-        return periodStopRegulation(period);
-      case GamePeriodType.Break:
-        return periodStopBreak(period);
-      case GamePeriodType.OvertimeBreak:
-        return periodStopOvertimeBreak(period);
-      case GamePeriodType.Overtime:
-        return periodStopOvertime(period);
-      case GamePeriodType.Penalty:
-        return periodStopPenalty(period);
-    }
-    return unknown;
-  }
-
-  String periodStopBreak(GameLog period) =>
-      periodStopBreakBreakout(period.score.ptsFor, period.score.ptsAgainst);
-
-  String periodStopBreakBreakout(num ptsFor, num ptsAgainst) =>
-      Intl.message('Stop break Score: $ptsFor - $ptsAgainst',
-          desc: 'the stop for the regulation break in the logs',
-          args: [ptsFor, ptsAgainst],
-          name: 'periodStopBreakBreakout',
-          locale: locale);
-
-  String periodStopOvertime(GameLog period) => periodStopOvertimeBreakout(
-      period.period.periodNumber, period.score.ptsFor, period.score.ptsAgainst);
-
-  String periodStopOvertimeBreak(GameLog period) =>
-      periodStopOvertimeBreakBreakout(
-          period.score.ptsFor, period.score.ptsAgainst);
-
-  String periodStopOvertimeBreakBreakout(num ptsFor, num ptsAgainst) =>
-      Intl.message('Stop overtime break Score: $ptsFor - $ptsAgainst',
-          desc: 'the stop for the overtime break in the logs',
-          args: [ptsFor, ptsAgainst],
-          name: 'periodStopOvertimeBreakBreakout',
-          locale: locale);
-
-  String periodStopOvertimeBreakout(
-          num periodNumber, num ptsFor, num ptsAgainst) =>
-      Intl.message('Stop overtime $periodNumber Score: $ptsFor - $ptsAgainst',
-          desc: 'the stop for the overtime  in the logs',
-          args: [periodNumber, ptsFor, ptsAgainst],
-          name: 'periodStopOvertimeBreakout',
-          locale: locale);
-
-  String periodStopPenalty(GameLog period) =>
-      periodStopPenaltyBreakout(period.score.ptsFor, period.score.ptsAgainst);
-
-  String periodStopPenaltyBreakout(num ptsFor, num ptsAgainst) =>
-      Intl.message('Stop penalty Score: $ptsFor - $ptsAgainst',
-          desc: 'the stop for the penalty period in the logs',
-          args: [ptsFor, ptsAgainst],
-          name: 'periodStopPenaltyBreakout',
-          locale: locale);
-
-  String periodStopRegulation(GameLog period) => periodStopRegulationBreakout(
-      period.period.periodNumber, period.score.ptsFor, period.score.ptsAgainst);
-
-  String periodStopRegulationBreakout(
-          num periodNumber, num ptsFor, num ptsAgainst) =>
-      Intl.message('Stop period $periodNumber Score: $ptsFor - $ptsAgainst',
-          desc: 'the stop for the regulation period in the logs',
-          args: [periodNumber, ptsFor, ptsAgainst],
-          name: 'periodStopRegulationBreakout',
-          locale: locale);
 
   String playerInviteDesc(String name) => Intl.message(
       'This will follow $name and allow you to see which games they are in and '
@@ -3371,6 +3231,11 @@ class Messages {
 
   String get playerDeleted => Intl.message('Player deleted',
       desc: 'Text to show the player is deleted', locale: locale);
+
+  String get finalScoreButton {
+    return Intl.message('SET FINAL SCORE',
+        desc: 'Button to set the final score', locale: locale);
+  }
 
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {

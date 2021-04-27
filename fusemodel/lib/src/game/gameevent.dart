@@ -5,6 +5,7 @@ import '../serializer.dart';
 import 'gameeventtype.dart';
 import 'gamefoultype.dart';
 import 'gameperiod.dart';
+import 'gamescore.dart';
 
 part 'gameevent.g.dart';
 
@@ -56,6 +57,14 @@ abstract class GameEvent implements Built<GameEvent, GameEventBuilder> {
   /// The player that did the assist.
   @nullable
   String get assistPlayerUid;
+
+  /// The message sent in the game.
+  @nullable
+  String get message;
+
+  /// If the score is set to a specific value, this is set to something.
+  @nullable
+  GameScore get fixedScore;
 
   static void _initializeBuilder(GameEventBuilder b) =>
       b..eventTimeline = Duration(seconds: 0);

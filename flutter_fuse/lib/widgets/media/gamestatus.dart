@@ -46,7 +46,7 @@ class GameStatus {
             break;
           case GameEventType.Sub:
             break;
-          case GameEventType.OffsensiveRebound:
+          case GameEventType.OffensiveRebound:
             break;
           case GameEventType.DefensiveRebound:
             break;

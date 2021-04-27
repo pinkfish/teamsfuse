@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/blocs/singlegameprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import 'results/gamelogview.dart';
-import 'results/messagesend.dart';
 import 'results/scoredetails.dart';
 
 ///
 /// Dialog to edit the result of the game.
 ///
 class EditResultDialog extends StatelessWidget {
+  final String gameUid;
+
   /// Constructor.
-  EditResultDialog(this._game) {
-    _game.add(SingleGameLoadGameLog());
-  }
+  EditResultDialog(this.gameUid);
 
-  final SingleGameBloc _game;
-
-  Widget _buildGame(
-      BuildContext context, Game game, Team team, Opponent opponent) {
-    var theme = Theme.of(context);
+  Widget _buildGame(BuildContext context, Game game, Team team,
+      Opponent opponent, SingleGameBloc gameBloc) {
+    final theme = Theme.of(context);
     var resultStr = '';
 
     if (game.result.inProgress == GameInProgress.Final) {
@@ -55,20 +53,15 @@ class EditResultDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          ScoreDetails(gameBloc, team),
           Expanded(
             child: Container(
               constraints: BoxConstraints(),
               margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
               decoration: BoxDecoration(color: theme.cardColor),
-              child: GameLogView(_game),
+              child: GameLogView(gameBloc),
             ),
           ),
-          Container(
-            margin: EdgeInsets.only(
-                left: 10.0, right: 10.0, bottom: 10.0, top: 1.0),
-            child: MessageSendBox(_game),
-          ),
-          ScoreDetails(_game, team),
         ],
       ),
     );
@@ -76,28 +69,40 @@ class EditResultDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener(
-      bloc: _game,
-      listener: (context, state) {
-        if (state is SingleGameDeleted) {
-          Navigator.pop(context);
-        }
-      },
-      child: BlocBuilder(
-        bloc: _game,
-        builder: (context, state) {
+    return SingleGameProvider(
+      gameUid: gameUid,
+      builder: (context, singleGameBloc) => BlocListener(
+        bloc: singleGameBloc,
+        listener: (context, state) {
           if (state is SingleGameDeleted) {
-            return CircularProgressIndicator();
+            Navigator.pop(context);
           }
-          return SingleTeamProvider(
-            teamUid: state.game.teamUid,
-            builder: (context, teamBloc) => BlocBuilder(
-              bloc: teamBloc,
-              builder: (context, teamState) => _buildGame(context, state.game,
-                  teamState.team, teamState.opponents[state.game.opponentUid]),
-            ),
-          );
         },
+        child: BlocProvider<GameEventUndoStack>(
+          create: (BuildContext context) => GameEventUndoStack(
+            db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+          ),
+          child: BlocBuilder(
+            bloc: singleGameBloc,
+            builder: (context, state) {
+              if (state is SingleGameDeleted) {
+                return CircularProgressIndicator();
+              }
+              return SingleTeamProvider(
+                teamUid: state.game.teamUid,
+                builder: (context, teamBloc) => BlocBuilder(
+                  bloc: teamBloc,
+                  builder: (context, teamState) => _buildGame(
+                      context,
+                      state.game,
+                      teamState.team,
+                      teamState.opponents[state.game.opponentUid],
+                      singleGameBloc),
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

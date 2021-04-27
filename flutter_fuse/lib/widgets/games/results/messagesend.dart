@@ -21,13 +21,14 @@ class MessageSendBox extends StatelessWidget {
     mess = mess.trim();
     if (mess.isNotEmpty) {
       var playerBloc = BlocProvider.of<PlayerBloc>(context);
-
-      game.add(SingleGameAddGameLog(
-          log: GameLog((b) => b
-            ..type = GameLogType.Message
+      var undoBloc = BlocProvider.of<GameEventUndoStack>(context);
+      undoBloc.addEvent(
+          GameEvent((b) => b
+            ..type = GameEventType.Message
             ..message = mess
-            ..displayName = playerBloc.state.me.name
-            ..uid = playerBloc.state.me.uid)));
+            ..playerUid = playerBloc.state.me.uid
+            ..uid = playerBloc.state.me.uid),
+          false);
       _textController.clear();
     }
   }

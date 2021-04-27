@@ -1,3 +1,4 @@
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -112,6 +113,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     _loadedStateBloc = LoadedStateBloc(coordinationBloc: _coordinationBloc);
 
     _authenticationBloc.add(AuthenticationAppStarted());
+    initDynamicLinks();
   }
 
   @override
@@ -161,6 +163,21 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         child: _materialApp(context),
       ),
     );
+  }
+
+  void initDynamicLinks() async {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+      final deepLink = dynamicLink?.link;
+
+      if (deepLink != null &&
+          _authenticationBloc.state is AuthenticationLoggedIn) {
+        await Navigator.pushNamed(context, deepLink.path);
+      }
+    }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });
   }
 
   @override

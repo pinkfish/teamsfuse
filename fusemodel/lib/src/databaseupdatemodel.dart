@@ -84,10 +84,6 @@ abstract class DatabaseUpdateModel {
   Future<void> updateFirestoreOfficalGameResult(
       String gameSharedUid, GameOfficialResults result);
 
-  Stream<Iterable<GameLog>> readGameLogs(Game game);
-
-  Future<String> addFirestoreGameLog(Game game, GameLog log);
-
   Stream<GameSharedData> getSharedGame(String sharedGameUid);
 
   Stream<Game> getGame(String gameUid);

@@ -26,7 +26,6 @@ class FuseMaterialApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final route = 'Home';
 
-    initDynamicLinks(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
@@ -51,24 +50,15 @@ class FuseMaterialApp extends StatelessWidget {
     );
   }
 
-  void initDynamicLinks(BuildContext context) async {
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-      final deepLink = dynamicLink?.link;
-
-      if (deepLink != null) {
-        await Navigator.pushNamed(context, deepLink.path);
-      }
-    }, onError: (OnLinkErrorException e) async {
-      print('onLinkError');
-      print(e.message);
-    });
-  }
-
   Route<dynamic> _buildRoute(
       BuildContext context, RouteSettings routeSettings) {
     // States on routes.
     final router = RepositoryProvider.of<fluro.FluroRouter>(context);
+    // Deal with routes that start with main.
+    if (routeSettings.name.startsWith('main/')) {
+      return router.generator(
+          routeSettings.copyWith(name: routeSettings.name.substring(5)));
+    }
     return router.generator(routeSettings);
   }
 }

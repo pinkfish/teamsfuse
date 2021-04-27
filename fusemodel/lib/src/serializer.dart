@@ -45,8 +45,6 @@ part 'serializer.g.dart';
   GameEventType,
   GameFoulType,
   GameInProgress,
-  GameLog,
-  GameLogType,
   GamePeriodType,
   GamePlace,
   GamePlayerSummary,

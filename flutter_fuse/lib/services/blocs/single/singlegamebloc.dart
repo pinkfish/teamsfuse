@@ -44,27 +44,6 @@ class SingleGameUpdateSharedData extends SingleGameEvent {
 }
 
 ///
-/// Adds a log to the game.
-///
-class SingleGameAddGameLog extends SingleGameEvent {
-  final GameLog log;
-
-  SingleGameAddGameLog({
-    @required this.log,
-  });
-  @override
-  List<Object> get props => [log];
-}
-
-///
-/// Loads the gane log for this game.
-///
-class SingleGameLoadGameLog extends SingleGameEvent {
-  @override
-  List<Object> get props => [];
-}
-
-///
 /// Delete this game from the world.
 ///
 class SingleGameDelete extends SingleGameEvent {
@@ -219,16 +198,6 @@ class _SingleGameDeleted extends SingleGameEvent {
   List<Object> get props => [];
 }
 
-class _SingleGameNewLogs extends SingleGameEvent {
-  /// The updated logs.
-  final BuiltList<GameLog> logs;
-
-  _SingleGameNewLogs({@required this.logs});
-
-  @override
-  List<Object> get props => [logs];
-}
-
 class _SingleGameNewEvents extends SingleGameEvent {
   final BuiltList<GameEvent> events;
   final BuiltList<GameEvent> newEvents;
@@ -281,7 +250,6 @@ class SingleGameBloc
   static String createNew = 'new';
 
   StreamSubscription<Game> _gameSub;
-  StreamSubscription<Iterable<GameLog>> _gameLogSub;
   StreamSubscription<BuiltList<GameEvent>> _gameEventSub;
   StreamSubscription<BuiltList<MediaInfo>> _mediaInfoSub;
 
@@ -310,7 +278,6 @@ class SingleGameBloc
   Future<void> close() async {
     await super.close();
     await _gameSub?.cancel();
-    await _gameLogSub?.cancel();
     await _mediaInfoSub?.cancel();
     await _gameEventSub?.cancel();
     await _opPlayers?.cancel();
@@ -426,7 +393,9 @@ class SingleGameBloc
       yield SingleGameSaving.fromState(state).build();
       try {
         await db.updateFirestoreGame(event.game, event.updateShared);
-        yield SingleGameSaveDone.fromState(state).build();
+        yield (SingleGameSaveDone.fromState(state)
+              ..game = event.game.toBuilder())
+            .build();
         yield (SingleGameLoaded.fromState(state)..game = event.game.toBuilder())
             .build();
       } catch (e, stack) {
@@ -459,24 +428,6 @@ class SingleGameBloc
               ..game = (state.game.toBuilder()
                 ..sharedData = event.sharedData.toBuilder()))
             .build();
-      } catch (e, stack) {
-        yield (SingleGameSaveFailed.fromState(state)
-              ..error = RemoteError(e.message, stack.toString()))
-            .build();
-        yield SingleGameLoaded.fromState(state).build();
-        crashes.recordException(e, stack);
-      }
-    }
-
-    // Add a gane log.
-    if (event is SingleGameAddGameLog) {
-      yield SingleGameSaving.fromState(state).build();
-      try {
-        await db.addFirestoreGameLog(state.game, event.log);
-        var logs = state.gameLog.toBuilder();
-        logs.add(event.log);
-        yield SingleGameSaveDone.fromState(state).build();
-        yield (SingleGameLoaded.fromState(state)..gameLog = logs).build();
       } catch (e, stack) {
         yield (SingleGameSaveFailed.fromState(state)
               ..error = RemoteError(e.message, stack.toString()))
@@ -539,21 +490,6 @@ class SingleGameBloc
         yield SingleGameLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
-    }
-
-    if (event is _SingleGameNewLogs) {
-      yield (SingleGameLoaded.fromState(state)
-            ..gameLog = event.logs.toBuilder()
-            ..loadedLogs = true)
-          .build();
-    }
-
-    if (event is SingleGameLoadGameLog) {
-      await _gameLogSub?.cancel();
-      _gameLogSub =
-          db.readGameLogs(state.game).listen((Iterable<GameLog> logs) {
-        add(_SingleGameNewLogs(logs: logs));
-      });
     }
 
     // Updates a player in the game
@@ -694,7 +630,8 @@ class SingleGameBloc
       if (ev.type != GameEventType.PeriodStart &&
           ev.type != GameEventType.PeriodEnd &&
           ev.type != GameEventType.TimeoutEnd &&
-          ev.type != GameEventType.TimeoutStart) {
+          ev.type != GameEventType.TimeoutStart &&
+          ev.type != GameEventType.ScoreSet) {
         if (ev.opponent) {
           sum = opponentSummary.perPeriod
               .putIfAbsent(currentPeriod, () => PlayerSummaryData())
@@ -770,7 +707,7 @@ class SingleGameBloc
             players[ev.replacementPlayerUid].currentlyPlaying = true;
           }
           break;
-        case GameEventType.OffsensiveRebound:
+        case GameEventType.OffensiveRebound:
           sum.offensiveRebounds++;
           playerSum.offensiveRebounds++;
           break;
@@ -811,9 +748,18 @@ class SingleGameBloc
                 ..score.ptsFor = ptsFor
                 ..score.ptsAgainst = ptsAgainst);
           break;
+        case GameEventType.ScoreSet:
+          result.scoresInternal[currentPeriod] = GameResultPerPeriod((b) => b
+            ..period = ev.period.toBuilder()
+            ..score.ptsFor = ev.fixedScore.ptsFor
+            ..score.ptsAgainst = ev.fixedScore.ptsFor);
+          ptsFor = ev.fixedScore.ptsFor;
+          ptsAgainst = ev.fixedScore.ptsAgainst;
+          break;
       }
       if (ev.type != GameEventType.PeriodStart &&
-          ev.type != GameEventType.PeriodEnd) {
+          ev.type != GameEventType.PeriodEnd &&
+          ev.type != GameEventType.ScoreSet) {
         if (ev.opponent) {
           opponentSummary.perPeriod[oldPeriod] = sum.build();
           opponents[ev.playerUid].perPeriod[oldPeriod] = playerSum.build();
@@ -895,9 +841,6 @@ class SingleGameBloc
           return SingleGameUninitialized();
         case SingleGameBlocStateType.Loaded:
           var ret = SingleGameLoaded.fromMap(json);
-          if (ret.loadedLogs) {
-            add(SingleGameLoadGameLog());
-          }
           return ret;
         case SingleGameBlocStateType.Deleted:
           return SingleGameDeleted.fromMap(json);

@@ -66,13 +66,14 @@ class GameCard extends StatelessWidget {
   }
 
   void _editResult(BuildContext context, SingleGameBloc gameBloc) async {
-    // Call up a dialog to edit the result.
-    await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return EditResultDialog(gameBloc);
-      },
-    );
+    await Navigator.pushNamed(
+        context,
+        '/GameStats/' +
+            gameBloc.state.game.uid +
+            '/' +
+            gameBloc.state.game.seasonUid +
+            '/' +
+            gameBloc.state.game.teamUid);
   }
 
   void _officalResult(BuildContext context) async {
@@ -178,7 +179,8 @@ class GameCard extends StatelessWidget {
   }
 
   Widget _buildInProgress(BuildContext context, Game game) {
-    var officalData = GameFromOfficial(game.sharedData, game.leagueOpponentUid);
+    var officialData =
+        GameFromOfficial(game.sharedData, game.leagueOpponentUid);
     if (game.result.inProgress == GameInProgress.Final) {
       GameResultPerPeriod finalResult;
       GameResultPerPeriod overtimeResult;
@@ -213,9 +215,9 @@ class GameCard extends StatelessWidget {
             overtimeResult,
             penaltyResult,
             game.result.result);
-        // If there is an offical result and it is different, mark this.
-        if (officalData.isGameFinished) {
-          if (!officalData.isSameAs(game.result)) {
+        // If there is an official result and it is different, mark this.
+        if (officialData.isGameFinished) {
+          if (!officialData.isSameAs(game.result)) {
             children
                 .add(Icon(Icons.error, color: Theme.of(context).errorColor));
           }
@@ -225,14 +227,14 @@ class GameCard extends StatelessWidget {
         );
       }
     } else {
-      // See if there is an offical result.
-      if (officalData.isGameFinished) {
+      // See if there is an official result.
+      if (officialData.isGameFinished) {
         var children = _buildResultColumn(
             context,
-            officalData.regulationResult,
-            officalData.overtimeResult,
-            officalData.penaltyResult,
-            officalData.result);
+            officialData.regulationResult,
+            officialData.overtimeResult,
+            officialData.penaltyResult,
+            officialData.result);
         children.insert(0, Text(Messages.of(context).official));
         return Column(
           children: children,
@@ -254,7 +256,7 @@ class GameCard extends StatelessWidget {
   Widget _buildTrailing(BuildContext context, SingleGameBloc gameBloc,
       Season season, List<Player> players) {
     var game = gameBloc.state.game;
-    // Only show attendence until the game/event is over.
+    // Only show attendance until the game/event is over.
     if (game.result.inProgress == GameInProgress.NotStarted) {
       if ((game.trackAttendance &&
           game.sharedData.time

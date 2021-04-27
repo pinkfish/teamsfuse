@@ -209,40 +209,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<Iterable<GameLog>> readGameLogs(Game game) async* {
-    var coll = _wrapper
-        .collection(GAMES_COLLECTION)
-        .document(game.uid)
-        .collection(GAME_LOG_COLLECTION);
-    var snap = await coll.getDocuments();
-    yield snap.documents.map((doc) => GameLog.fromMap(doc.data));
-
-    await for (var snap in coll.snapshots()) {
-      yield snap.documents.map((doc) => GameLog.fromMap(doc.data));
-    }
-  }
-
-  @override
-  Future<String> addFirestoreGameLog(Game game, GameLog log) {
-    var coll = _wrapper
-        .collection(GAMES_COLLECTION)
-        .document(game.uid)
-        .collection(GAME_LOG_COLLECTION);
-    var ref = coll.document();
-
-    log = log.rebuild((b) => b
-      ..eventTimeInternal =
-          TZDateTime.from(clock.now(), local).microsecondsSinceEpoch
-      ..uid = ref.documentID);
-    return ref.setData(log.toMap()).then((v) {
-      return ref.documentID;
-    }).catchError((e) {
-      print('Got error $e');
-      return null;
-    });
-  }
-
-  @override
   Future<Message> addMessage(Message mess, String body) async {
     // Add or update this record into the database.
     var ref = _wrapper.collection('Messages');

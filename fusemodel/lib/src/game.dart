@@ -1,7 +1,6 @@
 export 'game/game.dart';
 export 'game/gameevent.dart';
 export 'game/gamefromofficial.dart';
-export 'game/gamelog.dart';
 export 'game/gameofficialresults.dart';
 export 'game/gameperiod.dart';
 export 'game/gameplace.dart';

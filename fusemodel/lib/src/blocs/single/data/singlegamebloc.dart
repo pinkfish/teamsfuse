@@ -67,10 +67,6 @@ abstract class SingleGameState {
   @nullable
   Game get game;
 
-  /// The game log associated with the name.
-  @BuiltValueField(serialize: false)
-  BuiltList<GameLog> get gameLog;
-
   /// The logs associated with the game
   @BuiltValueField(serialize: false)
   bool get loadedLogs;
@@ -111,7 +107,6 @@ abstract class SingleGameState {
       SingleGameState state, SingleGameStateBuilder builder) {
     return builder
       ..game = state.game?.toBuilder()
-      ..gameLog = state.gameLog.toBuilder()
       ..gameEvents = state.gameEvents.toBuilder()
       ..media = state.media.toBuilder()
       ..players = state.players.toBuilder()

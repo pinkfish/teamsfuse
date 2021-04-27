@@ -14,7 +14,7 @@ class GameEventType extends EnumClass {
   static const GameEventType Missed = _$missed;
   static const GameEventType Foul = _$foul;
   static const GameEventType Sub = _$sub;
-  static const GameEventType OffsensiveRebound = _$offensiveRebound;
+  static const GameEventType OffensiveRebound = _$offensiveRebound;
   static const GameEventType DefensiveRebound = _$defensiveRebound;
   static const GameEventType Block = _$block;
   static const GameEventType Steal = _$steal;
@@ -24,6 +24,8 @@ class GameEventType extends EnumClass {
   static const GameEventType TimeoutStart = _$timeoutStart;
   static const GameEventType TimeoutEnd = _$timeoutEnd;
   static const GameEventType EmptyEvent = _$emptyEvent;
+  static const GameEventType Message = _$message;
+  static const GameEventType ScoreSet = _$scoreSet;
 
   const GameEventType._(String name) : super(name);
 

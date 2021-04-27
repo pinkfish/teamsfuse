@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/player/playerimage.dart';
 import '../../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -11,48 +12,45 @@ import '../../../services/messages.dart';
 class GameLogView extends StatelessWidget {
   /// Constructor.
   GameLogView(this.game) {
-    game.add(SingleGameLoadGameLog());
+    game.add(SingleGameLoadEvents());
   }
 
   /// The game the bloc is in.
   final SingleGameBloc game;
 
   Widget _buildGameItem(
-      BuildContext context, GameLog log, TextStyle subheadStyle) {
+      BuildContext context, GameEvent log, TextStyle subheadStyle) {
     Widget subtitle;
     switch (log.type) {
-      case GameLogType.Message:
+      case GameEventType.Message:
         subtitle = Text(log.message, style: subheadStyle);
         break;
-      case GameLogType.PeriodStart:
-        subtitle =
-            Text(Messages.of(context).periodStart(log), style: subheadStyle);
-        break;
-      case GameLogType.PeriodStop:
+      case GameEventType.PeriodStart:
         subtitle = Text(
-          Messages.of(context).periodStop(log),
+            Messages.of(context)
+                .periodStartText(Messages.of(context).periodName(log.period)),
+            style: subheadStyle);
+        break;
+      case GameEventType.PeriodEnd:
+        subtitle = Text(
+          Messages.of(context)
+              .periodEnd(Messages.of(context).periodName(log.period)),
           style: subheadStyle,
         );
         break;
-      case GameLogType.ScoreUpdate:
+      case GameEventType.ScoreSet:
         subtitle = Text(
-          Messages.of(context).onlyScore(log.score),
-          style: subheadStyle,
-        );
-        break;
-      case GameLogType.UpdateScore:
-        subtitle = Text(
-          Messages.of(context).fixScore(log),
+          Messages.of(context).onlyScore(log.fixedScore),
           style: subheadStyle,
         );
         break;
     }
     return ListTile(
       leading: CircleAvatar(
-        child: Text(log.initials()),
+        child: PlayerImage(playerUid: log.playerUid),
       ),
       title: Text(
-          MaterialLocalizations.of(context).formatFullDate(log.eventTime),
+          MaterialLocalizations.of(context).formatFullDate(log.timestamp),
           style: Theme.of(context)
               .textTheme
               .subtitle1
@@ -66,12 +64,12 @@ class GameLogView extends StatelessWidget {
     // Force the logs to load if they are not already.
     return BlocBuilder(
       bloc: game,
-      builder: (context, state) {
+      builder: (context, SingleGameState state) {
         var subheadStyle = Theme.of(context)
             .textTheme
             .subtitle1
             .copyWith(color: Colors.black, fontSize: 20.0);
-        var logs = state.gameLog.toList();
+        var logs = state.gameEvents.toList();
 
         return ListView.builder(
           scrollDirection: Axis.vertical,
