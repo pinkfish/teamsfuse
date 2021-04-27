@@ -42,6 +42,16 @@ platform :ios do
     PROVISIONING_PROFILE_SPECIFIER = ENV['PROVISIONING_PROFILE_SPECIFIER']
     TEMP_KEYCHAIN_USER = ENV['TEMP_KEYCHAIN_USER']
     TEMP_KEYCHAIN_PASSWORD = ENV['TEMP_KEYCHAIN_PASSWORD']
+    
+    
+    apple_intermediate_certificate_path = "/tmp/AppleWWDRCAG3.cer"
+    `curl https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer --output #{apple_intermediate_certificate_path}`
+
+    other_action.import_certificate(
+      certificate_path: apple_intermediate_certificate_path,
+      keychain_name: YOUR_KEYCHAIN_NAME,
+      keychain_password: YOUR_KEYCHAIN_PASSWORD
+    )
 
     # setup certs.
     keychain_name = TEMP_KEYCHAIN_USER
