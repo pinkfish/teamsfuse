@@ -197,7 +197,7 @@ class _TeamSettingsState extends State<TeamSettings> {
     _buildAdmins(ret, state);
     ret.add(
       SwitchListTile(
-        value: state.team.trackAttendence(state.club),
+        value: state.team.trackAttendance(state.club),
         title: Text('Track Attendence'),
         onChanged: (attend) => null,
       ),

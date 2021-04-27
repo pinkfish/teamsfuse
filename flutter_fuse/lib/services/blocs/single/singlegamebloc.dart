@@ -749,12 +749,14 @@ class SingleGameBloc
                 ..score.ptsAgainst = ptsAgainst);
           break;
         case GameEventType.ScoreSet:
-          result.scoresInternal[currentPeriod] = GameResultPerPeriod((b) => b
+          result.scoresInternal[ev.period] = GameResultPerPeriod((b) => b
             ..period = ev.period.toBuilder()
             ..score.ptsFor = ev.fixedScore.ptsFor
             ..score.ptsAgainst = ev.fixedScore.ptsFor);
           ptsFor = ev.fixedScore.ptsFor;
           ptsAgainst = ev.fixedScore.ptsAgainst;
+          // Update this to be the end, no matter what if the score is set.
+          result.inProgress = GameInProgress.Final;
           break;
       }
       if (ev.type != GameEventType.PeriodStart &&

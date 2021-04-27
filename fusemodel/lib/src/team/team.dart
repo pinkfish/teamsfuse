@@ -136,8 +136,8 @@ abstract class Team implements Built<Team, TeamBuilder> {
 
   static Serializer<Team> get serializer => _$teamSerializer;
 
-  /// Get the attendence tracking, potentially from the club.
-  bool trackAttendence(Club club) {
+  /// Get the attendance tracking, potentially from the club.
+  bool trackAttendance(Club club) {
     if (clubUid == null) {
       return trackAttendanceInternal;
     }

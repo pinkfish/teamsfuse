@@ -160,7 +160,7 @@ class TeamDetails extends StatelessWidget {
           }
 
           final tags = <Widget>[];
-          final team = teamState.team;
+          final Team team = teamState.team;
           if (team.clubUid != null) {
             Widget middle;
             if (teamState.club == null) {

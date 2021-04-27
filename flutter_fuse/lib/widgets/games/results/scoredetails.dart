@@ -1,19 +1,11 @@
-import 'dart:async';
-
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:timezone/timezone.dart';
 
 import '../../../services/blocs.dart';
 import '../../../services/messages.dart';
-import '../../../util/debouncer.dart';
 import '../..//util/numberpicker.dart';
-import '../../util/stopwatchdisplay.dart';
-import 'changescoredialog.dart';
-import 'periodselector.dart';
-import 'timersetupdialog.dart';
 
 ///
 /// Shows the details of the score.
@@ -45,47 +37,28 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     super.initState();
     _details = widget.game.state.game.result.toBuilder();
     _details.currentPeriod = GamePeriod.regulation1.toBuilder();
-    if (_details.currentPeriod != null) {
-      if (widget.game.state.game.result.scores
-          .containsKey(_details.currentPeriod)) {
-        _currentPeriodResults = widget
-            .game.state.game.result.scores[_details.currentPeriod]
-            .toBuilder();
-      } else {
-        // Default score bits.
-        _currentPeriodResults = GameResultPerPeriodBuilder()
-          ..period = _details.currentPeriod
-          ..score.ptsFor = 0
-          ..score.ptsAgainst = 0
-          ..score.intermediate =
-              (widget.game.state.game.result.currentPeriod.type !=
-                  GamePeriodType.Final);
-      }
-    }
-    var periodZero = GamePeriod((b) => b
-      ..type = _details.currentPeriod.type
-      ..periodNumber = 1);
-    _currentPeriodResults ??=
-        widget.game.state.game.result.scores[periodZero].toBuilder();
-    if (_currentPeriodResults == null) {
-      var gameScoreBuilder = GameScoreBuilder()
-        ..ptsAgainst = 0
-        ..ptsFor = 0;
+    if (widget.game.state.game.result.scores
+        .containsKey(_details.currentPeriod)) {
+      _currentPeriodResults = widget
+          .game.state.game.result.scores[_details.currentPeriod]
+          .toBuilder();
+      _currentPeriodResults.score.intermediate = false;
+    } else {
+      // Default score bits.
       _currentPeriodResults = GameResultPerPeriodBuilder()
-        ..period = periodZero.toBuilder()
-        ..score = gameScoreBuilder;
-
-      _details.scoresInternal[periodZero] = _currentPeriodResults.build();
+        ..period = _details.currentPeriod
+        ..score.ptsFor = 0
+        ..score.ptsAgainst = 0
+        ..score.intermediate = false;
     }
-    _details.currentPeriod ??= _currentPeriodResults.period;
     _ptsFor = _currentPeriodResults.score.ptsFor;
     _ptsAgainst = _currentPeriodResults.score.ptsAgainst;
   }
 
   void _sendUpdate() {
-    final newData = _details
-        .build()
-        .rebuild((b) => b..currentPeriod = GamePeriod.finalPeriod.toBuilder());
+    final newData = _details.build().rebuild((b) => b
+      ..currentPeriod = GamePeriod.finalPeriod.toBuilder()
+      ..inProgress = GameInProgress.Final);
     widget.game.add(SingleGameUpdateResult(result: newData));
   }
 

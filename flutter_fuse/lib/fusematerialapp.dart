@@ -54,6 +54,7 @@ class FuseMaterialApp extends StatelessWidget {
       BuildContext context, RouteSettings routeSettings) {
     // States on routes.
     final router = RepositoryProvider.of<fluro.FluroRouter>(context);
+    print('Navigating to ${routeSettings.name}');
     // Deal with routes that start with main.
     if (routeSettings.name.startsWith('main/')) {
       return router.generator(
