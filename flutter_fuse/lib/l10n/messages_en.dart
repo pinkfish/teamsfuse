@@ -91,147 +91,125 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m35(ptsFor, ptsAgainst, result) => "Do you want to set ${ptsFor} ${ptsAgainst} ${result} as the final score?";
 
-  static m36(ptsFor, ptsAgainst) => "Fix score: ${ptsFor} - ${ptsAgainst}";
+  static m36(player) => "Follow ${player}";
 
-  static m37(player) => "Follow ${player}";
+  static m37(arriveAt, address) => "Arrive by ${arriveAt}\n${address}";
 
-  static m38(arriveAt, address) => "Arrive by ${arriveAt}\n${address}";
+  static m38(resultString, ptsFor, ptsAgainst) => "${resultString}\nHome: ${ptsFor} Away: ${ptsAgainst}";
 
-  static m39(resultString, ptsFor, ptsAgainst) => "${resultString}\nHome: ${ptsFor} Away: ${ptsAgainst}";
+  static m39(time, endTime, opponent) => "NOW! ${time} - ${endTime} cs ${opponent}";
 
-  static m40(time, endTime, opponent) => "NOW! ${time} - ${endTime} cs ${opponent}";
+  static m40(time, endTime, tzShortName, opponent) => "NOW! ${time} - ${endTime} (${tzShortName}) vs ${opponent}";
 
-  static m41(time, endTime, tzShortName, opponent) => "NOW! ${time} - ${endTime} (${tzShortName}) vs ${opponent}";
+  static m41(time, tzShortName, opponent) => "NOW! ${time} (${tzShortName}) vs ${opponent}";
 
-  static m42(time, tzShortName, opponent) => "NOW! ${time} (${tzShortName}) vs ${opponent}";
+  static m42(time, opponent) => "NOW! ${time} vs ${opponent}";
 
-  static m43(time, opponent) => "NOW! ${time} vs ${opponent}";
+  static m43(time, endTime, opponent) => "${time} - ${endTime} vs ${opponent}";
 
-  static m44(time, endTime, opponent) => "${time} - ${endTime} vs ${opponent}";
+  static m44(time, endTime, tzShortName, opponent) => "${time} - ${endTime} (${tzShortName}) vs ${opponent}";
 
-  static m45(time, endTime, tzShortName, opponent) => "${time} - ${endTime} (${tzShortName}) vs ${opponent}";
+  static m45(time, tzShortName, opponent) => "${time} (${tzShortName}) vs ${opponent}";
 
-  static m46(time, tzShortName, opponent) => "${time} (${tzShortName}) vs ${opponent}";
+  static m46(time, opponent) => "${time} vs ${opponent}";
 
-  static m47(time, opponent) => "${time} vs ${opponent}";
+  static m47(opponent) => "Game vs ${opponent}";
 
-  static m48(opponent) => "Game vs ${opponent}";
+  static m48(by) => "By ${by}";
 
-  static m49(by) => "By ${by}";
+  static m49(num) => "Invited: ${num}";
 
-  static m50(num) => "Invited: ${num}";
+  static m50(name) => "${name} (Invited)";
 
-  static m51(name) => "${name} (Invited)";
+  static m51(points) => "${points}";
 
-  static m52(points) => "${points}";
+  static m52(points) => "Miss ${points}";
 
-  static m53(points) => "Miss ${points}";
+  static m53(teamName, playerName) => "${teamName} ${playerName}";
 
-  static m54(teamName, playerName) => "${teamName} ${playerName}";
+  static m54(num) => "${Intl.plural(num, zero: 'No teams', one: 'One team', other: '${num} teams')}";
 
-  static m55(num) => "${Intl.plural(num, zero: 'No teams', one: 'One team', other: '${num} teams')}";
+  static m55(num) => "${Intl.plural(num, one: 'One user', other: '${num} users')}";
 
-  static m56(num) => "${Intl.plural(num, one: 'One user', other: '${num} users')}";
+  static m56(ptsFor, ptsAgainst) => "${ptsFor} - ${ptsAgainst}";
 
-  static m57(ptsFor, ptsAgainst) => "${ptsFor} - ${ptsAgainst}";
+  static m57(opponentName, seasonName) => "${opponentName} - ${seasonName}";
 
-  static m58(opponentName, seasonName) => "${opponentName} - ${seasonName}";
+  static m58(win, loss, tie) => "Win: ${win} Loss: ${loss} Tie: ${tie}";
 
-  static m59(win, loss, tie) => "Win: ${win} Loss: ${loss} Tie: ${tie}";
+  static m59(num) => "Pending Invites: ${num}";
 
-  static m60(num) => "Pending Invites: ${num}";
+  static m60(periodName) => "End of ${periodName}";
 
-  static m61(periodName) => "End of ${periodName}";
+  static m61(periodNumber) => "Overtime ${periodNumber}";
 
-  static m62(periodNumber) => "Overtime ${periodNumber}";
+  static m62(periodNumber) => "Regulation ${periodNumber}";
 
-  static m63(periodNumber) => "Regulation ${periodNumber}";
+  static m63(periodName) => "Start of ${periodName}";
 
-  static m64(ptsFor, ptsAgainst) => "Start break Score: ${ptsFor} - ${ptsAgainst}";
+  static m64(name) => "This will follow ${name} and allow you to see which games they are in and all the teams they are in.  Please setup your relationship with the player and save.";
 
-  static m65(ptsFor, ptsAgainst) => "Start overtime break Score: ${ptsFor} - ${ptsAgainst}";
+  static m65(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst) => "Playing ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})";
 
-  static m66(periodNumber, ptsFor, ptsAgainst) => "Start overtime ${periodNumber} Score: ${ptsFor} - ${ptsAgainst}";
+  static m66(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst, penaltyFor, penaltyAgainst) => "Playing ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})(Penalty ${penaltyFor} - ${penaltyAgainst})";
 
-  static m67(ptsFor, ptsAgainst) => "Start penalty Score: ${ptsFor} - ${ptsAgainst}";
+  static m67(ptsFor, ptsAgainst, penaltyFor, penaltyAgainst) => "Playing ${ptsFor} - ${ptsAgainst} (Penalty ${penaltyFor} - ${penaltyAgainst})";
 
-  static m68(periodNumber, ptsFor, ptsAgainst) => "Start period ${periodNumber} Score: ${ptsFor} - ${ptsAgainst}";
+  static m68(ptsFor, ptsAgainst) => "Playing ${ptsFor} - ${ptsAgainst}";
 
-  static m69(periodName) => "Start of ${periodName}";
+  static m69(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst) => "Loss ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})";
 
-  static m70(ptsFor, ptsAgainst) => "Stop break Score: ${ptsFor} - ${ptsAgainst}";
+  static m70(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst, penaltyFor, penaltyAgainst) => "Loss ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})(Penalty ${penaltyFor} - ${penaltyAgainst})";
 
-  static m71(ptsFor, ptsAgainst) => "Stop overtime break Score: ${ptsFor} - ${ptsAgainst}";
+  static m71(ptsFor, ptsAgainst, penaltyFor, penaltyAgainst) => "Loss ${ptsFor} - ${ptsAgainst} (Penalty ${penaltyFor} - ${penaltyAgainst})";
 
-  static m72(periodNumber, ptsFor, ptsAgainst) => "Stop overtime ${periodNumber} Score: ${ptsFor} - ${ptsAgainst}";
+  static m72(ptsFor, ptsAgainst) => "Loss ${ptsFor} - ${ptsAgainst}";
 
-  static m73(ptsFor, ptsAgainst) => "Stop penalty Score: ${ptsFor} - ${ptsAgainst}";
+  static m73(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst) => "Tie ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})";
 
-  static m74(periodNumber, ptsFor, ptsAgainst) => "Stop period ${periodNumber} Score: ${ptsFor} - ${ptsAgainst}";
+  static m74(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst, penaltyFor, penaltyAgainst) => "Tie ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})(Penalty ${penaltyFor} - ${penaltyAgainst})";
 
-  static m75(name) => "This will follow ${name} and allow you to see which games they are in and all the teams they are in.  Please setup your relationship with the player and save.";
+  static m75(ptsFor, ptsAgainst, penaltyFor, penaltyAgainst) => "Tie ${ptsFor} - ${ptsAgainst} (Penalty ${penaltyFor} - ${penaltyAgainst})";
 
-  static m76(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst) => "Playing ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})";
+  static m76(ptsFor, ptsAgainst) => "Tie ${ptsFor} - ${ptsAgainst}";
 
-  static m77(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst, penaltyFor, penaltyAgainst) => "Playing ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})(Penalty ${penaltyFor} - ${penaltyAgainst})";
+  static m77(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst) => "Win ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})";
 
-  static m78(ptsFor, ptsAgainst, penaltyFor, penaltyAgainst) => "Playing ${ptsFor} - ${ptsAgainst} (Penalty ${penaltyFor} - ${penaltyAgainst})";
+  static m78(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst, penaltyFor, penaltyAgainst) => "Win ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})(Penalty ${penaltyFor} - ${penaltyAgainst})";
 
-  static m79(ptsFor, ptsAgainst) => "Playing ${ptsFor} - ${ptsAgainst}";
+  static m79(ptsFor, ptsAgainst, penaltyFor, penaltyAgainst) => "Win ${ptsFor} - ${ptsAgainst} (Penalty ${penaltyFor} - ${penaltyAgainst})";
 
-  static m80(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst) => "Loss ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})";
+  static m80(ptsFor, ptsAgainst) => "Win ${ptsFor} - ${ptsAgainst}";
 
-  static m81(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst, penaltyFor, penaltyAgainst) => "Loss ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})(Penalty ${penaltyFor} - ${penaltyAgainst})";
+  static m81(points, blocks, steals) => "Pts ${points} Blks ${blocks} Stls ${steals}";
 
-  static m82(ptsFor, ptsAgainst, penaltyFor, penaltyAgainst) => "Loss ${ptsFor} - ${ptsAgainst} (Penalty ${penaltyFor} - ${penaltyAgainst})";
+  static m82(teamName, seasonName) => "Team ${teamName}\nSeason ${seasonName}";
 
-  static m83(ptsFor, ptsAgainst) => "Loss ${ptsFor} - ${ptsAgainst}";
+  static m83(num) => "${num} club teams";
 
-  static m84(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst) => "Tie ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})";
+  static m84(str) => "Team Fuse (${str})";
 
-  static m85(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst, penaltyFor, penaltyAgainst) => "Tie ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})(Penalty ${penaltyFor} - ${penaltyAgainst})";
+  static m85(time, endTime) => "Practice ${time} - ${endTime}";
 
-  static m86(ptsFor, ptsAgainst, penaltyFor, penaltyAgainst) => "Tie ${ptsFor} - ${ptsAgainst} (Penalty ${penaltyFor} - ${penaltyAgainst})";
+  static m86(time, endTime, tzShortName) => "Practice ${time} - ${endTime} (${tzShortName})";
 
-  static m87(ptsFor, ptsAgainst) => "Tie ${ptsFor} - ${ptsAgainst}";
+  static m87(time, endTime) => "NOW! Practice ${time} - ${endTime}";
 
-  static m88(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst) => "Win ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})";
+  static m88(time, endTime, tzShortName) => "NOW! Practice ${time} - ${endTime} (${tzShortName})";
 
-  static m89(ptsFor, ptsAgainst, overtimeFor, overtimeAgainst, penaltyFor, penaltyAgainst) => "Win ${ptsFor} - ${ptsAgainst} (Overtime ${overtimeFor} - ${overtimeAgainst})(Penalty ${penaltyFor} - ${penaltyAgainst})";
+  static m89(time, tzShortName) => "NOW! Practice ${time} (${tzShortName})";
 
-  static m90(ptsFor, ptsAgainst, penaltyFor, penaltyAgainst) => "Win ${ptsFor} - ${ptsAgainst} (Penalty ${penaltyFor} - ${penaltyAgainst})";
+  static m90(time) => "NOW! Practice ${time}";
 
-  static m91(ptsFor, ptsAgainst) => "Win ${ptsFor} - ${ptsAgainst}";
+  static m91(time, tzShortName) => "Practice ${time} (${tzShortName})";
 
-  static m92(points, blocks, steals) => "Pts ${points} Blks ${blocks} Stls ${steals}";
+  static m92(time) => "Practice ${time}";
 
-  static m93(teamName, seasonName) => "Team ${teamName}\nSeason ${seasonName}";
+  static m93(email) => "Email address ${email} needs to be verified, please check your email or resend the verification details.";
 
-  static m94(num) => "${num} club teams";
+  static m94(wear) => "Wear ${wear}";
 
-  static m95(str) => "Team Fuse (${str})";
-
-  static m96(time, endTime) => "Practice ${time} - ${endTime}";
-
-  static m97(time, endTime, tzShortName) => "Practice ${time} - ${endTime} (${tzShortName})";
-
-  static m98(time, endTime) => "NOW! Practice ${time} - ${endTime}";
-
-  static m99(time, endTime, tzShortName) => "NOW! Practice ${time} - ${endTime} (${tzShortName})";
-
-  static m100(time, tzShortName) => "NOW! Practice ${time} (${tzShortName})";
-
-  static m101(time) => "NOW! Practice ${time}";
-
-  static m102(time, tzShortName) => "Practice ${time} (${tzShortName})";
-
-  static m103(time) => "Practice ${time}";
-
-  static m104(email) => "Email address ${email} needs to be verified, please check your email or resend the verification details.";
-
-  static m105(wear) => "Wear ${wear}";
-
-  static m106(win, loss, tie) => "Win: ${win} Loss: ${loss} Tie: ${tie}";
+  static m95(win, loss, tie) => "Win: ${win} Loss: ${loss} Tie: ${tie}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
@@ -513,10 +491,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "SAVE" : MessageLookupByLibrary.simpleMessage("SAVE"),
     "SEND" : MessageLookupByLibrary.simpleMessage("SEND"),
     "SET CLUB" : MessageLookupByLibrary.simpleMessage("SET CLUB"),
+    "SET FINAL SCORE" : MessageLookupByLibrary.simpleMessage("SET FINAL SCORE"),
     "SHARE PLAYER" : MessageLookupByLibrary.simpleMessage("SHARE PLAYER"),
     "SHARE TEAM" : MessageLookupByLibrary.simpleMessage("SHARE TEAM"),
     "SKIP" : MessageLookupByLibrary.simpleMessage("SKIP"),
     "START" : MessageLookupByLibrary.simpleMessage("START"),
+    "START GAME" : MessageLookupByLibrary.simpleMessage("START GAME"),
     "STATS" : MessageLookupByLibrary.simpleMessage("STATS"),
     "STL" : MessageLookupByLibrary.simpleMessage("STL"),
     "STREAM" : MessageLookupByLibrary.simpleMessage("STREAM"),
@@ -645,77 +625,66 @@ class MessageLookup extends MessageLookupByLibrary {
     "finalOfficialScoreBodyOvertimePenalty" : m33,
     "finalOfficialScoreBodyPenalty" : m34,
     "finalScoreBody" : m35,
-    "fixScoreBreakout" : m36,
-    "followPlayer" : m37,
-    "gameAddressArriveAt" : m38,
-    "gameResultOfficialBreakout" : m39,
-    "gameTitleNowSharedEnd" : m40,
-    "gameTitleNowSharedEndShort" : m41,
-    "gameTitleNowSharedShort" : m42,
-    "gameTitleNowSharedTime" : m43,
-    "gameTitleSharedEnd" : m44,
-    "gameTitleSharedEndShort" : m45,
-    "gameTitleSharedShort" : m46,
-    "gameTitleSharedTime" : m47,
-    "gameTitleVsGame" : m48,
+    "followPlayer" : m36,
+    "gameAddressArriveAt" : m37,
+    "gameResultOfficialBreakout" : m38,
+    "gameTitleNowSharedEnd" : m39,
+    "gameTitleNowSharedEndShort" : m40,
+    "gameTitleNowSharedShort" : m41,
+    "gameTitleNowSharedTime" : m42,
+    "gameTitleSharedEnd" : m43,
+    "gameTitleSharedEndShort" : m44,
+    "gameTitleSharedShort" : m45,
+    "gameTitleSharedTime" : m46,
+    "gameTitleVsGame" : m47,
     "home" : MessageLookupByLibrary.simpleMessage("home"),
-    "invitedBy" : m49,
-    "invitedPeople" : m50,
-    "invitedToTeamWithName" : m51,
-    "madeEventType" : m52,
-    "missedEventType" : m53,
-    "nameAndTeam" : m54,
-    "numberOfTeamsForPlayer" : m55,
-    "numberOfUserForPlayer" : m56,
-    "onlyScoreBreakout" : m57,
-    "opponentSeason" : m58,
-    "opponentWinRecordBreakout" : m59,
-    "pendingInvites" : m60,
-    "periodEnd" : m61,
-    "periodNameOvertimeNumber" : m62,
-    "periodNameRegulationNumber" : m63,
-    "periodStartBreakBreakout" : m64,
-    "periodStartOvertimeBreakBreakout" : m65,
-    "periodStartOvertimeBreakout" : m66,
-    "periodStartPenaltyBreakout" : m67,
-    "periodStartRegulationBreakout" : m68,
-    "periodStartText" : m69,
-    "periodStopBreakBreakout" : m70,
-    "periodStopOvertimeBreakBreakout" : m71,
-    "periodStopOvertimeBreakout" : m72,
-    "periodStopPenaltyBreakout" : m73,
-    "periodStopRegulationBreakout" : m74,
-    "playerInviteDesc" : m75,
-    "resultInProgressOvertime" : m76,
-    "resultInProgressOvertimePenalty" : m77,
-    "resultInProgressPenalty" : m78,
-    "resultInProgressRegulation" : m79,
-    "resultLossOvertime" : m80,
-    "resultLossOvertimePenalty" : m81,
-    "resultLossPenalty" : m82,
-    "resultLossRegulation" : m83,
-    "resultTieOvertime" : m84,
-    "resultTieOvertimePenalty" : m85,
-    "resultTiePenalty" : m86,
-    "resultTieRegulation" : m87,
-    "resultWinOvertime" : m88,
-    "resultWinOvertimePenalty" : m89,
-    "resultWinPenalty" : m90,
-    "resultWinRegulation" : m91,
-    "seasonSummaryExpanded" : m92,
-    "teamAndSeason" : m93,
-    "teamNumbers" : m94,
-    "titleWith" : m95,
-    "trainingTitleEnd" : m96,
-    "trainingTitleEndShortName" : m97,
-    "trainingTitleNowEnd" : m98,
-    "trainingTitleNowEndShortName" : m99,
-    "trainingTitleNowShortName" : m100,
-    "trainingTitleNowTime" : m101,
-    "trainingTitleShortName" : m102,
-    "trainingTitleTime" : m103,
-    "verifyExplanation" : m104,
-    "wearUniform" : m105,
-    "winRecordBreakout" : m106
+    "invitedBy" : m48,
+    "invitedPeople" : m49,
+    "invitedToTeamWithName" : m50,
+    "madeEventType" : m51,
+    "missedEventType" : m52,
+    "nameAndTeam" : m53,
+    "numberOfTeamsForPlayer" : m54,
+    "numberOfUserForPlayer" : m55,
+    "onlyScoreBreakout" : m56,
+    "opponentSeason" : m57,
+    "opponentWinRecordBreakout" : m58,
+    "pendingInvites" : m59,
+    "periodEnd" : m60,
+    "periodNameOvertimeNumber" : m61,
+    "periodNameRegulationNumber" : m62,
+    "periodStartText" : m63,
+    "playerInviteDesc" : m64,
+    "resultInProgressOvertime" : m65,
+    "resultInProgressOvertimePenalty" : m66,
+    "resultInProgressPenalty" : m67,
+    "resultInProgressRegulation" : m68,
+    "resultLossOvertime" : m69,
+    "resultLossOvertimePenalty" : m70,
+    "resultLossPenalty" : m71,
+    "resultLossRegulation" : m72,
+    "resultTieOvertime" : m73,
+    "resultTieOvertimePenalty" : m74,
+    "resultTiePenalty" : m75,
+    "resultTieRegulation" : m76,
+    "resultWinOvertime" : m77,
+    "resultWinOvertimePenalty" : m78,
+    "resultWinPenalty" : m79,
+    "resultWinRegulation" : m80,
+    "seasonSummaryExpanded" : m81,
+    "teamAndSeason" : m82,
+    "teamNumbers" : m83,
+    "titleWith" : m84,
+    "trainingTitleEnd" : m85,
+    "trainingTitleEndShortName" : m86,
+    "trainingTitleNowEnd" : m87,
+    "trainingTitleNowEndShortName" : m88,
+    "trainingTitleNowShortName" : m89,
+    "trainingTitleNowTime" : m90,
+    "trainingTitleShortName" : m91,
+    "trainingTitleTime" : m92,
+    "verifyExplanation" : m93,
+    "wearUniform" : m94,
+    "winRecordBreakout" : m95
   };
 }
