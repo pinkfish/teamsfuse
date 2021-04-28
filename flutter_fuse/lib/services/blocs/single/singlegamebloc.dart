@@ -279,11 +279,11 @@ class SingleGameBloc
   }
 
   static SingleGameState _getInitialState(String uid, GameBloc gameBloc) {
-    final game = gameBloc.getGame(uid);
+    final game = gameBloc?.getGame(uid);
     if (game == null) {
       return SingleGameUninitialized();
     }
-    return SingleGameLoaded((b) => b..game);
+    return SingleGameLoaded((b) => b..game = game.toBuilder());
   }
 
   @override

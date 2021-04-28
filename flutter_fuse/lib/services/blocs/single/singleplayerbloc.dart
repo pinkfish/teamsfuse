@@ -8,6 +8,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
+import '../playerbloc.dart';
 
 /// The event for all the single player bloc events
 abstract class SinglePlayerEvent extends Equatable {}
@@ -164,17 +165,28 @@ class SinglePlayerBloc
 
   /// Create the single player bloc to load the data for the player.
   SinglePlayerBloc(
-      {@required this.db, @required this.playerUid, @required this.crashes})
-      : super(SinglePlayerUninitialized(), playerUid) {
+      {@required this.db,
+      @required this.playerUid,
+      @required this.crashes,
+      @required PlayerBloc playerBloc})
+      : super(_getInitialState(playerUid, playerBloc), playerUid) {
     _playerSub = db.getPlayerDetails(playerUid).listen((data) {
       if (data == null) {
-        print('Couldnt find $playerUid');
+        print('Couldn\'t find $playerUid');
         add(_SinglePlayerDeleted());
       } else {
         add(_SinglePlayerNewPlayer(newPlayer: data));
       }
     });
     _playerSub.onError((e, stack) => crashes.recordException(e, stack));
+  }
+
+  static SinglePlayerState _getInitialState(String uid, PlayerBloc playerBloc) {
+    final player = playerBloc?.getPlayer(uid);
+    if (player == null) {
+      return SinglePlayerUninitialized();
+    }
+    return SinglePlayerLoaded((b) => b..player = player.toBuilder());
   }
 
   // Load this id from the hydratedBloc

@@ -7,6 +7,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
+import '../seasonbloc.dart';
 
 abstract class SingleSeasonEvent extends Equatable {}
 
@@ -88,8 +89,11 @@ class SingleSeasonBloc
 
   // Create the bloc and do exciting things with it.
   SingleSeasonBloc(
-      {@required this.db, @required this.seasonUid, @required this.crashes})
-      : super(SingleSeasonUninitialized(), seasonUid) {
+      {@required this.db,
+      @required this.seasonUid,
+      @required this.crashes,
+      @required SeasonBloc seasonBloc})
+      : super(_getInitialState(seasonUid, seasonBloc), seasonUid) {
     assert(seasonUid != null && seasonUid.isNotEmpty);
     _seasonSub = db.getSingleSeason(seasonUid).listen((season) {
       if (season != null) {
@@ -105,6 +109,14 @@ class SingleSeasonBloc
       add(_SingleSeasonDeleted());
       crashes.recordException(e, stack);
     });
+  }
+
+  static SingleSeasonState _getInitialState(String uid, SeasonBloc seasonBloc) {
+    final season = seasonBloc?.getSeason(uid);
+    if (season == null) {
+      return SingleSeasonUninitialized();
+    }
+    return SingleSeasonLoaded((b) => b..season = season.toBuilder());
   }
 
   @override

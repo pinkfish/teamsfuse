@@ -8,6 +8,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
+import '../teambloc.dart';
 
 abstract class SingleTeamEvent extends Equatable {}
 
@@ -227,8 +228,11 @@ class SingleTeamBloc
   String _listeningClubUid;
 
   SingleTeamBloc(
-      {@required this.db, @required this.teamUid, @required this.crashes})
-      : super(SingleTeamUninitialized(), 'TeamState.$teamUid') {
+      {@required this.db,
+      @required this.teamUid,
+      @required this.crashes,
+      @required TeamBloc teamBloc})
+      : super(_getInitialState(teamUid, teamBloc), 'TeamState.$teamUid') {
     _teamSub = db.getTeamDetails(teamUid: teamUid).listen((team) {
       if (team != null) {
         add(
@@ -249,6 +253,14 @@ class SingleTeamBloc
         _setupClubSub(state.team);
       }
     });
+  }
+
+  static SingleTeamState _getInitialState(String uid, TeamBloc teamBloc) {
+    final team = teamBloc?.getTeam(uid);
+    if (team == null) {
+      return SingleTeamUninitialized();
+    }
+    return SingleTeamLoaded((b) => b..team = team.toBuilder());
   }
 
   void _loadOpponents() async {

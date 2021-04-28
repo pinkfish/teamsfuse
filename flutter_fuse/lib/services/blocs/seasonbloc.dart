@@ -87,6 +87,16 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
     await _coordSub?.cancel();
   }
 
+  ///
+  /// Gets the season from the current cache.
+  ///
+  Season getSeason(String uid) {
+    if (state.seasons.containsKey(uid)) {
+      return state.seasons[uid];
+    }
+    return null;
+  }
+
   @override
   Stream<SeasonState> mapEventToState(SeasonEvent event) async* {
     // Start the firestore loading.

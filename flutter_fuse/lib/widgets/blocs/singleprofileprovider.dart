@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/analytics.dart';
 import '../../services/blocs.dart';
 import 'base/singleprovider.dart';
 
@@ -32,7 +33,7 @@ class SingleProfileProvider extends SingleBlocProvider<SingleProfileBloc> {
       userAuth: RepositoryProvider.of<UserAuthImpl>(context),
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       profileUid: uid,
-      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+      crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
     );
   }
 }

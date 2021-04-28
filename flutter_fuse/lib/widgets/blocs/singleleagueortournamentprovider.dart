@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/analytics.dart';
 import '../../services/blocs.dart';
 import 'base/singleprovider.dart';
 
@@ -33,7 +34,7 @@ class SingleLeagueOrTournamentProvider
       BuildContext context, String uid) {
     return SingleLeagueOrTournamentBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
-        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+        crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
         leagueUid: uid);
   }
 }

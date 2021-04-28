@@ -72,6 +72,13 @@ class PlayerBloc extends HydratedBloc<_PlayerEvent, PlayerState> {
     }
   }
 
+  ///
+  /// Get the player from the current state, if it exists.
+  ///
+  Player getPlayer(String uid) {
+    return state.getPlayer(uid);
+  }
+
   void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
     if (!_loadingFirestore) {
       _loadingFirestore = true;

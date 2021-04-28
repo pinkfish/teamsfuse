@@ -111,6 +111,13 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
     });
   }
 
+  ///
+  /// Get the team from the team bloc.
+  ///
+  Team getTeam(String uid) {
+    return state.getTeam(uid);
+  }
+
   void _startLoadingFirestore(CoordinationState state) {
     if (!_loadingFirestore) {
       _loadingFirestore = true;
