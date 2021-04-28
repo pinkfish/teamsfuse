@@ -118,7 +118,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     _authenticationBloc.add(AuthenticationAppStarted());
     initDynamicLinks();
     // Setup the local notifications to work with FCM.
-    _notifications = Notifications(selectNotification);
+    _notifications = Notifications(selectNotification, _authenticationBloc);
     _notifications.init(_authenticationBloc);
   }
 

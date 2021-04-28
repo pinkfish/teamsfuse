@@ -194,8 +194,11 @@ abstract class DatabaseUpdateModel {
 
   Future<void> addTrainingEvents(Game game, Iterable<DateTime> dates);
 
-  Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen,
-      Season season, Uint8List imageFile);
+  Future<String> addFirestoreTeam(
+      Team team,
+      DocumentReferenceWrapper preGenerated,
+      Season season,
+      Uint8List imageFile);
 
   Future<Uri> updateTeamImage(String teamUid, Uint8List imgFile);
 

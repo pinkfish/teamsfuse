@@ -5,8 +5,11 @@ import 'package:fusemodel/fusemodel.dart';
 import 'firestore.dart';
 import 'userdata.dart';
 
+///
+/// Implementation for user auth in the system.
+///
 class UserAuthImpl {
-  final FirestoreWrapper wrapper;
+  final FirestoreWrapper _wrapper;
   UserData _currentUser;
   FirebaseUserWrapper _currentFirebaseUser;
   final StreamController<UserData> _controller = StreamController<UserData>();
@@ -15,10 +18,9 @@ class UserAuthImpl {
   String _token;
   StreamSubscription<FirebaseUserWrapper> _updateStream;
 
-  UserAuthImpl(this.wrapper) {
-    _updateStream = wrapper.auth.onAuthStateChanged
+  UserAuthImpl(this._wrapper) {
+    _updateStream = _wrapper.auth.onAuthStateChanged
         .listen((FirebaseUserWrapper input) async {
-      print('onAuthStateChanged $input');
       if (_profileUpdates != null) {
         await _profileUpdates.cancel();
         _profileUpdates = null;
@@ -39,7 +41,8 @@ class UserAuthImpl {
         if (_token != null) {
           await setNotificationToken(_token);
         }
-        var ref = wrapper.collection(USER_DATA_COLLECTION).document(input.uid);
+        final ref =
+            _wrapper.collection(USER_DATA_COLLECTION).document(input.uid);
         _profileUpdates = ref.snapshots().listen(_onProfileUpdates);
       }
       print('end onAuthStateChanged $input');
@@ -52,52 +55,46 @@ class UserAuthImpl {
   }
 
   // To create new User
-  Future<UserData> createUser(UserData userData, FusedUserProfile profile) {
-    return wrapper.auth
-        .createUserWithEmailAndPassword(
-            email: userData.email, password: userData.password)
-        .then((FirebaseUserWrapper user) {
-      var newData = UserData((b) => b
-        ..profile = profile.toBuilder()
-        ..email = userData.email
-        ..isEmailVerified = false);
-      user.sendEmailVerification();
-      var ref = wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
-      return ref.setData(profile.toMap()).then((void data) async {
-        // With update uid.
-        // Create a 'me' user.
-        var player = PlayerBuilder();
-        player.name = userData.profile.displayName;
-        var playerUser = PlayerUserInternalBuilder();
-        playerUser.relationship = Relationship.Me;
-        playerUser.added = true;
-        player.usersData[user.uid] = playerUser.build();
-        await wrapper
-            .collection(PLAYERS_COLLECTION)
-            .add(player.build().toMap(includeUsers: true));
-        await signIn(userData);
-        return newData;
-      });
-    });
+  Future<UserData> createUser(
+      UserData userData, FusedUserProfile profile) async {
+    final user = await _wrapper.auth.createUserWithEmailAndPassword(
+        email: userData.email, password: userData.password);
+    final newData = UserData((b) => b
+      ..profile = profile.toBuilder()
+      ..email = userData.email
+      ..isEmailVerified = false);
+    await user.sendEmailVerification();
+    final ref = _wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
+    final data = await ref.setData(profile.toMap());
+
+    // With update uid.
+    // Create a 'me' user.
+    final player = PlayerBuilder();
+    player.name = userData.profile.displayName;
+    final playerUser = PlayerUserInternalBuilder();
+    playerUser.relationship = Relationship.Me;
+    playerUser.added = true;
+    player.usersData[user.uid] = playerUser.build();
+    await _wrapper
+        .collection(PLAYERS_COLLECTION)
+        .add(player.build().toMap(includeUsers: true));
+    await signIn(userData);
+    return newData;
   }
 
   // To verify new User
   Future<UserData> signIn(UserData userData) async {
-    print('Signin $userData');
-    var user = await wrapper.auth.signInWithEmailAndPassword(
+    final user = await _wrapper.auth.signInWithEmailAndPassword(
         email: userData.email, password: userData.password);
-    print('Got the sign in $user, now returning current user');
     if (user != null && user.loggedIn) {
-      print('In here');
       return currentUser();
     }
-    print('Throwing exception');
-    throw ArgumentError('Invalud login');
+    throw ArgumentError('Invalid login');
   }
 
   // To reset the password.
   Future<void> sendPasswordResetEmail(String email) async {
-    return wrapper.auth.sendPasswordResetEmail(email: email);
+    return _wrapper.auth.sendPasswordResetEmail(email: email);
   }
 
   // New user verification email.
@@ -118,7 +115,7 @@ class UserAuthImpl {
 
   // Sign the user out.
   Future<void> signOut() async {
-    return wrapper.auth.signOut().then((void a) {
+    return _wrapper.auth.signOut().then((void a) {
       _profileUpdates?.cancel();
       _profileUpdates = null;
     });
@@ -131,12 +128,13 @@ class UserAuthImpl {
 
   Future<UserData> currentUser() async {
     if (_currentUser == null) {
-      var fbUser = await wrapper.auth.currentUser();
+      final fbUser = await _wrapper.auth.currentUser();
       if (fbUser != null && fbUser.loggedIn) {
         _currentFirebaseUser = fbUser;
-        var user = await _userDataFromFirestore(fbUser, false);
+        final user = await _userDataFromFirestore(fbUser, false);
         if (_profileUpdates == null) {
-          var ref = wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
+          final ref =
+              _wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
           _profileUpdates = ref.snapshots().listen(_onProfileUpdates);
         }
         return user;
@@ -150,19 +148,17 @@ class UserAuthImpl {
   }
 
   Future<void> updateProfile(String uid, FusedUserProfile profile) async {
-    var ref = wrapper.collection(USER_DATA_COLLECTION).document(uid);
+    final ref = _wrapper.collection(USER_DATA_COLLECTION).document(uid);
     await ref.updateData(profile.toMap());
   }
 
   Stream<FusedUserProfile> getProfileStream(String userId) async* {
-    print('Looking for $userId');
-    var ref = wrapper.collection(USER_DATA_COLLECTION).document(userId);
-    var snap = await ref.get();
-    print('Found $userId ${snap.data}');
+    final ref = _wrapper.collection(USER_DATA_COLLECTION).document(userId);
+    final snap = await ref.get();
     if (snap.exists) {
-      var profile = FusedUserProfile.fromMap(snap.data);
+      final profile = FusedUserProfile.fromMap(snap.data);
       yield profile;
-      await for (DocumentSnapshotWrapper snap in ref.snapshots()) {
+      await for (final snap in ref.snapshots()) {
         yield FusedUserProfile.fromMap(snap.data);
       }
     }
@@ -171,7 +167,7 @@ class UserAuthImpl {
 
   void _onProfileUpdates(DocumentSnapshotWrapper doc) {
     if (doc.exists) {
-      var profile = FusedUserProfile.fromMap(doc.data).toBuilder();
+      final profile = FusedUserProfile.fromMap(doc.data).toBuilder();
       profile.uid = doc.documentID;
       _currentUser = _currentUser.rebuild((b) => b..profile = profile);
       _controller.add(_currentUser);
@@ -200,21 +196,20 @@ class UserAuthImpl {
       ..profile = userProfile);
     _currentFirebaseUser = input;
     if (forceProfile) {
-      var ref =
-          wrapper.collection(USER_DATA_COLLECTION).document(input.uid).get();
+      final ref =
+          _wrapper.collection(USER_DATA_COLLECTION).document(input.uid).get();
       if (forceProfile) {
-        var doc = await ref;
-        var profile = FusedUserProfile.fromMap(doc.data).toBuilder();
+        final doc = await ref;
+        final profile = FusedUserProfile.fromMap(doc.data).toBuilder();
         profile.uid = user.uid;
         user = user.rebuild((b) => b..profile = profile);
       } else {
         // Update when ready.
-        await ref.then((DocumentSnapshotWrapper doc) {
-          print('Loaded from firestore');
-          var profile = FusedUserProfile.fromMap(doc.data).toBuilder();
-          profile.uid = user.uid;
-          user = user.rebuild((b) => b..profile = profile);
-        });
+        final doc = await ref;
+
+        var profile = FusedUserProfile.fromMap(doc.data).toBuilder();
+        profile.uid = user.uid;
+        user = user.rebuild((b) => b..profile = profile);
       }
     }
     _currentUser = user;
@@ -224,11 +219,11 @@ class UserAuthImpl {
   // User profile
   Future<void> setNotificationToken(String token) async {
     if (_currentUser != null) {
-      var data = <String, bool>{};
-      var key = '${FusedUserProfile.TOKENS}.$token';
+      final data = <String, bool>{};
+      final key = '${FusedUserProfile.TOKENS}.$token';
       if (!data.containsKey(key) || !data[key]) {
         data[key] = true;
-        await wrapper
+        await _wrapper
             .collection(USER_DATA_COLLECTION)
             .document(_currentUser.uid)
             .updateData(data);
@@ -246,11 +241,11 @@ class UserAuthImpl {
   // User profile
   Future<void> deleteNotificationToken() async {
     if (_currentUser != null) {
-      var data = <String, bool>{};
-      var key = '${FusedUserProfile.TOKENS}.$_token';
+      final data = <String, bool>{};
+      final key = '${FusedUserProfile.TOKENS}.$_token';
       if (data.containsKey(key) && data[key]) {
         data[key] = false;
-        await wrapper
+        await _wrapper
             .collection(USER_DATA_COLLECTION)
             .document(_currentUser.uid)
             .updateData(data);

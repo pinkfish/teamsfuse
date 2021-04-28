@@ -32,7 +32,7 @@ class AuthenticationUninitialized extends AuthenticationState {
   AuthenticationUninitialized() : super(user: null);
 
   @override
-  String toString() => 'AuthenticationState::AuthenticatonUninitialized';
+  String toString() => 'AuthenticationState::AuthenticationUninitialized';
 }
 
 /// The auth state is loading.
@@ -61,7 +61,7 @@ class AuthenticationLoggedIn extends AuthenticationState {
   AuthenticationLoggedIn({@required UserData user}) : super(user: user);
 
   @override
-  String toString() => 'AuthenticationState::AuthenticatonLoggedIn';
+  String toString() => 'AuthenticationState::AuthenticationLoggedIn';
 }
 
 ///
@@ -100,7 +100,7 @@ class AuthenticationFailed extends AuthenticationState {
   /// Error from the login.
   final dynamic error;
 
-  /// Constructore for the authentication.
+  /// Constructor for the authentication.
   AuthenticationFailed({this.userData, this.reason, this.error});
 
   @override
@@ -260,7 +260,7 @@ class AuthenticationBloc
   StreamSubscription<UserData> _listener;
 
   /// Create a new authentication bloc.
-  AuthenticationBloc(this.userAuth, @required this.analyticsSubsystem)
+  AuthenticationBloc(this.userAuth, this.analyticsSubsystem)
       : super(AuthenticationUninitialized()) {
     print('Made with $userAuth $analyticsSubsystem');
     _listener = userAuth.onAuthChanged().listen(_authChanged);

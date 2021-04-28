@@ -19,7 +19,9 @@ class Notifications {
   final StreamController<String> _notificationRoutes =
       StreamController<String>();
 
-  final SelectNotificationCallback selectNotification;
+  final SelectNotificationCallback _selectNotification;
+
+  final AuthenticationBloc _authenticationBloc;
 
   /// Create a [AndroidNotificationChannel] for heads up notifications
   final channel = AndroidNotificationChannel(
@@ -34,7 +36,7 @@ class Notifications {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  Notifications(this.selectNotification);
+  Notifications(this._selectNotification, this._authenticationBloc);
 
   StreamSubscription<UpdateReason> _gameStream;
 
@@ -55,7 +57,7 @@ class Notifications {
         iOS: initializationSettingsIOS,
         macOS: initializationSettingsMacOS);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: selectNotification);
+        onSelectNotification: _selectNotification);
 
     /// Create an Android Notification Channel.
     ///
@@ -90,6 +92,16 @@ class Notifications {
     FirebaseMessaging.onMessage.listen((message) {
       print('onMessage: $message');
       return;
+    });
+
+    // Set the token to get notifications.
+    _authenticationBloc.stream.listen((event) async {
+      if (event is AuthenticationLoggedIn) {
+        // When we login, write out the auth token.
+        final token = await _firebaseMessaging.getToken();
+        print('Write token $token');
+        _authenticationBloc.add(AuthenticationNotificationToken(token));
+      }
     });
   }
 
