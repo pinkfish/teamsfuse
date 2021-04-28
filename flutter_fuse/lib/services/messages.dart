@@ -1671,7 +1671,7 @@ class Messages {
         locale: locale,
       );
 
-  String cardResultInProgress(GameResultSharedDetails result) {
+  String cardResultDetails(GameResultSharedDetails result) {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = GameResultPerPeriod((b) => b
@@ -1685,7 +1685,7 @@ class Messages {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
       if (result.penaltyResult != null) {
         GameResultPerPeriod penaltyScore = result.penaltyResult;
-        return cardResultInProgressOvertimeAndPenalty(
+        return cardResultDetailsOvertimeAndPenalty(
             finalScore.score.ptsFor,
             finalScore.score.ptsAgainst,
             overtimeScore.score.ptsFor,
@@ -1693,7 +1693,7 @@ class Messages {
             penaltyScore.score.ptsFor,
             penaltyScore.score.ptsAgainst);
       }
-      return cardResultInProgressOvertime(
+      return cardResultDetailsOvertime(
           finalScore.score.ptsFor,
           finalScore.score.ptsAgainst,
           overtimeScore.score.ptsFor,
@@ -1701,27 +1701,27 @@ class Messages {
     }
     if (result.penaltyResult != null) {
       GameResultPerPeriod penaltyScore = result.penaltyResult;
-      return cardResultInProgressPenalty(
+      return cardResultDetailsPenalty(
           finalScore.score.ptsFor,
           finalScore.score.ptsAgainst,
           penaltyScore.score.ptsFor,
           penaltyScore.score.ptsAgainst);
     }
-    return cardResultInProgressFinal(
+    return cardResultDetailsFinal(
         finalScore.score.ptsFor, finalScore.score.ptsAgainst);
   }
 
-  String cardResultInProgressFinal(
+  String cardResultDetailsFinal(
     num ptsFor,
     num ptsAgainst,
   ) =>
       Intl.message('$ptsFor - $ptsAgainst',
           desc: 'In progress result details',
           args: [ptsFor, ptsAgainst],
-          name: 'cardResultInProgressFinal',
+          name: 'cardResultDetailsFinal',
           locale: locale);
 
-  String cardResultInProgressOvertime(
+  String cardResultDetailsOvertime(
     num ptsFor,
     num ptsAgainst,
     num overtimeFor,
@@ -1737,11 +1737,11 @@ class Messages {
           overtimeFor,
           overtimeAgainst,
         ],
-        name: 'cardResultInProgressOvertime',
+        name: 'cardResultDetailsOvertime',
         locale: locale,
       );
 
-  String cardResultInProgressOvertimeAndPenalty(
+  String cardResultDetailsOvertimeAndPenalty(
           num ptsFor,
           num ptsAgainst,
           num overtimeFor,
@@ -1761,17 +1761,17 @@ class Messages {
           penaltyFor,
           penaltyAgainst
         ],
-        name: 'cardResultInProgressOvertimeAndPenalty',
+        name: 'cardResultDetailsOvertimeAndPenalty',
         locale: locale,
       );
 
-  String cardResultInProgressPenalty(
+  String cardResultDetailsPenalty(
           num ptsFor, num ptsAgainst, num penaltyFor, num penaltyAgainst) =>
       Intl.message(
           '$ptsFor - $ptsAgainst (Penalty $penaltyFor - $penaltyAgainst)',
           desc: 'In progress result details with penalty shootout',
           args: [ptsFor, ptsAgainst, penaltyFor, penaltyAgainst],
-          name: 'cardResultInProgressPenalty',
+          name: 'cardResultDetailsPenalty',
           locale: locale);
 
   String confirmCreateTeamForLeague(

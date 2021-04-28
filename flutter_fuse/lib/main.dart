@@ -30,18 +30,6 @@ void setLocalLocation(String tzName) {
   tz.setLocalLocation(tz.getLocation(tzName));
 }
 
-/// Create a [AndroidNotificationChannel] for heads up notifications
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'teams_fuse_channel', // id
-  'TeamsFuse Notifications', // title
-  'This channel is used for important notifications for TeamsFuse.', // description
-  importance: Importance.high,
-);
-
-/// Initialize the [FlutterLocalNotificationsPlugin] package.
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -117,23 +105,6 @@ void main() async {
   // Load notifications after the app config has loaded.
   var config = AppConfiguration();
   unawaited(config.load());
-
-  /// Create an Android Notification Channel.
-  ///
-  /// We use this channel in the `AndroidManifest.xml` file to override the
-  /// default FCM channel to enable heads up notifications.
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-
-  /// Update the iOS foreground notification presentation options to allow
-  /// heads up notifications.
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
 
   // License for the freepik picture.
   LicenseRegistry.addLicense(() async* {

@@ -1,13 +1,32 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
-//import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-//art';
+import 'package:timezone/timezone.dart';
+import '../messages.dart';
+import '../notifications.dart';
 
 /// Creates the text for the game.  THis is used by the game card and other
 /// places to display details about the game without being dependent on
 /// flutter.
 class GameNotification {
+  static GameNotification from(BuildContext context, Game game,
+      Opponent opponent, Team team, Season season) {
+    return GameNotification(
+      game,
+      team,
+      opponent,
+      season,
+      Messages.of(context),
+      MaterialLocalizations.of(context),
+      RepositoryProvider.of<Notifications>(context),
+    );
+  }
+
   /// Constructor.
-  GameNotification(this.game, this.team);
+  GameNotification(Game g, this.team, this.opponent, this.season, this.messages,
+      this.materialLocalizations, this.notification)
+      : id = 'Game' + g.uid,
+        game = g;
 
   /// The game to notify about.
   final Game game;
@@ -15,137 +34,118 @@ class GameNotification {
   /// The team to nofify about.
   final Team team;
 
-  /*
-  Future<int> showNotification(
-      int id,
-      FlutterLocalNotificationsPlugin notification,
-      Messages messages,
-      MaterialLocalizations materialLocalizations) async {
+  /// The opponent to notify about.
+  final Opponent opponent;
+
+  /// Season to notify about.
+  final Season season;
+
+  /// The notifications setup to use.
+  final Notifications notification;
+
+  /// The localization messages to use.
+  final Messages messages;
+
+  /// The material locations to use.
+  final MaterialLocalizations materialLocalizations;
+
+  /// The id of the notification.
+  final String id;
+
+  /// Shows the notification for this game.
+  Future<int> showNotification() async {
     StringBuffer body;
     String title;
 
-    Opponent op;
-    if (team == null || !team.opponents.containsKey(game.opponentUid)) {
-      op = Opponent(name: messages.unknown);
-    } else {
-      op = team.opponents[game.opponentUid];
-    }
+    final players = <Player>[];
 
-    List<Player> players = <Player>[];
-    Season season;
-    if (team != null) {
-      season = team.seasons[game.seasonUid];
-    }
-    if (season == null) {
-      season = Season();
-    }
-
-    TZDateTime timeNow = TZDateTime.from(clock.now(), local);
-    TimeOfDay day = TimeOfDay.fromDateTime(game.tzTime);
-    String format = materialLocalizations.formatTimeOfDay(day);
+    final gameTime = TimeOfDay.fromDateTime(game.sharedData.tzTime);
+    final format = materialLocalizations.formatTimeOfDay(gameTime);
+    final timeZone = getLocation(game.sharedData.timezone)
+        .timeZone(game.sharedData.time.millisecondsSinceEpoch);
     String endTimeFormat;
     String tzShortName;
-    if (game.timezone != local.name) {
-      tzShortName = getLocation(game.timezone).timeZone(game.time.toInt()).abbr;
+    if (game.sharedData.timezone != local.name) {
+      tzShortName = timeZone.abbreviation;
     }
 
-    if (game.time != game.endTime) {
-      TimeOfDay endDay = TimeOfDay.fromDateTime(game.tzEndTime);
+    if (game.sharedData.time != game.sharedData.endTime) {
+      final endDay = TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
       endTimeFormat = materialLocalizations.formatTimeOfDay(endDay);
     }
     String arriveFormat;
     // Only arrival time for games and only if it is before the game.
-    if (game.arriveTime != game.time &&
-        game.type == EventType.Game &&
-        timeNow.millisecondsSinceEpoch <
-            game.arriveTime + Duration.millisecondsPerHour) {
-      TimeOfDay arriveDay = TimeOfDay.fromDateTime(game.tzArriveTime);
+    var notifyTime = game.sharedData.tzTime.subtract(Duration(hours: 1));
+    if (game.arrivalTime != game.sharedData.time &&
+        game.sharedData.type == EventType.Game) {
+      final arriveDay = TimeOfDay.fromDateTime(game.tzArriveTime);
+      notifyTime = game.tzArriveTime.subtract(Duration(hours: 1));
       arriveFormat = materialLocalizations.formatTimeOfDay(arriveDay);
     }
 
     if (arriveFormat != null) {
-      String addr = game.place.address;
-      if (game.place.name.isNotEmpty) {
-        addr = game.place.name;
+      var address = game.sharedData.place.address;
+      if (game.sharedData.place.name.isNotEmpty) {
+        address = game.sharedData.place.name;
       }
-      body.write(messages.gameaddressarriveat(arriveFormat, addr) + '<br>');
+      body.write(messages.gameAddressArriveAt(arriveFormat, address) + '<br>');
     } else {
-      if (game.place.name.isNotEmpty) {
-        body.write(game.place.name + '<br>');
+      if (game.sharedData.place.name.isNotEmpty) {
+        body.write(game.sharedData.place.name + '<br>');
       } else {
-        body.write(game.place.address + '<br>');
+        body.write(game.sharedData.place.address + '<br>');
       }
     }
-    for (Player play in players) {
-      body.write('<i>' + messages.nameandteam(team, play) + '</i>');
+    for (final play in players) {
+      body.write('<i>' + messages.nameAndTeam(team.name, play.name) + '</i>');
     }
 
-    switch (game.type) {
+    switch (game.sharedData.type) {
       case EventType.Game:
         String opName;
-        if (op == null) {
+        if (opponent == null) {
           opName = messages.unknown;
         } else {
-          opName = op.name;
+          opName = opponent.name;
         }
-        title = messages.gametitle(format, endTimeFormat, tzShortName, opName);
+        title = messages.gameTitle(format, endTimeFormat, tzShortName, opName);
         break;
 
       case EventType.Event:
-        title =
-            messages.eventtitle(format, game.name, endTimeFormat, tzShortName);
+        title = messages.eventTitle(
+            format, game.sharedData.name, endTimeFormat, tzShortName);
         break;
 
       case EventType.Practice:
-        title = messages.trainingtitle(format, endTimeFormat, tzShortName);
+        title = messages.trainingTitle(format, endTimeFormat, tzShortName);
         break;
     }
 
-    if (game.type == EventType.Game) {
+    if (game.sharedData.type == EventType.Game) {
       if (game.result.result != GameResult.Unknown) {
-        body.write(messages.gameresult(game.result.result));
+        body.write(messages.gameResult(game.result.result));
       }
       if (game.result.inProgress == GameInProgress.Final) {
-        /*
-        GameResultPerPeriod finalResult;
-        GameResultPerPeriod overtimeResult;
-        if (game.result.scores.containsKey(GameInProgress.Overtime)) {
-          overtimeResult = game.result.scores[GameInProgress.Overtime];
-        }
-        GameResultPerPeriod penaltyResult;
-        if (game.result.scores.containsKey(GameInProgress.Penalty)) {
-          penaltyResult = game.result.scores[GameInProgress.Penalty];
-        }
-        body += '${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}';
-        if (overtimeResult != null) {
-          body += 'OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score
-              .ptsAgainst}';
-        }
-        if (penaltyResult != null) {
-          body += 'PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score
-              .ptsAgainst}';
-        }
-        */
+        body.write(messages.cardResultDetails(game.result));
       } else {
-        body.write(messages.gameinprogress(game.result.inProgress));
-        body.write(messages.resultinprogress(game.result));
+        body.write(messages.gameInProgress(game.result.inProgress));
+        body.write(messages.resultInProgress(game.result));
       }
     }
 
-    NotificationDetailsAndroid android =
-        NotificationDetailsAndroid('Game', 'Games', 'Games notifications');
-    NotificationDetailsIOS iOS = NotificationDetailsIOS();
-    NotificationDetails details = NotificationDetails(android, iOS);
-    print('$title $body $details');
-    /*
-    if (game.arriveTime > scheduleToShow) {
-      await notification.show(id, title, body, details);
-    } else {
-      await notification.schedule(id, title, body,
-          DateTime.fromMillisecondsSinceEpoch(scheduleToShow), details);
-    }
-    */
-    return id;
+    await notification.zonedSchedule(
+      id,
+      title,
+      body.toString(),
+      notifyTime,
+    );
+
+    return id.hashCode;
   }
-    */
+
+  Future<void> cancel() async {
+    await notification.cancelNotification(
+      id,
+    );
+  }
 }

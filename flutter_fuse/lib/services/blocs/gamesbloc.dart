@@ -7,6 +7,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
+import '../notifications.dart';
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
 import 'teambloc.dart';
@@ -54,6 +55,7 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
   final CoordinationBloc coordinationBloc;
   final TeamBloc teamBloc;
   final AnalyticsSubsystem crashes;
+  final Notifications notifications;
 
   StreamSubscription<TeamState> _teamSub;
   final Map<String, StreamSubscription<BuiltList<Game>>> _gameSubscriptions =
@@ -64,7 +66,8 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
   GameBloc(
       {@required this.coordinationBloc,
       @required this.teamBloc,
-      @required this.crashes})
+      @required this.crashes,
+      @required this.notifications})
       : _start = clock.now().subtract(Duration(days: 60)).toUtc(),
         _end = clock.now().add(Duration(days: 240)).toUtc(),
         super(GameUninitialized()) {

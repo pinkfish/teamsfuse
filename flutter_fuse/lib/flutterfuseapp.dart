@@ -117,8 +117,9 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
 
     _authenticationBloc.add(AuthenticationAppStarted());
     initDynamicLinks();
-    _notifications = Notifications();
-    _notifications.initForNotification();
+    // Setup the local notifications to work with FCM.
+    _notifications = Notifications(selectNotification);
+    _notifications.init(_authenticationBloc);
   }
 
   @override
@@ -147,7 +148,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
             create: (context) => widget._config),
         RepositoryProvider<LoggingData>(
             create: (context) => widget._loggingData),
-        RepositoryProvider<Notifications>(create: (context) => Notifications()),
+        RepositoryProvider<Notifications>(create: (context) => _notifications),
         RepositoryProvider<ImagePicker>(create: (context) => ImagePicker()),
       ],
       child: MultiBlocProvider(
@@ -188,6 +189,16 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
       print('onLinkError');
       print(e.message);
     });
+  }
+
+  Future selectNotification(String payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: $payload');
+    }
+    await Navigator.pushNamed(
+      context,
+      payload,
+    );
   }
 
   @override
