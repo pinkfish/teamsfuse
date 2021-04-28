@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:http/http.dart' as http;
 
 ///
@@ -34,7 +33,6 @@ class PublicGames {
         'seasonUid': seasonUid,
       }),
     );
-    print('Calling data  ${res.statusCode}');
     if (res.statusCode == 200) {
       final myData = jsonDecode(res.body);
       try {
@@ -52,7 +50,6 @@ class PublicGames {
         print(e);
       }
     }
-    print('end');
     return BuiltList.of([]);
   }
 }
