@@ -14,8 +14,6 @@ const AndroidInitializationSettings initializationSettingsAndroid =
 /// notifications and incoming notifications.
 ///
 class Notifications {
-  static const String _keyNotificationData = 'lib_notification_data';
-
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   final StreamController<String> _notificationRoutes =
@@ -70,8 +68,7 @@ class Notifications {
 
     /// Update the iOS foreground notification presentation options to allow
     /// heads up notifications.
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
+    await _firebaseMessaging.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
@@ -102,8 +99,6 @@ class Notifications {
     // If you're going to use other Firebase services in the background, such as Firestore,
     // make sure you call `initializeApp` before using other Firebase services.
     await Firebase.initializeApp();
-
-    print('Handling a background message: ${message.messageId}');
   }
 
   /// Received the local notification, now do something exciting.

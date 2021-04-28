@@ -116,6 +116,13 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
     }
   }
 
+  ///
+  /// Get a game from the system.
+  ///
+  Game getGame(String uid) {
+    return state.getGame(uid);
+  }
+
   @override
   Stream<GameState> mapEventToState(GameBlocEvent event) async* {
     // New data from above.  Mark ourselves as done.

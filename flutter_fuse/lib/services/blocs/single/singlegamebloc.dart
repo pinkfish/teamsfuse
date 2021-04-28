@@ -9,6 +9,7 @@ import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
+import '../gamesbloc.dart';
 
 /// The base class for al the single game events.
 abstract class SingleGameEvent extends Equatable {}
@@ -258,8 +259,11 @@ class SingleGameBloc
   StreamSubscription<BuiltList<Player>> _opPlayers;
 
   SingleGameBloc(
-      {@required this.gameUid, @required this.db, @required this.crashes})
-      : super(SingleGameUninitialized(), 'SingleGamw' + gameUid) {
+      {@required this.gameUid,
+      @required this.db,
+      @required this.crashes,
+      GameBloc gamesBloc})
+      : super(_getInitialState(gameUid, gamesBloc), 'SingleGame' + gameUid) {
     _gameSub = db.getGame(gameUid).listen((g) {
       if (g != null) {
         add(_SingleGameNewGame(newGame: g));
@@ -272,6 +276,14 @@ class SingleGameBloc
       crashes.recordException(e, stack);
       add(_SingleGameDeleted());
     });
+  }
+
+  static SingleGameState _getInitialState(String uid, GameBloc gameBloc) {
+    final game = gameBloc.getGame(uid);
+    if (game == null) {
+      return SingleGameUninitialized();
+    }
+    return SingleGameLoaded((b) => b..game);
   }
 
   @override

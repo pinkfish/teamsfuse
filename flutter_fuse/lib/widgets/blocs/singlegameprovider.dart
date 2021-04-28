@@ -35,6 +35,7 @@ class SingleGameProvider extends SingleBlocProvider<SingleGameBloc> {
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       gameUid: uid,
       crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+      gamesBloc: BlocProvider.of<GameBloc>(context),
     );
   }
 }
