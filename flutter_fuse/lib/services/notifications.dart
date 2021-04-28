@@ -95,7 +95,13 @@ class Notifications {
     });
 
     // Set the token to get notifications.
+    if (_authenticationBloc.state is AuthenticationLoggedIn) {
+      final token = await _firebaseMessaging.getToken();
+      print('Write token $token');
+      _authenticationBloc.add(AuthenticationNotificationToken(token));
+    }
     _authenticationBloc.stream.listen((event) async {
+      print('token state $event');
       if (event is AuthenticationLoggedIn) {
         // When we login, write out the auth token.
         final token = await _firebaseMessaging.getToken();

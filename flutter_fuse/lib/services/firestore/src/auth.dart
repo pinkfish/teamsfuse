@@ -49,7 +49,7 @@ class Auth extends wfs.AuthWrapper {
 /// Firebase user wrapper for use in the app.
 ///
 class FirebaseUser extends wfs.FirebaseUserWrapper {
-  /// Constrctor for the wrapper, takes a firebase user as input.
+  /// Constructor for the wrapper, takes a firebase user as input.
   FirebaseUser(this._user)
       : super(
             email: _user?.email,
