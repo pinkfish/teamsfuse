@@ -67,7 +67,7 @@ void main() {
             RepositoryProvider<DatabaseUpdateModel>(
               create: (c) => mockDb,
             ),
-            RepositoryProvider<AnalyticsSubsystem>(
+            RepositoryProvider<AnalyticsSubsystemImpl>(
               create: (c) => mockAnalytics,
             ),
           ],
@@ -111,7 +111,7 @@ void main() {
             RepositoryProvider<DatabaseUpdateModel>(
               create: (c) => mockDb,
             ),
-            RepositoryProvider<AnalyticsSubsystem>(
+            RepositoryProvider<AnalyticsSubsystemImpl>(
               create: (c) => mockAnalytics,
             ),
           ],
