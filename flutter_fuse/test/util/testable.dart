@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'dart:async';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
@@ -16,9 +19,16 @@ import 'package:golden_toolkit/golden_toolkit.dart';
 
 class MockDatabaseUpdateModel extends Mock implements DatabaseUpdateModel {}
 
-class MockAnalyticsSubsystem extends Mock implements AnalyticsSubsystem {}
+class MockAnalyticsSubsystem extends Mock implements AnalyticsSubsystemImpl {}
+
+class MockFirebaseAnalytics extends Mock implements FirebaseAnalytics {}
+
+class MockFirebaseDynamicLinks extends Mock implements FirebaseDynamicLinks {}
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
+
+class MockPendingDynamicLinkData extends Mock
+    implements PendingDynamicLinkData {}
 
 class MockUserAuth extends Mock implements UserAuthImpl {}
 
@@ -49,7 +59,7 @@ Future<Widget> makeTestableWidget(Widget child,
       home: child,
       // By default this navigates back to the current route.
       onGenerateRoute: (s) {
-        return MaterialPageRoute(builder: (c) => child, settings: s);
+        return SlideInOutPageRoute(builder: (c) => child, settings: s);
       },
     ),
   );
@@ -192,4 +202,45 @@ class StreamGenerator<T> {
 
     return stream;
   }
+}
+
+///
+/// Setup a bloc observer for the tests so we can see what is happening
+/// in tests.
+///
+void setupBlocObserver() {
+  Bloc.observer = _SimpleBlocDelegate();
+}
+
+///
+/// Simple delegate to print out the transitions.
+///
+class _SimpleBlocDelegate extends BlocObserver {
+  @override
+  void onTransition(Bloc bloc, Transition transition) {
+    super.onTransition(bloc, transition);
+    print('Transition: ${transition.currentState.runtimeType.toString()} '
+        'event: ${transition.event.runtimeType.toString()} '
+        'nextState: ${transition.nextState.runtimeType.toString()}');
+  }
+}
+
+class SlideInOutPageRoute<T> extends PageRouteBuilder<T> {
+  SlideInOutPageRoute({@required WidgetBuilder builder, RouteSettings settings})
+      : super(
+          settings: settings,
+          transitionDuration: Duration(seconds: 0),
+          pageBuilder: (BuildContext context, Animation<double> animation,
+                  Animation<double> secondaryAnimation) =>
+              builder(context),
+          transitionsBuilder: (BuildContext context,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation,
+              Widget child) {
+            return child;
+          },
+        );
+
+  @override
+  AnimationController get controller => super.controller;
 }

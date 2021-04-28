@@ -1,4 +1,5 @@
 import 'package:fluro/fluro.dart' as fluro;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/screens/team/addmedia.dart';
 import 'package:flutter_fuse/screens/team/editseasonplayer.dart';
 import 'package:flutter_fuse/screens/team/teammedia.dart';
@@ -218,10 +219,12 @@ class AppRouter {
                 EditGameScreen(values['id'][0].toString())));
     router.define('/Game/View/:id',
         handler: fluro.Handler(handlerFunc: (context, values) {
-      AnalyticsSubsystemImpl.analytics.logViewItem(
-          itemId: values['id'][0].toString(),
-          itemName: 'Game',
-          itemCategory: 'Game');
+      RepositoryProvider.of<AnalyticsSubsystemImpl>(context)
+          .firebase
+          .logViewItem(
+              itemId: values['id'][0].toString(),
+              itemName: 'Game',
+              itemCategory: 'Game');
       return GameDetailsScreen(values['id'][0].toString());
     }));
     router.define(
@@ -235,10 +238,12 @@ class AppRouter {
     );
     router.define('/SharedGame/:id',
         handler: fluro.Handler(handlerFunc: (context, values) {
-      AnalyticsSubsystemImpl.analytics.logViewItem(
-          itemId: values['id'][0].toString(),
-          itemName: 'Game',
-          itemCategory: 'Game');
+      RepositoryProvider.of<AnalyticsSubsystemImpl>(context)
+          .firebase
+          .logViewItem(
+              itemId: values['id'][0].toString(),
+              itemName: 'Game',
+              itemCategory: 'Game');
       return SharedGameDetailsScreen(values['id'][0].toString());
     }));
 
@@ -275,10 +280,12 @@ class AppRouter {
             handlerFunc: (context, values) => AddMessageScreen()));
     router.define('/ShowMessage/:id',
         handler: fluro.Handler(handlerFunc: (context, values) {
-      AnalyticsSubsystemImpl.analytics.logViewItem(
-          itemId: values['id'][0].toString(),
-          itemName: 'Message',
-          itemCategory: 'Message');
+      RepositoryProvider.of<AnalyticsSubsystemImpl>(context)
+          .firebase
+          .logViewItem(
+              itemId: values['id'][0].toString(),
+              itemName: 'Message',
+              itemCategory: 'Message');
 
       return ShowMessageScreen(messageUid: values['id'][0].toString());
     }));

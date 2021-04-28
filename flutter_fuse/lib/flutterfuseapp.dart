@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
@@ -24,11 +25,13 @@ class FlutterFuseApp extends StatefulWidget {
   final FirestoreWrapper _firestore;
   final AppConfiguration _config;
   final LoggingData _loggingData;
+  final AnalyticsSubsystemImpl _analytics;
 
   ///
   /// Create the app.
   ///
-  FlutterFuseApp(this._firestore, this._config, this._loggingData);
+  FlutterFuseApp(
+      this._firestore, this._config, this._loggingData, this._analytics);
 
   @override
   State<StatefulWidget> createState() {
@@ -51,6 +54,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   SeasonBloc _seasonBloc;
   DatabaseUpdateModel _databaseUpdateModel;
   UserAuthImpl _userAuthImpl;
+  Notifications _notifications;
 
   final ThemeData _theme = ThemeData(
     primarySwatch: Colors.green,
@@ -65,48 +69,47 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   void initState() {
     super.initState();
     _userAuthImpl = UserAuthImpl(widget._firestore);
-    _authenticationBloc =
-        AuthenticationBloc(_userAuthImpl, AnalyticsSubsystemImpl.instance);
+    _authenticationBloc = AuthenticationBloc(_userAuthImpl, widget._analytics);
     _databaseUpdateModel = DatabaseUpdateModelImpl(
-        Firestore(), _authenticationBloc, AnalyticsSubsystemImpl.instance);
+        Firestore(), _authenticationBloc, widget._analytics);
     _coordinationBloc = CoordinationBloc(
       authenticationBloc: _authenticationBloc,
-      analytics: AnalyticsSubsystemImpl.instance,
+      analytics: widget._analytics,
       databaseUpdateModel: _databaseUpdateModel,
     );
     _playerBloc = PlayerBloc(
       coordinationBloc: _coordinationBloc,
-      crashes: AnalyticsSubsystemImpl.instance,
+      crashes: widget._analytics,
     );
     _inviteBloc = InviteBloc(
         coordinationBloc: _coordinationBloc,
-        crashes: AnalyticsSubsystemImpl.instance,
+        crashes: widget._analytics,
         databaseUpdateModel: _databaseUpdateModel);
     _messagesBloc = MessagesBloc(
       coordinationBloc: _coordinationBloc,
-      crashes: AnalyticsSubsystemImpl.instance,
+      crashes: widget._analytics,
     );
     _clubBloc = ClubBloc(
       coordinationBloc: _coordinationBloc,
-      crashes: AnalyticsSubsystemImpl.instance,
+      crashes: widget._analytics,
     );
     _teamBloc = TeamBloc(
       coordinationBloc: _coordinationBloc,
       clubBloc: _clubBloc,
-      crashes: AnalyticsSubsystemImpl.instance,
+      crashes: widget._analytics,
     );
     _seasonBloc = SeasonBloc(
       coordinationBloc: _coordinationBloc,
-      crashes: AnalyticsSubsystemImpl.instance,
+      crashes: widget._analytics,
     );
     _leagueOrTournamentBloc = LeagueOrTournamentBloc(
       coordinationBloc: _coordinationBloc,
-      crashes: AnalyticsSubsystemImpl.instance,
+      crashes: widget._analytics,
     );
     _gameBloc = GameBloc(
       coordinationBloc: _coordinationBloc,
       teamBloc: _teamBloc,
-      crashes: AnalyticsSubsystemImpl.instance,
+      crashes: widget._analytics,
     );
     _filteredGameBloc = FilteredGameBloc(
         gameBloc: _gameBloc, teamBloc: _teamBloc, seasonBloc: _seasonBloc);
@@ -114,6 +117,8 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
 
     _authenticationBloc.add(AuthenticationAppStarted());
     initDynamicLinks();
+    _notifications = Notifications();
+    _notifications.initForNotification();
   }
 
   @override
@@ -123,12 +128,17 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         RepositoryProvider<fluro.FluroRouter>(
           create: (context) => AppRouter.createAppRouter(local),
         ),
-        RepositoryProvider<AnalyticsSubsystem>(
-          create: (c) => AnalyticsSubsystemImpl.instance,
+        RepositoryProvider<AnalyticsSubsystemImpl>(
+          create: (c) => widget._analytics,
         ),
         RepositoryProvider<UserAuthImpl>(
           create: (c) => _userAuthImpl,
         ),
+        RepositoryProvider<Notifications>(
+          create: (v) => _notifications,
+        ),
+        RepositoryProvider<FirebaseDynamicLinks>(
+            create: (c) => FirebaseDynamicLinks.instance),
         RepositoryProvider<DatabaseUpdateModel>(
             create: (context) => _databaseUpdateModel),
         RepositoryProvider<BaseCacheManager>(

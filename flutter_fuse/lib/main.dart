@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -33,12 +34,14 @@ void main() async {
   await Firebase.initializeApp();
 
   // Trace as the first thing in the system.
-  final trace = AnalyticsSubsystemImpl.instance.newTrace('startup');
+  final analytics = AnalyticsSubsystemImpl.create(FirebaseAnalytics());
+
+  final trace = analytics.newTrace('startup');
   trace.start();
 
   // Trace the errors to crashalytics early in the process.
   var loggingData = LoggingData();
-  unawaited(AnalyticsSubsystemImpl.analytics.logAppOpen());
+  unawaited(analytics.logAppOpen());
 
   // Send error logs up to crashalytics.
   FlutterError.onError = (details) {
@@ -88,7 +91,7 @@ void main() async {
       setLocalLocation(currentTimeZone);
     }
   } catch (e, stack) {
-    AnalyticsSubsystemImpl.instance.recordException(e, stack);
+    analytics.recordException(e, stack);
     currentTimeZone = 'America/Los_Angeles';
     setLocalLocation(currentTimeZone);
   }
@@ -110,7 +113,7 @@ void main() async {
   });
   trace.stop();
 
-  runApp(FlutterFuseApp(firestoreWrapper, config, loggingData));
+  runApp(FlutterFuseApp(firestoreWrapper, config, loggingData, analytics));
 }
 
 ///

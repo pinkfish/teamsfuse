@@ -11,19 +11,21 @@ import 'package:universal_io/io.dart';
 /// adding in all the various pieces.
 ///
 class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
-  static final FirebaseAnalytics _analytics = FirebaseAnalytics();
   static AnalyticsSubsystemImpl _instance;
 
   PackageInfo _packageInfo;
   DeviceInfoPlugin _deviceInfo;
   IosDeviceInfo _iosDeviceInfo;
   AndroidDeviceInfo _androidDeviceInfo;
+  final FirebaseAnalytics _analytics;
   bool _debugMode = false;
 
+  AnalyticsSubsystemImpl(this._analytics);
+
   /// The instance of the analytics system to use.
-  static AnalyticsSubsystemImpl get instance {
+  static AnalyticsSubsystemImpl create(FirebaseAnalytics analytics) {
     if (_instance == null) {
-      _instance = AnalyticsSubsystemImpl();
+      _instance = AnalyticsSubsystemImpl(analytics);
       _instance._load();
       if (Platform.isIOS || Platform.isAndroid) {
         FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
@@ -33,12 +35,17 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
     return _instance;
   }
 
+  FirebaseAnalytics get firebase => _analytics;
+
   void _load() {
     assert(_debugMode = true);
 
     // Load the device and package info.
     _packageInfo = PackageInfo(
-        version: 'unknown', packageName: 'unknown', buildNumber: 'unknown');
+        version: 'unknown',
+        packageName: 'unknown',
+        buildNumber: 'unknown',
+        appName: 'TeamsFuse');
 
     _deviceInfo = DeviceInfoPlugin();
 
@@ -57,11 +64,6 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
         _androidDeviceInfo = info;
       });
     } else {}
-  }
-
-  /// Returns the firebase analytics part to use in the system.
-  static FirebaseAnalytics get analytics {
-    return _analytics;
   }
 
   @override

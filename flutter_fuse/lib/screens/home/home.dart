@@ -4,6 +4,7 @@ import 'package:badges/badges.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 import 'package:timezone/timezone.dart';
@@ -224,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {});
     });
     _calendarSub.onError(
-        RepositoryProvider.of<AnalyticsSubsystem>(context).recordException);
+        RepositoryProvider.of<AnalyticsSubsystemImpl>(context).recordException);
   }
 
   @override

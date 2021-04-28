@@ -4,6 +4,7 @@ import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'screens/home/splash.dart';
 import 'services/analytics.dart';
@@ -40,7 +41,9 @@ class FuseMaterialApp extends StatelessWidget {
         Locale('en', 'AU'),
       ],
       navigatorObservers: <NavigatorObserver>[
-        FirebaseAnalyticsObserver(analytics: AnalyticsSubsystemImpl.analytics),
+        FirebaseAnalyticsObserver(
+            analytics: RepositoryProvider.of<AnalyticsSubsystemImpl>(context)
+                .firebase),
       ],
       title: 'Teams Fuse',
       theme: _theme,

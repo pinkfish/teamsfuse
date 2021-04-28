@@ -84,7 +84,7 @@ class AuthenticationLoggedOut extends AuthenticationState {
   AuthenticationLoggedOut() : super(user: null);
 
   @override
-  String toString() => 'AuthenticationState::AuthenticatonUninitialized';
+  String toString() => 'AuthenticationState::AuthenticationLoggedOut';
 }
 
 ///

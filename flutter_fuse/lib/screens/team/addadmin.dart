@@ -54,10 +54,12 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
       // part of this.
       var teamBloc = BlocProvider.of<TeamBloc>(context);
       for (var en in _emailNames) {
-        await AnalyticsSubsystemImpl.analytics.logShare(
-            contentType: 'inviteAsAdmin',
-            itemId: widget._teamUid,
-            method: 'handleSubmit');
+        await RepositoryProvider.of<AnalyticsSubsystemImpl>(context)
+            .firebase
+            .logShare(
+                contentType: 'inviteAsAdmin',
+                itemId: widget._teamUid,
+                method: 'handleSubmit');
         addInviteBloc.add(InviteEventAddAsAdmin(
             teamUid: widget._teamUid,
             email: en,

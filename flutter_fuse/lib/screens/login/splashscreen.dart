@@ -62,24 +62,30 @@ class SplashScreen extends StatelessWidget {
   void _checkState(BuildContext context, AuthenticationState state) {
     if (state is AuthenticationLoggedIn) {
       Timer(Duration(milliseconds: 1), () async {
-        RepositoryProvider.of<Notifications>(context).initForNotification();
-
-        await AnalyticsSubsystemImpl.analytics.setUserId(state.user.uid);
-        if (AnalyticsSubsystemImpl.instance.debugMode) {
-          await AnalyticsSubsystemImpl.analytics
+        final analytics =
+            RepositoryProvider.of<AnalyticsSubsystemImpl>(context);
+        await analytics.firebase.setUserId(state.user.uid);
+        if (analytics.debugMode) {
+          await analytics.firebase
               .setUserProperty(name: 'developer', value: 'true');
         } else {
-          await AnalyticsSubsystemImpl.analytics
+          await analytics.firebase
               .setUserProperty(name: 'developer', value: 'false');
         }
 
-        final data = await FirebaseDynamicLinks.instance.getInitialLink();
+        final links = RepositoryProvider.of<FirebaseDynamicLinks>(context);
+        final data = await links.getInitialLink();
         final deepLink = data?.link;
-        await Navigator.pushNamedAndRemoveUntil(
-            context, '/Main/Home', ModalRoute.withName('/Main/Home'));
+        Navigator.popUntil(context, (route) => route.isFirst);
+        final delayed = [Navigator.pushNamed(context, '/Main/Home')];
         if (deepLink != null) {
-          await Navigator.pushNamed(context, deepLink.path);
+          var myPath = deepLink.path;
+          if (!myPath.startsWith('/')) {
+            myPath = '/' + myPath;
+          }
+          delayed.add(Navigator.pushNamed(context, myPath));
         }
+        await Future.wait(delayed);
       });
     }
     if (state is AuthenticationLoggedInUnverified) {

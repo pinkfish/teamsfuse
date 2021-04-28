@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -44,21 +45,27 @@ void main() async {
 
   tz.initializeTimeZones();
 
-  unawaited(AnalyticsSubsystemImpl.instance.logAppOpen());
+  final analytics = AnalyticsSubsystemImpl.create(FirebaseAnalytics());
+
+  unawaited(analytics.firebase.logAppOpen());
 
   // Send error logs up to crashalytics.
   FlutterError.onError = (details) {
-    AnalyticsSubsystemImpl.instance
-        .recordException(details.exception, details.stack);
+    analytics.recordException(details.exception, details.stack);
   };
 
-  runApp(PublicTeamsFuse());
+  runApp(PublicTeamsFuse(analytics));
 }
 
 ///
 /// The public teams fuse app.
 ///
 class PublicTeamsFuse extends StatelessWidget {
+  final AnalyticsSubsystemImpl _analytics;
+
+  /// Create the public app.
+  PublicTeamsFuse(this._analytics);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -87,15 +94,15 @@ class PublicTeamsFuse extends StatelessWidget {
         RepositoryProvider<fluro.FluroRouter>(
           create: (context) => AppRouter.createAppRouter(),
         ),
-        RepositoryProvider<AnalyticsSubsystem>(
-          create: (c) => AnalyticsSubsystemImpl.instance,
+        RepositoryProvider<AnalyticsSubsystemImpl>(
+          create: (c) => _analytics,
         ),
         RepositoryProvider<UserAuthImpl>(
           create: (c) => UserAuthImpl(wrapper),
         ),
         RepositoryProvider<DatabaseUpdateModel>(
-            create: (context) => DatabaseUpdateModelImpl(
-                wrapper, null, AnalyticsSubsystemImpl.instance)),
+            create: (context) =>
+                DatabaseUpdateModelImpl(wrapper, null, _analytics)),
         RepositoryProvider<BaseCacheManager>(
             create: (context) => DefaultCacheManager()),
         RepositoryProvider<UserAuthImpl>(

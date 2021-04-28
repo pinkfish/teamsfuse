@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../services/analytics.dart';
 import '../../services/messages.dart';
@@ -13,7 +14,8 @@ class AboutScreen extends StatelessWidget {
 
     return AboutDialog(
       applicationName: Messages.of(context).title,
-      applicationVersion: AnalyticsSubsystemImpl.instance.getVersion(),
+      applicationVersion:
+          RepositoryProvider.of<AnalyticsSubsystemImpl>(context).getVersion(),
       applicationIcon: Image(
         image: ExactAssetImage('assets/images/hands_and_trophy.png'),
         width: (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
