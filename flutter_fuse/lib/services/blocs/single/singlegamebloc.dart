@@ -453,7 +453,7 @@ class SingleGameBloc
     if (event is SingleGameUpdateAttendance) {
       yield SingleGameSaving.fromState(state).build();
       try {
-        await db.updateFirestoreGameAttendence(
+        await db.updateFirestoreGameAttendance(
             state.game, event.playerUid, event.attendance);
         var builder = state.game.toBuilder();
         builder.attendance[event.playerUid] = event.attendance;
@@ -491,7 +491,7 @@ class SingleGameBloc
     if (event is SingleGameUpdateOfficalResult) {
       yield SingleGameSaving.fromState(state).build();
       try {
-        await db.updateFirestoreOfficalGameResult(
+        await db.updateFirestoreOfficialGameResult(
             state.game.sharedData.uid, event.result);
         yield SingleGameSaveDone.fromState(state).build();
         yield (SingleGameLoaded.fromState(state)).build();

@@ -263,7 +263,7 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
 
     if (event is SingleLeagueOrTournamentTeamLoadInvites) {
       _inviteSnapshot = db
-          .getLeagueOrTournmentTeamInvitesStream(leagueTeamUid)
+          .getLeagueOrTournamentTeamInvitesStream(leagueTeamUid)
           .listen((Iterable<InviteToLeagueTeam> invites) =>
               _updateInvites(invites));
       _inviteSnapshot.onError((e, stack) => crashes.recordException(e, stack));

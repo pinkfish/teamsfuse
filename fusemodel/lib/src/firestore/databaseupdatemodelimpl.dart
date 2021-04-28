@@ -3,9 +3,7 @@ import 'dart:typed_data';
 
 import 'package:async/async.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
-import 'package:timezone/timezone.dart';
 
 import '../../fusemodel.dart';
 import 'authenticationbloc.dart';
@@ -148,7 +146,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<void> updateFirestoreGameAttendence(
+  Future<void> updateFirestoreGameAttendance(
       Game game, String playerUid, Attendance attend) {
     var ref = _wrapper.collection(GAMES_COLLECTION).document(game.uid);
 
@@ -171,7 +169,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<void> updateFirestoreOfficalGameResult(
+  Future<void> updateFirestoreOfficialGameResult(
       String sharedGameUid, GameOfficialResults result) {
     var ref =
         _wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
@@ -460,13 +458,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  DocumentReferenceWrapper precreateTeamUid() {
+  DocumentReferenceWrapper preCreateTeamUid() {
     var ref = _wrapper.collection(TEAMS_COLLECTION);
     return ref.document();
   }
 
   @override
-  DocumentReferenceWrapper precreateClubUid() {
+  DocumentReferenceWrapper preCreateClubUid() {
     var ref = _wrapper.collection(CLUB_COLLECTION);
     return ref.document();
   }
@@ -941,7 +939,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  DocumentReferenceWrapper precreateUidSeason() {
+  DocumentReferenceWrapper preCreateUidSeason() {
     return _wrapper.collection(SEASONS_COLLECTION).document();
   }
 
@@ -1569,7 +1567,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<BuiltList<GameSharedData>> getLeagueGamesForDivison(
+  Stream<BuiltList<GameSharedData>> getLeagueGamesForDivision(
       String leagueDivisonUid) async* {
     var query = _wrapper.collection(GAMES_SHARED_COLLECTION).where(
         GameSharedData.leagueDivisionUidField,
@@ -1655,8 +1653,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<void> addUserToLeagueDivison(String leagueUid, bool admin) {
-    _analytics.logEvent(name: 'addUserToLeagueDivison');
+  Future<void> addUserToLeagueDivision(String leagueUid, bool admin) {
+    _analytics.logEvent(name: 'addUserToLeagueDivision');
     return _wrapper
         .collection(LEAGUE_COLLECTON)
         .document(leagueUid)
@@ -1705,7 +1703,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<BuiltList<InviteToLeagueTeam>> getLeagueOrTournmentTeamInvitesStream(
+  Stream<BuiltList<InviteToLeagueTeam>> getLeagueOrTournamentTeamInvitesStream(
       String leagueTeamUid) async* {
     var ref = _wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
@@ -1801,7 +1799,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<BuiltList<LeagueOrTournamentDivison>> getLeagueDivisonsForSeason(
+  Stream<BuiltList<LeagueOrTournamentDivison>> getLeagueDivisionsForSeason(
       {String leagueSeasonUid, String memberUid}) async* {
     var query = _wrapper.collection(LEAGUE_DIVISION_COLLECTION).where(
         LeagueOrTournamentDivison.LEAGUEORTOURNMENTSEASONUID,
@@ -1870,7 +1868,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<String> updateLeagueDivison(LeagueOrTournamentDivison division) async {
+  Future<String> updateLeagueDivision(
+      LeagueOrTournamentDivison division) async {
     if (division.uid == null) {
       var doc = await _wrapper
           .collection(LEAGUE_DIVISION_COLLECTION)

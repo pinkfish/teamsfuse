@@ -117,7 +117,7 @@ class SingleSharedGameBloc
     if (event is SingleSharedGameUpdateOfficalResult) {
       yield SingleSharedGameSaving.fromState(state).build();
       try {
-        await db.updateFirestoreOfficalGameResult(sharedGameUid, event.result);
+        await db.updateFirestoreOfficialGameResult(sharedGameUid, event.result);
         yield SingleSharedGameSaveDone.fromState(state).build();
         yield SingleSharedGameLoaded.fromState(state).build();
       } catch (e, stack) {

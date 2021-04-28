@@ -49,7 +49,7 @@ class AddClubBloc extends Bloc<AddClubEvent, AddItemState> {
 
       try {
         var updated = event.club.toBuilder();
-        var wrap = coordinationBloc.databaseUpdateModel.precreateClubUid();
+        var wrap = coordinationBloc.databaseUpdateModel.preCreateClubUid();
         updated.membersData[coordinationBloc.authenticationBloc.currentUser
             .uid] = AddedOrAdmin((b) => b..admin = true);
         updated.uid = wrap.documentID;

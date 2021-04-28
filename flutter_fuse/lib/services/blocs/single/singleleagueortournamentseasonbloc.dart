@@ -171,7 +171,7 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
     if (event is SingleLeagueOrTournamentSeasonLoadDivisions) {
       if (_leagueOrTournamentSnapshot == null) {
         _leagueOrTournamentSnapshot = db
-            .getLeagueDivisonsForSeason(
+            .getLeagueDivisionsForSeason(
                 leagueSeasonUid: leagueSeasonUid, memberUid: db.currentUser.uid)
             .listen((Iterable<LeagueOrTournamentDivison> divisons) =>
                 _updateDivisons(divisons));
@@ -206,7 +206,7 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
         ..name = event.name
         ..leagueOrTournmentSeasonUid = leagueSeasonUid
         ..leagueOrTournamentUid = state.season.leagueOrTournmentUid);
-      await db.updateLeagueDivison(divison).then((void a) => null,
+      await db.updateLeagueDivision(divison).then((void a) => null,
           onError: (Error error) => add(
               _SingleLeagueOrTournamentEventSeasonSaveFailed(error: error)));
     }

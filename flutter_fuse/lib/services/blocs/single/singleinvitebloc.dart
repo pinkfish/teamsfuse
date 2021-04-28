@@ -160,7 +160,7 @@ class SingleInviteBloc
         await db.addUserToLeagueSeason(invite.leagueSeasonUid, true);
       }
       if (invite.leagueDivisonUid != null) {
-        await db.addUserToLeagueDivison(invite.leagueDivisonUid, true);
+        await db.addUserToLeagueDivision(invite.leagueDivisonUid, true);
       }
 
       // This should cause the data to update
@@ -220,8 +220,8 @@ class SingleInviteBloc
           'admin': true,
           'added': true,
         });
-        var pregen = db.precreateTeamUid();
-        var pregenSeason = db.precreateUidSeason();
+        var pregen = db.preCreateTeamUid();
+        var pregenSeason = db.preCreateUidSeason();
         team.uid = pregen.documentID;
         var season = Season((b) => b
           ..uid = pregenSeason.documentID
@@ -246,7 +246,7 @@ class SingleInviteBloc
         }
         crashes.logInviteAccepted('leagueTeam', leagueTeam.uid);
       } else if (event.seasonUid == SingleInviteBloc.createNew) {
-        var pregenSeason = db.precreateUidSeason();
+        var pregenSeason = db.preCreateUidSeason();
 
         var season = Season((b) => b
           ..uid = pregenSeason.documentID

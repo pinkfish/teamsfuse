@@ -71,7 +71,7 @@ class ProfileBloc extends HydratedBloc<ProfileEvent, ProfileBlocState> {
   Stream<ProfileBlocState> mapEventToState(ProfileEvent event) async* {
     if (event is _ProfileUserLoaded) {
       yield (ProfileBlocLoaded.fromState(state)..profile = null).build();
-      // Load the current uswers profile.
+      // Load the current users profile.
       _profileSub = authenticationBloc.userAuth
           .getProfileStream(event.uid)
           .listen((FusedUserProfile profile) {

@@ -75,13 +75,13 @@ abstract class DatabaseUpdateModel {
 
   Future<void> deleteFirestoreGame(Game game);
 
-  Future<void> updateFirestoreGameAttendence(
+  Future<void> updateFirestoreGameAttendance(
       Game game, String playerUid, Attendance attend);
 
   Future<void> updateFirestoreGameResult(
       String gameUid, GameResultDetails result);
 
-  Future<void> updateFirestoreOfficalGameResult(
+  Future<void> updateFirestoreOfficialGameResult(
       String gameSharedUid, GameOfficialResults result);
 
   Stream<GameSharedData> getSharedGame(String sharedGameUid);
@@ -112,7 +112,7 @@ abstract class DatabaseUpdateModel {
   /// Loads all the media for this player.
   Stream<BuiltList<MediaInfo>> getMediaForPlayer({@required String playerUid});
 
-  /// Gets all the updates for this speific media info blob.
+  /// Gets all the updates for this specific media info blob.
   Stream<MediaInfo> getMediaInfo({@required String mediaInfoUid});
 
   /// Adds the game event into the database
@@ -174,7 +174,7 @@ abstract class DatabaseUpdateModel {
 
   Stream<Message> getMessage(String messageId);
 
-  /// Add the message into firrestore and do wild things with it.
+  /// Add the message into firestore and do wild things with it.
   Future<Message> addMessage(Message mess, String body);
 
   // Opponent update
@@ -199,7 +199,7 @@ abstract class DatabaseUpdateModel {
 
   Future<Uri> updateTeamImage(String teamUid, Uint8List imgFile);
 
-  DocumentReferenceWrapper precreateClubUid();
+  DocumentReferenceWrapper preCreateClubUid();
 
   Future<String> inviteAdminToTeam(
       {@required String myUid,
@@ -263,11 +263,11 @@ abstract class DatabaseUpdateModel {
   Future<void> updateFirestoreSeason(Season season, bool includePlayers);
 
   Future<Season> addFirestoreSeason(
-      Season season, DocumentReferenceWrapper pregen);
+      Season season, DocumentReferenceWrapper preGenerated);
 
   Future<void> removePlayerFromSeason(String seasonUid, String playerUid);
 
-  /// Update the seqson player pieces for the season.
+  /// Update the season player pieces for the season.
   Future<void> updateSeasonPlayerForSeason(
       String seasonUid, SeasonPlayer player);
 
@@ -292,7 +292,7 @@ abstract class DatabaseUpdateModel {
 
   Future<void> addPlayerToSeason(String seasonUid, SeasonPlayer player);
 
-  DocumentReferenceWrapper precreateUidSeason();
+  DocumentReferenceWrapper preCreateUidSeason();
 
   // Games!
   Stream<BuiltList<Game>> getBasicGames(
@@ -308,7 +308,7 @@ abstract class DatabaseUpdateModel {
   /// Update the club in the database.
   Future<String> updateClub(Club club, {bool includeMembers});
 
-  /// Add a new club to the datbase
+  /// Add a new club to the database
   Future<String> addClub(DocumentReferenceWrapper ref, Club club);
 
   /// Update the image with the club.
@@ -324,16 +324,16 @@ abstract class DatabaseUpdateModel {
   /// Delete a member from the club
   Future<void> deleteClubMember(Club club, String memberUid);
 
-  /// Precreates a teamuid to use for places where the uis is needed ahead of time.
-  DocumentReferenceWrapper precreateTeamUid();
+  /// PreCreates a teamUid to use for places where the uis is needed ahead of time.
+  DocumentReferenceWrapper preCreateTeamUid();
 
   /// Get all the invites to the club.
   Stream<BuiltList<InviteToClub>> getInviteToClubStream(String clubUid);
 
-  /// Gets the data associated withthe club.
+  /// Gets the data associated with the club.
   Stream<Club> getClubData({@required String clubUid});
 
-  /// Get all the clubs asccociated with the clut.
+  /// Get all the clubs associated with the club.
   Stream<BuiltList<Coach>> getClubCoaches(String clubUid);
 
   /// Add the coach to the club.
@@ -350,7 +350,7 @@ abstract class DatabaseUpdateModel {
   /// Get all the single news item for the club.
   Stream<NewsItem> getSingleClubNews(String clubUid, String newsUid);
 
-  /// Get all the news items asccociated with the club.
+  /// Get all the news items associated with the club.
   Stream<BuiltList<NewsItem>> getClubNews(String clubUid,
       {DateTime start, int limit});
 
@@ -364,15 +364,15 @@ abstract class DatabaseUpdateModel {
   Future<void> deleteClubNews(NewsItem news);
 
   // League and stuff.
-  Stream<BuiltList<GameSharedData>> getLeagueGamesForDivison(
-      String leagueDivisonUid);
+  Stream<BuiltList<GameSharedData>> getLeagueGamesForDivision(
+      String leagueDivisionUid);
 
   Stream<BuiltList<GameSharedData>> getLeagueGamesForTeam(String leagueTeamUid);
 
   Stream<BuiltList<LeagueOrTournamentSeason>> getLeagueSeasons(
       {String leagueUid});
 
-  Stream<BuiltList<LeagueOrTournamentDivison>> getLeagueDivisonsForSeason(
+  Stream<BuiltList<LeagueOrTournamentDivison>> getLeagueDivisionsForSeason(
       {String leagueSeasonUid, String memberUid});
 
   Stream<BuiltList<LeagueOrTournamentTeam>> getLeagueTeamsForTeamSeason(
@@ -386,7 +386,7 @@ abstract class DatabaseUpdateModel {
 
   Future<void> addUserToLeagueSeason(String leagueUid, bool admin);
 
-  Future<void> addUserToLeagueDivison(String leagueUid, bool admin);
+  Future<void> addUserToLeagueDivision(String leagueUid, bool admin);
 
   Future<String> inviteUserToLeague(InviteToLeagueAsAdmin invite);
 
@@ -406,7 +406,7 @@ abstract class DatabaseUpdateModel {
       LeagueOrTournamentTeam leagueTeam,
       String email});
 
-  Stream<BuiltList<InviteToLeagueTeam>> getLeagueOrTournmentTeamInvitesStream(
+  Stream<BuiltList<InviteToLeagueTeam>> getLeagueOrTournamentTeamInvitesStream(
       String leagueTeamUid);
 
   // League Season/Division.
@@ -417,7 +417,7 @@ abstract class DatabaseUpdateModel {
 
   Future<void> updateLeagueSeason(LeagueOrTournamentSeason season);
 
-  Future<void> updateLeagueDivison(LeagueOrTournamentDivison division);
+  Future<void> updateLeagueDivision(LeagueOrTournamentDivison division);
 
   Stream<BuiltList<LeagueOrTournamentTeam>> getLeagueDivisionTeams(
       String leagueDivisionUid);
@@ -425,7 +425,7 @@ abstract class DatabaseUpdateModel {
   /// Returns true if this connected correctly, false if there was an error.
   Future<bool> connectLeagueTeamToSeason(String leagueTeamUid, Season season);
 
-  // Initialized subscfriptions.
+  // Initialized subscriptions.
   Stream<BuiltList<LeagueOrTournament>> getMainLeagueOrTournaments();
 
   Stream<BuiltList<Club>> getMainClubs();

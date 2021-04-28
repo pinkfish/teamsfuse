@@ -155,7 +155,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
     if (divison.uid == leagueDivisonUid) {
       yield SingleLeagueOrTournamentDivisonSaving.fromState(state).build();
       try {
-        await db.updateLeagueDivison(divison);
+        await db.updateLeagueDivision(divison);
         yield SingleLeagueOrTournamentDivisonSaveDone.fromState(state).build();
         yield SingleLeagueOrTournamentDivisonLoaded.fromState(state).build();
       } catch (e, stack) {
@@ -250,7 +250,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
       if (_leagueOrTournamentSnapshot == null &&
           state is SingleLeagueOrTournamentDivisonLoaded) {
         _leagueOrTournamentSnapshot = db
-            .getLeagueGamesForDivison(leagueDivisonUid)
+            .getLeagueGamesForDivision(leagueDivisonUid)
             .listen((Iterable<GameSharedData> games) => _updateGames(games));
         _leagueOrTournamentSnapshot
             .onError((e, stack) => crashes.recordException(e, stack));
