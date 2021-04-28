@@ -48,7 +48,7 @@ class Notifications {
   }
 
   /// Initialize the system from the setup for local and FCM notifications.
-  void init(AuthenticationBloc auth) async {
+  void init() async {
     final initializationSettingsIOS = IOSInitializationSettings(
         onDidReceiveLocalNotification: onDidReceiveLocalNotification);
     final initializationSettingsMacOS = MacOSInitializationSettings();
@@ -56,17 +56,22 @@ class Notifications {
         android: initializationSettingsAndroid,
         iOS: initializationSettingsIOS,
         macOS: initializationSettingsMacOS);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: _selectNotification);
+    try {
+      await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+          onSelectNotification: _selectNotification);
 
-    /// Create an Android Notification Channel.
-    ///
-    /// We use this channel in the `AndroidManifest.xml` file to override the
-    /// default FCM channel to enable heads up notifications.
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+      /// Create an Android Notification Channel.
+      ///
+      /// We use this channel in the `AndroidManifest.xml` file to override the
+      /// default FCM channel to enable heads up notifications.
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(channel);
+    } catch (e, stack) {
+      // Report errors with the local events setup.
+      _authenticationBloc.analyticsSubsystem.recordException(e, stack);
+    }
 
     /// Update the iOS foreground notification presentation options to allow
     /// heads up notifications.

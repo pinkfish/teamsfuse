@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/analytics.dart';
+import 'package:flutter_fuse/services/blocs/playerbloc.dart';
 import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
 import 'package:flutter_fuse/widgets/player/playername.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,18 +14,14 @@ import 'package:mockito/mockito.dart';
 import '../util/testable.dart';
 import '../util/widgetvariant.dart';
 
-class MockDatabaseUpdateModel extends Mock implements DatabaseUpdateModel {}
-
-class MockAnalyticsSubsystem extends Mock implements AnalyticsSubsystemImpl {}
-
 void main() {
   testWidgets('uninitialized', (tester) async {
-    var gameData = StreamController<Player>();
-    var mockDb = MockDatabaseUpdateModel();
-    var mockAnalytics = MockAnalyticsSubsystem();
+    final playerData = StreamController<Player>();
+    final blocs = AllBlocs();
 
     // Nothing in the queue, so uninitialized
-    when(mockDb.getPlayerDetails('123')).thenAnswer((p) => gameData.stream);
+    when(blocs.mockDb.getPlayerDetails('123'))
+        .thenAnswer((p) => playerData.stream);
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(
@@ -32,10 +29,13 @@ void main() {
         MultiRepositoryProvider(
           providers: [
             RepositoryProvider<DatabaseUpdateModel>(
-              create: (c) => mockDb,
+              create: (c) => blocs.mockDb,
             ),
             RepositoryProvider<AnalyticsSubsystemImpl>(
-              create: (c) => mockAnalytics,
+              create: (c) => blocs.mockAnalytics,
+            ),
+            RepositoryProvider<PlayerBloc>(
+              create: (c) => blocs.playerBloc,
             ),
           ],
           child: PlayerName(playerUid: '123'),
@@ -49,15 +49,15 @@ void main() {
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('name set', (tester) async {
-    var gameData = StreamController<Player>();
-    var mockDb = MockDatabaseUpdateModel();
-    var mockAnalytics = MockAnalyticsSubsystem();
+    final gameData = StreamController<Player>();
+    final blocs = AllBlocs();
 
     AsyncHydratedStorage.storageDirectory = Directory('fail');
 
     // Stub the state stream
     //singlePlayerBloc.emit(SinglePlayerUninitialized());
-    when(mockDb.getPlayerDetails('123')).thenAnswer((p) => gameData.stream);
+    when(blocs.mockDb.getPlayerDetails('123'))
+        .thenAnswer((p) => gameData.stream);
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(
@@ -65,10 +65,13 @@ void main() {
         MultiRepositoryProvider(
           providers: [
             RepositoryProvider<DatabaseUpdateModel>(
-              create: (c) => mockDb,
+              create: (c) => blocs.mockDb,
             ),
             RepositoryProvider<AnalyticsSubsystemImpl>(
-              create: (c) => mockAnalytics,
+              create: (c) => blocs.mockAnalytics,
+            ),
+            RepositoryProvider<PlayerBloc>(
+              create: (c) => blocs.playerBloc,
             ),
           ],
           child: RepaintBoundary(
@@ -96,12 +99,12 @@ void main() {
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('name change', (tester) async {
-    var gameData = StreamController<Player>();
-    var mockDb = MockDatabaseUpdateModel();
-    var mockAnalytics = MockAnalyticsSubsystem();
+    final gameData = StreamController<Player>();
+    final blocs = AllBlocs();
 
     // Stub the state stream
-    when(mockDb.getPlayerDetails('123')).thenAnswer((p) => gameData.stream);
+    when(blocs.mockDb.getPlayerDetails('123'))
+        .thenAnswer((p) => gameData.stream);
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(
@@ -109,10 +112,13 @@ void main() {
         MultiRepositoryProvider(
           providers: [
             RepositoryProvider<DatabaseUpdateModel>(
-              create: (c) => mockDb,
+              create: (c) => blocs.mockDb,
             ),
             RepositoryProvider<AnalyticsSubsystemImpl>(
-              create: (c) => mockAnalytics,
+              create: (c) => blocs.mockAnalytics,
+            ),
+            RepositoryProvider<PlayerBloc>(
+              create: (c) => blocs.playerBloc,
             ),
           ],
           child: RepaintBoundary(

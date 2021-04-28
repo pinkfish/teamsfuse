@@ -119,7 +119,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     initDynamicLinks();
     // Setup the local notifications to work with FCM.
     _notifications = Notifications(selectNotification, _authenticationBloc);
-    _notifications.init(_authenticationBloc);
+    _notifications.init();
   }
 
   @override
