@@ -46,6 +46,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Loading...'), findsOneWidget);
+    blocs.close();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('name set', (tester) async {
@@ -96,6 +97,7 @@ void main() {
       await expectLater(find.byType(PlayerName),
           matchesGoldenFile('../golden/player_name_set.png'));
     }
+    blocs.close();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('name change', (tester) async {
@@ -149,5 +151,6 @@ void main() {
     await tester.pumpAndSettle();
 
     await expectLater(find.text('Bluey (Invited)'), findsOneWidget);
+    blocs.close();
   }, variant: TeamsFuseTestVariant());
 }

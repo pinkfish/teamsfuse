@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/screens/game/gamedetails.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,23 +33,33 @@ void main() {
   testWidgets('uninitialized', (tester) async {
     resetMockitoState();
 
-    final mockDb = MockDatabaseUpdateModel();
-    final mockAnalytics = MockAnalyticsSubsystem();
+    final blocs = AllBlocs();
     final gameController = StreamController<Game>();
 
     setupStorage();
 
-    when(mockDb.getGame('123')).thenAnswer((_) => gameController.stream);
+    when(blocs.mockDb.getGame('123')).thenAnswer((_) => gameController.stream);
 
     // Build our app and trigger a frame.
 
     final testWidget = await makeTestableWidget(
       MultiRepositoryProvider(
         providers: [
-          RepositoryProvider<DatabaseUpdateModel>(create: (c) => mockDb),
-          RepositoryProvider<AnalyticsSubsystem>(create: (c) => mockAnalytics)
+          RepositoryProvider<DatabaseUpdateModel>(create: (c) => blocs.mockDb),
+          RepositoryProvider<AnalyticsSubsystemImpl>(
+              create: (c) => blocs.mockAnalytics)
         ],
-        child: GameDetailsScreen('123'),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<PlayerBloc>(
+              create: (_) => blocs.playerBloc,
+            ),
+            BlocProvider<GameBloc>(
+              create: (_) => blocs.gameBloc,
+            ),
+          ],
+          child: GameDetailsScreen('123'),
+        ),
       ),
     );
 
@@ -61,26 +72,37 @@ void main() {
 
     expect(find.text('Loading...'), findsOneWidget);
     await gameController.close();
+    blocs.close();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('deleted', (tester) async {
-    final mockDb = MockDatabaseUpdateModel();
-    final mockAnalytics = MockAnalyticsSubsystem();
+    final blocs = AllBlocs();
     final gameController = StreamController<Game>();
     final mockObserver = MockNavigatorObserver();
 
     AsyncHydratedStorage.storageDirectory = Directory('fail');
 
-    when(mockDb.getGame('123')).thenAnswer((_) => gameController.stream);
+    when(blocs.mockDb.getGame('123')).thenAnswer((_) => gameController.stream);
 
     // Build our app and trigger a frame.
     final testWidget = await makeTestableWidget(
       MultiRepositoryProvider(
         providers: [
-          RepositoryProvider<DatabaseUpdateModel>(create: (c) => mockDb),
-          RepositoryProvider<AnalyticsSubsystem>(create: (c) => mockAnalytics)
+          RepositoryProvider<DatabaseUpdateModel>(create: (c) => blocs.mockDb),
+          RepositoryProvider<AnalyticsSubsystemImpl>(
+              create: (c) => blocs.mockAnalytics)
         ],
-        child: GameDetailsScreen('123'),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<PlayerBloc>(
+              create: (_) => blocs.playerBloc,
+            ),
+            BlocProvider<GameBloc>(
+              create: (_) => blocs.gameBloc,
+            ),
+          ],
+          child: GameDetailsScreen('123'),
+        ),
       ),
       observer: mockObserver,
     );
@@ -94,6 +116,7 @@ void main() {
     verify(mockObserver.didPop(any, any));
 
     await gameController.close();
+    blocs.close();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('loaded', (tester) async {
@@ -116,11 +139,18 @@ void main() {
         providers: [
           RepositoryProvider<DatabaseUpdateModel>(
               create: (c) => allBlocs.mockDb),
-          RepositoryProvider<AnalyticsSubsystem>(
+          RepositoryProvider<AnalyticsSubsystemImpl>(
               create: (c) => allBlocs.mockAnalytics)
         ],
-        child: BlocProvider<PlayerBloc>(
-          create: (_) => allBlocs.playerBloc,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<PlayerBloc>(
+              create: (_) => allBlocs.playerBloc,
+            ),
+            BlocProvider<GameBloc>(
+              create: (_) => allBlocs.gameBloc,
+            ),
+          ],
           child: RepaintBoundary(
             child: GameDetailsScreen('game123'),
           ),
@@ -180,11 +210,18 @@ void main() {
         providers: [
           RepositoryProvider<DatabaseUpdateModel>(
               create: (c) => allStuff.mockDb),
-          RepositoryProvider<AnalyticsSubsystem>(
+          RepositoryProvider<AnalyticsSubsystemImpl>(
               create: (c) => allStuff.mockAnalytics)
         ],
-        child: BlocProvider<PlayerBloc>(
-          create: (_) => allStuff.playerBloc,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<PlayerBloc>(
+              create: (_) => allStuff.playerBloc,
+            ),
+            BlocProvider<GameBloc>(
+              create: (_) => allStuff.gameBloc,
+            ),
+          ],
           child: RepaintBoundary(
             child: GameDetailsScreen('game123'),
           ),
@@ -285,8 +322,11 @@ void main() {
         providers: [
           RepositoryProvider<DatabaseUpdateModel>(
               create: (c) => allBlocs.mockDb),
-          RepositoryProvider<AnalyticsSubsystem>(
-              create: (c) => allBlocs.mockAnalytics)
+          RepositoryProvider<AnalyticsSubsystemImpl>(
+              create: (c) => allBlocs.mockAnalytics),
+          RepositoryProvider<GameBloc>(
+            create: (c) => allBlocs.gameBloc,
+          ),
         ],
         child: BlocProvider<PlayerBloc>(
           create: (_) => allBlocs.playerBloc,
