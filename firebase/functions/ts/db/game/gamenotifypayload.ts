@@ -87,8 +87,9 @@ export async function notifyOfResults(
             ) {
                 diff = true;
             }
-            ptsFor += nowScore.score.ptsFor;
-            ptsAgainst += nowScore.score.ptsAgainst;
+
+            ptsFor += nowScore.score?.ptsFor ?? 0;
+            ptsAgainst += nowScore.score?.ptsAgainst ?? 0;
         }
     }
     if (
