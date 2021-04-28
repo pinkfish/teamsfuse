@@ -49,8 +49,8 @@ platform :ios do
 
     import_certificate(
       certificate_path: apple_intermediate_certificate_path,
-      keychain_name: YOUR_KEYCHAIN_NAME,
-      keychain_password: YOUR_KEYCHAIN_PASSWORD
+      keychain_name: TEMP_KEYCHAIN_USER,
+      keychain_password: TEMP_KEYCHAIN_PASSWORD
     )
 
     # setup certs.
