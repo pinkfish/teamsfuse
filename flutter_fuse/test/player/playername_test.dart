@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
 import 'package:flutter_fuse/widgets/player/playername.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +15,7 @@ import '../util/widgetvariant.dart';
 
 class MockDatabaseUpdateModel extends Mock implements DatabaseUpdateModel {}
 
-class MockAnalyticsSubsystem extends Mock implements AnalyticsSubsystem {}
+class MockAnalyticsSubsystem extends Mock implements AnalyticsSubsystemImpl {}
 
 void main() {
   testWidgets('uninitialized', (tester) async {
@@ -33,7 +34,7 @@ void main() {
             RepositoryProvider<DatabaseUpdateModel>(
               create: (c) => mockDb,
             ),
-            RepositoryProvider<AnalyticsSubsystem>(
+            RepositoryProvider<AnalyticsSubsystemImpl>(
               create: (c) => mockAnalytics,
             ),
           ],
