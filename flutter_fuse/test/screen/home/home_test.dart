@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/screens/home/home.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -36,7 +37,7 @@ void main() {
                 providers: [
                   RepositoryProvider<DatabaseUpdateModel>(
                       create: (c) => allBlocs.mockDb),
-                  RepositoryProvider<AnalyticsSubsystem>(
+                  RepositoryProvider<AnalyticsSubsystemImpl>(
                       create: (c) => allBlocs.mockAnalytics)
                 ],
                 child: MultiBlocProvider(
