@@ -58,6 +58,7 @@ dependencies:
   sliver_calendar: ^0.4.2
   flutter_cache_manager: ^3.0.1
   flutter_keyboard_visibility: ^5.0.1
+  flutter_local_notifications: ^5.0.0+3
 
   cupertino_icons: ^1.0.2
 
