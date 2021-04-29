@@ -133,7 +133,7 @@ jobs:
       - run: flutter test
         working-directory: public_ux
       - name: Fastlane Action
-        uses: maierj/fastlane-action@v1.4.0
+        uses: maierj/fastlane-action@v2.0.1
         if: ${{ matrix.os == 'android' || matrix.os == 'ios' }}
         with:
           lane: beta
