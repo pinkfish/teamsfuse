@@ -47,17 +47,18 @@ platform :ios do
     apple_intermediate_certificate_path = "/tmp/AppleWWDRCAG3.cer"
     `curl https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer --output #{apple_intermediate_certificate_path}`
 
-    import_certificate(
-      certificate_path: apple_intermediate_certificate_path,
-      keychain_name: TEMP_KEYCHAIN_USER,
-      keychain_password: TEMP_KEYCHAIN_PASSWORD
-    )
 
     # setup certs.
     keychain_name = TEMP_KEYCHAIN_USER
     keychain_password = TEMP_KEYCHAIN_PASSWORD
     ensure_temp_keychain(keychain_name, keychain_password)
 
+    import_certificate(
+      certificate_path: apple_intermediate_certificate_path,
+      keychain_name: TEMP_KEYCHAIN_USER,
+      keychain_password: TEMP_KEYCHAIN_PASSWORD
+    )
+    
     match(
       type: 'appstore',
       app_identifier: DEVELOPER_APP_IDENTIFIER.to_s,
