@@ -90,6 +90,26 @@ class _MediaCarouselState extends State<MediaCarousel> {
     return loc;
   }
 
+  void _nextImage() {
+    _direction = false;
+    _index++;
+    if (_index >= widget.allMedia.length) {
+      _index = 0;
+    }
+    _zoomLocation = Offset(0, 0);
+    setState(() => _currentMedia = widget.allMedia[_index]);
+  }
+
+  void _prevImage() {
+    _direction = true;
+    _index--;
+    if (_index < 0) {
+      _index = widget.allMedia.length - 1;
+    }
+    _zoomLocation = Offset(0, 0);
+    setState(() => _currentMedia = widget.allMedia[_index]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final _dateFormat = intl.DateFormat.yMMMMEEEEd(Messages.of(context).locale);
@@ -144,22 +164,10 @@ class _MediaCarouselState extends State<MediaCarousel> {
                 if (!_zoomed) {
                   if (_panOffset.dy < 60 && _panOffset.dy > -60) {
                     if (_panOffset.dx > 100) {
-                      _direction = false;
-                      _index++;
-                      if (_index >= widget.allMedia.length) {
-                        _index = 0;
-                      }
-                      _zoomLocation = Offset(0, 0);
-                      setState(() => _currentMedia = widget.allMedia[_index]);
+                      _nextImage();
                     }
                     if (_panOffset.dx < -100) {
-                      _direction = true;
-                      _index--;
-                      if (_index < 0) {
-                        _index = widget.allMedia.length - 1;
-                      }
-                      _zoomLocation = Offset(0, 0);
-                      setState(() => _currentMedia = widget.allMedia[_index]);
+                      _prevImage();
                     }
                   }
                 }
@@ -356,6 +364,42 @@ class _MediaCarouselState extends State<MediaCarousel> {
                           color: Colors.white,
                         ),
                         onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                    Positioned(
+                      top: (constraints.maxHeight - 50) / 2,
+                      left: 3,
+                      child: Ink(
+                        decoration: ShapeDecoration(
+                          color: Colors.grey.withOpacity(0.5),
+                          shape: CircleBorder(),
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.arrow_back_ios_outlined,
+                            color: Colors.white,
+                            size: 35,
+                          ),
+                          onPressed: _nextImage,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: (constraints.maxHeight - 50) / 2,
+                      left: constraints.maxWidth - 50,
+                      child: Ink(
+                        decoration: ShapeDecoration(
+                          color: Colors.grey.withOpacity(0.5),
+                          shape: CircleBorder(),
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.arrow_forward_ios_outlined,
+                            color: Colors.white,
+                            size: 35,
+                          ),
+                          onPressed: _prevImage,
+                        ),
                       ),
                     ),
                   ],
