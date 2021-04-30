@@ -278,7 +278,13 @@ class _MediaCarouselState extends State<MediaCarousel> {
                           imageUrl: _currentMedia.url.toString(),
                           fit: BoxFit.none,
                           errorWidget: (c, str, e) => Icon(Icons.error),
-                          placeholder: (c, str) => CircularProgressIndicator(),
+                          placeholder: (c, str) => Center(
+                            child: SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
                         ),
                       ),
                     ),
