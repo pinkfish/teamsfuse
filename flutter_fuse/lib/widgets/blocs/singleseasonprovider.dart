@@ -36,11 +36,17 @@ class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
 
   static SingleSeasonBloc _createBloc(BuildContext context, String uid) {
     assert(uid != null && uid.isNotEmpty);
+    SeasonBloc seasonBloc;
+    try {
+      seasonBloc = BlocProvider.of<SeasonBloc>(context);
+    } catch (_) {
+      seasonBloc = null;
+    }
     return SingleSeasonBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       seasonUid: uid,
       crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
-      seasonBloc: BlocProvider.of<SeasonBloc>(context),
+      seasonBloc: seasonBloc,
     );
   }
 }

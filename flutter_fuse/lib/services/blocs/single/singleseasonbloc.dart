@@ -92,7 +92,7 @@ class SingleSeasonBloc
       {@required this.db,
       @required this.seasonUid,
       @required this.crashes,
-      @required SeasonBloc seasonBloc})
+      SeasonBloc seasonBloc})
       : super(_getInitialState(seasonUid, seasonBloc), seasonUid) {
     assert(seasonUid != null && seasonUid.isNotEmpty);
     _seasonSub = db.getSingleSeason(seasonUid).listen((season) {
