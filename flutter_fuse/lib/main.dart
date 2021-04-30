@@ -1,15 +1,11 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -80,7 +76,8 @@ void main() async {
     if (currentTimeZone == 'GMT' || currentTimeZone == 'Etc/UTC') {
       currentTimeZone = 'Europe/London';
       setLocalLocation(currentTimeZone);
-    } else if (currentTimeZone == 'Pacific Standard Time') {
+    } else if (currentTimeZone == 'Pacific Standard Time' ||
+        currentTimeZone == 'Pacific Daylight Time') {
       currentTimeZone = 'America/Los_Angeles';
       setLocalLocation(currentTimeZone);
     } else if (currentTimeZone == 'Mountain Standard Time') {
@@ -90,7 +87,12 @@ void main() async {
       currentTimeZone = 'Europe/London';
       setLocalLocation(currentTimeZone);
     } else {
-      setLocalLocation(currentTimeZone);
+      try {
+        setLocalLocation(currentTimeZone);
+      } catch (e, stack) {
+        analytics.recordException(e, stack);
+        print('Failed to set location $currentTimeZone');
+      }
     }
   } catch (e, stack) {
     analytics.recordException(e, stack);
