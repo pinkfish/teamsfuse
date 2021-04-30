@@ -170,8 +170,8 @@ jobs:
           cp -fR public_ux/build/web/* firebase/public/flutter
         if: ${{ matrix.os == 'web' }}
       - run: |
-          mkdir -p firebase/public/flutter/main
-          cp -fR flutter_fuse/build/web/* firebase/public/flutter/main
+          mkdir -p firebase/public/flutter_main
+          cp -fR flutter_fuse/build/web/* firebase/public/flutter_main
         if: ${{ matrix.os == 'web' }}
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master

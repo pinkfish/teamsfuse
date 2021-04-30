@@ -13,24 +13,42 @@
     ],
     "source": "functions"
   },
-  "hosting": {
-    "public": "public/flutter",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [
-      {
-        "source": "/support/request",
-        "function": "functionsSupportrequest"
-      },
-      {
-        "source": "**",
-        "destination": "/index.html"
-      },
-      {
-        "source": "/share/**",
-        "dynamicLinks": true
-      }
-    ]
-  },
+  "hosting": [
+    {
+      "target": "teamsfuse",
+      "public": "public/flutter",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "/support/request",
+          "function": "functionsSupportrequest"
+        },
+        {
+          "source": "**",
+          "destination": "/index.html"
+        },
+        {
+          "source": "/share/**",
+          "dynamicLinks": true
+        }
+      ]
+    },
+    {
+      "target": "teamsfusemain",
+      "public": "public/flutter_main",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        },
+        {
+          "source": "/share/**",
+          "dynamicLinks": true
+        }
+      ]
+    }
+  ],
   "storage": {
     "rules": "storage.rules"
   }

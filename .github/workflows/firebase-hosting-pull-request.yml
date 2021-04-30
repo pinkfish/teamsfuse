@@ -56,8 +56,8 @@ jobs:
         working-directory: public_ux
       - run: |
           flutter build web
-          mkdir -p ../firebase/public/flutter/main
-          cp -fR build/web/* ../firebase/public/flutter/main
+          mkdir -p ../firebase/public/flutter_main
+          cp -fR build/web/* ../firebase/public/flutter_main
         working-directory: flutter_fuse
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
