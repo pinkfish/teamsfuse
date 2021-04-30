@@ -15,7 +15,7 @@
   },
   "hosting": [
     {
-      "target": "teamsfuse",
+      "target": "public",
       "public": "public/flutter",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
@@ -34,7 +34,7 @@
       ]
     },
     {
-      "target": "teamsfusemain",
+      "target": "main",
       "public": "public/flutter_main",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
