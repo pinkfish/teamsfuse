@@ -222,7 +222,7 @@ describe('Notify for games - tests', () => {
                     notification: {
                         body: '',
                         title: '',
-                        icon: 'https://teamsfuse.firebaseapp.com/assets/sports/undefined.png',
+                        icon: 'https://teamsfuse.firebaseapp.com/assets/sports/Basketball.png',
                         tag: gameDoc.id,
                         clickAction: 'GAME',
                     },
@@ -320,7 +320,7 @@ describe('Notify for games - tests', () => {
                     notification: {
                         body: '',
                         title: '',
-                        icon: 'https://teamsfuse.firebaseapp.com/assets/sports/undefined.png',
+                        icon: 'https://teamsfuse.firebaseapp.com/assets/sports/Basketball.png',
                         tag: gameDoc.id,
                         clickAction: 'GAME',
                     },

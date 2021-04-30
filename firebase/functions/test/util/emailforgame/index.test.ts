@@ -8,6 +8,7 @@ import {
     createOpponent,
     createPlayer,
     createUser,
+    teamDefaultBasketballBase64,
 } from '../../test_util/datacreation';
 import { DateTime, Settings } from 'luxon';
 import * as nodemailer from 'nodemailer';
@@ -43,7 +44,8 @@ test.mockConfig({
 
 import { emailForGame, ChangedData } from '../../../ts/util/notifyforgame';
 
-const mailAttachments = [
+/*
+const mailAttachmentsWithTeam = [
     {
         filename: 'apple-store-badge.png',
         path: 'lib/ts/templates/img/apple-store-badge.png',
@@ -59,10 +61,42 @@ const mailAttachments = [
         content:
             'PCFET0NUWVBFIGh0bWw+CjxodG1sPgogIDxoZWFkPgogICAgPCEtLQogICAgSWYgeW91IGFyZSBzZXJ2aW5nIHlvdXIgd2ViIGFwcCBpbiBhIHBhdGggb3RoZXIgdGhhbiB0aGUgcm9vdCwgY2hhbmdlIHRoZQogICAgaHJlZiB2YWx1ZSBiZWxvdyB0byByZWZsZWN0IHRoZSBiYXNlIHBhdGggeW91IGFyZSBzZXJ2aW5nIGZyb20uCgogICAgVGhlIHBhdGggcHJvdmlkZWQgYmVsb3cgaGFzIHRvIHN0YXJ0IGFuZCBlbmQgd2l0aCBhIHNsYXNoICIvIiBpbiBvcmRlciBmb3IKICAgIGl0IHRvIHdvcmsgY29ycmVjdGx5LgoKICAgIEZvcmUgbW9yZSBkZXRhaWxzOgogICAgKiBodHRwczovL2RldmVsb3Blci5tb3ppbGxhLm9yZy9lbi1VUy9kb2NzL1dlYi9IVE1ML0VsZW1lbnQvYmFzZQogIC0tPgogICAgPGJhc2UgaHJlZj0iLyIgLz4KCiAgICA8bWV0YSBjaGFyc2V0PSJVVEYtOCIgLz4KICAgIDxtZXRhIGNvbnRlbnQ9IklFPUVkZ2UiIGh0dHAtZXF1aXY9IlgtVUEtQ29tcGF0aWJsZSIgLz4KICAgIDxtZXRhIG5hbWU9ImRlc2NyaXB0aW9uIiBjb250ZW50PSJBIG5ldyBGbHV0dGVyIHByb2plY3QuIiAvPgoKICAgIDwhLS0gaU9TIG1ldGEgdGFncyAmIGljb25zIC0tPgogICAgPG1ldGEgbmFtZT0iYXBwbGUtbW9iaWxlLXdlYi1hcHAtY2FwYWJsZSIgY29udGVudD0ieWVzIiAvPgogICAgPG1ldGEgbmFtZT0iYXBwbGUtbW9iaWxlLXdlYi1hcHAtc3RhdHVzLWJhci1zdHlsZSIgY29udGVudD0iYmxhY2siIC8+CiAgICA8bWV0YSBuYW1lPSJhcHBsZS1tb2JpbGUtd2ViLWFwcC10aXRsZSIgY29udGVudD0iZmx1dHRlcl9mdXNlIiAvPgogICAgPGxpbmsgcmVsPSJhcHBsZS10b3VjaC1pY29uIiBocmVmPSJpY29ucy9pY29uLTE5Mi5wbmciIC8+CgogICAgPCEtLSBGYXZpY29uIC0tPgogICAgPGxpbmsgcmVsPSJpY29uIiB0eXBlPSJpbWFnZS9wbmciIGhyZWY9ImZhdmljb24ucG5nIiAvPgoKICAgIDx0aXRsZT5mbHV0dGVyX2Z1c2U8L3RpdGxlPgogICAgPGxpbmsgcmVsPSJtYW5pZmVzdCIgaHJlZj0ibWFuaWZlc3QuanNvbiIgLz4KICA8L2hlYWQ+CiAgPGJvZHk+CiAgICA8IS0tIFRoaXMgc2NyaXB0IGluc3RhbGxzIHNlcnZpY2Vfd29ya2VyLmpzIHRvIHByb3ZpZGUgUFdBIGZ1bmN0aW9uYWxpdHkgdG8KICAgICAgIGFwcGxpY2F0aW9uLiBGb3IgbW9yZSBpbmZvcm1hdGlvbiwgc2VlOgogICAgICAgaHR0cHM6Ly9kZXZlbG9wZXJzLmdvb2dsZS5jb20vd2ViL2Z1bmRhbWVudGFscy9wcmltZXJzL3NlcnZpY2Utd29ya2VycyAtLT4KICAgIDxzY3JpcHQ+CiAgICAgIGlmICgic2VydmljZVdvcmtlciIgaW4gbmF2aWdhdG9yKSB7CiAgICAgICAgd2luZG93LmFkZEV2ZW50TGlzdGVuZXIoImZsdXR0ZXItZmlyc3QtZnJhbWUiLCBmdW5jdGlvbiAoKSB7CiAgICAgICAgICBuYXZpZ2F0b3Iuc2VydmljZVdvcmtlci5yZWdpc3RlcigiZmx1dHRlcl9zZXJ2aWNlX3dvcmtlci5qcyIpOwogICAgICAgIH0pOwogICAgICB9CiAgICA8L3NjcmlwdD4KICAgIDxzY3JpcHQgc3JjPSJodHRwczovL3d3dy5nc3RhdGljLmNvbS9maXJlYmFzZWpzLzcuMjAuMC9maXJlYmFzZS1hcHAuanMiPjwvc2NyaXB0PgogICAgPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvNy4xNy4xL2ZpcmViYXNlLWZpcmVzdG9yZS5qcyI+PC9zY3JpcHQ+CiAgICA8c2NyaXB0IHNyYz0iaHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy84LjIuNC9maXJlYmFzZS1hdXRoLmpzIj48L3NjcmlwdD4KICAgIDxzY3JpcHQgc3JjPSJodHRwczovL3d3dy5nc3RhdGljLmNvbS9maXJlYmFzZWpzLzguMi40L2ZpcmViYXNlLW1lc3NhZ2luZy5qcyI+PC9zY3JpcHQ+CiAgICA8c2NyaXB0IHNyYz0iaHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy84LjIuNC9maXJlYmFzZS1wZXJmb3JtYW5jZS5qcyI+PC9zY3JpcHQ+CiAgICA8c2NyaXB0IHNyYz0iaHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy84LjIuNC9maXJlYmFzZS1zdG9yYWdlLmpzIj48L3NjcmlwdD4KICAgIDxzY3JpcHQgc3JjPSJodHRwczovL3d3dy5nc3RhdGljLmNvbS9maXJlYmFzZWpzLzguMi40L2ZpcmViYXNlLXJlbW90ZS1jb25maWcuanMiPjwvc2NyaXB0PgogICAgPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvOC4yLjQvZmlyZWJhc2UtYW5hbHl0aWNzLmpzIj48L3NjcmlwdD4KICAgIDxzY3JpcHQgc3JjPSJodHRwczovL3d3dy5nc3RhdGljLmNvbS9maXJlYmFzZWpzLzguNC4xL2ZpcmViYXNlLWZ1bmN0aW9ucy5qcyI+PC9zY3JpcHQ+CgogICAgPHNjcmlwdD4KICAgICAgLy8gWW91ciB3ZWIgYXBwJ3MgRmlyZWJhc2UgY29uZmlndXJhdGlvbgogICAgICB2YXIgZmlyZWJhc2VDb25maWcgPSB7CiAgICAgICAgYXBpS2V5OiAiQUl6YVN5QmRoU1dTT0V2blRNSE1EZjBiTUVJYjhpNjR1VmNXTDNVIiwKICAgICAgICBhdXRoRG9tYWluOiAidGVhbXNmdXNlLmZpcmViYXNlYXBwLmNvbSIsCiAgICAgICAgZGF0YWJhc2VVUkw6ICJodHRwczovL3RlYW1zZnVzZS5maXJlYmFzZWlvLmNvbSIsCiAgICAgICAgcHJvamVjdElkOiAidGVhbXNmdXNlIiwKICAgICAgICBzdG9yYWdlQnVja2V0OiAidGVhbXNmdXNlLmFwcHNwb3QuY29tIiwKICAgICAgICBtZXNzYWdpbmdTZW5kZXJJZDogIjQwMDE5OTg5NzY4MyIsCiAgICAgICAgYXBwSWQ6ICIxOjQwMDE5OTg5NzY4Mzp3ZWI6YTc2YjljNTIzZGJlZjdhNDA4YWNhNiIsCiAgICAgIH07CiAgICAgIC8vIEluaXRpYWxpemUgRmlyZWJhc2UKICAgICAgZmlyZWJhc2UuaW5pdGlhbGl6ZUFwcChmaXJlYmFzZUNvbmZpZyk7CiAgICA8L3NjcmlwdD4KICAgIDxzY3JpcHQgc3JjPSJtYWluLmRhcnQuanMiIHR5cGU9ImFwcGxpY2F0aW9uL2phdmFzY3JpcHQiPjwvc2NyaXB0PgogIDwvYm9keT4KPC9odG1sPgo=',
         cid: 'teamimg',
-        contentType: 'text/html; charset=utf-8',
+        contentType: 'image/jpeg',
         encoding: 'base64',
     },
 ];
+*/
+
+const mailAttachmentsWithPlayerAndTeam = [
+    {
+        filename: 'apple-store-badge.png',
+        path: 'lib/ts/templates/img/apple-store-badge.png',
+        cid: 'apple-store',
+    },
+    {
+        filename: 'google-store-badge.png',
+        path: 'lib/ts/templates/img/google-play-badge.png',
+        cid: 'google-store',
+    },
+
+    {
+        filename: 'team.png',
+        content: teamDefaultBasketballBase64,
+        cid: 'teamimg',
+        contentType: 'image/png',
+        encoding: 'base64',
+    },
+    /*
+    {
+        filename: 'player.png',
+        content: teamDefaultPlayerBase64,
+        cid: 'playerimg',
+        contentType: 'image/png',
+        encoding: 'base64',
+    },
+    */
+];
+
 describe('Email for games', () => {
     let spy: sinon.SinonStub<[mailOptions: nodemailer.SendMailOptions], Promise<SMTPTransport.SentMessageInfo>>;
 
@@ -305,7 +339,7 @@ describe('Email for games', () => {
                     '</p>\n',
                 from: 'noreply@email.teamsfuse.com',
                 to: 'test@test.com',
-                attachments: mailAttachments,
+                attachments: mailAttachmentsWithPlayerAndTeam,
             });
         } finally {
             cache.close();
@@ -453,7 +487,7 @@ describe('Email for games', () => {
                     '</p>\n',
                 from: 'noreply@email.teamsfuse.com',
                 to: 'test@test.com',
-                attachments: mailAttachments,
+                attachments: mailAttachmentsWithPlayerAndTeam,
             });
         } finally {
             cache.close();
@@ -664,7 +698,7 @@ describe('Email for games', () => {
                     '</p>\n',
                 from: 'noreply@email.teamsfuse.com',
                 to: 'test@test.com',
-                attachments: mailAttachments,
+                attachments: mailAttachmentsWithPlayerAndTeam,
             });
         } finally {
             cache.close();

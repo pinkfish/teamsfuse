@@ -112,13 +112,6 @@ async function mailToSender(
                 return;
             }
 
-            let url;
-            if (teamData.photourl) {
-                url = teamData.photourl;
-            } else {
-                url = 'file:lib/ts/templates/img/defaultteam.jpg';
-            }
-
             // Building Email message.
             const shortInviteLink = await getShortLink(
                 'Invite to team ' + teamData.name,
@@ -139,7 +132,7 @@ async function mailToSender(
             mailOptions.text = payloadTxt(context) + footerTxt(context);
             mailOptions.html = payloadHtml(context) + footerHtml(context);
 
-            const image = await getImageFromUrl(url);
+            const image = await getImageFromUrl(teamData.photoUrl, 'lib/ts/templates/img/defaultteam.jpg');
             mailOptions.attachments.push({
                 filename: 'team.jpg',
                 content: Buffer.from(image.data).toString('base64'),
@@ -160,13 +153,6 @@ async function mailToSender(
                 return;
             }
 
-            let url;
-            if (playerData.photourl) {
-                url = playerData.photourl;
-            } else {
-                url = 'file:lib/ts/templates/img/defaultplayer.jpg';
-            }
-
             const shortInviteLink = await getShortLink(
                 'Invite to player ' + playerData.name,
                 'Invite/View/' + inviteDoc.id,
@@ -184,12 +170,12 @@ async function mailToSender(
             mailOptions.text = payloadTxt(context) + footerTxt(context);
             mailOptions.html = payloadHtml(context) + footerHtml(context);
 
-            const imageUrl = await getImageFromUrl(url);
+            const playerImageUrl = await getImageFromUrl(playerData.photoUrl, 'lib/ts/templates/img/defaultplayer.jpg');
             mailOptions.attachments.push({
                 filename: 'player.jpg',
-                content: Buffer.from(imageUrl.data).toString('base64'),
+                content: Buffer.from(playerImageUrl.data).toString('base64'),
                 cid: 'playerimg',
-                contentType: getContentType(imageUrl),
+                contentType: getContentType(playerImageUrl),
                 encoding: 'base64',
             });
             await sendMail(mailOptions);
@@ -199,13 +185,7 @@ async function mailToSender(
     } else if (data.type === 'LeagueAdmin' || data.type === 'LeagueTeam') {
         const snapshot = await db.collection('League').doc(data.leagueUid).get();
         if (snapshot.exists) {
-            let url;
             const snapData = snapshot.data() ?? {};
-            if (snapData.photourl) {
-                url = snapData.photourl;
-            } else {
-                url = 'file:lib/ts/templates/img/defaultleague.jpg';
-            }
 
             const shortInviteLink = await getShortLink(
                 'Invite to league ' + snapData.name,
@@ -215,7 +195,7 @@ async function mailToSender(
                 sentBy: sentByData,
                 invite: data,
 
-                league: snapshot.data(),
+                league: snapData,
                 leagueimg: 'cid:leagueimg',
                 'league.gender': snapData.gender.replace('Gender.', '').toLowerCase(),
                 'league.sport': snapData.sport.replace('Sport.', '').toLowerCase(),
@@ -229,12 +209,12 @@ async function mailToSender(
             }
             mailOptions.text = payloadTxt(context) + footerTxt(context);
             mailOptions.html = payloadHtml(context) + footerHtml(context);
-            const image = await getImageFromUrl(url);
+            const leagueImageUrl = await getImageFromUrl(snapData.photoUrl, 'lib/ts/templates/img/defaultleague.jpg');
             mailOptions.attachments.push({
                 filename: 'league.jpg',
-                content: Buffer.from(image.data).toString('base64'),
+                content: Buffer.from(leagueImageUrl.data).toString('base64'),
                 cid: 'leagueimg',
-                contentType: getContentType(image),
+                contentType: getContentType(leagueImageUrl),
                 encoding: 'base64',
             });
             await sendMail(mailOptions);
@@ -248,18 +228,12 @@ async function mailToSender(
             console.error('Snappy data is null');
             return;
         }
-        let url;
-        if (snappyData.photourl) {
-            url = snappyData.photourl;
-        } else {
-            url = 'file:lib/ts/templates/img/defaultclub.jpg';
-        }
 
         const shortInviteLink = await getShortLink('Invite to club ' + snappyData.name, 'Invite/View/' + inviteDoc.id);
         const context = {
             sentBy: sentByData,
             invite: data,
-            club: snapshot.data(),
+            club: snappyData,
             clubimg: 'cid:clubimg',
             shortInviteLink: shortInviteLink,
         };
@@ -268,13 +242,13 @@ async function mailToSender(
         mailOptions.text = payloadTxt(context) + footerTxt(context);
         mailOptions.html = payloadHtml(context) + footerHtml(context);
 
-        const image = await getImageFromUrl(url);
+        const clubImageUrl = await getImageFromUrl(snappyData.photoUrl, 'lib/ts/templates/img/defaultclub.jpg');
 
         mailOptions.attachments.push({
             filename: 'club.jpg',
-            content: Buffer.from(image.data).toString('base64'),
+            content: Buffer.from(clubImageUrl.data).toString('base64'),
             cid: 'clubimg',
-            contentType: getContentType(image),
+            contentType: getContentType(clubImageUrl),
             encoding: 'base64',
         });
         await sendMail(mailOptions);

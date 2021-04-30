@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
@@ -19,7 +20,8 @@ import 'package:timezone/data/latest.dart';
 
 class MockDatabaseUpdateModel extends Mock implements DatabaseUpdateModel {}
 
-class MockAnalyticsSubsystem extends Mock implements AnalyticsSubsystem {}
+class MockAnalyticsSubsystemImpl extends Mock
+    implements AnalyticsSubsystemImpl {}
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
@@ -89,7 +91,7 @@ MockStorage setupStorage() {
 ///
 class BasicData {
   final mockDb = MockDatabaseUpdateModel();
-  final mockAnalytics = MockAnalyticsSubsystem();
+  final mockAnalytics = MockAnalyticsSubsystemImpl();
   final mockUserAuth = MockUserAuth();
   final mockObserver = MockNavigatorObserver();
   final mockAlgoliaSearch = MockAlgoliaSearch();
@@ -134,7 +136,8 @@ class BasicData {
         providers: [
           RepositoryProvider<AlgoliaSearch>(create: (c) => mockAlgoliaSearch),
           RepositoryProvider<DatabaseUpdateModel>(create: (c) => mockDb),
-          RepositoryProvider<AnalyticsSubsystem>(create: (c) => mockAnalytics),
+          RepositoryProvider<AnalyticsSubsystemImpl>(
+              create: (c) => mockAnalytics),
           RepositoryProvider<UserAuthImpl>(create: (c) => mockUserAuth),
         ],
         child: BlocProvider<AuthenticationBloc>(

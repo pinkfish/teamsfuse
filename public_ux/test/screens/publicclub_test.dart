@@ -6,6 +6,8 @@ import 'dart:io';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:clock/clock.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
@@ -118,7 +120,9 @@ void main() {
 
       // Build our app and trigger a frame.
       final testWidget = await makeTestableWidget(
-          PublicClubHomeScreen(PublicClubTab.club.name, 'club'));
+          RepositoryProvider<AnalyticsSubsystemImpl>(
+              create: (c) => basicData.mockAnalytics,
+              child: PublicClubHomeScreen(PublicClubTab.club.name, 'club')));
 
       await tester.pumpWidget(basicData.injectBlocs(testWidget));
       clubController.add(testClub);

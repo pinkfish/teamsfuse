@@ -2,11 +2,22 @@ import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { DocumentSnapshot } from '@google-cloud/firestore';
 import { DateTime } from 'luxon';
+import * as fs from 'fs';
 
 interface TeamAndSeason {
     team: DocumentSnapshot;
     season: DocumentSnapshot;
 }
+
+export const teamDefaultBasketballBase64 = Buffer.from(
+    fs.readFileSync('lib/ts/templates/img/Sport.Basketball.png'),
+).toString('base64');
+export const teamDefaultTeamBase64 = Buffer.from(fs.readFileSync('lib/ts/templates/img/defaultteam.jpg')).toString(
+    'base64',
+);
+export const teamDefaultPlayerBase64 = Buffer.from(fs.readFileSync('lib/ts/templates/img/defaultplayer.jpg')).toString(
+    'base64',
+);
 
 export async function createSeason(isPublicVisibleSeason: boolean, teamUid: string): Promise<DocumentSnapshot> {
     const seasonDocId = uuid();
@@ -42,6 +53,7 @@ export async function createSeasonAndTeam(
                 uid: teamDocId,
                 isPublic: isPublicVisibleTeam,
                 clubUid: clubUid,
+                sport: 'Basketball',
                 admins: {
                     me: {
                         added: true,
@@ -64,6 +76,7 @@ export async function createSeasonAndTeam(
                 name: 'Lookup TeamName',
                 photourl: null,
                 currentSeason: seasonDocId,
+                sport: 'Basketball',
                 uid: teamDocId,
                 isPublic: isPublicVisibleTeam,
                 admins: {

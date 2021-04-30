@@ -10,7 +10,7 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { clearFirestoreData } from '@firebase/rules-unit-testing';
 import chai, { expect, should } from 'chai';
 import SinonChai from 'sinon-chai';
-import { createSeasonAndTeam, createPlayer, createUser } from '../test_util/datacreation';
+import { createSeasonAndTeam, createPlayer, createUser, teamDefaultPlayerBase64 } from '../test_util/datacreation';
 
 // Setup chai and sinon.
 chai.use(SinonChai);
@@ -241,14 +241,14 @@ describe('Messages', () => {
                 '</p>\n',
             from: '"Player fromPlayer <' + messageRecipient.id + '@email.teamsfuse.com>',
             to: 'test@test.com',
-            attachments: mailAttachments,
+            attachments: mailAttachmentsWithPlayer,
         });
 
         return;
     });
 });
 
-export const mailAttachments = [
+const mailAttachmentsWithPlayer = [
     {
         filename: 'apple-store-badge.png',
         path: 'lib/ts/templates/img/apple-store-badge.png',
@@ -261,10 +261,9 @@ export const mailAttachments = [
     },
     {
         filename: 'player.jpg',
-        content:
-            'PCFET0NUWVBFIGh0bWw+CjxodG1sPgogIDxoZWFkPgogICAgPCEtLQogICAgSWYgeW91IGFyZSBzZXJ2aW5nIHlvdXIgd2ViIGFwcCBpbiBhIHBhdGggb3RoZXIgdGhhbiB0aGUgcm9vdCwgY2hhbmdlIHRoZQogICAgaHJlZiB2YWx1ZSBiZWxvdyB0byByZWZsZWN0IHRoZSBiYXNlIHBhdGggeW91IGFyZSBzZXJ2aW5nIGZyb20uCgogICAgVGhlIHBhdGggcHJvdmlkZWQgYmVsb3cgaGFzIHRvIHN0YXJ0IGFuZCBlbmQgd2l0aCBhIHNsYXNoICIvIiBpbiBvcmRlciBmb3IKICAgIGl0IHRvIHdvcmsgY29ycmVjdGx5LgoKICAgIEZvcmUgbW9yZSBkZXRhaWxzOgogICAgKiBodHRwczovL2RldmVsb3Blci5tb3ppbGxhLm9yZy9lbi1VUy9kb2NzL1dlYi9IVE1ML0VsZW1lbnQvYmFzZQogIC0tPgogICAgPGJhc2UgaHJlZj0iLyIgLz4KCiAgICA8bWV0YSBjaGFyc2V0PSJVVEYtOCIgLz4KICAgIDxtZXRhIGNvbnRlbnQ9IklFPUVkZ2UiIGh0dHAtZXF1aXY9IlgtVUEtQ29tcGF0aWJsZSIgLz4KICAgIDxtZXRhIG5hbWU9ImRlc2NyaXB0aW9uIiBjb250ZW50PSJBIG5ldyBGbHV0dGVyIHByb2plY3QuIiAvPgoKICAgIDwhLS0gaU9TIG1ldGEgdGFncyAmIGljb25zIC0tPgogICAgPG1ldGEgbmFtZT0iYXBwbGUtbW9iaWxlLXdlYi1hcHAtY2FwYWJsZSIgY29udGVudD0ieWVzIiAvPgogICAgPG1ldGEgbmFtZT0iYXBwbGUtbW9iaWxlLXdlYi1hcHAtc3RhdHVzLWJhci1zdHlsZSIgY29udGVudD0iYmxhY2siIC8+CiAgICA8bWV0YSBuYW1lPSJhcHBsZS1tb2JpbGUtd2ViLWFwcC10aXRsZSIgY29udGVudD0iZmx1dHRlcl9mdXNlIiAvPgogICAgPGxpbmsgcmVsPSJhcHBsZS10b3VjaC1pY29uIiBocmVmPSJpY29ucy9pY29uLTE5Mi5wbmciIC8+CgogICAgPCEtLSBGYXZpY29uIC0tPgogICAgPGxpbmsgcmVsPSJpY29uIiB0eXBlPSJpbWFnZS9wbmciIGhyZWY9ImZhdmljb24ucG5nIiAvPgoKICAgIDx0aXRsZT5mbHV0dGVyX2Z1c2U8L3RpdGxlPgogICAgPGxpbmsgcmVsPSJtYW5pZmVzdCIgaHJlZj0ibWFuaWZlc3QuanNvbiIgLz4KICA8L2hlYWQ+CiAgPGJvZHk+CiAgICA8IS0tIFRoaXMgc2NyaXB0IGluc3RhbGxzIHNlcnZpY2Vfd29ya2VyLmpzIHRvIHByb3ZpZGUgUFdBIGZ1bmN0aW9uYWxpdHkgdG8KICAgICAgIGFwcGxpY2F0aW9uLiBGb3IgbW9yZSBpbmZvcm1hdGlvbiwgc2VlOgogICAgICAgaHR0cHM6Ly9kZXZlbG9wZXJzLmdvb2dsZS5jb20vd2ViL2Z1bmRhbWVudGFscy9wcmltZXJzL3NlcnZpY2Utd29ya2VycyAtLT4KICAgIDxzY3JpcHQ+CiAgICAgIGlmICgic2VydmljZVdvcmtlciIgaW4gbmF2aWdhdG9yKSB7CiAgICAgICAgd2luZG93LmFkZEV2ZW50TGlzdGVuZXIoImZsdXR0ZXItZmlyc3QtZnJhbWUiLCBmdW5jdGlvbiAoKSB7CiAgICAgICAgICBuYXZpZ2F0b3Iuc2VydmljZVdvcmtlci5yZWdpc3RlcigiZmx1dHRlcl9zZXJ2aWNlX3dvcmtlci5qcyIpOwogICAgICAgIH0pOwogICAgICB9CiAgICA8L3NjcmlwdD4KICAgIDxzY3JpcHQgc3JjPSJodHRwczovL3d3dy5nc3RhdGljLmNvbS9maXJlYmFzZWpzLzcuMjAuMC9maXJlYmFzZS1hcHAuanMiPjwvc2NyaXB0PgogICAgPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvNy4xNy4xL2ZpcmViYXNlLWZpcmVzdG9yZS5qcyI+PC9zY3JpcHQ+CiAgICA8c2NyaXB0IHNyYz0iaHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy84LjIuNC9maXJlYmFzZS1hdXRoLmpzIj48L3NjcmlwdD4KICAgIDxzY3JpcHQgc3JjPSJodHRwczovL3d3dy5nc3RhdGljLmNvbS9maXJlYmFzZWpzLzguMi40L2ZpcmViYXNlLW1lc3NhZ2luZy5qcyI+PC9zY3JpcHQ+CiAgICA8c2NyaXB0IHNyYz0iaHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy84LjIuNC9maXJlYmFzZS1wZXJmb3JtYW5jZS5qcyI+PC9zY3JpcHQ+CiAgICA8c2NyaXB0IHNyYz0iaHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy84LjIuNC9maXJlYmFzZS1zdG9yYWdlLmpzIj48L3NjcmlwdD4KICAgIDxzY3JpcHQgc3JjPSJodHRwczovL3d3dy5nc3RhdGljLmNvbS9maXJlYmFzZWpzLzguMi40L2ZpcmViYXNlLXJlbW90ZS1jb25maWcuanMiPjwvc2NyaXB0PgogICAgPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvOC4yLjQvZmlyZWJhc2UtYW5hbHl0aWNzLmpzIj48L3NjcmlwdD4KCiAgICA8c2NyaXB0PgogICAgICAvLyBZb3VyIHdlYiBhcHAncyBGaXJlYmFzZSBjb25maWd1cmF0aW9uCiAgICAgIHZhciBmaXJlYmFzZUNvbmZpZyA9IHsKICAgICAgICBhcGlLZXk6ICJBSXphU3lCZGhTV1NPRXZuVE1ITURmMGJNRUliOGk2NHVWY1dMM1UiLAogICAgICAgIGF1dGhEb21haW46ICJ0ZWFtc2Z1c2UuZmlyZWJhc2VhcHAuY29tIiwKICAgICAgICBkYXRhYmFzZVVSTDogImh0dHBzOi8vdGVhbXNmdXNlLmZpcmViYXNlaW8uY29tIiwKICAgICAgICBwcm9qZWN0SWQ6ICJ0ZWFtc2Z1c2UiLAogICAgICAgIHN0b3JhZ2VCdWNrZXQ6ICJ0ZWFtc2Z1c2UuYXBwc3BvdC5jb20iLAogICAgICAgIG1lc3NhZ2luZ1NlbmRlcklkOiAiNDAwMTk5ODk3NjgzIiwKICAgICAgICBhcHBJZDogIjE6NDAwMTk5ODk3NjgzOndlYjphNzZiOWM1MjNkYmVmN2E0MDhhY2E2IiwKICAgICAgfTsKICAgICAgLy8gSW5pdGlhbGl6ZSBGaXJlYmFzZQogICAgICBmaXJlYmFzZS5pbml0aWFsaXplQXBwKGZpcmViYXNlQ29uZmlnKTsKICAgIDwvc2NyaXB0PgogICAgPHNjcmlwdCBzcmM9Im1haW4uZGFydC5qcyIgdHlwZT0iYXBwbGljYXRpb24vamF2YXNjcmlwdCI+PC9zY3JpcHQ+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==',
+        content: teamDefaultPlayerBase64,
+        contentType: 'image/jpeg',
         cid: 'playerimg',
-        contentType: 'text/html; charset=utf-8',
         encoding: 'base64',
     },
 ];

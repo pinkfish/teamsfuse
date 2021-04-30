@@ -169,19 +169,12 @@ async function sendTheEmail(
             messageLink: messageLink,
         };
 
-        let playerPhotoUrl: string;
-        if (data.photoUrl && data.photoUrl !== '') {
-            playerPhotoUrl = data.photoUrl;
-        } else {
-            // Make it based on the sport.
-            playerPhotoUrl = 'https://www.teamsfuse.com/assets/' + teamData!.sport + '.png';
-        }
-
         const footerTxt = handlebars.compile(fs.readFileSync('lib/ts/templates/footer.txt', 'utf8'));
         const footerHtml = handlebars.compile(fs.readFileSync('lib/ts/templates/footer.html', 'utf8'));
         let attachments: Attachment[];
         try {
-            const image = await getImageFromUrl(playerPhotoUrl);
+            const image = await getImageFromUrl(data.photoUrl, 'lib/ts/templates/img/defaultplayer.jpg');
+
             attachments = [
                 {
                     filename: 'apple-store-badge.png',
@@ -226,6 +219,7 @@ async function sendTheEmail(
             attachments: attachments,
         };
         try {
+            console.log(sendPayload);
             await sendMail(sendPayload);
         } catch (error) {
             console.error('Error mailing ' + error);

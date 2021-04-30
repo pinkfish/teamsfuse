@@ -480,14 +480,6 @@ async function doTheNotification(
             }
         }
 
-        let teamPhotoUrl: string;
-        if (teamData.photoUrl && teamData.photoUrl !== '') {
-            teamPhotoUrl = teamData.photoUrl;
-        } else {
-            // Make it based on the sport.
-            teamPhotoUrl = 'https://www.teamsfuse.com/assets/' + teamData.sport + '.png';
-        }
-
         // Create a nice layout thingy.
         const availability = {
             yes: await formatAvailability(yes, seasonData),
@@ -518,7 +510,10 @@ async function doTheNotification(
         const footerHtml = handlebars.compile(fs.readFileSync('lib/ts/templates/footer.html', 'utf8'));
         let attachments: Attachment[];
         try {
-            const image = await getImageFromUrl(teamPhotoUrl);
+            const image = await getImageFromUrl(
+                teamData.photoUrl,
+                'lib/ts/templates/img/Sport.' + teamData.sport + '.png',
+            );
             attachments = [
                 {
                     filename: 'apple-store-badge.png',
@@ -531,7 +526,7 @@ async function doTheNotification(
                     cid: 'google-store',
                 },
                 {
-                    filename: 'team.jpg',
+                    filename: 'team.png',
                     content: Buffer.from(image.data).toString('base64'),
                     cid: 'teamimg',
                     contentType: getContentType(image),
