@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-04-27T06:43:51.425448",
+  "@@last_modified": "2021-05-11T05:53:38.132049",
   "About": "About",
   "@About": {
     "type": "text",
@@ -2170,8 +2170,8 @@
       "minutes": {}
     }
   },
-  "cardResultInProgressFinal": "{ptsFor} - {ptsAgainst}",
-  "@cardResultInProgressFinal": {
+  "cardResultDetailsFinal": "{ptsFor} - {ptsAgainst}",
+  "@cardResultDetailsFinal": {
     "description": "In progress result details",
     "type": "text",
     "placeholders": {
@@ -2179,8 +2179,8 @@
       "ptsAgainst": {}
     }
   },
-  "cardResultInProgressOvertime": "{ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
-  "@cardResultInProgressOvertime": {
+  "cardResultDetailsOvertime": "{ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
+  "@cardResultDetailsOvertime": {
     "description": "Win result details with penalty shootout",
     "type": "text",
     "placeholders": {
@@ -2190,8 +2190,8 @@
       "overtimeAgainst": {}
     }
   },
-  "cardResultInProgressOvertimeAndPenalty": "{ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
-  "@cardResultInProgressOvertimeAndPenalty": {
+  "cardResultDetailsOvertimeAndPenalty": "{ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
+  "@cardResultDetailsOvertimeAndPenalty": {
     "description": "Win result details with penalty shootout",
     "type": "text",
     "placeholders": {
@@ -2203,8 +2203,8 @@
       "penaltyAgainst": {}
     }
   },
-  "cardResultInProgressPenalty": "{ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
-  "@cardResultInProgressPenalty": {
+  "cardResultDetailsPenalty": "{ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
+  "@cardResultDetailsPenalty": {
     "description": "In progress result details with penalty shootout",
     "type": "text",
     "placeholders": {
