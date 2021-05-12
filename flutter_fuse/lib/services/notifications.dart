@@ -95,7 +95,8 @@ class Notifications {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     FirebaseMessaging.onMessage.listen((message) {
-      print('onMessage: $message');
+      print('onMessage: ${message.data}');
+      print('onMessage: ${message.notification.body}');
       return;
     });
 
