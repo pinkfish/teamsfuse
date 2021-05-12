@@ -10,6 +10,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_fuse/services/blocs.dart';
+import 'package:flutter_fuse/services/notifications.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -26,6 +27,8 @@ class MockFirebaseAnalytics extends Mock implements FirebaseAnalytics {}
 class MockFirebaseDynamicLinks extends Mock implements FirebaseDynamicLinks {}
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
+
+class MockNotifications extends Mock implements Notifications {}
 
 class MockPendingDynamicLinkData extends Mock
     implements PendingDynamicLinkData {}

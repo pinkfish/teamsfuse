@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_fuse/services/analytics.dart';
+import 'package:flutter_fuse/services/notifications.dart';
 import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/firestore.dart';
@@ -122,6 +123,7 @@ class _SplashScreenTest {
   final userController = StreamController<UserData>();
   final mockFirebaseAnalytics = MockFirebaseAnalytics();
   final mockFirebaseDyanmicLinks = MockFirebaseDynamicLinks();
+  final mockNotifications = MockNotifications();
   AuthenticationBloc authBloc;
   Widget testWidget;
   final screen = SplashScreen();
@@ -146,6 +148,9 @@ class _SplashScreenTest {
               create: (c) => mockAnalytics),
           RepositoryProvider<FirebaseDynamicLinks>(
             create: (c) => mockFirebaseDyanmicLinks,
+          ),
+          RepositoryProvider<Notifications>(
+            create: (c) => mockNotifications,
           ),
         ],
         child: MultiBlocProvider(

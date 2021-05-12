@@ -120,6 +120,13 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     // Setup the local notifications to work with FCM.
     _notifications = Notifications(selectNotification, _authenticationBloc);
     _notifications.init();
+    // Do groovy stuff on clicking the notification.
+    Notifications.onMessageOpenedApp.listen((event) async {
+      final newRoute = _notifications.pathFromMessage(event);
+      if (newRoute != null) {
+        await Navigator.pushNamed(context, newRoute);
+      }
+    });
   }
 
   @override

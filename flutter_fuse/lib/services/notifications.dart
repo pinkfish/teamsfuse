@@ -96,8 +96,36 @@ class Notifications {
 
     FirebaseMessaging.onMessage.listen((message) {
       print('onMessage: ${message.data}');
-      print('onMessage: ${message.notification.body}');
+      final notification = message.notification;
+      final android = message.notification?.android;
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channel.description,
+              icon: 'app_icon',
+            ),
+          ),
+        );
+      } else {
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(),
+        );
+      }
       return;
+    });
+
+    // When a new message comesin forward it onwards.
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      _onMessageOpenedAppController.add(message);
     });
 
     // Set the token to get notifications.
@@ -161,9 +189,46 @@ class Notifications {
     }
   }
 
+  ///
+  /// Cancel this notification.
+  ///
   Future<void> cancelNotification(String threadId) async {
     await flutterLocalNotificationsPlugin.cancel(threadId.hashCode);
   }
+
+  ///
+  /// Gets the initial message.
+  ///
+  Future<RemoteMessage> getInitialMessage() {
+    return _firebaseMessaging.getInitialMessage();
+  }
+
+  ///
+  /// Turn a remote message into something we can use.
+  ///
+  String pathFromMessage(RemoteMessage message) {
+    switch (message.data['action']) {
+      case 'openGame':
+        return '/Game/View/${message.data['gameUid']}';
+      default:
+        return null;
+    }
+  }
+
+  // ignore: close_sinks
+  static final _onMessageOpenedAppController =
+      StreamController<RemoteMessage>();
+
+  /// Returns a [Stream] that is called when a user presses a notification message displayed
+  /// via FCM.
+  ///
+  /// A Stream event will be sent if the app has opened from a background state
+  /// (not terminated).
+  ///
+  /// If your app is opened via a notification whilst the app is terminated,
+  /// see [getInitialMessage].
+  static Stream<RemoteMessage> get onMessageOpenedApp =>
+      _onMessageOpenedAppController.stream;
 }
 
 // Background messaging handler.

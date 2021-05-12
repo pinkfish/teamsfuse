@@ -84,6 +84,14 @@ class SplashScreen extends StatelessWidget {
             myPath = '/' + myPath;
           }
           delayed.add(Navigator.pushNamed(context, myPath));
+        } else {
+          // Check if we came from a notification if it is not a dynamic link.
+          final notifications = RepositoryProvider.of<Notifications>(context);
+          final newRoute = notifications
+              .pathFromMessage(await notifications.getInitialMessage());
+          if (newRoute != null) {
+            await Navigator.pushNamed(context, newRoute);
+          }
         }
         await Future.wait(delayed);
       });
