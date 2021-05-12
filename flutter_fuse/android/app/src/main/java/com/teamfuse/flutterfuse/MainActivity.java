@@ -28,5 +28,4 @@ import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 public class MainActivity extends FlutterActivity /*implements MethodCallHandler */{
     private static final String TAG = "MainActivity";
     public static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
-
 }
