@@ -9,6 +9,11 @@ import 'package:timezone/timezone.dart';
 const AndroidInitializationSettings initializationSettingsAndroid =
     AndroidInitializationSettings('app_icon');
 
+const channelId = 'teams_fuse_channel';
+const channelTitle = 'TeamsFuse Notifications';
+const channelDescription =
+    'This channel is used for important notifications for TeamsFuse.';
+
 ///
 /// Handles interacting with the notifications for the app.  Displaying
 /// notifications and incoming notifications.
@@ -25,10 +30,9 @@ class Notifications {
 
   /// Create a [AndroidNotificationChannel] for heads up notifications
   final channel = AndroidNotificationChannel(
-    'teams_fuse_channel', // id
-    'TeamsFuse Notifications', // title
-    'This channel is used for important notifications for TeamsFuse.',
-    // description
+    channelId,
+    channelTitle,
+    channelDescription,
     importance: Importance.high,
   );
 
@@ -98,26 +102,19 @@ class Notifications {
       print('onMessage: ${message.data}');
       final notification = message.notification;
       final android = message.notification?.android;
-      if (notification != null && android != null) {
+      if (notification != null) {
         flutterLocalNotificationsPlugin.show(
           notification.hashCode,
           notification.title,
           notification.body,
           NotificationDetails(
             android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              channel.description,
+              channelId,
+              channelTitle,
+              channelDescription,
               icon: 'app_icon',
             ),
           ),
-        );
-      } else {
-        flutterLocalNotificationsPlugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(),
         );
       }
       return;
@@ -163,9 +160,9 @@ class Notifications {
           scheduleAt,
           NotificationDetails(
             android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              channel.description,
+              channelId,
+              channelTitle,
+              channelDescription,
             ),
             iOS: iOSPlatformChannelSpecifics,
           ),
@@ -179,9 +176,9 @@ class Notifications {
         body,
         NotificationDetails(
           android: AndroidNotificationDetails(
-            channel.id,
-            channel.name,
-            channel.description,
+            channelId,
+            channelTitle,
+            channelDescription,
           ),
           iOS: iOSPlatformChannelSpecifics,
         ),
@@ -236,4 +233,24 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  print('onBackgroundMessage: ${message.data}');
+  final notification = message.notification;
+  final android = message.notification?.android;
+  if (notification != null) {
+    await flutterLocalNotificationsPlugin.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channelId,
+          channelTitle,
+          channelDescription,
+          icon: 'app_icon',
+        ),
+      ),
+    );
+  }
 }
