@@ -20,7 +20,7 @@ class GameListCalendarState {
       : startPoint = TZDateTime.from(clock.now(), location),
         endPoint =
             TZDateTime.from(clock.now().add(Duration(days: 30)), location) {
-    _listening = _gameBloc.listen(_setGames);
+    _listening = _gameBloc.stream.listen(_setGames);
   }
 
   /// Start point in the calendar for displaying thing on the screen.

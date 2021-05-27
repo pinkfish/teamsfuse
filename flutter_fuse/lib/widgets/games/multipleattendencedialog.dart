@@ -131,7 +131,7 @@ class _MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
                   child: ListBody(children: _buildAttendenceSet(context)),
                 ),
               ),
-              FlatButton(
+              TextButton(
                   onPressed: _saveDialog,
                   child: Text(Messages.of(context).saveButtonText))
             ],

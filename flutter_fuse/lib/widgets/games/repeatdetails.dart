@@ -218,7 +218,9 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
         controller: _scrollController,
         child: Form(
           key: _formState,
-          autovalidate: autoValidate,
+          autovalidateMode: autoValidate
+              ? AutovalidateMode.always
+              : AutovalidateMode.onUserInteraction,
           child: DropdownButtonHideUnderline(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

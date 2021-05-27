@@ -500,7 +500,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                       textColor: Colors.white,
                       child: Text(Messages.of(context).saveButtonText),
                     ),
-                    FlatButton(
+                    TextButton(
                       onPressed: () => Navigator.pop(context, false),
                       child: Text(
                           MaterialLocalizations.of(context).cancelButtonLabel),

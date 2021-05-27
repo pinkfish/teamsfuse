@@ -28,6 +28,7 @@ class TeamResultsByOpponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleOpponentProvider(
       opponentUid: opponentUid,
+      teamUid: teamUid,
       builder: (context, teamBloc) => BlocListener(
         bloc: teamBloc,
         listener: (context, state) {

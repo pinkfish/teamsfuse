@@ -109,7 +109,9 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
         controller: _scrollController,
         child: Form(
           key: _formKey,
-          autovalidate: autovalidate,
+          autovalidateMode: autovalidate
+              ? AutovalidateMode.always
+              : AutovalidateMode.onUserInteraction,
           child: DropdownButtonHideUnderline(
             child: Column(
               mainAxisSize: MainAxisSize.min,

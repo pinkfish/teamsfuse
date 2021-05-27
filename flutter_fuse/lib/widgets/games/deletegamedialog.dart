@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
 
@@ -28,14 +27,14 @@ Future<bool> deleteGameDialog(
             ),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
               child: Text(MaterialLocalizations.of(context).okButtonLabel),
             ),
-            FlatButton(
+            TextButton(
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
