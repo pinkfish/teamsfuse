@@ -26,7 +26,7 @@ class SeasonName extends StatelessWidget {
       create: (BuildContext context) => SingleSeasonBloc(
           seasonUid: seasonUid,
           db: RepositoryProvider.of<DatabaseUpdateModel>(context),
-          crashes: RepositoryProvider.of<AnalyticsSubsystem>(context)),
+          crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context)),
       child: Builder(
         builder: (BuildContext context) {
           return BlocBuilder(

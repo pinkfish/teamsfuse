@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/firestore.dart';
 
@@ -92,7 +93,7 @@ class ClubMembers extends StatelessWidget {
     for (var adminUid in club.adminsUids) {
       var bloc = SingleProfileBloc(
           userAuth: RepositoryProvider.of<UserAuthImpl>(context),
-          crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+          crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
           profileUid: adminUid,
           db: RepositoryProvider.of<DatabaseUpdateModel>(context));
       members.add(
@@ -109,7 +110,7 @@ class ClubMembers extends StatelessWidget {
     for (var memberUid in club.members) {
       var bloc = SingleProfileBloc(
           userAuth: RepositoryProvider.of<UserAuthImpl>(context),
-          crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+          crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
           profileUid: memberUid,
           db: RepositoryProvider.of<DatabaseUpdateModel>(context));
       members.add(

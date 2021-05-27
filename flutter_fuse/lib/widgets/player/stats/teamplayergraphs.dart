@@ -139,7 +139,7 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
             create: (BuildContext context) => SingleSeasonBloc(
               seasonUid: widget.seasonState.season.uid,
               db: RepositoryProvider.of<DatabaseUpdateModel>(context),
-              crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+              crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
             ),
             child: Builder(
               builder: (BuildContext context) => BlocConsumer(

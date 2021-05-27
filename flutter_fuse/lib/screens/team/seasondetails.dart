@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -116,7 +117,7 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
         var bloc = SingleSeasonBloc(
             db: RepositoryProvider.of<DatabaseUpdateModel>(context),
             seasonUid: widget.seasonUid,
-            crashes: RepositoryProvider.of<AnalyticsSubsystem>(context));
+            crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context));
         bloc.add(SingleSeasonLoadGames());
         return bloc;
       },

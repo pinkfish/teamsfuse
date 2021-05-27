@@ -57,7 +57,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
         teamBlocs[g.teamUid] = SingleTeamBloc(
           db: RepositoryProvider.of<DatabaseUpdateModel>(context),
           teamUid: g.teamUid,
-          crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+          crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
         );
       }
       graphSeasonUid ??= g.seasonUid;
@@ -66,7 +66,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
         seasonBlocs[g.seasonUid] = SingleSeasonBloc(
           db: RepositoryProvider.of<DatabaseUpdateModel>(context),
           seasonUid: g.seasonUid,
-          crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+          crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
         );
       }
     });
