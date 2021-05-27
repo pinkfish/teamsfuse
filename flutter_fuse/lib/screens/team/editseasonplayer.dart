@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/widgets/form/roleinteamformfield.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -53,12 +54,13 @@ class _EditSeasonPlayerScreenState extends State<EditSeasonPlayerScreen> {
       seasonUid: widget.seasonUid,
       playerUid: widget.playerUid,
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
-      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+      crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
     );
     singlePlayerBloc = SinglePlayerBloc(
       playerUid: widget.playerUid,
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
-      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+      crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
+      playerBloc: BlocProvider.of<PlayerBloc>(context),
     );
   }
 

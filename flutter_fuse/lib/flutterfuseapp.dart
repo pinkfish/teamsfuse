@@ -1,4 +1,3 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
@@ -110,6 +109,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
       coordinationBloc: _coordinationBloc,
       teamBloc: _teamBloc,
       crashes: widget._analytics,
+      notifications: _notifications,
     );
     _filteredGameBloc = FilteredGameBloc(
         gameBloc: _gameBloc, teamBloc: _teamBloc, seasonBloc: _seasonBloc);

@@ -12,7 +12,6 @@ import '../blocs/singleleagueortournamentteamprovider.dart';
 import '../blocs/singleseasonprovider.dart';
 import '../blocs/singleteamprovider.dart';
 import '../games/attendancedialog.dart';
-import '../games/editresultdialog.dart';
 import '../games/multipleattendencedialog.dart';
 import '../teams/teamimage.dart';
 import 'attendanceicon.dart';

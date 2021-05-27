@@ -4,7 +4,7 @@ part of firestore_mobile;
 /// document references, and querying for documents (using the methods
 /// inherited from [Query]).
 class CollectionReference extends wfs.CollectionReferenceWrapper {
-  /// Wrapper constrcutor.
+  /// Wrapper constructor.
   CollectionReference(this._doc);
 
   final fs.CollectionReference _doc;
@@ -95,8 +95,8 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   }
 }
 
-class _QuerySnapshotStreamTransformer
-    extends StreamTransformerBase<fs.QuerySnapshot, wfs.QuerySnapshotWrapper> {
+class _QuerySnapshotStreamTransformer extends StreamTransformerBase<
+    fs.QuerySnapshot<Map<String, dynamic>>, wfs.QuerySnapshotWrapper> {
   _QuerySnapshotStreamTransformer() {
     _controller = StreamController<wfs.QuerySnapshotWrapper>(
         onListen: _onListen,

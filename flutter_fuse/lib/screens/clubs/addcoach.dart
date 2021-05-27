@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
@@ -44,7 +45,7 @@ class _AddCoachScreenState extends State<AddCoachScreen> {
     super.initState();
     _coachBloc = AddCoachBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
-        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context));
+        crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context));
     _coachToAdd = Coach((b) => b
       ..name = ''
       ..uid = ''

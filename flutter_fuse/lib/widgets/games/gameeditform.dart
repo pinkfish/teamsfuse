@@ -106,7 +106,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
     } else {
       _formKey.currentState.save();
 
-      print('tz ${_builder.sharedData.timezone} ${_atDate}');
+      print('tz ${_builder.sharedData.timezone} $_atDate');
       // Add the date time and the time together.
       _builder.sharedData.time = TZDateTime(
               getLocation(_builder.sharedData.timezone),

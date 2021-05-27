@@ -40,7 +40,6 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
       GlobalKey<TeamEditFormState>();
   final GlobalKey<FormState> _formKeyPlayer = GlobalKey<FormState>();
   int _currentStep;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   StepState _detailsStepState = StepState.disabled;
   StepState _detailsSecondStepState = StepState.disabled;
   StepState _createStepStage = StepState.disabled;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
@@ -40,7 +41,7 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
     super.initState();
     _newsItemBloc = AddNewsItemBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
-        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context));
+        crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context));
     _newsItemToAdd = NewsItem((b) => b
       ..subject = ''
       ..uid = ''

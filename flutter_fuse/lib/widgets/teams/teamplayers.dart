@@ -71,6 +71,9 @@ class _TeamPlayersState extends State<TeamPlayers> {
               bloc.add(SingleTeamLoadInvites());
             }
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 Row(
                   children: <Widget>[

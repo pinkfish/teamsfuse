@@ -289,7 +289,7 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
     );
   }
 
-  _performAutoCompleteSearch(String searchTerm) async {
+  void _performAutoCompleteSearch(String searchTerm) async {
     var provider = PlaceProvider.of(context, listen: false);
 
     if (searchTerm.isNotEmpty) {
@@ -321,17 +321,17 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
     }
   }
 
-  clearText() {
+  void clearText() {
     provider.searchTerm = '';
     controller.clear();
   }
 
-  resetSearchBar() {
+  void resetSearchBar() {
     clearText();
     focus.unfocus();
   }
 
-  clearOverlay() {
+  void clearOverlay() {
     _clearOverlay();
   }
 }

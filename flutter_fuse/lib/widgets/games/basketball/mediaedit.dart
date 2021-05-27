@@ -73,7 +73,7 @@ class _MediaEditState extends State<MediaEdit> {
                 if (url == null) {
                   return Messages.of(context).invalidUrl;
                 }
-              } catch (FormatException) {
+              } catch (e) {
                 return Messages.of(context).invalidUrl;
               }
               return null;

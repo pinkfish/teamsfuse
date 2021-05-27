@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:exif/exif.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -50,7 +51,7 @@ class _AddMediaScreenState extends State<AddMediaScreen> {
     _curPlayerUid = SeasonPlayerFormField.none;
     _addMediaBloc = AddMediaBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
-      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+      crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
     );
   }
 

@@ -101,7 +101,6 @@ class Notifications {
     FirebaseMessaging.onMessage.listen((message) {
       print('onMessage: ${message.data}');
       final notification = message.notification;
-      final android = message.notification?.android;
       if (notification != null) {
         flutterLocalNotificationsPlugin.show(
           notification.hashCode,
@@ -204,6 +203,9 @@ class Notifications {
   /// Turn a remote message into something we can use.
   ///
   String pathFromMessage(RemoteMessage message) {
+    if (message == null) {
+      return null;
+    }
     switch (message.data['action']) {
       case 'openGame':
         return '/Game/View/${message.data['gameUid']}';
@@ -237,7 +239,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   print('onBackgroundMessage: ${message.data}');
   final notification = message.notification;
-  final android = message.notification?.android;
   if (notification != null) {
     await flutterLocalNotificationsPlugin.show(
       notification.hashCode,

@@ -26,7 +26,6 @@ class EditSeasonScreen extends StatefulWidget {
 }
 
 class _EditSeasonScreenState extends State<EditSeasonScreen> {
-  Season _seasonSelect;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _seasonName;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();

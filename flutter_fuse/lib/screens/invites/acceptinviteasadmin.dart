@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -38,7 +39,7 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
     // Default to empty.
     _singleInviteBloc = SingleInviteBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
-        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+        crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
         inviteUid: widget._inviteUid,
         teamBloc: BlocProvider.of<TeamBloc>(context),
         seasonBloc: BlocProvider.of<SeasonBloc>(context));

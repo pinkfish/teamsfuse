@@ -114,7 +114,7 @@ class _ClubTeamPickerState extends State<ClubTeamPicker> {
         builder: (context, state) {
           Widget inner;
 
-          print('Club team picker ${state}');
+          print('Club team picker $state');
           if (!state.loadedTeams) {
             widget.clubBloc.add(SingleClubLoadTeams());
           }

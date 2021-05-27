@@ -79,7 +79,7 @@ class MyDocumentReference extends wfs.DocumentReferenceWrapper {
 }
 
 class _DocumentSnapshotStreamTransformer extends StreamTransformerBase<
-    fs.DocumentSnapshot, wfs.DocumentSnapshotWrapper> {
+    fs.DocumentSnapshot<Map<String, dynamic>>, wfs.DocumentSnapshotWrapper> {
   _DocumentSnapshotStreamTransformer(this.ref) {
     _controller = StreamController<wfs.DocumentSnapshotWrapper>(
         onListen: _onListen,

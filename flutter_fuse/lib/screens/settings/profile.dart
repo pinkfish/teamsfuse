@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/firestore.dart';
 
@@ -101,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
     for (var user in player.player.users.values) {
       var bloc = SingleProfileBloc(
           userAuth: RepositoryProvider.of<UserAuthImpl>(context),
-          crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+          crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
           profileUid: user.userUid,
           db: RepositoryProvider.of<DatabaseUpdateModel>(context));
       ret.add(

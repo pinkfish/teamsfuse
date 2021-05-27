@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:flutter_fuse/util/async_hydrated_bloc/asynchydratedmixin.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';

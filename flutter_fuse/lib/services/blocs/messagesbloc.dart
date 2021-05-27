@@ -109,7 +109,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
 
   void _onUnreadMessagesUpdated(Iterable<MessageRecipient> data) async {
     // Fill in all the messages.
-    for (var recipient in data) {
+    for (var _ in data) {
       coordinationBloc.loadingTrace?.incrementCounter('message');
     }
 

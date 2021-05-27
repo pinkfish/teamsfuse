@@ -5,7 +5,6 @@ import 'package:flutter_fuse/widgets/blocs/singleseasonprovider.dart';
 import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
 import 'package:flutter_fuse/widgets/teams/media/mediacard.dart';
 import 'package:flutter_fuse/widgets/teams/seasondropdown.dart';
-import 'package:flutter_fuse/widgets/teams/media/seasonimages.dart';
 import 'package:flutter_fuse/widgets/util/deleted.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -30,7 +29,6 @@ class TeamMediaScreen extends StatefulWidget {
 
 class _TeamMediaScreenState extends State<TeamMediaScreen> {
   String _seasonUid;
-  int _tabIndex;
 
   @override
   Widget build(BuildContext context) {

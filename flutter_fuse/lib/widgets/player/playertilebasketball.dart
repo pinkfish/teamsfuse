@@ -282,6 +282,7 @@ class PlayerTileBasketball extends StatelessWidget {
       color: color,
       shape: shape,
       child: LayoutBuilder(builder: (BuildContext context, BoxConstraints box) {
+        print(box);
         return ListTile(
           visualDensity: box.maxHeight < 40.0
               ? VisualDensity.compact
@@ -323,6 +324,7 @@ class PlayerTileBasketball extends StatelessWidget {
 
            */
           leading: Container(
+            width: min(box.maxHeight / 2, 60),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
@@ -330,8 +332,8 @@ class PlayerTileBasketball extends StatelessWidget {
                       contentColor ?? Theme.of(context).primaryColor, 40)),
             ),
             child: SizedBox(
-              width: box.maxHeight / 2,
-              height: box.maxHeight / 2,
+              width: min(box.maxHeight / 2, 60),
+              height: min(box.maxHeight / 2, 60),
               child: Center(
                 child: Text(
                   jerseyNumber ?? 'U',

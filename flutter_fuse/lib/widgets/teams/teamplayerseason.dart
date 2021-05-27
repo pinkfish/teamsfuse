@@ -32,17 +32,19 @@ class TeamPlayersSeason extends StatelessWidget {
                 'PlayerDetails/$_teamUid/$_seasonUid/${player.playerUid}');
           },
           child: teamState.team.sport == Sport.Basketball
-              ? PublicMark(
-                  isPublic: player.isPublic,
-                  child: PlayerTileBasketball(
-                    playerUid: player.playerUid,
-                    seasonUid: _seasonUid,
-                    showChips: true,
-                    // Edit for the season parts of the player.
-                    onEdit: (playerUid) => Navigator.pushNamed(context,
-                        '/Season/Player/$_seasonUid/${player.playerUid}'),
-                  ),
+              ? /*PublicMark(
+                        isPublic: player.isPublic,
+                        child: */
+              PlayerTileBasketball(
+                  playerUid: player.playerUid,
+                  seasonUid: _seasonUid,
+                  showChips: true,
+                  // Edit for the season parts of the player.
+                  onEdit: (playerUid) => Navigator.pushNamed(context,
+                      '/Season/Player/$_seasonUid/${player.playerUid}'),
                 )
+              //)
+
               : ListTile(
                   leading: PlayerImage(playerUid: player.playerUid),
                   title: PlayerName(playerUid: player.playerUid),
@@ -82,11 +84,18 @@ class TeamPlayersSeason extends StatelessWidget {
         builder: (context, seasonState) {
           if (seasonState is SingleSeasonUninitialized ||
               seasonState is SingleSeasonDeleted) {
-            return Column(children: [
-              Text(Messages.of(context).loading),
-            ]);
+            return Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(Messages.of(context).loading),
+                ]);
           }
           return Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: _buildPlayers(context, seasonState, teamState));
         },
       ),

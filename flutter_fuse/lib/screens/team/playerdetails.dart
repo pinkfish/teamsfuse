@@ -52,6 +52,7 @@ class PlayerDetailsScreen extends StatelessWidget {
       playerUid: playerBloc.playerUid,
       crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+      playerBloc: BlocProvider.of<PlayerBloc>(context),
     );
     var result = await showDialog<bool>(
         context: context,

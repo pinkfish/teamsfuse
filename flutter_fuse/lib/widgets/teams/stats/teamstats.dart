@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/widgets/blocs/singleseasonprovider.dart';
 import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -51,7 +52,8 @@ class _TeamStatsWidgetState extends State<TeamStatsWidget> {
             create: (BuildContext context) => SingleSeasonBloc(
                 db: RepositoryProvider.of<DatabaseUpdateModel>(context),
                 seasonUid: _currentSeasonUid,
-                crashes: RepositoryProvider.of<AnalyticsSubsystem>(context)),
+                crashes:
+                    RepositoryProvider.of<AnalyticsSubsystemImpl>(context)),
             child: Builder(
               builder: (BuildContext context) => Column(
                 children: [
