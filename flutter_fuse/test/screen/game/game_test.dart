@@ -57,6 +57,9 @@ void main() {
             BlocProvider<GameBloc>(
               create: (_) => blocs.gameBloc,
             ),
+            BlocProvider<TeamBloc>(
+              create: (_) => blocs.teamBloc,
+            ),
           ],
           child: GameDetailsScreen('123'),
         ),
@@ -99,6 +102,9 @@ void main() {
             ),
             BlocProvider<GameBloc>(
               create: (_) => blocs.gameBloc,
+            ),
+            BlocProvider<TeamBloc>(
+              create: (_) => blocs.teamBloc,
             ),
           ],
           child: GameDetailsScreen('123'),
@@ -149,6 +155,9 @@ void main() {
             ),
             BlocProvider<GameBloc>(
               create: (_) => allBlocs.gameBloc,
+            ),
+            BlocProvider<TeamBloc>(
+              create: (_) => allBlocs.teamBloc,
             ),
           ],
           child: RepaintBoundary(
@@ -220,6 +229,9 @@ void main() {
             ),
             BlocProvider<GameBloc>(
               create: (_) => allStuff.gameBloc,
+            ),
+            BlocProvider<TeamBloc>(
+              create: (_) => allStuff.teamBloc,
             ),
           ],
           child: RepaintBoundary(
@@ -326,6 +338,9 @@ void main() {
               create: (c) => allBlocs.mockAnalytics),
           RepositoryProvider<GameBloc>(
             create: (c) => allBlocs.gameBloc,
+          ),
+          RepositoryProvider<TeamBloc>(
+            create: (c) => allBlocs.teamBloc,
           ),
         ],
         child: BlocProvider<PlayerBloc>(
