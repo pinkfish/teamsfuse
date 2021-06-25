@@ -50,6 +50,7 @@ void main() {
     }
 
     // Click on the forgot button.
+    await tester.pump(Duration(milliseconds: 600));
     await tester.tap(loginForm.createAccountButton);
     await tester.pump(Duration(milliseconds: 600));
 
