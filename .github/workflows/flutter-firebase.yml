@@ -104,7 +104,9 @@ jobs:
         if: ${{ matrix.os == 'ios' }}
         env:
           APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
-      - run: pod install
+      - run: |
+          flutter packages get
+          pod install
         working-directory: flutter_fuse/ios
         if: ${{ matrix.os == 'ios' }}
       - run: |
