@@ -1,6 +1,6 @@
 name: flutter_fuse
 description: A way to fuse the teams.
-version: 0.9.15
+version: 0.9.16
 homepage: http://www.teamsfuse.com
 # Not publishing anywhere.
 publish_to: none
@@ -48,10 +48,8 @@ dependencies:
   google_api_headers: ">=1.0.0 <2.0.0"
   fusemodel:
     path: ../fusemodel
-  sqflite: any
   badges: ">=2.0.1 <3.0.0"
   universal_io: ">=2.0.4 <3.0.0"
-
   fluro: any
   image_picker: ">=0.8.1 <1.0.0"
   timezone: ">=0.7.0 <0.8.0"

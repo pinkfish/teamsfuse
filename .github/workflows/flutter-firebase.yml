@@ -105,6 +105,11 @@ jobs:
         env:
           APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
       - run: |
+          flutter packages get
+          pod install
+        working-directory: flutter_fuse/ios
+        if: ${{ matrix.os == 'ios' }}
+      - run: |
           brew install ghostscript imagemagick
           magick --version
       - run: |
