@@ -47,7 +47,6 @@ dependencies:
   google_api_headers: ^1.0.0
   fusemodel:
     path: ../fusemodel
-  sqflite: any
   badges: ^2.0.1
   universal_io: ^2.0.4
 
