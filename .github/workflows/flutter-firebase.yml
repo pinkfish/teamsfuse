@@ -59,7 +59,7 @@ jobs:
           channel: "stable"
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.7.2'
+          ruby-version: "2.7.2"
           bundler-cache: true
       - name: Install dependencies
         run: |
@@ -108,6 +108,11 @@ jobs:
           flutter packages get
           pod install
         working-directory: flutter_fuse/ios
+        if: ${{ matrix.os == 'ios' }}
+      - run: |
+          flutter build ios
+        working-directory: flutter_fuse/ios
+        continue-on-error: true
         if: ${{ matrix.os == 'ios' }}
       - run: |
           brew install ghostscript imagemagick
