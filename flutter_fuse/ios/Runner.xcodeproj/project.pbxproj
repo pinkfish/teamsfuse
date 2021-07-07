@@ -9,20 +9,13 @@
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
-		673C8443208EB83500E2A938 /* GoogleMapsBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 673C8442208EB83500E2A938 /* GoogleMapsBase.framework */; };
-		673C8445208EB85200E2A938 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 673C8444208EB85200E2A938 /* GoogleMaps.framework */; };
-		673C8447208EB86600E2A938 /* GoogleMapsCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 673C8446208EB86600E2A938 /* GoogleMapsCore.framework */; };
 		6754682D209C3CF800EBA2C2 /* EmptySwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6754682C209C3CF800EBA2C2 /* EmptySwift.swift */; };
-		67C2B983208EBAC400EA0054 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B982208EBAC400EA0054 /* FirebaseInstanceID.framework */; };
-		67C2B98D208EBAD800EA0054 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B98C208EBAD800EA0054 /* FirebaseAnalytics.framework */; };
-		67C2B98F208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B98E208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework */; };
 		67DE79B02046B76B00FCB169 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 67DE79AF2046B76B00FCB169 /* GoogleService-Info.plist */; };
 		978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */; };
 		97C146F31CF9000F007C117D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C146F21CF9000F007C117D /* main.m */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		B6C247AC18567E682A774411 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9EFE7E536F7A15607B8E7C2 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -73,13 +66,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				673C8447208EB86600E2A938 /* GoogleMapsCore.framework in Frameworks */,
-				673C8443208EB83500E2A938 /* GoogleMapsBase.framework in Frameworks */,
-				67C2B98D208EBAD800EA0054 /* FirebaseAnalytics.framework in Frameworks */,
-				67C2B98F208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework in Frameworks */,
-				67C2B983208EBAC400EA0054 /* FirebaseInstanceID.framework in Frameworks */,
-				673C8445208EB85200E2A938 /* GoogleMaps.framework in Frameworks */,
-				B6C247AC18567E682A774411 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -182,6 +168,7 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				5E4C338B342348E734DD90B1 /* [CP] Embed Pods Frameworks */,
+				514C1F81E635EA8BC0EF443C /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -262,6 +249,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
+		};
+		514C1F81E635EA8BC0EF443C /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		5E4C338B342348E734DD90B1 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
