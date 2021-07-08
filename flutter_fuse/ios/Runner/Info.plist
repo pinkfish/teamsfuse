@@ -43,6 +43,8 @@
 	<string>Selecting images for teams/players</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Using location to display on a map</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+	<string>Using location to display on a map</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Selecting images for teams/players</string>
 	<key>UILaunchStoryboardName</key>
