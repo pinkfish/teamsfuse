@@ -109,6 +109,35 @@ void main() {
 
     loginForm.dispose();
   }, variant: TeamsFuseTestVariant());
+
+  testWidgets('logged in - with link already', (tester) async {
+    var loginForm = _SplashScreenTest(tester);
+    await loginForm.setup();
+    final pending = MockPendingDynamicLinkData();
+    when(pending.link).thenReturn(
+        Uri(scheme: 'https', host: 'womble.com', path: '/Womble/Rabbit'));
+    when(loginForm.mockFirebaseDyanmicLinks.getInitialLink())
+        .thenAnswer((realInvocation) => Future.value(pending));
+    // Logged in verified.
+    loginForm.userController.add(UserData((b) => b
+      ..email = 'frog@frog.com'
+      ..isEmailVerified = true
+      ..password = ''
+      ..uid = '1234'));
+
+    when(loginForm.mockAnalytics.getUserId()).thenReturn('1234');
+
+    await tester.pump(Duration(milliseconds: 600));
+    await tester.binding.delayed(Duration(milliseconds: 50));
+    await tester.binding.delayed(Duration(milliseconds: 600));
+
+    verifyNever(loginForm.mockObserver
+        .didPush(argThat(HasRouteName('/Main/Home')), any));
+    verifyNever(loginForm.mockObserver
+        .didPush(argThat(HasRouteName('/Womble/Rabbit')), any));
+
+    loginForm.dispose();
+  }, variant: TeamsFuseTestVariant());
 }
 
 class _SplashScreenTest {

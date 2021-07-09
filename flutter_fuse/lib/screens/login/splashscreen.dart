@@ -64,7 +64,7 @@ class SplashScreen extends StatelessWidget {
       Timer(Duration(milliseconds: 1), () async {
         final analytics =
             RepositoryProvider.of<AnalyticsSubsystemImpl>(context);
-        print('setUserId');
+        print('Frog ${state.user.uid} ${analytics.getUserId()}');
         if (state.user.uid != analytics.getUserId()) {
           await analytics.setUserId(state.user.uid);
           if (analytics.debugMode) {
