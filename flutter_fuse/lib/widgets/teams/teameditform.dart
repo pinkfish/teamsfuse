@@ -280,8 +280,8 @@ class TeamEditFormState extends State<TeamEditForm> {
           child: TextFormField(
             decoration: InputDecoration(
               icon: const Icon(Icons.timer),
-              hintText: Messages.of(context).arrivebeforehint,
-              labelText: Messages.of(context).arrivebeforelabel,
+              hintText: Messages.of(context).arriveBeforeHint,
+              labelText: Messages.of(context).arriveBeforeLabel,
             ),
             focusNode: _focusNodeArriveBefore,
             initialValue: _builder.arriveEarlyInternal.toString(),
@@ -308,7 +308,7 @@ class TeamEditFormState extends State<TeamEditForm> {
             initialValue: _builder.isPublic,
             icon: MdiIcons.earth,
             enabled: widget.club != null,
-            label: Messages.of(context).publicallyVisible(Tristate.Yes),
+            label: Messages.of(context).publiclyVisible(Tristate.Yes),
             onSaved: (value) => _builder.isPublic = value,
           ),
         );

@@ -151,8 +151,8 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
         child: TextFormField(
           decoration: InputDecoration(
             icon: const Icon(Icons.timer),
-            hintText: Messages.of(context).arrivebeforehint,
-            labelText: Messages.of(context).arrivebeforelabel,
+            hintText: Messages.of(context).arriveBeforeHint,
+            labelText: Messages.of(context).arriveBeforeLabel,
           ),
           focusNode: _focusNodeArriveBefore,
           initialValue: widget.club.arriveBeforeGame.toString(),

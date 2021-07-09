@@ -60,7 +60,7 @@ class _AttendanceDialogState extends State<AttendanceDialog> {
           },
           child: ListTile(
             leading: Icon(Icons.help, color: theme.disabledColor),
-            title: Text(Messages.of(context).attendnceMaybe),
+            title: Text(Messages.of(context).attendanceMaybe),
             dense: true,
             selected: widget.current == Attendance.Maybe,
           ),

@@ -176,7 +176,7 @@ class GameDetailsBase extends StatelessWidget {
       title: RichText(text: title),
       subtitle: dontMatch
           ? Text(
-              Messages.of(context).officialDontMatch,
+              Messages.of(context).officialDoNotMatch,
               style: Theme.of(context)
                   .textTheme
                   .bodyText2

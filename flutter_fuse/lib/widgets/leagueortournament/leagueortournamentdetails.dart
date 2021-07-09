@@ -59,7 +59,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                       alignment: Alignment.topLeft,
                       child: FlatButton(
                         onPressed: () => _addDivison(seasonBloc),
-                        child: Text(Messages.of(context).addDivison,
+                        child: Text(Messages.of(context).addDivision,
                             style: Theme.of(context).textTheme.button.copyWith(
                                 color: Theme.of(context).accentColor)),
                       ),
@@ -96,7 +96,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
               FlatButton(
                 onPressed: () => _addDivison(seasonBloc),
                 child: Text(
-                  Messages.of(context).addDivison,
+                  Messages.of(context).addDivision,
                   style: Theme.of(context)
                       .textTheme
                       .button

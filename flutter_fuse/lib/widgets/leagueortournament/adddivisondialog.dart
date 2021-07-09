@@ -38,7 +38,7 @@ class AddDivisonDialog extends Dialog {
           style: Theme.of(context).textTheme.headline6,
           child: Semantics(
             namesRoute: true,
-            child: Text(Messages.of(context).addDivison),
+            child: Text(Messages.of(context).addDivision),
           ),
         ),
       ),
