@@ -170,16 +170,22 @@ class _GameDetailsState extends State<GameDetails> {
           if (state is SingleGameDeleted || state is SingleGameUninitialized) {
             return CircularProgressIndicator();
           }
+          if (!state.loadedMedia) {
+            widget.gameBloc.add(SingleGameLoadMedia());
+          }
           return SavingOverlay(
             saving: state is SingleGameSaving,
             child: GameDetailsBase(
               game: state.game,
+              gameMedia: state.media,
               adding: widget.adding,
               editResult: _editResult,
               editOfficialResult: _editOfficialResult,
               openNavigation: openNavigation,
-              openAttendence: _openAttendance,
-              copyOfficalResult: _copyOfficialResult,
+              openAttendance: _openAttendance,
+              copyOfficialResult: _copyOfficialResult,
+              openAddMedia: (g) =>
+                  Navigator.pushNamed(context, '/Game/Media/Add/${g.uid}'),
             ),
           );
         },

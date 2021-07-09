@@ -8,7 +8,7 @@ import '../../../services/messages.dart';
 import '../../blocs/singleseasonprovider.dart';
 
 ///
-/// Create a nice carosoul of images.
+/// Create a nice carousel of images.
 ///
 class SeasonImages extends StatelessWidget {
   /// The season uid to load.

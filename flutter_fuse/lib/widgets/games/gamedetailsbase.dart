@@ -1,5 +1,8 @@
+import 'package:built_collection/built_collection.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -18,7 +21,7 @@ import 'teamresults.dart';
 /// Callback for the game.
 typedef GameCallback = void Function(Game game);
 
-/// Callback for the offical result.
+/// Callback for the official result.
 typedef GameOfficialResult = void Function(
     GameSharedData sharedData, GameResultSharedDetails details);
 
@@ -36,16 +39,21 @@ typedef GameOpenAttendance = void Function(
 class GameDetailsBase extends StatelessWidget {
   /// Constructor.
   GameDetailsBase(
-      {this.game,
+      {@required this.game,
+      this.gameMedia,
       this.adding,
       this.editResult,
-      this.openAttendence,
+      this.openAttendance,
       this.openNavigation,
+      this.openAddMedia,
       this.editOfficialResult,
-      this.copyOfficalResult});
+      this.copyOfficialResult});
 
   /// The game.
   final Game game;
+
+  /// Media for the game
+  final BuiltList<MediaInfo> gameMedia;
 
   /// If we are currently adding this game
   final bool adding;
@@ -53,17 +61,20 @@ class GameDetailsBase extends StatelessWidget {
   /// The edit callback for when it is edited.
   final GameCallback editResult;
 
-  /// Callback to open the attendence pieces
-  final GameOpenAttendance openAttendence;
+  /// Callback to open the attendance pieces
+  final GameOpenAttendance openAttendance;
 
   /// Navigate to the specific game.
   final GameCallback openNavigation;
 
-  /// The callback to edit the offical results.
+  /// Navigate to the specific game.
+  final GameCallback openAddMedia;
+
+  /// The callback to edit the official results.
   final GameOfficialResult editOfficialResult;
 
-  /// The callback when the offical result is copied to the local result.
-  final GameCopyResult copyOfficalResult;
+  /// The callback when the official result is copied to the local result.
+  final GameCopyResult copyOfficialResult;
 
   Widget _buildAttendance(Game game, Season season, PlayerState playerState) {
     var availability = <Widget>[];
@@ -107,8 +118,8 @@ class GameDetailsBase extends StatelessWidget {
     return ListTile(
       leading: const Icon(MdiIcons.bookOpenVariant),
       title: GestureDetector(
-        onTap: () => openAttendence != null
-            ? openAttendence(game, availabilityResult)
+        onTap: () => openAttendance != null
+            ? openAttendance(game, availabilityResult)
             : null,
         child: Column(
           children: availability,
@@ -136,7 +147,7 @@ class GameDetailsBase extends StatelessWidget {
       GameSharedData sharedData,
       GameResultSharedDetails details,
       bool inProgress,
-      bool dontMatch) {
+      bool doNotMatch) {
     // Started.
     TextSpan title;
     var theme = Theme.of(context);
@@ -181,12 +192,12 @@ class GameDetailsBase extends StatelessWidget {
     return ListTile(
       onTap: () => _tapListTile(official, sharedData, details),
       leading: official
-          ? (dontMatch
+          ? (doNotMatch
               ? Icon(Icons.error, color: theme.errorColor)
               : Icon(MdiIcons.bookOpen))
           : Icon(MdiIcons.bookOpenVariant),
       title: RichText(text: title),
-      subtitle: dontMatch
+      subtitle: doNotMatch
           ? Text(
               Messages.of(context).officialDoNotMatch,
               style: Theme.of(context)
@@ -351,7 +362,7 @@ class GameDetailsBase extends StatelessWidget {
         }
 
         // Official results.
-        var officalData =
+        var officialData =
             GameFromOfficial(game.sharedData, game.leagueOpponentUid);
         // Only show official links for games in a league/tournament.
         if (game.sharedData.leagueUid != null &&
@@ -360,17 +371,17 @@ class GameDetailsBase extends StatelessWidget {
               context,
               true,
               game.sharedData,
-              officalData,
+              officialData,
               game.sharedData.officialResult.result ==
                   OfficialResult.InProgress,
-              officalData.isSameAs(game.result)));
-          if (!officalData.isSameAs(game.result)) {
-            if (copyOfficalResult != null) {
+              officialData.isSameAs(game.result)));
+          if (!officialData.isSameAs(game.result)) {
+            if (copyOfficialResult != null) {
               body.add(ButtonBar(
                 children: <Widget>[
-                  FlatButton(
+                  TextButton(
                     onPressed: () =>
-                        copyOfficalResult(game.sharedData, officalData),
+                        copyOfficialResult(game.sharedData, officialData),
                     child: Text(Messages.of(context).useOfficialResultButton),
                   ),
                 ],
@@ -520,6 +531,44 @@ class GameDetailsBase extends StatelessWidget {
           ),
         );
       }
+    }
+
+    // Media
+    if (gameMedia != null) {
+      body.add(
+        ListTile(
+          leading: Icon(Icons.image),
+          title: gameMedia.isEmpty
+              ? Text(Messages.of(context).noMedia)
+              : ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: gameMedia
+                      .map<Widget>(
+                        (MediaInfo info) => Container(
+                          child: Center(
+                            child: CachedNetworkImage(
+                              imageUrl: info.url.toString(),
+                              height: 80,
+                              errorWidget: (c, str, e) => Icon(Icons.error),
+                              placeholder: (c, str) =>
+                                  CircularProgressIndicator(),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+        ),
+      );
+      body.add(ButtonBar(
+        children: [
+          TextButton(
+            onPressed: () => openAddMedia(game),
+            child: Text(Messages.of(context).addMediaButton),
+          ),
+        ],
+      ));
     }
 
     return LayoutBuilder(

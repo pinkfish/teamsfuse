@@ -110,7 +110,7 @@ class _SeasonPlayerFormFieldState extends FormFieldState<String> {
     if (_widget.includeNone) {
       ret.add(DropdownMenuItem<String>(
         value: SeasonPlayerFormField.none,
-        child: Text(Messages.of(context).noGames),
+        child: Text(Messages.of(context).noPlayers),
       ));
     }
     if (_widget.includeNew) {

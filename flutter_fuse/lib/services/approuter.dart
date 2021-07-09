@@ -16,6 +16,7 @@ import '../screens/clubs/editcoach.dart';
 import '../screens/clubs/editnewsitem.dart';
 import '../screens/game/addevent.dart';
 import '../screens/game/addgame.dart';
+import '../screens/game/addmedia.dart';
 import '../screens/team/addmedia.dart';
 import '../screens/game/addtraining.dart';
 import '../screens/game/editgame.dart';
@@ -226,6 +227,10 @@ class AppRouter {
               itemName: 'Game',
               itemCategory: 'Game');
       return GameDetailsScreen(values['id'][0].toString());
+    }));
+    router.define('/Game/Media/Add/:id',
+        handler: fluro.Handler(handlerFunc: (context, values) {
+      return AddGameMediaScreen(values['id'][0].toString());
     }));
     router.define(
       '/GameStats/:id/:seasonId/:teamId',
