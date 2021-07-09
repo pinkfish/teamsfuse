@@ -23,11 +23,11 @@ class TeamPlayersSeason extends StatelessWidget {
   List<Widget> _buildPlayers(BuildContext context, SingleSeasonState state,
       SingleTeamState teamState) {
     var ret = <Widget>[];
-    var data = state.season.players.asList();
+    var data = state.season.players.toList();
     data.sort((p1, p2) => state
         .getPlayerName(p1.playerUid)
         .compareTo(state.getPlayerName(p2.playerUid)));
-    for (var player in state.season.players) {
+    for (var player in data) {
       ret.add(
         GestureDetector(
           onTap: () {

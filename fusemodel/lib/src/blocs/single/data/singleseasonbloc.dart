@@ -103,6 +103,7 @@ abstract class SingleSeasonStateMixin {
 
   /// Gets the name of the player, '' if not loaded.
   String getPlayerName(String playerUid) {
+    playerUid = playerUid.trim();
     if (fullPlayer.containsKey(playerUid)) {
       return fullPlayer[playerUid].name;
     }

@@ -105,7 +105,7 @@ class SingleSeasonBloc
   StreamSubscription<Season> _seasonSub;
   StreamSubscription<BuiltList<Game>> _gameSub;
   StreamSubscription<BuiltList<MediaInfo>> _mediaSub;
-  Map<String, StreamSubscription<Player>> _playersSub = {};
+  final Map<String, StreamSubscription<Player>> _playersSub = {};
 
   // Create the bloc and do exciting things with it.
   SingleSeasonBloc(
@@ -131,12 +131,15 @@ class SingleSeasonBloc
     });
   }
 
+  /*
   @override
   Stream<Transition<SingleSeasonEvent, SingleSeasonState>> transformTransitions(
     Stream<Transition<SingleSeasonEvent, SingleSeasonState>> transitions,
   ) {
     return transitions.debounceTime(Duration(milliseconds: 100));
   }
+
+   */
 
   static SingleSeasonState _getInitialState(String uid, SeasonBloc seasonBloc) {
     final season = seasonBloc?.getSeason(uid);
@@ -226,9 +229,9 @@ class SingleSeasonBloc
     }
 
     if (event is _SingleSeasonLoadedPlayer) {
-      yield (SingleSeasonLoaded.fromState(state)
-            ..fullPlayer[event.player.uid] = event.player)
-          .build();
+      var data = state.fullPlayer.toBuilder();
+      data[event.player.uid] = event.player;
+      yield (SingleSeasonLoaded.fromState(state)..fullPlayer = data).build();
     }
 
     if (event is SingleSeasonLoadMedia) {
