@@ -417,6 +417,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "No games to display, check filters" : MessageLookupByLibrary.simpleMessage("No games to display, check filters"),
     "No invites" : MessageLookupByLibrary.simpleMessage("No invites"),
     "No leagues" : MessageLookupByLibrary.simpleMessage("No leagues"),
+    "No one" : MessageLookupByLibrary.simpleMessage("No one"),
     "No players" : MessageLookupByLibrary.simpleMessage("No players"),
     "No repeat" : MessageLookupByLibrary.simpleMessage("No repeat"),
     "No result." : MessageLookupByLibrary.simpleMessage("No result."),
