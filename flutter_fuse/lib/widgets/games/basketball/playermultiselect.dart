@@ -127,18 +127,18 @@ class PlayerMultiselect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return orientation == Orientation.portrait
-        ? GridView.count(
-            childAspectRatio: 3.0,
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            children: _populateList(context, orientation),
-          )
-        : GridView.count(
-            childAspectRatio: 2.5,
-            crossAxisCount: 4,
-            shrinkWrap: true,
-            children: _populateList(context, orientation),
-          );
+    return LayoutBuilder(builder: (context, layout) {
+      var cols = layout.maxWidth ~/ 200;
+      if (cols < 2) {
+        cols = 2;
+      }
+      var aspectRatio = (layout.maxWidth / cols) / 80.0;
+      return GridView.count(
+        childAspectRatio: aspectRatio,
+        crossAxisCount: cols,
+        shrinkWrap: true,
+        children: _populateList(context, orientation),
+      );
+    });
   }
 }
