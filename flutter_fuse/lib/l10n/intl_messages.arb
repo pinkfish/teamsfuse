@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-07-09T18:03:52.614471",
+  "@@last_modified": "2021-07-09T20:44:02.564812",
   "About": "About",
   "@About": {
     "type": "text",
@@ -45,14 +45,14 @@
     "type": "text",
     "placeholders": {}
   },
-  "Add Divison": "Add Divison",
-  "@Add Divison": {
+  "Add Division": "Add Division",
+  "@Add Division": {
     "description": "Add a division inside a league/tournament",
     "type": "text",
     "placeholders": {}
   },
-  "ADD DIVISON": "ADD DIVISON",
-  "@ADD DIVISON": {
+  "ADD DIVISION": "ADD DIVISION",
+  "@ADD DIVISION": {
     "description": "Add a division inside a league/tournament",
     "type": "text",
     "placeholders": {}
@@ -345,11 +345,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "Start Game - Breaks": "Start Game - Breaks",
-  "@Start Game - Breaks": {
-    "type": "text",
-    "placeholders": {}
-  },
   "Club": "Club",
   "@Club": {
     "type": "text",
@@ -524,12 +519,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "REMOVE FROM TEAM": "REMOVE FROM TEAM",
-  "@REMOVE FROM TEAM": {
-    "description": "Button to change the remove a member from the team",
-    "type": "text",
-    "placeholders": {}
-  },
   "Description": "Description",
   "@Description": {
     "description": "Long description of a tournament/league to display on the league page",
@@ -660,6 +649,12 @@
   "Final score": "Final score",
   "@Final score": {
     "description": "Final score dialog title",
+    "type": "text",
+    "placeholders": {}
+  },
+  "SET FINAL SCORE": "SET FINAL SCORE",
+  "@SET FINAL SCORE": {
+    "description": "Button to set the final score",
     "type": "text",
     "placeholders": {}
   },
@@ -1108,7 +1103,7 @@
   },
   "No divisions": "No divisions",
   "@No divisions": {
-    "description": "Divisons inside the season for a league/tournament",
+    "description": "Divisions inside the season for a league/tournament",
     "type": "text",
     "placeholders": {}
   },
@@ -1457,6 +1452,18 @@
     "type": "text",
     "placeholders": {}
   },
+  "PLAYER": "PLAYER",
+  "@PLAYER": {
+    "description": "The button to visit the player",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Player deleted": "Player deleted",
+  "@Player deleted": {
+    "description": "Text to show the player is deleted",
+    "type": "text",
+    "placeholders": {}
+  },
   "Player email address": "Player email address",
   "@Player email address": {
     "description": "Player email input field hint",
@@ -1598,6 +1605,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "REMOVE FROM TEAM": "REMOVE FROM TEAM",
+  "@REMOVE FROM TEAM": {
+    "description": "Button to change the remove a member from the team",
+    "type": "text",
+    "placeholders": {}
+  },
   "Repeat": "Repeat",
   "@Repeat": {
     "description": "Repeat title for the training create steps",
@@ -1726,15 +1739,15 @@
     "type": "text",
     "placeholders": {}
   },
-  "Send message": "Send message",
-  "@Send message": {
-    "description": "In a text edit box to send a message to a user",
-    "type": "text",
-    "placeholders": {}
-  },
   "SEND": "SEND",
   "@SEND": {
     "description": "Button to send the message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Send message": "Send message",
+  "@Send message": {
+    "description": "In a text edit box to send a message to a user",
     "type": "text",
     "placeholders": {}
   },
@@ -1834,12 +1847,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "START GAME": "START GAME",
-  "@START GAME": {
-    "description": "Start game dialog button title",
-    "type": "text",
-    "placeholders": {}
-  },
   "Start Game": "Start Game",
   "@Start Game": {
     "description": "Start game dialog title",
@@ -1849,6 +1856,17 @@
   "Do you want to start the game?": "Do you want to start the game?",
   "@Do you want to start the game?": {
     "description": "Start game dialog body text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Start Game - Breaks": "Start Game - Breaks",
+  "@Start Game - Breaks": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "START GAME": "START GAME",
+  "@START GAME": {
+    "description": "Start game dialog button title",
     "type": "text",
     "placeholders": {}
   },
@@ -3065,23 +3083,5 @@
       "loss": {},
       "tie": {}
     }
-  },
-  "PLAYER": "PLAYER",
-  "@PLAYER": {
-    "description": "The button to visit the player",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Player deleted": "Player deleted",
-  "@Player deleted": {
-    "description": "Text to show the player is deleted",
-    "type": "text",
-    "placeholders": {}
-  },
-  "SET FINAL SCORE": "SET FINAL SCORE",
-  "@SET FINAL SCORE": {
-    "description": "Button to set the final score",
-    "type": "text",
-    "placeholders": {}
   }
 }
