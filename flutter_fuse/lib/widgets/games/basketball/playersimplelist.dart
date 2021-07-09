@@ -9,15 +9,23 @@ import '../../../services/messages.dart';
 /// Shows the list of players in the team, sorts by the name.
 ///
 class PlayerSimpleList extends StatelessWidget {
+  /// The season to display.
   final Season season;
+
+  /// The game being displayed.
   final Game game;
-  final Map<String, Player> additonalPlayers;
+
+  /// Any additional players to add in.
+  final Map<String, Player> additionalPlayers;
+
+  /// The style of the text.
   final TextStyle style;
 
+  /// Display a simple list of players,
   PlayerSimpleList(
       {@required this.game,
       @required this.season,
-      this.additonalPlayers,
+      this.additionalPlayers,
       this.style});
 
   @override
@@ -30,8 +38,8 @@ class PlayerSimpleList extends StatelessWidget {
           (e) => game.ignoreFromSeason.contains(e) || fullList.contains(e));
       fullList.addAll(seasonList);
     }
-    if (additonalPlayers != null) {
-      fullList.addAll(additonalPlayers.keys);
+    if (additionalPlayers != null) {
+      fullList.addAll(additionalPlayers.keys);
     }
 
     return SingleChildScrollView(

@@ -10,12 +10,22 @@ import '../../../services/messages.dart';
 /// Shows the list of players in the team.
 ///
 class PlayerList extends StatefulWidget {
+  /// The orientation of the list.
   final Orientation orientation;
+
+  /// The season to display the list for.
   final Season season;
+
+  /// the Game to display the list for.
   final Game game;
+
+  /// The additional players to display.
   final Map<String, Player> additionalPlayers;
+
+  /// The extra details for the playet to display.
   final BuiltMap<String, Player> fullPlayerDetails;
 
+  /// Creates the player list with all the useful data.
   PlayerList(
       {this.orientation = Orientation.portrait,
       @required this.game,
@@ -79,10 +89,17 @@ class _PlayerListState extends State<PlayerList> {
                 children: <Widget>[
                   SizedBox(
                     width: width * 2,
-                    child: Text(
-                      '',
-                      style: minDataStyle.copyWith(fontWeight: FontWeight.bold),
-                      textScaleFactor: scale,
+                    child: TextButton(
+                      onPressed: () =>
+                          setState(() => _sortBy = SortPlayerBy.Name),
+                      child: Text(
+                        '',
+                        style:
+                            minDataStyle.copyWith(fontWeight: FontWeight.bold),
+                        textScaleFactor: scale,
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                      ),
                     ),
                   ),
                   SizedBox(
