@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-07-09T20:44:02.564812",
+  "@@last_modified": "2021-07-09T21:26:58.461637",
   "About": "About",
   "@About": {
     "type": "text",
@@ -271,6 +271,12 @@
   "Assists": "Assists",
   "@Assists": {
     "description": "Title for the section on a player assist",
+    "type": "text",
+    "placeholders": {}
+  },
+  "No one": "No one",
+  "@No one": {
+    "description": "No one in the attencance group",
     "type": "text",
     "placeholders": {}
   },
