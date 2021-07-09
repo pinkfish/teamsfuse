@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-05-11T05:53:38.132049",
+  "@@last_modified": "2021-07-09T18:03:52.614471",
   "About": "About",
   "@About": {
     "type": "text",
@@ -1321,6 +1321,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "Pct": "Pct",
+  "@Pct": {
+    "description": "Title for the made short percentage",
+    "type": "text",
+    "placeholders": {}
+  },
   "Period": "Period",
   "@Period": {
     "description": "Dialog title for setting the current period",
@@ -1482,7 +1488,7 @@
   },
   "Pts": "Pts",
   "@Pts": {
-    "description": "Points summary in game",
+    "description": "Points abbreviation",
     "type": "text",
     "placeholders": {}
   },

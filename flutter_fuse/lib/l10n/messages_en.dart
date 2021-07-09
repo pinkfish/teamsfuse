@@ -452,6 +452,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "Parent" : MessageLookupByLibrary.simpleMessage("Parent"),
     "Password" : MessageLookupByLibrary.simpleMessage("Password"),
     "Passwords must match" : MessageLookupByLibrary.simpleMessage("Passwords must match"),
+    "Pct" : MessageLookupByLibrary.simpleMessage("Pct"),
     "Penalty" : MessageLookupByLibrary.simpleMessage("Penalty"),
     "Period" : MessageLookupByLibrary.simpleMessage("Period"),
     "Period 1" : MessageLookupByLibrary.simpleMessage("Period 1"),
