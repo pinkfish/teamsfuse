@@ -38,7 +38,8 @@ class SavingOverlay extends StatelessWidget {
             // Fill the whole page, drop it back when not saving to not
             // trap the gestures.
             constraints: _saving
-                ? BoxConstraints.expand()
+                ? BoxConstraints.expand(
+                    height: MediaQuery.of(context).size.height)
                 : BoxConstraints.tight(const Size(0.0, 0.0)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

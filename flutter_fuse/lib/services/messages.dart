@@ -2665,9 +2665,9 @@ class Messages {
       return unknown;
     }
     if (private == Tristate.Yes) {
-      return publicallyVisibleYes;
+      return publiclyVisibleYes;
     }
-    return publicallyVisibleNo;
+    return publiclyVisibleNo;
   }
 
   QuoteAndAuthor quoteForSaving(int quoteId) {
@@ -2690,7 +2690,7 @@ class Messages {
       case 5:
         return QuoteAndAuthor(quote: quoteNoChances, author: 'David Beckham');
       default:
-        return QuoteAndAuthor(quote: quoteDontPanic, author: 'Douglas Adams');
+        return QuoteAndAuthor(quote: quoteDoNotPanic, author: 'Douglas Adams');
     }
   }
 
