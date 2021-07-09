@@ -17,7 +17,7 @@ import 'officalresultdialog.dart';
 /// Lots of details.
 ///
 class GameDetails extends StatefulWidget {
-  /// Constrcutor.
+  /// Constructor.
   GameDetails(this.gameBloc, {this.adding = false});
 
   /// The game bloc to show the details for.

@@ -27,8 +27,8 @@ typedef GameCopyResult = void Function(
     GameSharedData sharedData, GameFromOfficial details);
 
 /// Callback when the attendance thing is being opened.
-typedef GameOpenAttendence = void Function(
-    Game game, Map<Player, Attendance> attendence);
+typedef GameOpenAttendance = void Function(
+    Game game, Map<Player, Attendance> attendance);
 
 ///
 /// The base for the game details.
@@ -54,7 +54,7 @@ class GameDetailsBase extends StatelessWidget {
   final GameCallback editResult;
 
   /// Callback to open the attendence pieces
-  final GameOpenAttendence openAttendence;
+  final GameOpenAttendance openAttendence;
 
   /// Navigate to the specific game.
   final GameCallback openNavigation;
@@ -65,9 +65,9 @@ class GameDetailsBase extends StatelessWidget {
   /// The callback when the offical result is copied to the local result.
   final GameCopyResult copyOfficalResult;
 
-  Widget _buildAttendence(Game game, Season season, PlayerState playerState) {
+  Widget _buildAttendance(Game game, Season season, PlayerState playerState) {
     var availability = <Widget>[];
-    var availavilityResult = <Player, Attendance>{};
+    var availabilityResult = <Player, Attendance>{};
 
     if (season != null) {
       playerState.players.forEach((key, player) {
@@ -78,12 +78,24 @@ class GameDetailsBase extends StatelessWidget {
           if (game.attendance.containsKey(key)) {
             attend = game.attendance[key];
           }
-          availavilityResult[player] = attend;
+          availabilityResult[player] = attend;
           availability.add(
             Row(
               children: <Widget>[
                 Expanded(child: Text(player.name)),
-                AttendanceIcon(attend),
+                Ink(
+                  decoration: ShapeDecoration(
+                    color: Colors.lightBlue.shade50,
+                    shape: CircleBorder(),
+                  ),
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: AttendanceIcon(
+                      attend,
+                    ),
+                  ),
+                ),
               ],
             ),
           );
@@ -96,7 +108,7 @@ class GameDetailsBase extends StatelessWidget {
       leading: const Icon(MdiIcons.bookOpenVariant),
       title: GestureDetector(
         onTap: () => openAttendence != null
-            ? openAttendence(game, availavilityResult)
+            ? openAttendence(game, availabilityResult)
             : null,
         child: Column(
           children: availability,
@@ -316,7 +328,7 @@ class GameDetailsBase extends StatelessWidget {
               BlocBuilder(
                   bloc: BlocProvider.of<PlayerBloc>(context),
                   builder: (context, playerState) =>
-                      _buildAttendence(game, season, playerState)),
+                      _buildAttendance(game, season, playerState)),
             );
           }
         }
@@ -393,7 +405,7 @@ class GameDetailsBase extends StatelessWidget {
           BlocBuilder(
             bloc: BlocProvider.of<PlayerBloc>(context),
             builder: (context, playerState) =>
-                _buildAttendence(game, season, playerState),
+                _buildAttendance(game, season, playerState),
           ),
         );
       }

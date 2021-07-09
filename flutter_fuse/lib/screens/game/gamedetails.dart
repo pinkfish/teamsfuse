@@ -66,6 +66,10 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
             return LoadingWidget();
           }
 
+          if (!gameState.loadedPlayers) {
+            gameBloc.add(SingleGameLoadPlayers());
+          }
+
           return SingleTeamProvider(
             teamUid: gameState.game.teamUid,
             builder: (c, teamBloc) => BlocConsumer(
@@ -129,7 +133,7 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                         child: SingleChildScrollView(
                           scrollDirection: Axis.vertical,
                           controller: _scrollController,
-                          child: Availaility(gameBloc),
+                          child: Availability(gameBloc),
                         ),
                       );
                     }

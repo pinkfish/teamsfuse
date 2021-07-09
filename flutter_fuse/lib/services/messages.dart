@@ -203,6 +203,11 @@ class Messages {
   String get assistTitle => Intl.message('Assists',
       desc: 'Title for the section on a player assist', locale: locale);
 
+  String get attendanceEmpty {
+    return Intl.message('No one',
+        desc: 'No one in the attencance group', locale: locale);
+  }
+
   String get attendanceNo {
     return Intl.message('Not making it',
         desc: 'Negative attendance for the game', locale: locale);
