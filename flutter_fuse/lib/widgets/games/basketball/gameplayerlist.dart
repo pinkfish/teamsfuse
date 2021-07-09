@@ -64,15 +64,18 @@ class GamePlayerList extends StatelessWidget {
       this.compactDisplay = false});
 
   static int _sortFunc(Game game, String a, String b) {
-    var asum = game.players[a] ?? game.opponents[a];
-    var bsum = game.players[b] ?? game.opponents[b];
-    if (asum.currentlyPlaying) {
+    var aSummary = game.players[a] ?? game.opponents[a];
+    var bSummary = game.players[b] ?? game.opponents[b];
+    if (aSummary.currentlyPlaying) {
+      if (bSummary.currentlyPlaying) {
+        return aSummary.jerseyNumber.compareTo(bSummary.jerseyNumber);
+      }
       return -1;
     }
-    if (bsum.currentlyPlaying) {
+    if (bSummary.currentlyPlaying) {
       return 1;
     }
-    return 0;
+    return aSummary.jerseyNumber.compareTo(bSummary.jerseyNumber);
   }
 
   @override

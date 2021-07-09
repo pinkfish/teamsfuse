@@ -254,8 +254,8 @@ class SingleGameBloc
   StreamSubscription<BuiltList<GameEvent>> _gameEventSub;
   StreamSubscription<BuiltList<MediaInfo>> _mediaInfoSub;
 
-  Map<String, StreamSubscription<Player>> _players;
-  Map<String, Player> _loadedPlayers;
+  final Map<String, StreamSubscription<Player>> _players = {};
+  final Map<String, Player> _loadedPlayers = {};
   StreamSubscription<BuiltList<Player>> _opPlayers;
 
   SingleGameBloc(
@@ -293,6 +293,11 @@ class SingleGameBloc
     await _mediaInfoSub?.cancel();
     await _gameEventSub?.cancel();
     await _opPlayers?.cancel();
+
+    // Close all the player subscriptions.
+    for (var sub in _players.values) {
+      await sub?.cancel();
+    }
   }
 
   @override
@@ -425,6 +430,7 @@ class SingleGameBloc
           if (!_players.containsKey(playerUid)) {
             _players[playerUid] =
                 db.getPlayerDetails(playerUid).listen(_onPlayerUpdated);
+            _players[playerUid].onError(crashes.recordException);
           }
         }
       });
@@ -530,13 +536,6 @@ class SingleGameBloc
         yield SingleGameLoaded.fromState(state).build();
         crashes.recordException(error, stack);
       }
-    }
-
-    if (event is _SingleGameUpdatePlayers) {
-      yield (SingleGameLoaded.fromState(state)
-            ..players = event.players.toBuilder()
-            ..loadedPlayers = true)
-          .build();
     }
 
     if (event is _SingleGameUpdatePlayers) {

@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,12 +20,14 @@ class StartPeriod extends StatefulWidget {
   final Season season;
   final Orientation orientation;
   final SingleGameBloc singleGameBloc;
+  final BuiltMap<String, Player> fullPlayerDetails;
 
   StartPeriod(
       {@required this.game,
       @required this.season,
       @required this.orientation,
-      this.singleGameBloc});
+      this.singleGameBloc,
+      this.fullPlayerDetails});
 
   @override
   State<StatefulWidget> createState() {
@@ -192,6 +195,7 @@ class _StartPeriodState extends State<StartPeriod> {
                 isSelected: (s) => selectedPlayers.contains(s),
                 selectPlayer: _selectPlayer,
                 orientation: widget.orientation,
+                fullPlayerDetails: widget.fullPlayerDetails,
               ),
             ),
           ),

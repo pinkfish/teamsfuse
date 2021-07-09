@@ -1018,6 +1018,9 @@ class Messages {
   String get percentageGameSummary => Intl.message('%age',
       desc: 'Percentage made in game summary title', locale: locale);
 
+  String get percentageTitle => Intl.message('Pct',
+      desc: 'Title for the made short percentage', locale: locale);
+
   String get period => Intl.message('Period',
       desc: 'Dialog title for setting the current period', locale: locale);
 
@@ -1131,9 +1134,6 @@ class Messages {
 
   String get points => Intl.message('Points',
       desc: 'Drop down menu item for points', locale: locale);
-
-  String get pointsGameSummary =>
-      Intl.message('Pts', desc: 'Points summary in game', locale: locale);
 
   String get pointsTitle =>
       Intl.message('Pts', desc: 'Points abbreviation', locale: locale);
@@ -1427,9 +1427,6 @@ class Messages {
   String get steals => Intl.message('Steals',
       desc: 'Drop down menu item for steals', locale: locale);
 
-  String get stealsGameSummary =>
-      Intl.message('Steals', desc: 'Steals summary in game', locale: locale);
-
   String get stealsTitle =>
       Intl.message('Stl', desc: 'Steals abbreviation', locale: locale);
 
@@ -1560,8 +1557,6 @@ class Messages {
   String get turnovers => Intl.message('Turnovers',
       desc: 'Drop down menu item for turnovers', locale: locale);
 
-  String get turnoversGameSummary =>
-      Intl.message('T/O', desc: 'Turnover summary in game', locale: locale);
   String get turnoversTitle =>
       Intl.message('T/O', desc: 'Turnover abbreviation', locale: locale);
 

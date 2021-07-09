@@ -561,6 +561,11 @@ class GameStatsScreen extends StatelessWidget {
                               }
                             }
 
+                            if (!state.loadedPlayers) {
+                              // Loads the players for the game.
+                              singleGameBloc.add(SingleGameLoadPlayers());
+                            }
+
                             if (!state.loadedEvents) {
                               singleGameBloc.add(SingleGameLoadEvents());
                             }
@@ -607,7 +612,8 @@ class GameStatsScreen extends StatelessWidget {
                                 builder: (BuildContext context,
                                     SingleSeasonState seasonState) {
                                   if (seasonState
-                                      is SingleSeasonUninitialized) {
+                                          is SingleSeasonUninitialized ||
+                                      seasonState is SingleSeasonSaving) {
                                     return LoadingWidget();
                                   }
                                   if (seasonState is SingleSeasonLoaded) {
@@ -619,7 +625,6 @@ class GameStatsScreen extends StatelessWidget {
                                           .season.playersData[playerUid];
                                       if (!state.game.players
                                           .containsKey(playerUid)) {
-                                        print('Missing $playerUid');
                                         builder ??= state.game.toBuilder();
                                         builder.players[playerUid] =
                                             GamePlayerSummary((b) => b
@@ -630,8 +635,6 @@ class GameStatsScreen extends StatelessWidget {
                                         if (state.game.players[playerUid]
                                                 .jerseyNumber !=
                                             data.jerseyNumber) {
-                                          print(
-                                              'Wrong jersey $playerUid ${data.jerseyNumber}');
                                           builder ??= state.game.toBuilder();
                                           builder.players[playerUid] = builder
                                               .players[playerUid]
@@ -643,9 +646,6 @@ class GameStatsScreen extends StatelessWidget {
                                     }
                                     // Update the game for all the players with the builder.
                                     if (builder != null) {
-                                      print(
-                                          'From PLayers ${state.game.players.keys}');
-                                      print('To PLayers ${builder.players}');
                                       singleGameBloc.add(SingleGameUpdate(
                                           game: builder.build()));
                                     }
@@ -655,6 +655,7 @@ class GameStatsScreen extends StatelessWidget {
                                     season: seasonState.season,
                                     orientation: orientation,
                                     singleGameBloc: singleGameBloc,
+                                    fullPlayerDetails: state.players,
                                   );
                                 },
                               );

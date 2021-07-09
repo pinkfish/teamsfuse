@@ -107,6 +107,8 @@ class SingleSeasonBloc
   StreamSubscription<BuiltList<MediaInfo>> _mediaSub;
   final Map<String, StreamSubscription<Player>> _playersSub = {};
 
+  SingleSeasonState _cachedState;
+
   // Create the bloc and do exciting things with it.
   SingleSeasonBloc(
       {@required this.db,
@@ -130,16 +132,6 @@ class SingleSeasonBloc
       crashes.recordException(e, stack);
     });
   }
-
-  /*
-  @override
-  Stream<Transition<SingleSeasonEvent, SingleSeasonState>> transformTransitions(
-    Stream<Transition<SingleSeasonEvent, SingleSeasonState>> transitions,
-  ) {
-    return transitions.debounceTime(Duration(milliseconds: 100));
-  }
-
-   */
 
   static SingleSeasonState _getInitialState(String uid, SeasonBloc seasonBloc) {
     final season = seasonBloc?.getSeason(uid);

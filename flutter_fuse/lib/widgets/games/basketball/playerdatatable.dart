@@ -129,7 +129,7 @@ class _PlayerDataTableState extends State<PlayerDataTable> {
                   ),
                   DataColumn(
                     label: Text(
-                      Messages.of(context).pointsGameSummary,
+                      Messages.of(context).pointsTitle,
                       textScaleFactor: scale,
                       style: style,
                     ),
@@ -168,7 +168,7 @@ class _PlayerDataTableState extends State<PlayerDataTable> {
                   ),
                   DataColumn(
                     label: Text(
-                      Messages.of(context).turnoversGameSummary,
+                      Messages.of(context).turnoversTitle,
                       textScaleFactor: scale,
                       style: style,
                     ),

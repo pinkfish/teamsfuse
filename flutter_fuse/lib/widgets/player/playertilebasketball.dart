@@ -20,7 +20,7 @@ typedef PlayerExtraFunc = Widget Function(String playerUid);
 /// Shows the details on the player by giving the name and jersey number.
 ///
 class PlayerTileBasketball extends StatelessWidget {
-  /// Playeruid to display
+  /// PlayerUid to display
   final String playerUid;
 
   /// Season to display for.
@@ -29,10 +29,10 @@ class PlayerTileBasketball extends StatelessWidget {
   /// The game uid to use.
   final String gameUid;
 
-  /// What to do whern the player is tapped.
+  /// What to do when the player is tapped.
   final PlayerCallbackFunc onTap;
 
-  /// Edit bbutton, if we should display it.
+  /// Edit button, if we should display it.
   final PlayerCallbackFunc onEdit;
 
   /// The color of the bar.
@@ -237,6 +237,9 @@ class PlayerTileBasketball extends StatelessWidget {
       String jerseyNumber,
       SeasonPlayerSummary summary,
       GamePlayerSummary gameSummary) {
+    if (jerseyNumber.isEmpty) {
+      jerseyNumber = 'U';
+    }
     if (compactDisplay) {
       return GestureDetector(
         onTap: () => onTap != null ? onTap(loadedPlayer.uid) : null,

@@ -1,8 +1,10 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../player/playername.dart';
+import '../../../services/messages.dart';
 
 ///
 /// Shows the list of players in the team.
@@ -11,13 +13,15 @@ class PlayerList extends StatefulWidget {
   final Orientation orientation;
   final Season season;
   final Game game;
-  final Map<String, Player> additonalPlayers;
+  final Map<String, Player> additionalPlayers;
+  final BuiltMap<String, Player> fullPlayerDetails;
 
   PlayerList(
       {this.orientation = Orientation.portrait,
       @required this.game,
       @required this.season,
-      this.additonalPlayers});
+      this.additionalPlayers,
+      this.fullPlayerDetails});
 
   @override
   State<StatefulWidget> createState() {
@@ -25,13 +29,17 @@ class PlayerList extends StatefulWidget {
   }
 }
 
+///
+/// How to sort the players in the list.
+///
 enum SortPlayerBy {
   Points,
   Fouls,
   Turnovers,
   Steals,
   Blocks,
-  MadePerentage,
+  MadePercentage,
+  Name,
 }
 
 class _PlayerListState extends State<PlayerList> {
@@ -57,11 +65,11 @@ class _PlayerListState extends State<PlayerList> {
               sortedList.contains(e));
           sortedList.addAll(seasonList);
         }
-        if (widget.additonalPlayers != null) {
-          sortedList.addAll(widget.additonalPlayers.keys);
+        if (widget.additionalPlayers != null) {
+          sortedList.addAll(widget.additionalPlayers.keys);
         }
         sortedList.sort((String u1, String u2) =>
-            _sortFunction(_getData(u1), _getData(u2)));
+            _sortFunction(u1, _getData(u1), u2, _getData(u2)));
         return AnimatedSwitcher(
           duration: Duration(milliseconds: 500),
           child: Column(
@@ -79,11 +87,11 @@ class _PlayerListState extends State<PlayerList> {
                   ),
                   SizedBox(
                     width: width,
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: () =>
                           setState(() => _sortBy = SortPlayerBy.Points),
                       child: Text(
-                        'Pts',
+                        Messages.of(context).pointsTitle,
                         overflow: TextOverflow.fade,
                         softWrap: false,
                         style: minDataStyle.copyWith(
@@ -98,16 +106,16 @@ class _PlayerListState extends State<PlayerList> {
                   ),
                   SizedBox(
                     width: width,
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: () =>
-                          setState(() => _sortBy = SortPlayerBy.MadePerentage),
+                          setState(() => _sortBy = SortPlayerBy.MadePercentage),
                       child: Text(
-                        'Pct',
+                        Messages.of(context).percentageTitle,
                         overflow: TextOverflow.fade,
                         softWrap: false,
                         style: minDataStyle.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: _sortBy == SortPlayerBy.MadePerentage
+                          color: _sortBy == SortPlayerBy.MadePercentage
                               ? Theme.of(context).accentColor
                               : null,
                         ),
@@ -117,11 +125,11 @@ class _PlayerListState extends State<PlayerList> {
                   ),
                   SizedBox(
                     width: width,
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: () =>
                           setState(() => _sortBy = SortPlayerBy.Fouls),
                       child: Text(
-                        'Fouls',
+                        Messages.of(context).foulsGameSummary,
                         overflow: TextOverflow.fade,
                         softWrap: false,
                         style: minDataStyle.copyWith(
@@ -136,11 +144,11 @@ class _PlayerListState extends State<PlayerList> {
                   ),
                   SizedBox(
                     width: width,
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: () =>
                           setState(() => _sortBy = SortPlayerBy.Turnovers),
                       child: Text(
-                        'T/O',
+                        Messages.of(context).turnoversTitle,
                         overflow: TextOverflow.fade,
                         softWrap: false,
                         style: minDataStyle.copyWith(
@@ -155,11 +163,11 @@ class _PlayerListState extends State<PlayerList> {
                   ),
                   SizedBox(
                     width: width,
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: () =>
                           setState(() => _sortBy = SortPlayerBy.Steals),
                       child: Text(
-                        'Steals',
+                        Messages.of(context).stealsTitle,
                         softWrap: false,
                         overflow: TextOverflow.clip,
                         style: minDataStyle.copyWith(
@@ -174,11 +182,11 @@ class _PlayerListState extends State<PlayerList> {
                   ),
                   SizedBox(
                     width: width,
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: () =>
                           setState(() => _sortBy = SortPlayerBy.Blocks),
                       child: Text(
-                        'Blk',
+                        Messages.of(context).blocksTitle,
                         softWrap: false,
                         overflow: TextOverflow.clip,
                         style: minDataStyle.copyWith(
@@ -210,7 +218,8 @@ class _PlayerListState extends State<PlayerList> {
         PlayerSummaryData();
   }
 
-  int _sortFunction(PlayerSummaryData s1, PlayerSummaryData s2) {
+  int _sortFunction(
+      String u1, PlayerSummaryData s1, String u2, PlayerSummaryData s2) {
     switch (_sortBy) {
       case SortPlayerBy.Points:
         return s2.points - s1.points;
@@ -222,7 +231,7 @@ class _PlayerListState extends State<PlayerList> {
         return s2.steals - s1.steals;
       case SortPlayerBy.Blocks:
         return s2.blocks - s1.blocks;
-      case SortPlayerBy.MadePerentage:
+      case SortPlayerBy.MadePercentage:
         if ((s2.one.attempts + s2.two.attempts + s2.three.attempts) > 0) {
           if ((s1.one.attempts + s1.two.attempts + s1.three.attempts) > 0) {
             return ((s2.one.made + s2.two.made + s2.three.made) ~/
@@ -234,6 +243,22 @@ class _PlayerListState extends State<PlayerList> {
         } else if ((s1.one.attempts + s1.two.attempts + s1.three.attempts) >
             0) {
           return -1;
+        }
+        return 0;
+      case SortPlayerBy.Name:
+        if (widget.fullPlayerDetails != null) {
+          var n1 = widget.fullPlayerDetails[u1];
+          var n2 = widget.fullPlayerDetails[u2];
+          if (n1 == null && n2 == null) {
+            return 0;
+          }
+          if (n1 == null) {
+            return 1;
+          }
+          if (n2 == null) {
+            return -1;
+          }
+          return n1.name.compareTo(n2.name);
         }
     }
     return 0;

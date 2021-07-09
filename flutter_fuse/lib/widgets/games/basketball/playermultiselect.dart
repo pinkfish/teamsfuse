@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -33,6 +34,9 @@ class PlayerMultiselect extends StatelessWidget {
   /// Any specific additional players to pass in.
   final Map<String, Player> additionalPlayers;
 
+  /// The full player details.
+  final BuiltMap<String, Player> fullPlayerDetails;
+
   List<Widget> _populateList(BuildContext context, Orientation o) {
     var players = game.players.keys.toSet();
     var seasonPlayers =
@@ -46,18 +50,28 @@ class PlayerMultiselect extends StatelessWidget {
     }
     var ordered = players.toList();
     ordered.sort((String a, String b) {
-      var asum = game.players[a] ?? game.opponents[a];
-      var bsum = game.players[b] ?? game.opponents[b];
-      if (asum == null || bsum == null) {
+      var aSummary = game.players[a] ?? game.opponents[a];
+      var bSummary = game.players[b] ?? game.opponents[b];
+      var aFull = fullPlayerDetails != null ? fullPlayerDetails[a] : null;
+      var bFull = fullPlayerDetails != null ? fullPlayerDetails[b] : null;
+      if (aSummary == null || bSummary == null) {
         return 0;
       }
-      if (asum.currentlyPlaying) {
-        return -1;
-      }
-      if (bsum.currentlyPlaying) {
+      if (aSummary.currentlyPlaying) {
+        if (!bSummary.currentlyPlaying) {
+          return -1;
+        }
+      } else if (bSummary.currentlyPlaying) {
         return 1;
       }
-      return 0;
+      // Sort by number or name.
+      if (bSummary.jerseyNumber.isEmpty && aSummary.jerseyNumber.isEmpty) {
+        // Order by name.
+        if (aFull != null && bFull != null) {
+          return aFull.name.compareTo(bFull.name);
+        }
+      }
+      return bSummary.jerseyNumber.compareTo(aSummary.jerseyNumber);
     });
     Color mainColor;
     Color mainColorSelected;
@@ -108,6 +122,7 @@ class PlayerMultiselect extends StatelessWidget {
       @required this.isSelected,
       @required this.selectPlayer,
       this.additionalPlayers,
+      this.fullPlayerDetails,
       this.orientation = Orientation.portrait});
 
   @override
