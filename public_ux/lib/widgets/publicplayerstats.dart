@@ -4,7 +4,6 @@ import 'package:flutter_fuse/services/blocs/single/singleplayerbloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/player/playerimage.dart';
 import 'package:flutter_fuse/widgets/teams/stats/playerdetailrow.dart';
-import 'package:flutter_fuse/widgets/teams/stats/seasonplayerdetail.dart';
 import 'package:flutter_fuse/widgets/teams/stats/seasonplayerheader.dart';
 import 'package:flutter_fuse/widgets/teams/teamimage.dart';
 import 'package:flutter_fuse/widgets/teams/teamname.dart';
@@ -118,7 +117,7 @@ class PublicPlayerStats extends StatelessWidget {
                   style: Theme.of(context).textTheme.subtitle1);
             }
             final seasonPlayer = season.playersData[bloc.playerUid];
-            int lastYear = 0;
+            var lastYear = 0;
             return OrientationBuilder(
               builder: (context, orientation) => LayoutBuilder(
                 builder: (context, constraints) => Column(

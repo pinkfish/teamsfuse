@@ -127,7 +127,9 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
 
   void _cleanupSnaps() {
     _adminTeamSub?.cancel();
+    _adminTeamSub = null;
     _userTeamSub?.cancel();
+    _userTeamSub = null;
   }
 
   @override
@@ -140,7 +142,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
 
   @override
   Stream<TeamState> mapEventToState(TeamEvent event) async* {
-    // Start the firestore loading.
+    // Start the Firestore loading process.
     if (event is _TeamFirestoreStart) {
       // Do the admin team loading thing.
       var adminTrace = coordinationBloc.analytics.newTrace('adminTeams');
@@ -209,7 +211,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
     }
 
     if (event is _NewClubTeams) {
-      // Loop ovewer the teams and do stuff.
+      // Loop over the teams and do stuff.
       var clubTeams = MapBuilder<String, BuiltMap<String, Team>>();
       for (var club in event.teams.entries) {
         var teams = MapBuilder<String, Team>();

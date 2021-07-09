@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/notifications.dart';
 import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,6 +31,8 @@ class MockUserAuth extends Mock implements UserAuthImpl {}
 class MockStorage extends Mock implements HydratedStorage {}
 
 class MockAlgoliaSearch extends Mock implements AlgoliaSearch {}
+
+class MockNotifications extends Mock implements Notifications {}
 
 ///
 /// Makes a happy little testable widget with a wrapper.
@@ -160,8 +163,10 @@ class AllBlocs extends BasicData {
   LoadedStateBloc loadedStateBloc;
   InviteBloc inviteBloc;
   PlayerBloc playerBloc;
+  MockNotifications mockNotifications;
 
   AllBlocs() {
+    mockNotifications = MockNotifications();
     coordinationBloc = CoordinationBloc(
       authenticationBloc: authBloc,
       analytics: mockAnalytics,
@@ -182,6 +187,7 @@ class AllBlocs extends BasicData {
     );
     gameBloc = GameBloc(
       coordinationBloc: coordinationBloc,
+      notifications: mockNotifications,
       teamBloc: teamBloc,
       crashes: mockAnalytics,
     );

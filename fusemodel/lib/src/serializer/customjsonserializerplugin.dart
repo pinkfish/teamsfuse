@@ -190,7 +190,7 @@ class CustomEnumJsonPlugin extends StandardJsonPlugin {
   /// Converts [StandardJsonPlugin] serialization output, a `Map`, to a `List`,
   /// when the serialized type is known statically.
   List _toList(Map map, bool hasEncodedKeys) {
-    var result = List(map.length * 2);
+    var result = List<dynamic>.filled(map.length * 2, null);
     var i = 0;
     map.forEach((key, value) {
       // Drop null values, they are represented by missing keys.
@@ -220,7 +220,7 @@ class CustomEnumJsonPlugin extends StandardJsonPlugin {
 
     if (map.containsKey(valueKey)) {
       // Just a type and a primitive value. Retrieve the value in the map.
-      final result = List(2);
+      final result = List.filled(2, null);
       result[0] = type;
       result[1] = map[valueKey];
       return result;
@@ -234,7 +234,7 @@ class CustomEnumJsonPlugin extends StandardJsonPlugin {
       type = 'map';
     }
 
-    var result = List(map.length * 2 - 1);
+    var result = List.filled(map.length * 2 - 1, null);
     result[0] = type;
 
     var i = 1;

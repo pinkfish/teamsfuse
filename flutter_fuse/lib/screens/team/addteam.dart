@@ -118,6 +118,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         }
         // Verify a player has been picked.
         _formKeyPlayer.currentState.save();
+        _formKeyPlayer.currentState.validate();
         if (_playerUid == PlayerFormField.nonePlayer) {
           _playerStepState = StepState.error;
           _detailsStepState = StepState.disabled;
@@ -255,7 +256,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                     builder: (context, singleClubBloc) => BlocBuilder(
                       bloc: singleClubBloc,
                       builder: (context, clubState) {
-                        ListTile(
+                        return ListTile(
                           leading: const Icon(MdiIcons.group),
                           title: _clubUid != ClubPicker.noClub
                               ? Text(singleClubBloc.state.club.name)
@@ -336,6 +337,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         bloc: _addTeamBloc,
         listener: (context, addState) {
           if (addState is AddItemDone) {
+            print('addState: AddItemDOne');
             Navigator.pop(context);
           }
           if (addState is AddItemSaveFailed) {
@@ -353,6 +355,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                 _onStepperContinue(context);
               },
               onStepCancel: () {
+                print('onStepCancel');
                 // Go back
                 Navigator.of(context).pop();
               },
@@ -377,6 +380,12 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                     key: _formKeyPlayer,
                     child: PlayerFormField(
                       initialValue: PlayerFormField.nonePlayer,
+                      validator: (v) {
+                        if (v == PlayerFormField.nonePlayer) {
+                          return Messages.of(context).selectPlayer;
+                        }
+                        return null;
+                      },
                       onSaved: (player) => _playerUid = player,
                     ),
                   ),

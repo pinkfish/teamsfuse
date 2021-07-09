@@ -47,7 +47,7 @@ class SingleSeasonBlocStateType extends EnumClass {
 /// exciting singleSeason stuff.
 ///
 @BuiltValue(instantiable: false)
-abstract class SingleSeasonState {
+abstract class SingleSeasonState with SingleSeasonStateMixin {
   /// The season information.
   @nullable
   Season get season;
@@ -64,6 +64,13 @@ abstract class SingleSeasonState {
   /// If the media is loaded.
   bool get loadedMedia;
 
+  /// If the players are loaded.
+  bool get loadedPlayers;
+
+  /// Gets the full player for the season state.
+  @override
+  BuiltMap<String, Player> get fullPlayer;
+
   /// The type of the season bloc.
   SingleSeasonBlocStateType get type;
 
@@ -73,6 +80,8 @@ abstract class SingleSeasonState {
     return builder
       ..loadedGames = state.loadedGames
       ..loadedMedia = state.loadedMedia
+      ..loadedPlayers = state.loadedPlayers
+      ..fullPlayer = state.fullPlayer.toBuilder()
       ..season = state.season?.toBuilder()
       ..media = state.media.toBuilder()
       ..games = state.games.toBuilder();
@@ -81,16 +90,31 @@ abstract class SingleSeasonState {
   /// Initialize the builder from the state.
   static void initializeStateBuilder(SingleSeasonStateBuilder b) => b
     ..loadedGames = false
+    ..loadedPlayers = false
     ..loadedMedia = false;
 
   /// Create the serialized data from the state.
   Map<String, dynamic> toMap();
 }
 
+abstract class SingleSeasonStateMixin {
+  /// Gets the full player for the season state.
+  BuiltMap<String, Player> get fullPlayer;
+
+  /// Gets the name of the player, '' if not loaded.
+  String getPlayerName(String playerUid) {
+    if (fullPlayer.containsKey(playerUid)) {
+      return fullPlayer[playerUid].name;
+    }
+    return '';
+  }
+}
+
 ///
 /// The singleSeason loaded from the database.
 ///
 abstract class SingleSeasonLoaded
+    with SingleSeasonStateMixin
     implements
         SingleSeasonState,
         Built<SingleSeasonLoaded, SingleSeasonLoadedBuilder> {
@@ -132,6 +156,7 @@ abstract class SingleSeasonLoaded
 /// The singleSeason bloc that is unitialized.
 ///
 abstract class SingleSeasonUninitialized
+    with SingleSeasonStateMixin
     implements
         SingleSeasonState,
         Built<SingleSeasonUninitialized, SingleSeasonUninitializedBuilder> {
@@ -171,6 +196,7 @@ abstract class SingleSeasonUninitialized
 /// The singleSeason bloc that is unitialized.
 ///
 abstract class SingleSeasonDeleted
+    with SingleSeasonStateMixin
     implements
         SingleSeasonState,
         Built<SingleSeasonDeleted, SingleSeasonDeletedBuilder> {
@@ -209,6 +235,7 @@ abstract class SingleSeasonDeleted
 /// The singleSeason bloc that is unitialized.
 ///
 abstract class SingleSeasonSaveFailed
+    with SingleSeasonStateMixin
     implements
         SingleSeasonState,
         Built<SingleSeasonSaveFailed, SingleSeasonSaveFailedBuilder> {
@@ -249,6 +276,7 @@ abstract class SingleSeasonSaveFailed
 /// The singleSeason bloc that is unitialized.
 ///
 abstract class SingleSeasonSaving
+    with SingleSeasonStateMixin
     implements
         SingleSeasonState,
         Built<SingleSeasonSaving, SingleSeasonSavingBuilder> {
@@ -285,6 +313,7 @@ abstract class SingleSeasonSaving
 /// The singleSeason bloc that is saving.
 ///
 abstract class SingleSeasonSaveDone
+    with SingleSeasonStateMixin
     implements
         SingleSeasonState,
         Built<SingleSeasonSaveDone, SingleSeasonSaveDoneBuilder> {

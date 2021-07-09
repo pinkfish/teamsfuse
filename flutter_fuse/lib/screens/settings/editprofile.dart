@@ -73,7 +73,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed(BuildContext context, SingleProfileBloc profileBloc) async {

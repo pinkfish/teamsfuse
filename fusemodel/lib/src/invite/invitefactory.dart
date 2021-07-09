@@ -5,7 +5,6 @@ import 'invitetoclub.dart';
 import 'invitetoleagueasadmin.dart';
 import 'invitetoleagueteam.dart';
 import 'invitetoplayer.dart';
-import 'invitetoteam.dart';
 
 ///
 /// Base class for all invites.

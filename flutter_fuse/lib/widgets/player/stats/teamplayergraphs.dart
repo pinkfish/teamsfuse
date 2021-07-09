@@ -262,41 +262,32 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
       measureFn: (_CumulativeScore e, _) => e.count,
       data: state.games.map((e) {
         var total = 0;
-        var name = '';
         switch (eventType) {
           case _GameTimeseriesType.All:
             break;
           case _GameTimeseriesType.Points:
             total = e.players[widget.playerUid].fullData.points;
-            name = Messages.of(context).pointsTitle;
             break;
           case _GameTimeseriesType.Fouls:
             total = e.players[widget.playerUid].fullData.fouls;
-            name = Messages.of(context).fouls;
             break;
           case _GameTimeseriesType.Turnovers:
             total = e.players[widget.playerUid].fullData.turnovers;
-            name = Messages.of(context).turnoversTitle;
             break;
           case _GameTimeseriesType.Steals:
             total = e.players[widget.playerUid].fullData.steals;
-            name = Messages.of(context).stealsTitle;
             break;
           case _GameTimeseriesType.Blocks:
             total = e.players[widget.playerUid].fullData.blocks;
-            name = Messages.of(context).blocksTitle;
             break;
           case _GameTimeseriesType.OffensiveRebounds:
             total = e.players[widget.playerUid].fullData.offensiveRebounds;
-            name = Messages.of(context).blocksTitle;
             break;
           case _GameTimeseriesType.DefensiveRebounds:
             total = e.players[widget.playerUid].fullData.defensiveRebounds;
-            name = Messages.of(context).blocksTitle;
             break;
           case _GameTimeseriesType.Assists:
             total = e.players[widget.playerUid].fullData.assists;
-            name = Messages.of(context).assistTitle;
             break;
         }
         return _CumulativeScore(e.opponentUid, total);

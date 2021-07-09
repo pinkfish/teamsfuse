@@ -2072,6 +2072,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var teamCollection = _wrapper
         .collection(TEAMS_COLLECTION)
         .where('${Team.adminsField}.${userData.uid}.$ADDED', isEqualTo: true);
+    print('getTeamAdmins ${Team.adminsField}.${userData.uid}.$ADDED');
 
     var wrap = await teamCollection.getDocuments();
     yield BuiltList(

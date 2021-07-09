@@ -3,7 +3,6 @@ import 'package:flutter_fuse/widgets/teams/stats/playerdetailrow.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'seasonplayerlist.dart';
-import '../../player/playername.dart';
 import '../../util/publicmark.dart';
 
 ///

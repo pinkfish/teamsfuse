@@ -18,12 +18,14 @@ class PlayerFormField extends FormField<String> {
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
+    AutovalidateMode autovalidateMode = AutovalidateMode.onUserInteraction,
   })  : assert(initialValue != null),
         super(
           key: key ?? Key('PLAYER'),
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,
+          autovalidateMode: autovalidateMode,
           builder: (field) {
             var state = field as PlayerFormFieldState;
 

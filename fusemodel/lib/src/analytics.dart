@@ -9,8 +9,6 @@ abstract class AnalyticsSubsystem {
 
   void logLogin();
 
-  void setUserId(String uid);
-
   void setUserProperty({String name, String value});
 
   bool get debugMode;

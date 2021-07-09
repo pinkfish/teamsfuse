@@ -58,6 +58,7 @@ class _TeamDetailsExpansionPanel extends State<TeamDetailsExpansionPanel> {
         teamBlocs[g.teamUid] = SingleTeamBloc(
           db: RepositoryProvider.of<DatabaseUpdateModel>(context),
           teamUid: g.teamUid,
+          teamBloc: BlocProvider.of<TeamBloc>(context),
           crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
         );
       }

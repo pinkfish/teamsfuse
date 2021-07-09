@@ -126,8 +126,10 @@ class AllBlocs extends BasicData {
   LoadedStateBloc loadedStateBloc;
   InviteBloc inviteBloc;
   PlayerBloc playerBloc;
+  MockNotifications mockNotifications;
 
   AllBlocs() {
+    mockNotifications = MockNotifications();
     coordinationBloc = CoordinationBloc(
       authenticationBloc: authBloc,
       analytics: mockAnalytics,
@@ -148,6 +150,7 @@ class AllBlocs extends BasicData {
     );
     gameBloc = GameBloc(
       coordinationBloc: coordinationBloc,
+      notifications: mockNotifications,
       teamBloc: teamBloc,
       crashes: mockAnalytics,
     );

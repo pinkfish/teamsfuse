@@ -65,7 +65,7 @@ class UserAuthImpl {
       ..isEmailVerified = false);
     await user.sendEmailVerification();
     final ref = _wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
-    final data = await ref.setData(profile.toMap());
+    await ref.setData(profile.toMap());
 
     // With update uid.
     // Create a 'me' user.

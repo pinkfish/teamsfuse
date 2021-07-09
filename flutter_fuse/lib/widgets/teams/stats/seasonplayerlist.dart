@@ -1,11 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/screens/game/editgame.dart';
 import 'package:flutter_fuse/widgets/teams/stats/seasonplayerdetail.dart';
 import 'package:flutter_fuse/widgets/teams/stats/seasonplayerheader.dart';
 import 'package:fusemodel/fusemodel.dart';
-
-import '../../player/playername.dart';
 
 /// Called when the player is tapped on.
 typedef PlayerTapFunction = void Function(SeasonPlayer player);

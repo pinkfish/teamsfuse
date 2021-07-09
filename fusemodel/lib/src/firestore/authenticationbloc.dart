@@ -285,7 +285,7 @@ class AuthenticationBloc
     if (user == null) {
       return AuthenticationLoggedOut();
     } else if (user.isEmailVerified) {
-      analyticsSubsystem.setUserId(user.uid);
+      //analyticsSubsystem.setUserId(user.uid);
       if (analyticsSubsystem.debugMode) {
         analyticsSubsystem.setUserProperty(name: 'developer', value: 'true');
       } else {

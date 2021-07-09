@@ -19,6 +19,7 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
   AndroidDeviceInfo _androidDeviceInfo;
   final FirebaseAnalytics _analytics;
   bool _debugMode = false;
+  String _userId;
 
   AnalyticsSubsystemImpl(this._analytics);
 
@@ -33,6 +34,19 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
     }
 
     return _instance;
+  }
+
+  /// Sets the user id locally an in the firebase system.
+  Future<void> setUserId(String userId) {
+    _userId = userId;
+    if (Platform.isAndroid || Platform.isIOS) {
+      return firebase.setUserId(userId);
+    }
+    return null;
+  }
+
+  String getUserId() {
+    return _userId;
   }
 
   FirebaseAnalytics get firebase => _analytics;
@@ -83,13 +97,6 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
   Future<void> logAppOpen() async {
     if (Platform.isAndroid || Platform.isIOS) {
       return _analytics.logAppOpen();
-    }
-  }
-
-  @override
-  void setUserId(String uid) {
-    if (Platform.isAndroid || Platform.isIOS) {
-      _analytics.setUserId(uid);
     }
   }
 

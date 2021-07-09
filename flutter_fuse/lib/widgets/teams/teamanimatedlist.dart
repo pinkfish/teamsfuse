@@ -111,7 +111,7 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
               child: Text(Messages.of(context).noTeams),
             );
           }
-          teamSorted.sort((a, b) => a.name.compareTo(b.name) as int);
+          teamSorted.sort((a, b) => a.name.compareTo(b.name));
           _updateTeams(teamSorted);
           return AnimatedList(
             key: _listState,

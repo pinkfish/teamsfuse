@@ -27,7 +27,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool emailOnUpcoming;
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _onSave(

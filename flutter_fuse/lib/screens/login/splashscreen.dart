@@ -64,36 +64,41 @@ class SplashScreen extends StatelessWidget {
       Timer(Duration(milliseconds: 1), () async {
         final analytics =
             RepositoryProvider.of<AnalyticsSubsystemImpl>(context);
-        await analytics.firebase.setUserId(state.user.uid);
-        if (analytics.debugMode) {
-          await analytics.firebase
-              .setUserProperty(name: 'developer', value: 'true');
-        } else {
-          await analytics.firebase
-              .setUserProperty(name: 'developer', value: 'false');
-        }
+        print('setUserId');
+        if (state.user.uid != analytics.getUserId()) {
+          await analytics.setUserId(state.user.uid);
+          if (analytics.debugMode) {
+            await analytics.firebase
+                .setUserProperty(name: 'developer', value: 'true');
+          } else {
+            await analytics.firebase
+                .setUserProperty(name: 'developer', value: 'false');
+          }
 
-        final links = RepositoryProvider.of<FirebaseDynamicLinks>(context);
-        final data = await links.getInitialLink();
-        final deepLink = data?.link;
-        Navigator.popUntil(context, (route) => route.isFirst);
-        final delayed = [Navigator.pushNamed(context, '/Main/Home')];
-        if (deepLink != null) {
-          var myPath = deepLink.path;
-          if (!myPath.startsWith('/')) {
-            myPath = '/' + myPath;
+          final links = RepositoryProvider.of<FirebaseDynamicLinks>(context);
+          final data = await links.getInitialLink();
+          final deepLink = data?.link;
+          Navigator.popUntil(context, (route) => route.isFirst);
+          final delayed = [Navigator.pushNamed(context, '/Main/Home')];
+          if (deepLink != null) {
+            var myPath = deepLink.path;
+            if (!myPath.startsWith('/')) {
+              myPath = '/' + myPath;
+            }
+            print('Push /Main/Home splash');
+            delayed.add(Navigator.pushNamed(context, myPath));
+          } else {
+            // Check if we came from a notification if it is not a dynamic link.
+            final notifications = RepositoryProvider.of<Notifications>(context);
+            final newRoute = notifications
+                .pathFromMessage(await notifications.getInitialMessage());
+            print('Push $newRoute splash');
+            if (newRoute != null) {
+              await Navigator.pushNamed(context, newRoute);
+            }
           }
-          delayed.add(Navigator.pushNamed(context, myPath));
-        } else {
-          // Check if we came from a notification if it is not a dynamic link.
-          final notifications = RepositoryProvider.of<Notifications>(context);
-          final newRoute = notifications
-              .pathFromMessage(await notifications.getInitialMessage());
-          if (newRoute != null) {
-            await Navigator.pushNamed(context, newRoute);
-          }
+          await Future.wait(delayed);
         }
-        await Future.wait(delayed);
       });
     }
     if (state is AuthenticationLoggedInUnverified) {

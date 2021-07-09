@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
@@ -8,7 +9,6 @@ import '../blocs/singleteamprovider.dart';
 import '../player/playerimage.dart';
 import '../player/playername.dart';
 import '../player/playertilebasketball.dart';
-import '../util/publicmark.dart';
 
 ///
 /// Show the players of the team and a specific season.
@@ -23,7 +23,10 @@ class TeamPlayersSeason extends StatelessWidget {
   List<Widget> _buildPlayers(BuildContext context, SingleSeasonState state,
       SingleTeamState teamState) {
     var ret = <Widget>[];
-
+    var data = state.season.players.asList();
+    data.sort((p1, p2) => state
+        .getPlayerName(p1.playerUid)
+        .compareTo(state.getPlayerName(p2.playerUid)));
     for (var player in state.season.players) {
       ret.add(
         GestureDetector(
@@ -92,6 +95,7 @@ class TeamPlayersSeason extends StatelessWidget {
                   Text(Messages.of(context).loading),
                 ]);
           }
+          seasonBloc.add(SingleSeasonLoadPlayers());
           return Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,

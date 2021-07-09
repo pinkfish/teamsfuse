@@ -27,9 +27,7 @@ class MessagesBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class MessagesBlocState {
-  @override
   BuiltList<MessageRecipient> get unreadMessages;
-  @override
   BuiltList<MessageRecipient> get recentMessages;
   MessagesBlocStateType get type;
 

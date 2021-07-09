@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:isolate';
 
+import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
 import '../seasonbloc.dart';
@@ -27,6 +29,14 @@ class SingleSeasonUpdate extends SingleSeasonEvent {
 /// Loads all the games for this season.
 ///
 class SingleSeasonLoadGames extends SingleSeasonEvent {
+  @override
+  List<Object> get props => [];
+}
+
+///
+/// Loads all the players for this season.
+///
+class SingleSeasonLoadPlayers extends SingleSeasonEvent {
   @override
   List<Object> get props => [];
 }
@@ -73,6 +83,15 @@ class _SingleSeasonLoadedMedia extends SingleSeasonEvent {
   List<Object> get props => [media];
 }
 
+class _SingleSeasonLoadedPlayer extends SingleSeasonEvent {
+  final Player player;
+
+  _SingleSeasonLoadedPlayer({@required this.player});
+
+  @override
+  List<Object> get props => [player];
+}
+
 ///
 /// Bloc to handle updates and state of a specific team.
 ///
@@ -86,6 +105,7 @@ class SingleSeasonBloc
   StreamSubscription<Season> _seasonSub;
   StreamSubscription<BuiltList<Game>> _gameSub;
   StreamSubscription<BuiltList<MediaInfo>> _mediaSub;
+  Map<String, StreamSubscription<Player>> _playersSub = {};
 
   // Create the bloc and do exciting things with it.
   SingleSeasonBloc(
@@ -111,6 +131,13 @@ class SingleSeasonBloc
     });
   }
 
+  @override
+  Stream<Transition<SingleSeasonEvent, SingleSeasonState>> transformTransitions(
+    Stream<Transition<SingleSeasonEvent, SingleSeasonState>> transitions,
+  ) {
+    return transitions.debounceTime(Duration(milliseconds: 100));
+  }
+
   static SingleSeasonState _getInitialState(String uid, SeasonBloc seasonBloc) {
     final season = seasonBloc?.getSeason(uid);
     if (season == null) {
@@ -126,6 +153,10 @@ class SingleSeasonBloc
     _seasonSub = null;
     await _gameSub?.cancel();
     _gameSub = null;
+
+    for (var sub in _playersSub.values) {
+      await sub?.cancel();
+    }
   }
 
   @override
@@ -174,6 +205,30 @@ class SingleSeasonBloc
           _gameSub.onError(crashes.recordException);
         }
       }
+    }
+
+    if (event is SingleSeasonLoadPlayers) {
+      // Load the players for the system...
+      if (!(state is SingleSeasonUninitialized) && !state.loadedPlayers) {
+        // Do the load.
+        for (var pl in state.season.players) {
+          if (!_playersSub.containsKey(pl.playerUid)) {
+            _playersSub[pl.playerUid] =
+                db.getPlayerDetails(pl.playerUid).listen((event) {
+              add(_SingleSeasonLoadedPlayer(player: event));
+            });
+            _playersSub[pl.playerUid].onError(crashes.recordException);
+          }
+        }
+        yield (SingleSeasonLoaded.fromState(state)..loadedPlayers = true)
+            .build();
+      }
+    }
+
+    if (event is _SingleSeasonLoadedPlayer) {
+      yield (SingleSeasonLoaded.fromState(state)
+            ..fullPlayer[event.player.uid] = event.player)
+          .build();
     }
 
     if (event is SingleSeasonLoadMedia) {

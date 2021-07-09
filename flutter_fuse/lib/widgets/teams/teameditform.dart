@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:built_collection/built_collection.dart';
@@ -35,7 +34,7 @@ enum StartSection {
 /// other bits.
 ///
 class TeamEditForm extends StatefulWidget {
-  /// Constrcutor.
+  /// Constructor.
   TeamEditForm(this.team, this.club, GlobalKey<TeamEditFormState> key,
       {this.startSection = StartSection.all})
       : super(key: key);

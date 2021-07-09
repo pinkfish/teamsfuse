@@ -129,7 +129,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
       return Text(Messages.of(context).loading);
     }
 
-    if (state.seasons == 0) {
+    if (state.seasons.isEmpty) {
       if (state.league.isAdmin()) {
         return TextButton(
             onPressed: () => _addSeason(leagueOrTournamentBloc),
