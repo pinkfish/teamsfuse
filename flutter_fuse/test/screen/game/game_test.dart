@@ -125,11 +125,12 @@ void main() {
     blocs.close();
   }, variant: TeamsFuseTestVariant());
 
-  testWidgets('loaded', (tester) async {
+  testWidgets('loading', (tester) async {
     setupStorage();
 
     final teamController = StreamController<Team>();
     final seasonController = StreamController<Season>();
+    final playerController = StreamController<Player>();
     final allBlocs = AllBlocs();
 
     when(allBlocs.mockDb.getGame('game123'))
@@ -138,6 +139,8 @@ void main() {
         .thenAnswer((_) => teamController.stream);
     when(allBlocs.mockDb.getSingleSeason('season123'))
         .thenAnswer((_) => seasonController.stream);
+    when(allBlocs.mockDb.getPlayerDetails('1234'))
+        .thenAnswer((_) => playerController.stream);
 
     // Build our app and trigger a frame.
     final testWidget = await makeTestableWidget(
@@ -184,6 +187,8 @@ void main() {
     final seasonController = StreamController<Season>();
     final opponentController = StreamController<Iterable<Opponent>>();
     final teamSeasonController = StreamController<BuiltList<Season>>();
+    final playerController = StreamController<Player>();
+    final mediaController = StreamController<BuiltList<MediaInfo>>();
     final allStuff = AllBlocs();
 
     when(allStuff.mockDb.getGame('game123'))
@@ -196,6 +201,10 @@ void main() {
         .thenAnswer((_) => opponentController.stream);
     when(allStuff.mockDb.getSeasonsForTeam('team123'))
         .thenAnswer((_) => teamSeasonController.stream);
+    when(allStuff.mockDb.getPlayerDetails('player123'))
+        .thenAnswer((_) => playerController.stream);
+    when(allStuff.mockDb.getMediaForGame(gameUid: 'game123'))
+        .thenAnswer((_) => mediaController.stream);
     allStuff.playerBloc.emit((PlayerLoaded.fromState(PlayerUninitialized())
           ..players = MapBuilder({
             'player123': Player((b) => b
@@ -298,6 +307,7 @@ void main() {
     final teamSeasonController =
         StreamGenerator<BuiltList<Season>>(BuiltList.of([season]));
     final gameController = StreamGenerator<Game>(game);
+    final mediaController = StreamController<BuiltList<MediaInfo>>();
     final allBlocs = AllBlocs();
 
     when(allBlocs.mockDb.getGame('game123'))
@@ -310,6 +320,8 @@ void main() {
         .thenAnswer((_) => opponentController.stream());
     when(allBlocs.mockDb.getSeasonsForTeam('team123'))
         .thenAnswer((_) => teamSeasonController.stream());
+    when(allBlocs.mockDb.getMediaForGame(gameUid: 'game123'))
+        .thenAnswer((_) => mediaController.stream);
 
     allBlocs.playerBloc.emit((PlayerLoaded.fromState(PlayerUninitialized())
           ..players = MapBuilder({
