@@ -22,7 +22,8 @@ import 'gametitle.dart';
 ///
 class GameCard extends StatelessWidget {
   /// Constructor.
-  GameCard({@required this.gameUid, this.singleGameBloc})
+  GameCard(
+      {@required this.gameUid, this.singleGameBloc, this.showButtons = true})
       : assert(gameUid != null || singleGameBloc != null);
 
   /// The gameUid for the game.
@@ -31,14 +32,17 @@ class GameCard extends StatelessWidget {
   /// The single game block to use
   final SingleGameBloc singleGameBloc;
 
-  /// current attendence details for the game.
-  final Map<Player, Attendance> attendence = <Player, Attendance>{};
+  /// If we should show buttons on t he card or not.
+  final bool showButtons;
+
+  /// current attendance details for the game.
+  final Map<Player, Attendance> attendance = <Player, Attendance>{};
 
   void _openAttendance(BuildContext context, SingleGameBloc gameBloc) async {
-    if (attendence.length == 1) {
+    if (attendance.length == 1) {
       // Do a simple picker popup.
-      var player = attendence.keys.first;
-      var current = attendence[player];
+      var player = attendance.keys.first;
+      var current = attendance[player];
 
       var attend = await showDialog<Attendance>(
           context: context,
@@ -53,7 +57,7 @@ class GameCard extends StatelessWidget {
       var attend = await showDialog<Map<Player, Attendance>>(
           context: context,
           builder: (context) {
-            return MultipleAttendanceDialog(attendence);
+            return MultipleAttendanceDialog(attendance);
           });
       if (attend != null) {
         for (var a in attend.entries) {
@@ -102,16 +106,16 @@ class GameCard extends StatelessWidget {
     // Show current availability.
     for (var player in players) {
       if (game.attendance.containsKey(player.uid)) {
-        attendence[player] = game.attendance[player.uid];
+        attendance[player] = game.attendance[player.uid];
       } else {
-        attendence[player] = Attendance.Maybe;
+        attendance[player] = Attendance.Maybe;
       }
     }
-    if (attendence.isEmpty) {
+    if (attendance.isEmpty) {
       return null;
     }
     var widgets = <Widget>[];
-    attendence.forEach((player, attend) {
+    attendance.forEach((player, attend) {
       widgets.add(AttendanceIcon(attend));
     });
     return GestureDetector(
@@ -345,7 +349,8 @@ class GameCard extends StatelessWidget {
       );
     }
 
-    if (game.sharedData.time.isBefore(clock.now()) &&
+    if (showButtons &&
+        game.sharedData.time.isBefore(clock.now()) &&
         game.sharedData.type == EventType.Game &&
         game.result.result == GameResult.Unknown) {
       if (game.sharedData.officialResult != null &&

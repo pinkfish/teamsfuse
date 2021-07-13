@@ -128,13 +128,21 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
     final rows = <Widget>[];
     final messages = Messages.of(context);
 
-    rows.add(GameCard(
-      gameUid: widget._gameUid,
+    rows.add(Padding(
+      padding: EdgeInsets.all(10.0),
+      child: GameCard(
+        gameUid: widget._gameUid,
+        showButtons: false,
+      ),
     ));
 
     rows.add(
       DropdownButtonHideUnderline(
         child: SeasonPlayerFormField(
+          decoration: InputDecoration(
+              icon: const Icon(Icons.people),
+              labelText: messages.players,
+              hintText: messages.players),
           initialValue: _curPlayerUid ?? 'none',
           seasonBloc: singleSeasonBloc,
           includeNone: true,
