@@ -664,6 +664,9 @@ class Messages {
   String get invalidUrl => Intl.message('Invalid URL',
       desc: 'Error in a form when the url is invalid', locale: locale);
 
+  String get invalidYoutubeURL => Intl.message('Invalid YouTube URL',
+      desc: 'Error in a form when the youtube url is invalid', locale: locale);
+
   String get invite {
     return Intl.message('Invites',
         desc: 'Title for the screen with the list of current invites',
@@ -3251,6 +3254,8 @@ class Messages {
           name: 'winRecordBreakout',
           args: [win, loss, tie],
           locale: locale);
+
+  String get youtubeLink => Intl.message('Youtube URL/id', locale: locale);
 
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {

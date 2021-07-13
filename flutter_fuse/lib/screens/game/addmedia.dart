@@ -9,11 +9,12 @@ import 'package:flutter_fuse/widgets/games/gamecard.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleseasonprovider.dart';
-import '../../widgets/form/gameformfield.dart';
 import '../../widgets/form/seasonplayerformfield.dart';
 import '../../widgets/util/savingoverlay.dart';
 
@@ -36,7 +37,10 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
   AutovalidateMode autoValidate = AutovalidateMode.disabled;
   String _curPlayerUid;
   String _description;
+  String _youtubeID;
   PickedFile _imageFile;
+  int _selectedIndex = 0;
+  YoutubePlayerController _youtubeController;
 
   AddMediaBloc _addMediaBloc;
 
@@ -169,53 +173,104 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
         },
       ),
     );
-    rows.add(
-      GestureDetector(
-        onTap: _pickImage,
-        child: SizedBox(
-          height: 100,
-          child: _showImage(),
-        ),
-      ),
-    );
-
-    return SingleChildScrollView(
-      child: Form(
-        autovalidateMode: autoValidate,
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            SingleChildScrollView(
-              child: Column(children: rows),
+    if (_selectedIndex == 0) {
+      rows.add(
+        Expanded(
+          child: GestureDetector(
+            onTap: _pickImage,
+            child: SizedBox(
+              height: 100,
+              child: _showImage(),
             ),
-            BlocBuilder(
-              bloc: singleSeasonBloc,
-              builder: (context, seasonState) {
-                if (seasonState is SingleSeasonUninitialized) {
-                  return TextButton(
-                    onPressed: null,
-                    child: Text(Messages.of(context).loading),
-                  );
-                }
-                if (!seasonState.loadedGames) {
-                  singleSeasonBloc.add(
-                    SingleSeasonLoadGames(),
-                  );
-                }
-                return ButtonBar(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => _handleSubmit(singleGameBloc.state.game),
-                      child: Text(Messages.of(context).addButton),
-                    ),
-                  ],
-                );
-              },
-            )
-          ],
+          ),
         ),
+      );
+    } else {
+      rows.add(
+        TextFormField(
+          initialValue: '',
+          decoration: InputDecoration(
+              icon: const Icon(MdiIcons.video),
+              labelText: messages.youtubeLink,
+              hintText: messages.youtubeLink),
+          minLines: 3,
+          maxLines: 5,
+          focusNode: _descriptionFocusNode,
+          keyboardType: TextInputType.url,
+          validator: (v) {
+            var id = YoutubePlayer.convertUrlToId(v);
+            if (id == null) {
+              return Messages.of(context).invalidYoutubeURL;
+            }
+            return null;
+          },
+          onSaved: (value) {
+            _youtubeID = YoutubePlayer.convertUrlToId(value);
+            // See if we can get the id (or if this is an id) for the youtube
+            // video
+            if (_youtubeID != null) {
+              if (_youtubeController != null) {
+                _youtubeController =
+                    YoutubePlayerController(initialVideoId: _youtubeID);
+              } else {
+                _youtubeController.load(_youtubeID);
+              }
+            }
+            setState(() {});
+          },
+        ),
+      );
+      if (_youtubeController == null) {
+        rows.add(
+          Expanded(
+            child: Icon(MdiIcons.videoPlusOutline, size: 100),
+          ),
+        );
+      } else {
+        rows.add(
+          Expanded(
+            child: YoutubePlayer(
+              controller: _youtubeController,
+              aspectRatio: 16 / 9,
+            ),
+          ),
+        );
+      }
+    }
+
+    return Form(
+      autovalidateMode: autoValidate,
+      key: _formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          ...rows,
+          BlocBuilder(
+            bloc: singleSeasonBloc,
+            builder: (context, seasonState) {
+              if (seasonState is SingleSeasonUninitialized) {
+                return TextButton(
+                  onPressed: null,
+                  child: Text(Messages.of(context).loading),
+                );
+              }
+              if (!seasonState.loadedGames) {
+                singleSeasonBloc.add(
+                  SingleSeasonLoadGames(),
+                );
+              }
+              return ButtonBar(
+                children: [
+                  ElevatedButton(
+                    onPressed: () => _handleSubmit(singleGameBloc.state.game),
+                    child: Text(Messages.of(context).addButton),
+                  ),
+                ],
+              );
+            },
+          )
+        ],
       ),
     );
   }
@@ -224,28 +279,40 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => _addMediaBloc,
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          title: Text(Messages.of(context).addMediaItem),
-        ),
-        body: BlocListener(
-          bloc: _addMediaBloc,
-          listener: (context, state) {
-            if (state is AddItemDone) {
-              Navigator.pop(context);
-            }
-            if (state is AddItemSaveFailed) {
-              _showInSnackBar(Messages.of(context).formError);
-            }
-          },
-          child: BlocBuilder(
+      child: SingleGameProvider(
+        gameUid: widget._gameUid,
+        builder: (context, singleGameBloc) => Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            title: Text(Messages.of(context).addMediaItem),
+            actions: [
+              TextButton(
+                onPressed: () => _handleSubmit(singleGameBloc.state.game),
+                child: Text(
+                  MaterialLocalizations.of(context).saveButtonLabel,
+                  style: Theme.of(context)
+                      .textTheme
+                      .subtitle1
+                      .copyWith(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          body: BlocListener(
             bloc: _addMediaBloc,
-            builder: (context, state) => SavingOverlay(
-              saving: state is AddItemSaving,
-              child: SingleGameProvider(
-                gameUid: widget._gameUid,
-                builder: (context, singleGameBloc) => BlocBuilder(
+            listener: (context, state) {
+              if (state is AddItemDone) {
+                Navigator.pop(context);
+              }
+              if (state is AddItemSaveFailed) {
+                _showInSnackBar(Messages.of(context).formError);
+              }
+            },
+            child: BlocBuilder(
+              bloc: _addMediaBloc,
+              builder: (context, state) => SavingOverlay(
+                saving: state is AddItemSaving,
+                child: BlocBuilder(
                   bloc: singleGameBloc,
                   builder: (context, gameState) {
                     if (gameState is SingleGameUninitialized) {
@@ -261,6 +328,23 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
                 ),
               ),
             ),
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.image),
+                label: Messages.of(context).imageMediaType,
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(MdiIcons.video),
+                label: Messages.of(context).videoMediaType,
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Theme.of(context).accentColor,
+            onTap: (index) => setState(() {
+              _selectedIndex = index;
+            }),
           ),
         ),
       ),
