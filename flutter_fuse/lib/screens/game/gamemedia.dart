@@ -46,7 +46,7 @@ class _GameMediaScreenState extends State<GameMediaScreen> {
               icon: Icon(Icons.image),
               onPressed: () => Navigator.pushNamed(
                 context,
-                '/Game/Media/${widget.gameUid}',
+                '/Game/Media/View/${widget.gameUid}',
               ),
             ),
           ];

@@ -6,6 +6,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:video_player/video_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../../services/messages.dart';
 
@@ -52,11 +54,22 @@ class _MediaCarouselState extends State<MediaCarousel> {
 
   final sizeController = StreamController<bool>.broadcast();
 
+  VideoPlayerController _videoController;
+  YoutubePlayerController _youtubeController;
+  String _loadedVideo = '';
+
   @override
   void initState() {
     super.initState();
     _currentMedia = widget.media;
     _index = widget.allMedia.indexOf(_currentMedia);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _videoController?.dispose();
+    _youtubeController?.dispose();
   }
 
   double _realPixelToImage(double pos) {
@@ -232,43 +245,84 @@ class _MediaCarouselState extends State<MediaCarousel> {
                         tag: 'media${_currentMedia.uid}',
                         child: CachedNetworkImage(
                           imageBuilder: (context, provider) {
-                            final imageToDisplay = Image(
-                              image: provider,
-                              height: _size.height / _scale,
-                              width: _size.width / _scale,
-                              fit: BoxFit.fill,
-                              alignment: Alignment.topLeft,
-                            );
+                            Widget imageToDisplay;
 
-                            imageToDisplay.image
-                                .resolve(ImageConfiguration())
-                                .addListener(
-                              ImageStreamListener(
-                                (ImageInfo image, bool synchronousCall) {
-                                  var myImage = image.image;
-                                  if (myImage.width != _size.width ||
-                                      myImage.height != _size.height ||
-                                      _imageScale !=
-                                          max(
-                                            _size.width / constraints.maxWidth,
-                                            _size.height /
-                                                constraints.maxHeight,
-                                          )) {
-                                    _size = Size(myImage.width.toDouble(),
-                                        myImage.height.toDouble());
-                                    _imageScale = max(
-                                      _size.width / constraints.maxWidth,
-                                      _size.height / constraints.maxHeight,
-                                    );
-                                    if (!_zoomed) {
-                                      _scale = _imageScale;
-                                    }
-                                    // Refresh the page,
-                                    sizeController.add(true);
+                            switch (_currentMedia.type) {
+                              case MediaType.image:
+                                var myImage = Image(
+                                  image: provider,
+                                  height: _size.height / _scale,
+                                  width: _size.width / _scale,
+                                  fit: BoxFit.fill,
+                                  alignment: Alignment.topLeft,
+                                );
+
+                                myImage.image
+                                    .resolve(ImageConfiguration())
+                                    .addListener(
+                                  ImageStreamListener(
+                                    (ImageInfo image, bool synchronousCall) {
+                                      var myImage = image.image;
+                                      if (myImage.width != _size.width ||
+                                          myImage.height != _size.height ||
+                                          _imageScale !=
+                                              max(
+                                                _size.width /
+                                                    constraints.maxWidth,
+                                                _size.height /
+                                                    constraints.maxHeight,
+                                              )) {
+                                        _size = Size(myImage.width.toDouble(),
+                                            myImage.height.toDouble());
+                                        _imageScale = max(
+                                          _size.width / constraints.maxWidth,
+                                          _size.height / constraints.maxHeight,
+                                        );
+                                        if (!_zoomed) {
+                                          _scale = _imageScale;
+                                        }
+                                        // Refresh the page,
+                                        sizeController.add(true);
+                                      }
+                                    },
+                                  ),
+                                );
+                                imageToDisplay = myImage;
+                                break;
+                              case MediaType.videoOnDemand:
+                                if (_videoController == null ||
+                                    _videoController.dataSource !=
+                                        _currentMedia.url.toString()) {
+                                  _videoController?.dispose();
+                                  _videoController =
+                                      VideoPlayerController.network(
+                                          _currentMedia.url.toString());
+                                  _videoController
+                                      .initialize()
+                                      .then((_) => setState(() {}));
+                                }
+                                imageToDisplay = VideoPlayer(_videoController);
+                                break;
+                              case MediaType.videoStreaming:
+                                break;
+                              case MediaType.youtubeID:
+                                if (_loadedVideo == null ||
+                                    _loadedVideo != _currentMedia.youtubeID) {
+                                  if (_videoController != null) {
+                                    _youtubeController =
+                                        YoutubePlayerController(
+                                            initialVideoId:
+                                                _currentMedia.youtubeID);
+                                  } else {
+                                    _youtubeController
+                                        .load(_currentMedia.youtubeID);
                                   }
-                                },
-                              ),
-                            );
+                                  _loadedVideo = _currentMedia.youtubeID;
+                                }
+                                imageToDisplay = YoutubePlayer(
+                                    controller: _youtubeController);
+                                break;
+                            }
                             return FittedBox(
                                 fit: BoxFit.none,
                                 alignment: Alignment.topLeft,

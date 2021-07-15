@@ -1,5 +1,6 @@
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/screens/game/gamemedia.dart';
 import 'package:flutter_fuse/screens/team/addmedia.dart';
 import 'package:flutter_fuse/screens/team/editseasonplayer.dart';
 import 'package:flutter_fuse/screens/team/teammedia.dart';
@@ -231,6 +232,10 @@ class AppRouter {
     router.define('/Game/Media/Add/:id',
         handler: fluro.Handler(handlerFunc: (context, values) {
       return AddGameMediaScreen(values['id'][0].toString());
+    }));
+    router.define('/Game/Media/View/:id',
+        handler: fluro.Handler(handlerFunc: (context, values) {
+      return GameMediaScreen(values['id'][0].toString());
     }));
     router.define(
       '/GameStats/:id/:seasonId/:teamId',

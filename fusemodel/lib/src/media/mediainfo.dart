@@ -15,7 +15,7 @@ abstract class MediaInfo implements Built<MediaInfo, MediaInfoBuilder> {
   @nullable
   String get uid;
 
-  /// The sessonUid the media is for.
+  /// The seasonUid the media is for.
   String get seasonUid;
 
   /// The team the media is for.
@@ -41,13 +41,17 @@ abstract class MediaInfo implements Built<MediaInfo, MediaInfoBuilder> {
   /// The description the media.
   String get description;
 
-  /// The thumnbnail url to use for the media.
+  /// The thumbnail url to use for the media.
   @nullable
   Uri get thumbnailUrl;
 
   /// The rtmp url for streaming data.
   @nullable
   Uri get rtmpUrl;
+
+  /// The youtubeId for the video.
+  @nullable
+  String get youtubeID;
 
   /// The type of the media.
   MediaType get type;

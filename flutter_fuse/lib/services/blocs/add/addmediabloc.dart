@@ -102,9 +102,10 @@ class AddMediaBloc extends Bloc<AddMediaEvent, AddItemState> {
           ..description = event.description
           ..teamUid = event.teamUid
           ..type = event.mediaType
-          ..url =
-              Uri.parse('https://www.youtube.com/watch?v=${event.youtubeID}') ??
-                  Uri.directory('')
+          ..youtubeID = event.youtubeID
+          ..url = event.youtubeID != null
+              ? Uri.parse('https://www.youtube.com/watch?v=${event.youtubeID}')
+              : Uri.directory('')
           ..length = event.duration);
         final uid = await db.addMedia(media: media, imageFile: event.imageFile);
         yield AddItemDone(uid: uid);
