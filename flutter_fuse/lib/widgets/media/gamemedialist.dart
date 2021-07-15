@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../../../services/blocs.dart';
-import '../../../services/messages.dart';
-import '../../media/mediatypelisttile.dart';
-import '../../util/savingoverlay.dart';
+import '../../services/blocs.dart';
+import '../../services/messages.dart';
+import 'mediatypelisttile.dart';
+import '../util/savingoverlay.dart';
 
 ///
 /// Shows the controls around the video.  Buttons for uploading/streaming if

@@ -5,17 +5,30 @@ import 'package:fusemodel/fusemodel.dart';
 /// Figure out the current statue of the game
 ///
 class GameStatus {
+  /// The next event point.
   Duration nextEvent = Duration.zero;
+
+  /// Pts for in the game/
   int ptsFor = 0;
+
+  /// Pts against in the game.
   int ptsAgainst = 0;
+
+  /// Fouls for in the game.
   int foulsFor = 0;
+
+  /// Fouls against in the game.
   int foulsAgainst = 0;
+
+  /// The current period.
   GamePeriod period = GamePeriod.notStarted;
 
+  /// The game status based on the current game and position.
   GameStatus({@required SingleGameState state, @required Duration position}) {
     updateState(state: state, position: position);
   }
 
+  /// Work out the current state by updating the position.
   bool updateState({Duration position, SingleGameState state}) {
     var nextEvent = Duration.zero;
     var ptsFor = 0;
@@ -23,7 +36,7 @@ class GameStatus {
     var foulsFor = 0;
     var foulsAgainst = 0;
 
-    // Recalulate the score/fouls.
+    // Recalculate the score/fouls.
     for (var ev in state.gameEvents) {
       if (ev.eventTimeline < position) {
         switch (ev.type) {

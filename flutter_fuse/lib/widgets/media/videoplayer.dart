@@ -8,24 +8,22 @@ import 'gamestatusoverlay.dart';
 ///
 /// Shows video for the specific game.
 ///
-class GameVideoPlayer extends StatefulWidget {
-  final SingleGameState state;
+class GameMediaVideoPlayer extends StatefulWidget {
+  final SingleGameState gameState;
   final MediaInfo video;
   final DateTime start;
 
-  GameVideoPlayer(
-      {@required this.state, @required this.video, this.start, Key key})
+  GameMediaVideoPlayer(
+      {@required this.gameState, @required this.video, this.start, Key key})
       : super(key: key);
-
-  Game get() => state.game;
 
   @override
   State<StatefulWidget> createState() {
-    return _GameVideoPlayer();
+    return _MediaVideoPlayerState();
   }
 }
 
-class _GameVideoPlayer extends State<GameVideoPlayer> {
+class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
   VideoPlayerController _controller;
   Uri _currentUrl;
   DateTime _lastStart;
@@ -108,7 +106,7 @@ class _GameVideoPlayer extends State<GameVideoPlayer> {
                         child: VideoPlayer(_controller),
                       ),
                       GameStatusVideoPlayerOverlay(
-                          controller: _controller, state: widget.state),
+                          controller: _controller, state: widget.gameState),
                     ],
                   )
                 : CircularProgressIndicator(),

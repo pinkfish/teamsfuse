@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../../services/messages.dart';
+import '../../services/messages.dart';
 
 ///
 /// Callback whenm the media is ready to save.

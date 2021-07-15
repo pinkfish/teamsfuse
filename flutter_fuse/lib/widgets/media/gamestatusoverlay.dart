@@ -9,9 +9,13 @@ import 'gamestatus.dart';
 /// video (or beside the video)
 ///
 class GameStatusOverlay extends StatelessWidget {
+  /// The status of the game to display.
   final GameStatus status;
+
+  /// If the overlay has been initialized.
   final bool initialized;
 
+  /// The game status as an overlay.
   GameStatusOverlay({@required this.status, this.initialized = true});
 
   @override
@@ -47,9 +51,13 @@ class GameStatusOverlay extends StatelessWidget {
 /// Show the status for a specific video player overlay
 ///
 class GameStatusVideoPlayerOverlay extends StatefulWidget {
+  /// The current game state.
   final SingleGameState state;
+
+  /// The controller to deal with.
   final VideoPlayerController controller;
 
+  /// Show the status as an overlay.
   GameStatusVideoPlayerOverlay({@required this.state, this.controller});
 
   @override
@@ -60,35 +68,35 @@ class GameStatusVideoPlayerOverlay extends StatefulWidget {
 
 class _GameStatusVideoPlayerOverlayState
     extends State<GameStatusVideoPlayerOverlay> {
-  VoidCallback listener;
-  GameStatus status;
+  VoidCallback _listener;
+  GameStatus _status;
 
   @override
   void initState() {
-    status = GameStatus(
+    _status = GameStatus(
         state: widget.state, position: widget.controller.value.position);
     super.initState();
-    listener = () {
+    _listener = () {
       if (!mounted) {
         return;
       }
-      if (status.nextEvent < widget.controller.value.position) {
+      if (_status.nextEvent < widget.controller.value.position) {
         setState(() {});
       }
     };
-    widget.controller.addListener(listener);
+    widget.controller.addListener(_listener);
   }
 
   @override
   void deactivate() {
     super.deactivate();
-    widget.controller.removeListener(listener);
+    widget.controller.removeListener(_listener);
   }
 
   @override
   Widget build(BuildContext context) {
     return GameStatusOverlay(
-      status: status,
+      status: _status,
       initialized: widget.controller.value.isInitialized,
     );
   }
@@ -98,9 +106,13 @@ class _GameStatusVideoPlayerOverlayState
 /// Shows an overlay for the specific position in the data
 ///
 class GameStatusPositionOverlay extends StatelessWidget {
+  /// The position in the game.
   final SingleGameState state;
+
+  /// The current duration point.
   final Duration position;
 
+  /// Showing the overlay on the video.
   GameStatusPositionOverlay({@required this.state, this.position});
 
   @override
