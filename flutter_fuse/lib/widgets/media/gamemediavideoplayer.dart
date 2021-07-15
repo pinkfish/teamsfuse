@@ -1,6 +1,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/widgets/blocs/singlegameprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:video_player/video_player.dart';
@@ -112,12 +113,13 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
                           ? SingleGameProvider(
                               gameUid: widget.video.gameUid,
                               builder: (context, singleGameBloc) => BlocBuilder(
-                                bloc: singleGameBloc,
-                                builder: (context, gameState) =>
-                                    GameStatusVideoPlayerOverlay(
+                                  bloc: singleGameBloc,
+                                  builder: (context, gameState) {
+                                    singleGameBloc.add(SingleGameLoadEvents());
+                                    return GameStatusVideoPlayerOverlay(
                                         controller: _controller,
-                                        state: gameState),
-                              ),
+                                        state: gameState);
+                                  }),
                             )
                           : SizedBox(
                               height: 0,
