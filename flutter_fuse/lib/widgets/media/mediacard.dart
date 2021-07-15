@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart';
 
-import '../../player/playername.dart';
-import '../../util/publicmark.dart';
-import '../../../services/messages.dart';
-import 'mediacarousel.dart';
+import '../player/playername.dart';
+import '../util/publicmark.dart';
+import '../../services/messages.dart';
+import '../teams/media/mediacarousel.dart';
 
 ///
 /// The card to display the details of the media.

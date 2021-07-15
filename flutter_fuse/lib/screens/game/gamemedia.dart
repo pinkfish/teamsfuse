@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/widgets/blocs/singlegameprovider.dart';
-import 'package:flutter_fuse/widgets/teams/media/mediacard.dart';
+import 'package:flutter_fuse/widgets/media/mediacard.dart';
 import 'package:flutter_fuse/widgets/teams/opponentname.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';

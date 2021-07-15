@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../../../services/blocs.dart';
-import '../../../services/messages.dart';
-import '../../blocs/singleseasonprovider.dart';
+import '../../services/blocs.dart';
+import '../../services/messages.dart';
+import '../blocs/singleseasonprovider.dart';
 
 ///
 /// Create a nice carousel of images.

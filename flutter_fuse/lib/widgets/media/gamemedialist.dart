@@ -40,8 +40,8 @@ class GameMediaList extends StatelessWidget {
                         padding: EdgeInsets.all(5.0),
                         child: MediaTypeListTile(
                           media: m,
-                          onTap: () => Navigator.pushNamed(
-                              context, 'Game/Media/${state.game.uid}/${m.uid}'),
+                          onTap: () => Navigator.pushNamed(context,
+                              'Game/Media/Play/${state.game.uid}/${m.uid}'),
                         ),
                       ))
                   .toList(),
