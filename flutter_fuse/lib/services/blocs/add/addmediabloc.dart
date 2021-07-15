@@ -33,23 +33,31 @@ class AddMediaEventCommit extends AddMediaEvent {
   /// The media to add.
   final Uint8List imageFile;
 
+  /// The youtube id
+  final String youtubeID;
+
   /// The start time for the media data.
   final DateTime startAt;
 
   /// The description of the media info.
   final String description;
 
+  /// Duration of the clip.
+  final Duration duration;
+
   /// The add event to write this new club out.
-  AddMediaEventCommit({
-    @required this.seasonUid,
-    @required this.teamUid,
-    @required this.gameUid,
-    @required this.playerUid,
-    @required this.mediaType,
-    @required this.imageFile,
-    @required this.description,
-    @required this.startAt,
-  });
+  AddMediaEventCommit(
+      {@required this.seasonUid,
+      @required this.teamUid,
+      @required this.gameUid,
+      @required this.playerUid,
+      @required this.mediaType,
+      @required this.description,
+      @required this.startAt,
+      this.duration = const Duration(seconds: 0),
+      this.imageFile,
+      this.youtubeID})
+      : assert(imageFile != null || youtubeID != null);
 
   @override
   List<Object> get props => [
@@ -61,6 +69,7 @@ class AddMediaEventCommit extends AddMediaEvent {
         imageFile,
         description,
         startAt,
+        youtubeID,
       ];
 }
 
@@ -87,14 +96,16 @@ class AddMediaBloc extends Bloc<AddMediaEvent, AddItemState> {
       try {
         final media = MediaInfo((b) => b
           ..uid = ''
-          ..startAt=event.startAt??DateTime.now().toUtc()
+          ..startAt = event.startAt ?? DateTime.now().toUtc()
           ..gameUid = event.gameUid
           ..seasonUid = event.seasonUid
           ..description = event.description
           ..teamUid = event.teamUid
           ..type = event.mediaType
-          ..url=Uri.directory('')
-          ..length = Duration(seconds: 0));
+          ..url =
+              Uri.parse('https://www.youtube.com/watch?v=${event.youtubeID}') ??
+                  Uri.directory('')
+          ..length = event.duration);
         final uid = await db.addMedia(media: media, imageFile: event.imageFile);
         yield AddItemDone(uid: uid);
       } on Exception catch (e, stack) {

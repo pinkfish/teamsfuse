@@ -104,4 +104,23 @@ class Validations {
     }
     return null;
   }
+
+  /// Validates the youtube url.
+  static String validateYoutubeUrl(BuildContext context, String url) {
+    if (url == null) {
+      return Messages.of(context).invalidYoutubeURL;
+    }
+
+    if (url.isEmpty) {
+      return Messages.of(context).invalidYoutubeURL;
+    }
+
+    var pattern = RegExp(
+        r'^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$');
+    var match = pattern.hasMatch(url);
+
+    if (match) return null;
+
+    return Messages.of(context).invalidYoutubeURL;
+  }
 }

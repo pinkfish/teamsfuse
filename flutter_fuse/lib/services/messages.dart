@@ -667,6 +667,9 @@ class Messages {
   String get invalidYoutubeURL => Intl.message('Invalid YouTube URL',
       desc: 'Error in a form when the youtube url is invalid', locale: locale);
 
+  String get invalidImageFile => Intl.message('Invalid file name',
+      desc: 'Error setting the image file', locale: locale);
+
   String get invite {
     return Intl.message('Invites',
         desc: 'Title for the screen with the list of current invites',
@@ -1655,6 +1658,9 @@ class Messages {
 
   String get videoMediaType =>
       Intl.message('Upload Video', desc: 'Upload a video', locale: locale);
+
+  String get youtubeMediaType =>
+      Intl.message('Youtube', desc: 'Upload a video', locale: locale);
 
   String get viewButton => Intl.message('VIEW',
       desc: 'Banner to view the full data on the image', locale: locale);

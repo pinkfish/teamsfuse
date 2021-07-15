@@ -2,14 +2,17 @@ import 'dart:io';
 
 import 'package:exif/exif.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/analytics.dart';
+import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/blocs/singlegameprovider.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../services/blocs.dart';
@@ -35,16 +38,18 @@ class AddGameMediaScreen extends StatefulWidget {
 
 class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
   AutovalidateMode autoValidate = AutovalidateMode.disabled;
-  String _curPlayerUid;
   String _description;
   String _youtubeID;
   PickedFile _imageFile;
+  PickedFile _videoFile;
   int _selectedIndex = 0;
   YoutubePlayerController _youtubeController;
+  VideoPlayerController _videoController;
 
   AddMediaBloc _addMediaBloc;
 
   final FocusNode _descriptionFocusNode = FocusNode();
+  final FocusNode _youtubeIdFocusNode = FocusNode();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -52,7 +57,6 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
   @override
   void initState() {
     super.initState();
-    _curPlayerUid = SeasonPlayerFormField.none;
     _addMediaBloc = AddMediaBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       crashes: RepositoryProvider.of<AnalyticsSubsystemImpl>(context),
@@ -68,30 +72,81 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
   }
 
   Future<void> _handleSubmit(Game game) async {
-    if (_formKey.currentState.validate() && _imageFile != null) {
+    if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
-      final bytes = await _imageFile.readAsBytes();
-      final exif = await readExifFromBytes(bytes);
-      DateTime start;
-      if (exif['Image DateTime'] != null) {
-        print(exif['Image DateTime']);
-        print('bong');
-      }
-      print(exif);
+      if (_selectedIndex == 0) {
+        if (_imageFile != null) {
+          _showInSnackBar(Messages.of(context).invalidImageFile);
+          autoValidate = AutovalidateMode.always;
+          return;
+        }
+        final bytes = await _imageFile.readAsBytes();
+        final exif = await readExifFromBytes(bytes);
+        DateTime start;
+        if (exif['Image DateTime'] != null) {
+          print(exif['Image DateTime']);
+          print('bong');
+        }
+        print(exif);
 
-      // Send the invite, cloud functions will handle the email
-      // part of this.
-      _addMediaBloc.add(AddMediaEventCommit(
-        seasonUid: game.seasonUid,
-        teamUid: game.teamUid,
-        gameUid: game.uid,
-        playerUid: _curPlayerUid,
-        mediaType: MediaType.image,
-        description: _description,
-        imageFile: bytes,
-        startAt: start,
-      ));
+        // Send the invite, cloud functions will handle the email
+        // part of this.
+        _addMediaBloc.add(AddMediaEventCommit(
+          seasonUid: game.seasonUid,
+          teamUid: game.teamUid,
+          gameUid: game.uid,
+          playerUid: SeasonPlayerFormField.none,
+          mediaType: MediaType.image,
+          description: _description,
+          imageFile: bytes,
+          startAt: start,
+        ));
+      } else if (_selectedIndex == 1) {
+        if (_videoFile != null) {
+          _showInSnackBar(Messages.of(context).invalidImageFile);
+          autoValidate = AutovalidateMode.always;
+          return;
+        }
+        final bytes = await _videoFile.readAsBytes();
+
+        // Send the invite, cloud functions will handle the email
+        // part of this.
+        _addMediaBloc.add(AddMediaEventCommit(
+          seasonUid: game.seasonUid,
+          teamUid: game.teamUid,
+          gameUid: game.uid,
+          playerUid: SeasonPlayerFormField.none,
+          mediaType: MediaType.videoOnDemand,
+          description: _description,
+          imageFile: bytes,
+          startAt: game.sharedData.tzTime,
+        ));
+      } else {
+        var thumb = YoutubePlayer.getThumbnail(videoId: _youtubeID);
+        print('Invalid thumbnail $_youtubeID');
+        if (thumb == null) {
+          _showInSnackBar(Messages.of(context).invalidYoutubeURL);
+          return;
+        }
+        var data = await NetworkAssetBundle(Uri.parse(thumb)).load('');
+        print('Invalid data $_youtubeID');
+        if (data == null) {
+          _showInSnackBar(Messages.of(context).invalidYoutubeURL);
+          return;
+        }
+        _addMediaBloc.add(AddMediaEventCommit(
+          seasonUid: game.seasonUid,
+          teamUid: game.teamUid,
+          gameUid: game.uid,
+          playerUid: SeasonPlayerFormField.none,
+          mediaType: MediaType.youtubeID,
+          description: _description,
+          imageFile: data.buffer.asUint8List(),
+          youtubeID: _youtubeID,
+          startAt: game.sharedData.tzTime,
+        ));
+      }
     } else {
       autoValidate = AutovalidateMode.always;
       _showInSnackBar(Messages.of(context).formError);
@@ -112,18 +167,48 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
     );
   }
 
+  Widget _showVideo() {
+    if (_videoFile == null) {
+      return Icon(
+        Icons.help,
+        size: 200,
+      );
+    }
+    if (_videoController == null) {
+      _videoController = VideoPlayerController.network(_videoFile.path);
+      _videoController.initialize();
+    }
+    return SizedBox(
+      height: 100,
+      child: VideoPlayer(
+        _videoController,
+      ),
+    );
+  }
+
   void _pickImage() async {
     final picker = RepositoryProvider.of<ImagePicker>(context);
-    final img = await picker.getImage(
-      source: ImageSource.gallery,
-      maxHeight: 1024,
-      maxWidth: 1024,
-      imageQuality: 95,
-    );
-    if (img != null) {
-      setState(() {
-        _imageFile = img;
-      });
+    if (_selectedIndex == 0) {
+      final img = await picker.getImage(
+        source: ImageSource.gallery,
+        maxHeight: 1024,
+        maxWidth: 1024,
+        imageQuality: 95,
+      );
+      if (img != null) {
+        setState(() {
+          _imageFile = img;
+        });
+      }
+    } else {
+      final img = await picker.getVideo(
+        source: ImageSource.gallery,
+      );
+      if (img != null) {
+        setState(() {
+          _videoFile = img;
+        });
+      }
     }
   }
 
@@ -139,23 +224,6 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
         showButtons: false,
       ),
     ));
-
-    rows.add(
-      DropdownButtonHideUnderline(
-        child: SeasonPlayerFormField(
-          decoration: InputDecoration(
-              icon: const Icon(Icons.people),
-              labelText: messages.players,
-              hintText: messages.players),
-          initialValue: _curPlayerUid ?? 'none',
-          seasonBloc: singleSeasonBloc,
-          includeNone: true,
-          onSaved: (value) {
-            _curPlayerUid = value;
-          },
-        ),
-      ),
-    );
 
     rows.add(
       TextFormField(
@@ -175,46 +243,68 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
     );
     if (_selectedIndex == 0) {
       rows.add(
-        Expanded(
-          child: GestureDetector(
-            onTap: _pickImage,
-            child: SizedBox(
-              height: 100,
-              child: _showImage(),
-            ),
+        GestureDetector(
+          onTap: _pickImage,
+          child: SizedBox(
+            height: 100,
+            child: _showImage(),
           ),
         ),
       );
-    } else {
+    } else if (_selectedIndex == 1) {
+      rows.add(
+        GestureDetector(
+          onTap: _pickImage,
+          child: SizedBox(
+            height: 100,
+            child: _showVideo(),
+          ),
+        ),
+      );
+    } else if (_selectedIndex == 2) {
       rows.add(
         TextFormField(
-          initialValue: '',
+          initialValue: _youtubeID != null
+              ? 'https://www.youtube.com/watch?v=$_youtubeID'
+              : '',
           decoration: InputDecoration(
               icon: const Icon(MdiIcons.video),
               labelText: messages.youtubeLink,
               hintText: messages.youtubeLink),
           minLines: 3,
           maxLines: 5,
-          focusNode: _descriptionFocusNode,
+          focusNode: _youtubeIdFocusNode,
           keyboardType: TextInputType.url,
-          validator: (v) {
-            var id = YoutubePlayer.convertUrlToId(v);
-            if (id == null) {
-              return Messages.of(context).invalidYoutubeURL;
+          validator: (v) => Validations.validateYoutubeUrl(context, v),
+          onChanged: (s) {
+            if (Validations.validateYoutubeUrl(context, s) == null) {
+              var newS = YoutubePlayer.convertUrlToId(s);
+              // Load it or do something.
+              if (_youtubeController == null) {
+                _youtubeController =
+                    YoutubePlayerController(initialVideoId: newS);
+              } else {
+                _youtubeController.load(newS);
+              }
+              setState(() {});
+            } else if (_youtubeController != null) {
+              _youtubeController.pause();
             }
-            return null;
           },
           onSaved: (value) {
             _youtubeID = YoutubePlayer.convertUrlToId(value);
             // See if we can get the id (or if this is an id) for the youtube
             // video
             if (_youtubeID != null) {
-              if (_youtubeController != null) {
+              if (_youtubeController == null) {
                 _youtubeController =
                     YoutubePlayerController(initialVideoId: _youtubeID);
               } else {
                 _youtubeController.load(_youtubeID);
               }
+            } else {
+              _youtubeController?.dispose();
+              _youtubeController = null;
             }
             setState(() {});
           },
@@ -222,17 +312,13 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
       );
       if (_youtubeController == null) {
         rows.add(
-          Expanded(
-            child: Icon(MdiIcons.videoPlusOutline, size: 100),
-          ),
+          Icon(MdiIcons.videoPlusOutline, size: 100),
         );
       } else {
         rows.add(
-          Expanded(
-            child: YoutubePlayer(
-              controller: _youtubeController,
-              aspectRatio: 16 / 9,
-            ),
+          YoutubePlayer(
+            controller: _youtubeController,
+            aspectRatio: 16 / 9,
           ),
         );
       }
@@ -298,38 +384,41 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
               ),
             ],
           ),
-          body: BlocListener(
-            bloc: _addMediaBloc,
-            listener: (context, state) {
-              if (state is AddItemDone) {
-                Navigator.pop(context);
-              }
-              if (state is AddItemSaveFailed) {
-                _showInSnackBar(Messages.of(context).formError);
-              }
-            },
-            child: BlocBuilder(
+          body: SingleChildScrollView(
+            child: BlocListener(
               bloc: _addMediaBloc,
-              builder: (context, state) => SavingOverlay(
-                saving: state is AddItemSaving,
-                child: BlocBuilder(
-                  bloc: singleGameBloc,
-                  builder: (context, gameState) {
-                    if (gameState is SingleGameUninitialized) {
-                      return LoadingWidget();
-                    }
+              listener: (context, state) {
+                if (state is AddItemDone) {
+                  Navigator.pop(context);
+                }
+                if (state is AddItemSaveFailed) {
+                  _showInSnackBar(Messages.of(context).formError);
+                }
+              },
+              child: BlocBuilder(
+                bloc: _addMediaBloc,
+                builder: (context, state) => SavingOverlay(
+                  saving: state is AddItemSaving,
+                  child: BlocBuilder(
+                    bloc: singleGameBloc,
+                    builder: (context, gameState) {
+                      if (gameState is SingleGameUninitialized) {
+                        return LoadingWidget();
+                      }
 
-                    return SingleSeasonProvider(
-                      seasonUid: gameState.game.seasonUid,
-                      builder: (context, singleSeasonBloc) =>
-                          _buildForm(singleGameBloc, singleSeasonBloc),
-                    );
-                  },
+                      return SingleSeasonProvider(
+                        seasonUid: gameState.game.seasonUid,
+                        builder: (context, singleSeasonBloc) =>
+                            _buildForm(singleGameBloc, singleSeasonBloc),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
           ),
-          bottomNavigationBar: BottomNavigationBar(
+          resizeToAvoidBottomInset: true,
+          bottomSheet: BottomNavigationBar(
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(Icons.image),
@@ -337,7 +426,11 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
               ),
               BottomNavigationBarItem(
                 icon: Icon(MdiIcons.video),
-                label: Messages.of(context).videoMediaType,
+                label: Messages.of(context).video,
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(MdiIcons.youtube),
+                label: Messages.of(context).youtubeMediaType,
               ),
             ],
             currentIndex: _selectedIndex,

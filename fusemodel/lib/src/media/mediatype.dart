@@ -20,6 +20,10 @@ class MediaType extends EnumClass {
   /// The image for the media type.
   static const MediaType image = _$image;
 
+  /// The youtube id media type.  This is a youtube id that will play
+  /// from youtube.
+  static const MediaType youtubeID = _$youtubeID;
+
   const MediaType._(String name) : super(name);
 
   /// The values of the mediatype.
