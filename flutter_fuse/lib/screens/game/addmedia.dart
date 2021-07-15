@@ -135,17 +135,19 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
           _showInSnackBar(Messages.of(context).invalidYoutubeURL);
           return;
         }
-        _addMediaBloc.add(AddMediaEventCommit(
-          seasonUid: game.seasonUid,
-          teamUid: game.teamUid,
-          gameUid: game.uid,
-          playerUid: SeasonPlayerFormField.none,
-          mediaType: MediaType.youtubeID,
-          description: _description,
-          imageFile: data.buffer.asUint8List(),
-          youtubeID: _youtubeID,
-          startAt: game.sharedData.tzTime,
-        ));
+        _addMediaBloc.add(
+          AddMediaEventCommit(
+            seasonUid: game.seasonUid,
+            teamUid: game.teamUid,
+            gameUid: game.uid,
+            playerUid: SeasonPlayerFormField.none,
+            mediaType: MediaType.youtubeID,
+            description: _description,
+            imageFile: data.buffer.asUint8List(),
+            youtubeID: _youtubeID,
+            startAt: game.sharedData.tzTime,
+          ),
+        );
       }
     } else {
       autoValidate = AutovalidateMode.always;
