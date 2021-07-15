@@ -13,20 +13,22 @@ dependencies:
     sdk: flutter
 
   material_design_icons_flutter: ^4.0.5955
-  firebase_analytics: ^8.0.2
+  firebase_analytics: ^8.2.0
 
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.3
   algolia: ^1.0.1
-  flutter_markdown: ^0.6.1
+  flutter_markdown: ^0.6.2
   fusemodel:
     path: ../fusemodel
   flutter_fuse:
     path: ../flutter_fuse
-  pedantic: ^1.11.0
-  flutter_bloc: ^7.0.0
+  pedantic: ">=1.11.0 <2.0.0"
+  flutter_bloc: ">=7.0.0 <8.0.0"
+  youtube_player_iframe: ">=2.1.0 <3.0.0"
+  youtube_player_flutter: ">=8.0.0 <9.0.0"
 
 dependency_overrides:
-  analyzer: ^1.5.0
+  analyzer: ^1.7.1
   intl: ^0.17.0
   petitparser: ^4.1.0
   intl_translation: ^0.17.10+1
