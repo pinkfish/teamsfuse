@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:built_collection/built_collection.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fuse/widgets/media/videoplayer.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:video_player/video_player.dart';
@@ -52,11 +53,7 @@ class _MediaCarouselState extends State<MediaCarousel> {
   Size _size = Size(0, 0);
   bool _zoomed = false;
 
-  final sizeController = StreamController<bool>.broadcast();
-
-  VideoPlayerController _videoController;
-  YoutubePlayerController _youtubeController;
-  String _loadedVideo = '';
+  final _sizeController = StreamController<bool>.broadcast();
 
   @override
   void initState() {
@@ -68,8 +65,6 @@ class _MediaCarouselState extends State<MediaCarousel> {
   @override
   void dispose() {
     super.dispose();
-    _videoController?.dispose();
-    _youtubeController?.dispose();
   }
 
   double _realPixelToImage(double pos) {
@@ -231,7 +226,7 @@ class _MediaCarouselState extends State<MediaCarousel> {
               },
               child: StreamBuilder(
                 key: ValueKey(_currentMedia),
-                stream: sizeController.stream,
+                stream: _sizeController.stream,
                 builder: (context, snapshot) => Stack(
                   alignment: Alignment.topLeft,
                   fit: StackFit.expand,
@@ -282,7 +277,7 @@ class _MediaCarouselState extends State<MediaCarousel> {
                                           _scale = _imageScale;
                                         }
                                         // Refresh the page,
-                                        sizeController.add(true);
+                                        _sizeController.add(true);
                                       }
                                     },
                                   ),
@@ -290,37 +285,16 @@ class _MediaCarouselState extends State<MediaCarousel> {
                                 imageToDisplay = myImage;
                                 break;
                               case MediaType.videoOnDemand:
-                                if (_videoController == null ||
-                                    _videoController.dataSource !=
-                                        _currentMedia.url.toString()) {
-                                  _videoController?.dispose();
-                                  _videoController =
-                                      VideoPlayerController.network(
-                                          _currentMedia.url.toString());
-                                  _videoController
-                                      .initialize()
-                                      .then((_) => setState(() {}));
-                                }
-                                imageToDisplay = VideoPlayer(_videoController);
+                                imageToDisplay = GameMediaVideoPlayer(
+                                  video: _currentMedia,
+                                );
                                 break;
                               case MediaType.videoStreaming:
                                 break;
                               case MediaType.youtubeID:
-                                if (_loadedVideo == null ||
-                                    _loadedVideo != _currentMedia.youtubeID) {
-                                  if (_videoController != null) {
-                                    _youtubeController =
-                                        YoutubePlayerController(
-                                            initialVideoId:
-                                                _currentMedia.youtubeID);
-                                  } else {
-                                    _youtubeController
-                                        .load(_currentMedia.youtubeID);
-                                  }
-                                  _loadedVideo = _currentMedia.youtubeID;
-                                }
-                                imageToDisplay = YoutubePlayer(
-                                    controller: _youtubeController);
+                                imageToDisplay = GameMediaVideoPlayer(
+                                  video: _currentMedia,
+                                );
                                 break;
                             }
                             return FittedBox(

@@ -1,5 +1,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/blocs/singlegameprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:video_player/video_player.dart';
 
@@ -9,12 +11,13 @@ import 'gamestatusoverlay.dart';
 /// Shows video for the specific game.
 ///
 class GameMediaVideoPlayer extends StatefulWidget {
-  final SingleGameState gameState;
+  /// The video to play.
   final MediaInfo video;
+
+  /// Where to start
   final DateTime start;
 
-  GameMediaVideoPlayer(
-      {@required this.gameState, @required this.video, this.start, Key key})
+  GameMediaVideoPlayer({@required this.video, this.start, Key key})
       : super(key: key);
 
   @override
@@ -105,8 +108,20 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
                         aspectRatio: _controller.value.aspectRatio,
                         child: VideoPlayer(_controller),
                       ),
-                      GameStatusVideoPlayerOverlay(
-                          controller: _controller, state: widget.gameState),
+                      widget.video.gameUid != null
+                          ? SingleGameProvider(
+                              gameUid: widget.video.gameUid,
+                              builder: (context, singleGameBloc) => BlocBuilder(
+                                bloc: singleGameBloc,
+                                builder: (context, gameState) =>
+                                    GameStatusVideoPlayerOverlay(
+                                        controller: _controller,
+                                        state: gameState),
+                              ),
+                            )
+                          : SizedBox(
+                              height: 0,
+                            )
                     ],
                   )
                 : CircularProgressIndicator(),
