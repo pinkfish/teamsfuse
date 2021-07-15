@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import '../player/playername.dart';
 import '../util/publicmark.dart';
 import '../../services/messages.dart';
-import '../teams/media/mediacarousel.dart';
+import 'mediacarousel.dart';
 
 ///
 /// The card to display the details of the media.

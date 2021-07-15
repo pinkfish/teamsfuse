@@ -4,7 +4,7 @@ import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/blocs/single/singleteambloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/blocs/singleseasonprovider.dart';
-import 'package:flutter_fuse/widgets/teams/media/mediacarousel.dart';
+import 'package:flutter_fuse/widgets/media/mediacarousel.dart';
 import 'package:flutter_fuse/widgets/util/deleted.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';

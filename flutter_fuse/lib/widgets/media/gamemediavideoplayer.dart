@@ -5,6 +5,7 @@ import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/widgets/blocs/singlegameprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:video_player/video_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import 'gamestatusoverlay.dart';
 
@@ -29,6 +30,7 @@ class GameMediaVideoPlayer extends StatefulWidget {
 
 class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
   VideoPlayerController _controller;
+  YoutubePlayerController _youtubeController;
   Uri _currentUrl;
   DateTime _lastStart;
   double _volume = 1.0;
@@ -45,26 +47,59 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
     _controller?.dispose();
   }
 
-  void _updateUrl(Uri newUrl) async {
+  void _updateMedia(MediaInfo media) async {
+    Uri newUrl;
+
+    switch (media.type) {
+      case MediaType.videoOnDemand:
+        newUrl = media.url;
+        break;
+      case MediaType.youtubeID:
+        newUrl =
+            Uri.parse('https://wwww.youtube.com/watch?v=${media.youtubeID}');
+        break;
+      default:
+        newUrl = Uri.file('');
+        break;
+    }
     if (newUrl != _currentUrl) {
       _currentUrl = newUrl;
-      var downloadUrl = newUrl.toString();
-      if (newUrl.scheme == 'gs') {
-        var ref = FirebaseStorage.instance.refFromURL(newUrl.toString());
-        downloadUrl = await ref.getDownloadURL();
-      }
-      await _controller?.dispose();
-      _controller = VideoPlayerController.network(downloadUrl);
-      try {
-        await _controller.initialize();
-        // If the start point is set, go to there.
-        if (widget.start != null) {
-          seekTo(widget.start);
+      if (media.type == MediaType.videoOnDemand) {
+        var downloadUrl = newUrl.toString();
+        if (newUrl.scheme == 'gs') {
+          var ref = FirebaseStorage.instance.refFromURL(newUrl.toString());
+          downloadUrl = await ref.getDownloadURL();
         }
-        _lastStart = widget.start;
-        setState(() {});
-      } catch (e) {
-        print('Error $e');
+        await _controller?.dispose();
+        _controller = VideoPlayerController.network(downloadUrl);
+        try {
+          await _controller.initialize();
+          // If the start point is set, go to there.
+          if (widget.start != null) {
+            seekTo(widget.start);
+          }
+          await _controller.pause();
+          _lastStart = widget.start;
+          setState(() {});
+        } catch (e) {
+          print('Error $e');
+        }
+      } else {
+        _youtubeController?.dispose();
+        _youtubeController =
+            YoutubePlayerController(initialVideoId: media.youtubeID);
+        try {
+          _youtubeController.load(media.youtubeID);
+          // If the start point is set, go to there.
+          if (widget.start != null) {
+            seekTo(widget.start);
+          }
+          _youtubeController.pause();
+          _lastStart = widget.start;
+          setState(() {});
+        } catch (e) {
+          print('Error $e');
+        }
       }
     }
   }
@@ -83,12 +118,22 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
       _controller.seekTo(pos);
       _controller.play().then((v) => setState(() => true));
     }
+    if (_youtubeController != null) {
+      _youtubeController.seekTo(pos);
+      _youtubeController.play();
+    }
+  }
+
+  Widget _showVideoPlayer(BuildContext context) {
+    if (widget.video.type == MediaType.videoOnDemand) {
+      return VideoPlayer(_controller);
+    }
+    return YoutubePlayer(controller: _youtubeController);
   }
 
   @override
   Widget build(BuildContext context) {
-    var newUrl = widget.video.url;
-    _updateUrl(newUrl);
+    _updateMedia(widget.video);
 
     // Seek if the time point changes.
     if (widget.start != null) {
@@ -107,7 +152,7 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
                     children: [
                       AspectRatio(
                         aspectRatio: _controller.value.aspectRatio,
-                        child: VideoPlayer(_controller),
+                        child: _showVideoPlayer(context),
                       ),
                       widget.video.gameUid != null
                           ? SingleGameProvider(

@@ -4,13 +4,11 @@ import 'dart:math';
 import 'package:built_collection/built_collection.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/widgets/media/videoplayer.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:video_player/video_player.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../../services/messages.dart';
+import 'gamemediavideoplayer.dart';
 
 ///
 /// Show the media in full screen.
