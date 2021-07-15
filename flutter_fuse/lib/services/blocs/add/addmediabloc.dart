@@ -96,7 +96,7 @@ class AddMediaBloc extends Bloc<AddMediaEvent, AddItemState> {
       try {
         final media = MediaInfo((b) => b
           ..uid = ''
-          ..startAt = event.startAt ?? DateTime.now().toUtc()
+          ..startAt = event.startAt.toUtc() ?? DateTime.now().toUtc()
           ..gameUid = event.gameUid
           ..seasonUid = event.seasonUid
           ..description = event.description

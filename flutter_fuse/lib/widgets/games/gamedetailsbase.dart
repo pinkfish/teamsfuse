@@ -540,24 +540,28 @@ class GameDetailsBase extends StatelessWidget {
           leading: Icon(Icons.image),
           title: gameMedia.isEmpty
               ? Text(Messages.of(context).noMedia)
-              : ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: gameMedia
-                      .map<Widget>(
-                        (MediaInfo info) => Container(
-                          child: Center(
-                            child: CachedNetworkImage(
-                              imageUrl: info.url.toString(),
-                              height: 80,
-                              errorWidget: (c, str, e) => Icon(Icons.error),
-                              placeholder: (c, str) =>
-                                  CircularProgressIndicator(),
-                              fit: BoxFit.cover,
+              : SizedBox(
+                  height: 90,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: gameMedia
+                        .map<Widget>(
+                          (MediaInfo info) => Container(
+                            height: 80,
+                            child: Center(
+                              child: CachedNetworkImage(
+                                imageUrl: info.url.toString(),
+                                height: 80,
+                                errorWidget: (c, str, e) => Icon(Icons.error),
+                                placeholder: (c, str) =>
+                                    CircularProgressIndicator(),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                      .toList(),
+                        )
+                        .toList(),
+                  ),
                 ),
         ),
       );
