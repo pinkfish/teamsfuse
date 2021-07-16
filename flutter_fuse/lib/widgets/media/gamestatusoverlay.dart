@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:video_player/video_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import 'gamestatus.dart';
 
@@ -57,8 +58,12 @@ class GameStatusVideoPlayerOverlay extends StatefulWidget {
   /// The controller to deal with.
   final VideoPlayerController controller;
 
+  /// The youtube controller to use.
+  final YoutubePlayerController youtubePlayerController;
+
   /// Show the status as an overlay.
-  GameStatusVideoPlayerOverlay({@required this.state, this.controller});
+  GameStatusVideoPlayerOverlay(
+      {@required this.state, this.controller, this.youtubePlayerController});
 
   @override
   State<StatefulWidget> createState() {
@@ -73,31 +78,41 @@ class _GameStatusVideoPlayerOverlayState
 
   @override
   void initState() {
-    _status = GameStatus(
-        state: widget.state, position: widget.controller.value.position);
+    Duration position;
+    if (widget.controller != null) {
+      position = widget.controller.value.position;
+    } else if (widget.youtubePlayerController != null) {
+      position = widget.youtubePlayerController.value.position;
+    } else {
+      position = Duration(seconds: 0);
+    }
+    _status = GameStatus(state: widget.state, position: position);
     super.initState();
     _listener = () {
       if (!mounted) {
         return;
       }
-      if (_status.nextEvent < widget.controller.value.position) {
+      if (_status.nextEvent < position) {
         setState(() {});
       }
     };
-    widget.controller.addListener(_listener);
+    widget.controller?.addListener(_listener);
+    widget.youtubePlayerController?.addListener(_listener);
   }
 
   @override
   void deactivate() {
     super.deactivate();
-    widget.controller.removeListener(_listener);
+    widget.controller?.removeListener(_listener);
+    widget.youtubePlayerController?.removeListener(_listener);
   }
 
   @override
   Widget build(BuildContext context) {
     return GameStatusOverlay(
       status: _status,
-      initialized: widget.controller.value.isInitialized,
+      initialized: (widget.controller?.value?.isInitialized ?? false) ||
+          (widget.youtubePlayerController?.value?.isReady ?? false),
     );
   }
 }

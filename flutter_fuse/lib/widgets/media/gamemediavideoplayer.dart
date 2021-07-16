@@ -125,10 +125,42 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
   }
 
   Widget _showVideoPlayer(BuildContext context) {
-    if (widget.video.type == MediaType.videoOnDemand) {
-      return VideoPlayer(_controller);
+    Widget player;
+    double aspectRatio;
+
+    if (_controller != null && _controller.value.isInitialized) {
+      player = VideoPlayer(_controller);
+      aspectRatio = _controller.value.aspectRatio;
+    } else if (_youtubeController != null && _youtubeController.value.isReady) {
+      player = YoutubePlayer(controller: _youtubeController);
+      aspectRatio = 16 / 9;
+    } else {
+      return CircularProgressIndicator();
     }
-    return YoutubePlayer(controller: _youtubeController);
+    return Stack(
+      children: [
+        AspectRatio(
+          aspectRatio: aspectRatio,
+          child: player,
+        ),
+        widget.video.gameUid != null
+            ? SingleGameProvider(
+                gameUid: widget.video.gameUid,
+                builder: (context, singleGameBloc) => BlocBuilder(
+                    bloc: singleGameBloc,
+                    builder: (context, gameState) {
+                      singleGameBloc.add(SingleGameLoadEvents());
+                      return GameStatusVideoPlayerOverlay(
+                          controller: _controller,
+                          youtubePlayerController: _youtubeController,
+                          state: gameState);
+                    }),
+              )
+            : SizedBox(
+                height: 0,
+              )
+      ],
+    );
   }
 
   @override
@@ -147,31 +179,7 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
       children: [
         Expanded(
           child: Center(
-            child: _controller != null && _controller.value.isInitialized
-                ? Stack(
-                    children: [
-                      AspectRatio(
-                        aspectRatio: _controller.value.aspectRatio,
-                        child: _showVideoPlayer(context),
-                      ),
-                      widget.video.gameUid != null
-                          ? SingleGameProvider(
-                              gameUid: widget.video.gameUid,
-                              builder: (context, singleGameBloc) => BlocBuilder(
-                                  bloc: singleGameBloc,
-                                  builder: (context, gameState) {
-                                    singleGameBloc.add(SingleGameLoadEvents());
-                                    return GameStatusVideoPlayerOverlay(
-                                        controller: _controller,
-                                        state: gameState);
-                                  }),
-                            )
-                          : SizedBox(
-                              height: 0,
-                            )
-                    ],
-                  )
-                : CircularProgressIndicator(),
+            child: _showVideoPlayer(context),
           ),
         ),
         _controller != null

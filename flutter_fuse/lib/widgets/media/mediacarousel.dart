@@ -236,82 +236,78 @@ class _MediaCarouselState extends State<MediaCarousel> {
                       height: constraints.maxHeight,
                       child: Hero(
                         tag: 'media${_currentMedia.uid}',
-                        child: CachedNetworkImage(
-                          imageBuilder: (context, provider) {
-                            Widget imageToDisplay;
-
-                            switch (_currentMedia.type) {
-                              case MediaType.image:
-                                var myImage = Image(
-                                  image: provider,
-                                  height: _size.height / _scale,
-                                  width: _size.width / _scale,
-                                  fit: BoxFit.fill,
-                                  alignment: Alignment.topLeft,
-                                );
-
-                                myImage.image
-                                    .resolve(ImageConfiguration())
-                                    .addListener(
-                                  ImageStreamListener(
-                                    (ImageInfo image, bool synchronousCall) {
-                                      var myImage = image.image;
-                                      if (myImage.width != _size.width ||
-                                          myImage.height != _size.height ||
-                                          _imageScale !=
-                                              max(
-                                                _size.width /
-                                                    constraints.maxWidth,
-                                                _size.height /
-                                                    constraints.maxHeight,
-                                              )) {
-                                        _size = Size(myImage.width.toDouble(),
-                                            myImage.height.toDouble());
-                                        _imageScale = max(
-                                          _size.width / constraints.maxWidth,
-                                          _size.height / constraints.maxHeight,
-                                        );
-                                        if (!_zoomed) {
-                                          _scale = _imageScale;
-                                        }
-                                        // Refresh the page,
-                                        _sizeController.add(true);
-                                      }
-                                    },
-                                  ),
-                                );
-                                imageToDisplay = myImage;
-                                break;
-                              case MediaType.videoOnDemand:
-                                imageToDisplay = GameMediaVideoPlayer(
+                        child: Builder(builder: (context) {
+                          switch (widget.media.type) {
+                            case MediaType.youtubeID:
+                            case MediaType.videoOnDemand:
+                              return AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: GameMediaVideoPlayer(
                                   video: _currentMedia,
-                                );
-                                break;
-                              case MediaType.videoStreaming:
-                                break;
-                              case MediaType.youtubeID:
-                                imageToDisplay = GameMediaVideoPlayer(
-                                  video: _currentMedia,
-                                );
-                                break;
-                            }
-                            return FittedBox(
-                                fit: BoxFit.none,
+                                ),
+                              );
+                          }
+                          return CachedNetworkImage(
+                            imageBuilder: (context, provider) {
+                              Widget imageToDisplay;
+
+                              var myImage = Image(
+                                image: provider,
+                                height: _size.height / _scale,
+                                width: _size.width / _scale,
+                                fit: BoxFit.fill,
                                 alignment: Alignment.topLeft,
-                                child: imageToDisplay);
-                          },
-                          alignment: Alignment.topLeft,
-                          imageUrl: _currentMedia.url.toString(),
-                          fit: BoxFit.none,
-                          errorWidget: (c, str, e) => Icon(Icons.error),
-                          placeholder: (c, str) => Center(
-                            child: SizedBox(
-                              height: 50,
-                              width: 50,
-                              child: CircularProgressIndicator(),
+                              );
+
+                              myImage.image
+                                  .resolve(ImageConfiguration())
+                                  .addListener(
+                                ImageStreamListener(
+                                  (ImageInfo image, bool synchronousCall) {
+                                    var myImage = image.image;
+                                    if (myImage.width != _size.width ||
+                                        myImage.height != _size.height ||
+                                        _imageScale !=
+                                            max(
+                                              _size.width /
+                                                  constraints.maxWidth,
+                                              _size.height /
+                                                  constraints.maxHeight,
+                                            )) {
+                                      _size = Size(myImage.width.toDouble(),
+                                          myImage.height.toDouble());
+                                      _imageScale = max(
+                                        _size.width / constraints.maxWidth,
+                                        _size.height / constraints.maxHeight,
+                                      );
+                                      if (!_zoomed) {
+                                        _scale = _imageScale;
+                                      }
+                                      // Refresh the page,
+                                      _sizeController.add(true);
+                                    }
+                                  },
+                                ),
+                              );
+                              imageToDisplay = myImage;
+                              return FittedBox(
+                                  fit: BoxFit.none,
+                                  alignment: Alignment.topLeft,
+                                  child: imageToDisplay);
+                            },
+                            alignment: Alignment.topLeft,
+                            imageUrl: _currentMedia.url.toString(),
+                            fit: BoxFit.none,
+                            errorWidget: (c, str, e) => Icon(Icons.error),
+                            placeholder: (c, str) => Center(
+                              child: SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: CircularProgressIndicator(),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        }),
                       ),
                     ),
                     Positioned(
