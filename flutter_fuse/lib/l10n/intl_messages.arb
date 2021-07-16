@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-07-09T21:26:58.461637",
+  "@@last_modified": "2021-07-15T19:04:23.691532",
   "About": "About",
   "@About": {
     "type": "text",
@@ -901,6 +901,18 @@
   "Invalid URL": "Invalid URL",
   "@Invalid URL": {
     "description": "Error in a form when the url is invalid",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Invalid YouTube URL": "Invalid YouTube URL",
+  "@Invalid YouTube URL": {
+    "description": "Error in a form when the youtube url is invalid",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Invalid file name": "Invalid file name",
+  "@Invalid file name": {
+    "description": "Error setting the image file",
     "type": "text",
     "placeholders": {}
   },
@@ -2162,6 +2174,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "Youtube": "Youtube",
+  "@Youtube": {
+    "description": "Upload a video",
+    "type": "text",
+    "placeholders": {}
+  },
   "VIEW": "VIEW",
   "@VIEW": {
     "description": "Banner to view the full data on the image",
@@ -3089,5 +3107,10 @@
       "loss": {},
       "tie": {}
     }
+  },
+  "Youtube URL/id": "Youtube URL/id",
+  "@Youtube URL/id": {
+    "type": "text",
+    "placeholders": {}
   }
 }
