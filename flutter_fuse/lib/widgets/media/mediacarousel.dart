@@ -5,10 +5,9 @@ import 'package:built_collection/built_collection.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:intl/intl.dart' as intl;
 
-import '../../../services/messages.dart';
 import 'gamemediavideoplayer.dart';
+import 'mediastatusoverlay.dart';
 
 ///
 /// Show the media in full screen.
@@ -50,6 +49,7 @@ class _MediaCarouselState extends State<MediaCarousel> {
 
   Size _size = Size(0, 0);
   bool _zoomed = false;
+  Stream<Duration> _videoPositionStream;
 
   final _sizeController = StreamController<bool>.broadcast();
 
@@ -118,9 +118,6 @@ class _MediaCarouselState extends State<MediaCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    final _dateFormat = intl.DateFormat.yMMMMEEEEd(Messages.of(context).locale);
-    final _timeFormat = intl.DateFormat.jm(Messages.of(context).locale);
-
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -240,11 +237,13 @@ class _MediaCarouselState extends State<MediaCarousel> {
                           switch (widget.media.type) {
                             case MediaType.youtubeID:
                             case MediaType.videoOnDemand:
+                              var player = GameMediaVideoPlayer(
+                                video: _currentMedia,
+                              );
+                              _videoPositionStream = player.positionStream;
                               return AspectRatio(
                                 aspectRatio: 16 / 9,
-                                child: GameMediaVideoPlayer(
-                                  video: _currentMedia,
-                                ),
+                                child: player,
                               );
                           }
                           return CachedNetworkImage(
@@ -314,84 +313,29 @@ class _MediaCarouselState extends State<MediaCarousel> {
                       bottom: 20,
                       left: 0,
                       width: constraints.maxWidth,
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        color: Colors.white38,
-                        child: Padding(
-                          padding:
-                              EdgeInsets.only(left: 10, right: 10, top: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                _currentMedia.description,
-                                style: Theme.of(context).textTheme.bodyText1,
-                                textScaleFactor: 1.5,
-                                maxLines: 5,
-                                overflow: TextOverflow.fade,
-                              ),
-                              SizedBox(height: 10),
-                              Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Text(
-                                    _dateFormat.format(_currentMedia.startAt),
-                                  ),
-                                  SizedBox(width: 20),
-                                  Text(
-                                    _timeFormat.format(_currentMedia.startAt),
-                                  ),
-                                ],
-                              ),
-                              ButtonBar(
-                                children: [
-                                  _currentMedia.playerUid.isNotEmpty &&
-                                          widget.onPlayerPressed != null
-                                      ? TextButton(
-                                          onPressed: () =>
-                                              widget.onPlayerPressed(
-                                                  _currentMedia.playerUid),
-                                          child: Text(Messages.of(context)
-                                              .playerButton),
-                                        )
-                                      : SizedBox(width: 0),
-                                  _currentMedia.teamUid.isNotEmpty &&
-                                          widget.onTeamPressed != null
-                                      ? TextButton(
-                                          onPressed: () => widget.onTeamPressed(
-                                              _currentMedia.teamUid),
-                                          child: Text(
-                                              Messages.of(context).teamButton),
-                                        )
-                                      : SizedBox(width: 0),
-                                  TextButton(
-                                    onPressed: () => Navigator.pushNamed(
-                                        context,
-                                        '/Season/Media/'
-                                        '${widget.media.seasonUid}/'
-                                        '${widget.media.uid}'),
-                                    child:
-                                        Text(Messages.of(context).editButton),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
+                      child: MediaStatusVideoPlayerOverlay(
+                        media: _currentMedia,
+                        initialPosition: Duration(seconds: 0),
+                        positionStream: _videoPositionStream,
+                        onPlayerPressed: widget.onPlayerPressed,
+                        onTeamPressed: widget.onTeamPressed,
                       ),
                     ),
                     Positioned(
                       top: 0,
                       left: 0,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.close,
-                          color: Colors.white,
+                      child: Ink(
+                        decoration: ShapeDecoration(
+                          color: Colors.grey.withOpacity(0.5),
+                          shape: CircleBorder(),
                         ),
-                        onPressed: () => Navigator.pop(context),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            color: Colors.white,
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                        ),
                       ),
                     ),
                     Positioned(

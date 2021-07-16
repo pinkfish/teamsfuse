@@ -28,6 +28,8 @@ class GameStatus {
     updateState(state: state, position: position);
   }
 
+  GameStatus.empty();
+
   /// Work out the current state by updating the position.
   bool updateState({Duration position, SingleGameState state}) {
     var nextEvent = Duration.zero;

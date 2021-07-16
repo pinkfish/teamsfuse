@@ -1,13 +1,13 @@
+import 'dart:async';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/blocs.dart';
-import 'package:flutter_fuse/widgets/blocs/singlegameprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-import 'gamestatusoverlay.dart';
+/// Boolean callback to use for the playing state.
+typedef BoolCallback = void Function(bool state);
 
 ///
 /// Shows video for the specific game.
@@ -19,8 +19,20 @@ class GameMediaVideoPlayer extends StatefulWidget {
   /// Where to start
   final DateTime start;
 
-  GameMediaVideoPlayer({@required this.video, this.start, Key key})
-      : super(key: key);
+  /// The controller and stream.
+  final StreamController<Duration> positionController;
+
+  /// The notifier to use when updating the playing state.
+  final BoolCallback onPlayingStateChanged;
+
+  /// The stream exposed that has all the events on it.
+  Stream<Duration> get positionStream => positionController.stream;
+
+  /// Create the video player with the right details.
+  GameMediaVideoPlayer(
+      {@required this.video, this.start, this.onPlayingStateChanged, Key key})
+      : positionController = StreamController<Duration>.broadcast(),
+        super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -35,16 +47,21 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
   DateTime _lastStart;
   double _volume = 1.0;
   bool _isMuted = false;
+  bool _currentlyPlaying = false;
 
   @override
   void initState() {
     super.initState();
+    if (widget.onPlayingStateChanged != null) {
+      widget.onPlayingStateChanged(_currentlyPlaying);
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
     _controller?.dispose();
+    _youtubeController?.dispose();
   }
 
   void _updateMedia(MediaInfo media) async {
@@ -65,6 +82,8 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
     if (newUrl != _currentUrl) {
       _currentUrl = newUrl;
       if (media.type == MediaType.videoOnDemand) {
+        _youtubeController?.dispose();
+        _youtubeController = null;
         var downloadUrl = newUrl.toString();
         if (newUrl.scheme == 'gs') {
           var ref = FirebaseStorage.instance.refFromURL(newUrl.toString());
@@ -72,6 +91,22 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
         }
         await _controller?.dispose();
         _controller = VideoPlayerController.network(downloadUrl);
+        _controller.addListener(() {
+          if (!mounted) {
+            return;
+          }
+          var playing = false;
+          if (_controller.value.isInitialized) {
+            widget.positionController.add(_controller.value.position);
+            playing = _controller.value.isPlaying;
+          }
+          if (playing != _currentlyPlaying) {
+            _currentlyPlaying = playing;
+            if (widget.onPlayingStateChanged != null) {
+              widget.onPlayingStateChanged(_currentlyPlaying);
+            }
+          }
+        });
         try {
           await _controller.initialize();
           // If the start point is set, go to there.
@@ -85,16 +120,48 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
           print('Error $e');
         }
       } else {
-        _youtubeController?.dispose();
-        _youtubeController =
-            YoutubePlayerController(initialVideoId: media.youtubeID);
-        try {
+        await _controller?.dispose();
+        _controller = null;
+        if (_youtubeController == null) {
+          _youtubeController =
+              YoutubePlayerController(initialVideoId: media.youtubeID);
+          var loaded = false;
+          _youtubeController.addListener(() {
+            if (!mounted) {
+              return;
+            }
+            var playing = false;
+            if (_youtubeController.value.isReady) {
+              // Pause it once it loads.
+              if (!loaded) {
+                loaded = true;
+                _youtubeController.pause();
+              }
+              widget.positionController.add(_youtubeController.value.position);
+              playing = _youtubeController.value.isPlaying;
+            }
+            if (playing != _currentlyPlaying) {
+              _currentlyPlaying = playing;
+              if (widget.onPlayingStateChanged != null) {
+                widget.onPlayingStateChanged(_currentlyPlaying);
+              }
+            }
+            if (_youtubeController.value.hasError) {
+              print('youtube error ${_youtubeController.value.errorCode}');
+            }
+          });
+        } else {
           _youtubeController.load(media.youtubeID);
+        }
+        print(
+            'youtube ${media.youtubeID} ${_youtubeController.initialVideoId}');
+        try {
           // If the start point is set, go to there.
           if (widget.start != null) {
             seekTo(widget.start);
           }
-          _youtubeController.pause();
+          //_youtubeController.pause();
+          print('youtube ${media.youtubeID} pause');
           _lastStart = widget.start;
           setState(() {});
         } catch (e) {
@@ -131,35 +198,21 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
     if (_controller != null && _controller.value.isInitialized) {
       player = VideoPlayer(_controller);
       aspectRatio = _controller.value.aspectRatio;
-    } else if (_youtubeController != null && _youtubeController.value.isReady) {
-      player = YoutubePlayer(controller: _youtubeController);
+    } else if (_youtubeController != null) {
+      print('Creating youtube player ${_youtubeController.value}');
+      player = YoutubePlayer(
+        controller: _youtubeController,
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: Colors.blueAccent,
+      );
       aspectRatio = 16 / 9;
     } else {
+      print('No youtube player ${_youtubeController?.value}');
       return CircularProgressIndicator();
     }
-    return Stack(
-      children: [
-        AspectRatio(
-          aspectRatio: aspectRatio,
-          child: player,
-        ),
-        widget.video.gameUid != null
-            ? SingleGameProvider(
-                gameUid: widget.video.gameUid,
-                builder: (context, singleGameBloc) => BlocBuilder(
-                    bloc: singleGameBloc,
-                    builder: (context, gameState) {
-                      singleGameBloc.add(SingleGameLoadEvents());
-                      return GameStatusVideoPlayerOverlay(
-                          controller: _controller,
-                          youtubePlayerController: _youtubeController,
-                          state: gameState);
-                    }),
-              )
-            : SizedBox(
-                height: 0,
-              )
-      ],
+    return AspectRatio(
+      aspectRatio: aspectRatio,
+      child: player,
     );
   }
 
