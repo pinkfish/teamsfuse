@@ -123,8 +123,13 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
         await _controller?.dispose();
         _controller = null;
         if (_youtubeController == null) {
-          _youtubeController =
-              YoutubePlayerController(initialVideoId: media.youtubeID);
+          _youtubeController = YoutubePlayerController(
+            initialVideoId: media.youtubeID,
+            flags: YoutubePlayerFlags(
+              autoPlay: false,
+              controlsVisibleAtStart: true,
+            ),
+          );
           var loaded = false;
           _youtubeController.addListener(() {
             if (!mounted) {
@@ -203,6 +208,10 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
       player = YoutubePlayer(
         controller: _youtubeController,
         showVideoProgressIndicator: true,
+        progressColors: ProgressBarColors(
+          playedColor: Colors.amber,
+          handleColor: Colors.amberAccent,
+        ),
         progressIndicatorColor: Colors.blueAccent,
       );
       aspectRatio = 16 / 9;
@@ -229,12 +238,10 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
     }
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Center(
-            child: _showVideoPlayer(context),
-          ),
-        ),
+        _showVideoPlayer(context),
         _controller != null
             ? VideoProgressIndicator(
                 _controller,
@@ -269,23 +276,22 @@ class _MediaVideoPlayerState extends State<GameMediaVideoPlayer> {
               max: 1.0,
               min: 0.0,
             ),
-            _controller != null && _controller.value.isPlaying
-                ? IconButton(
-                    icon: const Icon(Icons.pause),
-                    onPressed: () =>
-                        _controller.pause().then((v) => setState(() => true)),
-                  )
-                : IconButton(
-                    icon: const Icon(Icons.play_arrow),
-                    onPressed: () =>
-                        _controller.play().then((v) => setState(() => true)),
-                  ),
-            SizedBox(width: 20.0),
+            _youtubeController != null
+                ? SizedBox(width: 0)
+                : _controller != null && _controller.value.isPlaying
+                    ? IconButton(
+                        icon: const Icon(Icons.pause),
+                        onPressed: () => _controller
+                            .pause()
+                            .then((v) => setState(() => true)),
+                      )
+                    : IconButton(
+                        icon: const Icon(Icons.play_arrow),
+                        onPressed: () => _controller
+                            .play()
+                            .then((v) => setState(() => true)),
+                      ),
           ],
-        ),
-        Text(
-          widget.video.description,
-          overflow: TextOverflow.fade,
         ),
       ],
     );

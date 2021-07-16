@@ -241,8 +241,8 @@ class _MediaCarouselState extends State<MediaCarousel> {
                                 video: _currentMedia,
                               );
                               _videoPositionStream = player.positionStream;
-                              return AspectRatio(
-                                aspectRatio: 16 / 9,
+                              return Align(
+                                alignment: Alignment.topRight,
                                 child: player,
                               );
                           }

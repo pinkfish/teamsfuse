@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/blocs.dart';
+import 'package:flutter_fuse/widgets/blocs/singlegameprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -21,25 +24,16 @@ class MediaStatusOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var ptsTheme = Theme.of(context).textTheme.headline5;
-    return Container(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(status.ptsFor.toString(), style: ptsTheme),
+        Padding(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: Text('-', style: ptsTheme),
         ),
-        padding: EdgeInsets.all(5.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(status.ptsFor.toString(), style: ptsTheme),
-            Padding(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              child: Text('-', style: ptsTheme),
-            ),
-            Text(status.ptsAgainst.toString(), style: ptsTheme),
-          ],
-        ),
-      ),
+        Text(status.ptsAgainst.toString(), style: ptsTheme),
+      ],
     );
   }
 }
@@ -81,16 +75,18 @@ class _MediaStatusVideoPlayerOverlayState
     extends State<MediaStatusVideoPlayerOverlay> {
   GameStatus _status;
   StreamSubscription<Duration> _streamSub;
+  Duration _position;
 
   @override
   void initState() {
     super.initState();
     _status = GameStatus.empty();
+    _position = Duration(seconds: 0);
     _streamSub = widget.positionStream?.listen((event) {
       if (!mounted) {
         return;
       }
-      if (_status.nextEvent < widget.initialPosition) {
+      if (_status.nextEvent < _position) {
         setState(() {});
       }
     });
@@ -107,11 +103,60 @@ class _MediaStatusVideoPlayerOverlayState
     super.deactivate();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  List<Widget> _buildRows(BuildContext context) {
     final _dateFormat = intl.DateFormat.yMMMMEEEEd(Messages.of(context).locale);
     final _timeFormat = intl.DateFormat.jm(Messages.of(context).locale);
 
+    if (widget.media.type == MediaType.image) {
+      return [
+        Text(
+          widget.media.description,
+          style: Theme.of(context).textTheme.bodyText1,
+          textScaleFactor: 1.5,
+          maxLines: 5,
+          overflow: TextOverflow.fade,
+        ),
+        SizedBox(height: 10),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              _dateFormat.format(widget.media.startAt),
+            ),
+            SizedBox(width: 20),
+            Text(
+              _timeFormat.format(widget.media.startAt),
+            ),
+          ],
+        ),
+      ];
+    }
+
+    return [
+      SingleGameProvider(
+        gameUid: widget.media.gameUid,
+        builder: (context, singleGameBloc) => BlocBuilder(
+          bloc: singleGameBloc,
+          builder: (context, gameState) {
+            singleGameBloc.add(SingleGameLoadEvents());
+            var status = GameStatus(state: gameState, position: _position);
+            return MediaStatusOverlay(status: status);
+          },
+        ),
+      ),
+      SizedBox(height: 10),
+      Text(
+        widget.media.description,
+        style: Theme.of(context).textTheme.bodyText1,
+        textScaleFactor: 1.5,
+        maxLines: 5,
+        overflow: TextOverflow.fade,
+      ),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -123,26 +168,7 @@ class _MediaStatusVideoPlayerOverlayState
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
-              widget.media.description,
-              style: Theme.of(context).textTheme.bodyText1,
-              textScaleFactor: 1.5,
-              maxLines: 5,
-              overflow: TextOverflow.fade,
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Text(
-                  _dateFormat.format(widget.media.startAt),
-                ),
-                SizedBox(width: 20),
-                Text(
-                  _timeFormat.format(widget.media.startAt),
-                ),
-              ],
-            ),
+            ..._buildRows(context),
             ButtonBar(
               children: [
                 widget.media.playerUid.isNotEmpty &&
