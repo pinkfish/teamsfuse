@@ -563,6 +563,11 @@ class Messages {
 
   String get joinLeague => Intl.message('JOIN LEAGUE', locale: locale);
 
+  String get jumpBallButton => Intl.message('JMP', locale: locale);
+
+  String get jumpBallEventType => Intl.message('Jump Ball',
+      desc: 'Jump ball during the game', locale: locale);
+
   String get league => Intl.message('League',
       desc: 'The league the team is playing in', locale: locale);
 
@@ -1590,6 +1595,7 @@ class Messages {
           args: [name, rel],
           name: 'displayNameRelationshipBreakout',
           locale: locale);
+
   String eventTitle(
       String time, String name, String endTime, String tzShortName) {
     if (name != null && name.isNotEmpty) {
@@ -2141,6 +2147,8 @@ class Messages {
         return periodEnd(getPeriodName(p.period));
       case GameEventType.ScoreSet:
         return scoreSet(p.fixedScore);
+      case GameEventType.JumpBall:
+        return jumpBallEventType;
     }
     return unknown;
   }
