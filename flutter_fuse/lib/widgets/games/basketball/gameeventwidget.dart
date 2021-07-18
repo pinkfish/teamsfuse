@@ -20,13 +20,13 @@ class GameEventWidget extends StatelessWidget {
   /// The timestamp, if we should show it.
   final bool showTimestamp;
 
-  /// If we shouldshow the period name.
+  /// If we should show the period name.
   final bool showPeriod;
 
   /// If we should show the name of the player.
   final bool showName;
 
-  /// What to call when we tap on this event/
+  /// What to call when we tap on this event.
   final GameEventTapCallback onTap;
 
   /// The format for the datetime.

@@ -14,10 +14,16 @@ import 'dialogplayerlist.dart';
 /// The result of this dialog.
 ///
 class GameShotResult {
+  /// The player that made the shot.
   final String playerUid;
+
+  /// The player that did the assist (empty if none).
   final String assistPlayerUid;
+
+  /// The location the shot was from.
   final GameEventLocation location;
 
+  /// Create a nice game shot result.
   GameShotResult(this.playerUid, this.location, this.assistPlayerUid);
 }
 

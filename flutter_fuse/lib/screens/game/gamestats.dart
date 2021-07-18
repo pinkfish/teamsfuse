@@ -65,6 +65,7 @@ class GameStatsScreen extends StatelessWidget {
     await undoBloc.addEvent(
       GameEvent((b) => b
         ..playerUid = playerData.playerUid
+        ..assistPlayerUid = playerData.assistPlayerUid
         ..points = pts
         ..timestamp = (clock.now().toUtc())
         ..gameUid = gameUid
@@ -78,24 +79,6 @@ class GameStatsScreen extends StatelessWidget {
         ..type = made ? GameEventType.Made : GameEventType.Missed),
       false,
     );
-    if (playerData.assistPlayerUid != null) {
-      await undoBloc.addEvent(
-        GameEvent(
-          (b) => b
-            ..playerUid = playerData.assistPlayerUid
-            ..points = pts
-            ..timestamp = (clock.now().toUtc())
-            ..gameUid = gameUid
-            ..period =
-                singleGameBloc.state.game.result.currentPeriod.toBuilder()
-            ..eventTimeline = singleGameBloc.state.game.currentGameTime
-            ..opponent = singleGameBloc.state.game.opponents
-                .containsKey(playerData.playerUid)
-            ..type = GameEventType.Made,
-        ),
-        false,
-      );
-    }
   }
 
   Future<void> _doSubEvent(BuildContext context, GameEventType type,

@@ -7,15 +7,25 @@ import '../../util/loading.dart';
 import 'gameeventwidget.dart';
 
 ///
-/// The list of game eevents associated with the single game bloc.
+/// The list of game events associated with the single game bloc.
 ///
 class GameEventList extends StatelessWidget {
+  /// Filtering method, only show the events where this is true.
   final bool Function(GameEvent) eventCheck;
+
+  /// Show the name in the event.
   final bool showName;
+
+  /// Show the timestamp.
   final bool showTimestamp;
+
+  /// Show the period.
   final bool showPeriod;
+
+  /// What to do on a tap.
   final GameEventTapCallback onTap;
 
+  /// Create an event list.
   GameEventList(
       {this.eventCheck,
       this.showName = false,
