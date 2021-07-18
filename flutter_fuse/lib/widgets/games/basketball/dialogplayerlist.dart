@@ -1,7 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/blocs/singleseasonprovider.dart';
 import 'package:flutter_fuse/widgets/player/playertilebasketball.dart';
+import 'package:flutter_fuse/widgets/player/playertilesimple.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../../services/localutilities.dart';
@@ -20,7 +23,8 @@ class DialogPlayerList extends StatelessWidget {
   final Orientation orientation;
   final double scale;
 
-  List<Widget> _populateList(BuildContext context, Orientation o) {
+  List<Widget> _populateList(
+      BuildContext context, Orientation o, SingleSeasonState seasonState) {
     var players = game.players.keys.toList();
     players.addAll(game.opponents.keys);
     players.sort((String a, String b) {
@@ -45,11 +49,11 @@ class DialogPlayerList extends StatelessWidget {
         .map(
           (String playerUid) => Padding(
             padding: EdgeInsets.all(2.0),
-            child: PlayerTileBasketball(
+            child: PlayerTileSimple(
               playerUid: playerUid,
+              season: seasonState.season,
               gameUid: game.uid,
               scale: scale,
-              showSummary: false,
               shape: ContinuousRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0),
                 side: BorderSide(
@@ -74,25 +78,33 @@ class DialogPlayerList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return (orientation == Orientation.portrait)
-        ? LayoutBuilder(builder: (BuildContext context, BoxConstraints box) {
-            var width = box.maxWidth / 2;
-            var minHeight = 60.0;
-            var ratio = min(width / minHeight, 3.0);
-            return GridView.count(
-              childAspectRatio: ratio,
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              primary: false,
-              children: _populateList(context, orientation),
-            );
-          })
-        : GridView.count(
-            childAspectRatio: 2.5,
-            crossAxisCount: 4,
-            shrinkWrap: true,
-            primary: false,
-            children: _populateList(context, orientation),
-          );
+    return SingleSeasonProvider(
+      seasonUid: game.seasonUid,
+      builder: (context, seasonBloc) => BlocBuilder(
+        bloc: seasonBloc,
+        builder: (context, seasonState) => ((orientation ==
+                Orientation.portrait)
+            ? LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints box) {
+                var width = box.maxWidth / 2;
+                var minHeight = 60.0;
+                var ratio = min(width / minHeight, 3.0);
+                return GridView.count(
+                  childAspectRatio: ratio,
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  primary: false,
+                  children: _populateList(context, orientation, seasonState),
+                );
+              })
+            : GridView.count(
+                childAspectRatio: 2.5,
+                crossAxisCount: 4,
+                shrinkWrap: true,
+                primary: false,
+                children: _populateList(context, orientation, seasonState),
+              )),
+      ),
+    );
   }
 }
