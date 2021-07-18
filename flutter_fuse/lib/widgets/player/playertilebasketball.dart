@@ -287,7 +287,7 @@ class PlayerTileBasketball extends StatelessWidget {
       child: LayoutBuilder(builder: (BuildContext context, BoxConstraints box) {
         print(box);
         return ListTile(
-          visualDensity: box.maxHeight < 40.0
+          visualDensity: box.maxHeight < 61.0
               ? VisualDensity.compact
               : VisualDensity.standard,
           contentPadding: box.maxHeight < 40.0 ? EdgeInsets.all(1.0) : null,
@@ -297,9 +297,9 @@ class PlayerTileBasketball extends StatelessWidget {
             style: Theme.of(context).textTheme.headline6.copyWith(
                 fontSize: min(box.maxHeight - 5,
                     Theme.of(context).textTheme.headline6.fontSize)),
-            overflow: TextOverflow.ellipsis,
+            overflow: TextOverflow.fade,
             textScaleFactor: 1.0,
-            maxLines: 2,
+            maxLines: 1,
           ),
           /*
           leading: ConstrainedBox(
@@ -327,7 +327,7 @@ class PlayerTileBasketball extends StatelessWidget {
 
            */
           leading: Container(
-            width: min(box.maxHeight / 2, 60),
+            width: min(box.maxHeight / 2, 40),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
@@ -335,8 +335,8 @@ class PlayerTileBasketball extends StatelessWidget {
                       contentColor ?? Theme.of(context).primaryColor, 40)),
             ),
             child: SizedBox(
-              width: min(box.maxHeight / 2, 60),
-              height: min(box.maxHeight / 2, 60),
+              width: min(box.maxHeight / 2, 40),
+              height: min(box.maxHeight / 2, 40),
               child: Center(
                 child: Text(
                   jerseyNumber ?? 'U',
@@ -356,10 +356,14 @@ class PlayerTileBasketball extends StatelessWidget {
               summary != null && showSummary
                   ? Text(
                       Messages.of(context).seasonSummary(summary),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     )
                   : gameSummary != null && showSummary
                       ? Text(
                           Messages.of(context).gameSummary(gameSummary),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         )
                       : SizedBox(height: 0),
             ],

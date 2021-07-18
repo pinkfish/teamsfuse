@@ -16,16 +16,30 @@ import 'playermultiselect.dart';
 /// Pulls up some data to start the period.
 ///
 class StartPeriod extends StatefulWidget {
+  /// The game to start the period for,
   final Game game;
+
+  /// The season for the game.
   final Season season;
+
+  /// How the setup is orientated.
   final Orientation orientation;
+
+  /// The bloc associated with the game.
   final SingleGameBloc singleGameBloc;
+
+  /// The full player details for the game.  Used for sorting.
   final BuiltMap<String, Player> fullPlayerDetails;
 
+  /// The media for the team.
+  final BuiltList<MediaInfo> media;
+
+  /// The constructor for the start period selector.
   StartPeriod(
       {@required this.game,
       @required this.season,
       @required this.orientation,
+      this.media,
       this.singleGameBloc,
       this.fullPlayerDetails});
 
@@ -36,8 +50,8 @@ class StartPeriod extends StatefulWidget {
 }
 
 class _StartPeriodState extends State<StartPeriod> {
-  GamePeriod period;
-  List<String> selectedPlayers = [];
+  GamePeriod _period;
+  final List<String> _selectedPlayers = [];
 
   void _editResult() async {
     // Call up a dialog to edit the result.
@@ -53,8 +67,19 @@ class _StartPeriodState extends State<StartPeriod> {
     }
   }
 
+  void _addWithVideo() {}
+
   @override
   Widget build(BuildContext context) {
+    var foundVideo = false;
+    if (widget.media != null) {
+      for (var m in widget.media) {
+        if (m.type == MediaType.videoOnDemand ||
+            m.type == MediaType.youtubeID) {
+          foundVideo = true;
+        }
+      }
+    }
     return Container(
       decoration: BoxDecoration(
         color: LocalUtilities.isDark(context)
@@ -81,6 +106,13 @@ class _StartPeriodState extends State<StartPeriod> {
                       onPressed: _editResult,
                       style: TextButton.styleFrom(),
                       child: Text(Messages.of(context).finalScoreButton),
+                    )
+                  : SizedBox(height: 0),
+              foundVideo
+                  ? TextButton(
+                      onPressed: _addWithVideo,
+                      style: TextButton.styleFrom(),
+                      child: Text(Messages.of(context).addWithVideo),
                     )
                   : SizedBox(height: 0),
             ],
@@ -115,8 +147,8 @@ class _StartPeriodState extends State<StartPeriod> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               PeriodDropdown(
-                value: period,
-                onPeriodChange: (GamePeriod p) => setState(() => period = p),
+                value: _period,
+                onPeriodChange: (GamePeriod p) => setState(() => _period = p),
               ),
               SizedBox(width: 30.0),
               TextButton(
@@ -136,7 +168,7 @@ class _StartPeriodState extends State<StartPeriod> {
                     GameEvent((b) => b
                       ..gameUid = widget.game.uid
                       ..playerUid = ''
-                      ..period = period.toBuilder()
+                      ..period = _period.toBuilder()
                       ..timestamp = clock.now().toUtc()
                       ..opponent = false
                       ..eventTimeline = widget.game.currentGameTime
@@ -148,19 +180,19 @@ class _StartPeriodState extends State<StartPeriod> {
                   var players = widget.game.players.map((u, d) => MapEntry(
                       u,
                       d.rebuild((b) =>
-                          b..currentlyPlaying = selectedPlayers.contains(u))));
+                          b..currentlyPlaying = _selectedPlayers.contains(u))));
                   // If there is no opponent, we add one.
                   var opponents = widget.game.opponents.map((u, d) => MapEntry(
                       u,
                       d.rebuild((b) =>
-                          b..currentlyPlaying = selectedPlayers.contains(u))));
-                  if (period.type == GamePeriodType.Final) {
+                          b..currentlyPlaying = _selectedPlayers.contains(u))));
+                  if (_period.type == GamePeriodType.Final) {
                     // Finish the game.
                     widget.singleGameBloc.add(
                       SingleGameUpdate(
                         game: widget.game.rebuild((b) => b
                           ..runningFrom = null
-                          ..result.currentPeriod = period.toBuilder()
+                          ..result.currentPeriod = _period.toBuilder()
                           ..players = players.toBuilder()
                           ..result.inProgress = GameInProgress.Final
                           ..opponents = opponents.toBuilder()),
@@ -171,7 +203,7 @@ class _StartPeriodState extends State<StartPeriod> {
                       SingleGameUpdate(
                         game: widget.game.rebuild((b) => b
                           ..runningFrom = clock.now().toUtc()
-                          ..result.currentPeriod = period.toBuilder()
+                          ..result.currentPeriod = _period.toBuilder()
                           ..result.inProgress = GameInProgress.InProgress
                           ..players = players.toBuilder()
                           ..opponents = opponents.toBuilder()),
@@ -186,17 +218,15 @@ class _StartPeriodState extends State<StartPeriod> {
               ),
             ],
           ),
-          Flexible(
-            fit: FlexFit.loose,
-            child: SingleChildScrollView(
-              child: PlayerMultiselect(
-                game: widget.game,
-                season: widget.season,
-                isSelected: (s) => selectedPlayers.contains(s),
-                selectPlayer: _selectPlayer,
-                orientation: widget.orientation,
-                fullPlayerDetails: widget.fullPlayerDetails,
-              ),
+          Expanded(
+            //fit: FlexFit.loose,
+            child: PlayerMultiselect(
+              game: widget.game,
+              season: widget.season,
+              isSelected: (s) => _selectedPlayers.contains(s),
+              selectPlayer: _selectPlayer,
+              orientation: widget.orientation,
+              fullPlayerDetails: widget.fullPlayerDetails,
             ),
           ),
         ],
@@ -208,28 +238,28 @@ class _StartPeriodState extends State<StartPeriod> {
   void initState() {
     switch (widget.game.result.currentPeriod.type) {
       case GamePeriodType.NotStarted:
-        period = GamePeriod.regulation1;
+        _period = GamePeriod.regulation1;
         break;
       case GamePeriodType.Regulation:
-        period = widget.game.result.currentPeriod.rebuild((b) => b
+        _period = widget.game.result.currentPeriod.rebuild((b) => b
           ..periodNumber = widget.game.result.currentPeriod.periodNumber + 1);
         break;
       case GamePeriodType.Overtime:
-        period = widget.game.result.currentPeriod.rebuild((b) => b
+        _period = widget.game.result.currentPeriod.rebuild((b) => b
           ..periodNumber = widget.game.result.currentPeriod.periodNumber + 1);
         break;
       case GamePeriodType.Penalty:
-        period = GamePeriod.finalPeriod;
+        _period = GamePeriod.finalPeriod;
         break;
       default:
-        period = widget.game.result.currentPeriod;
+        _period = widget.game.result.currentPeriod;
         break;
     }
 
     // Find the currently in play people and mark them.
     widget.game.players.forEach((uid, s) {
       if (s.currentlyPlaying) {
-        selectedPlayers.add(uid);
+        _selectedPlayers.add(uid);
       }
     });
     super.initState();
@@ -238,9 +268,9 @@ class _StartPeriodState extends State<StartPeriod> {
   /// Updates the current set of selected players.
   void _selectPlayer(String uid, bool remove) {
     if (remove) {
-      setState(() => selectedPlayers.remove(uid));
+      setState(() => _selectedPlayers.remove(uid));
     } else {
-      setState(() => selectedPlayers.add(uid));
+      setState(() => _selectedPlayers.add(uid));
     }
   }
 }

@@ -570,6 +570,10 @@ class GameStatsScreen extends StatelessWidget {
                               singleGameBloc.add(SingleGameLoadEvents());
                             }
 
+                            if (!state.loadedMedia) {
+                              singleGameBloc.add(SingleGameLoadMedia());
+                            }
+
                             if (state is SingleGameUninitialized ||
                                 (state is SingleGameLoaded &&
                                     !state.loadedEvents)) {
@@ -656,6 +660,7 @@ class GameStatsScreen extends StatelessWidget {
                                     orientation: orientation,
                                     singleGameBloc: singleGameBloc,
                                     fullPlayerDetails: state.players,
+                                    media: state.media,
                                   );
                                 },
                               );

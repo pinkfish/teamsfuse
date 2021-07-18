@@ -24,12 +24,12 @@ class DialogPlayerList extends StatelessWidget {
     var players = game.players.keys.toList();
     players.addAll(game.opponents.keys);
     players.sort((String a, String b) {
-      var asum = game.players[a] ?? game.opponents[a];
-      var bsum = game.players[b] ?? game.opponents[b];
-      if (asum.currentlyPlaying) {
+      var aSummary = game.players[a] ?? game.opponents[a];
+      var bSummary = game.players[b] ?? game.opponents[b];
+      if (aSummary.currentlyPlaying) {
         return -1;
       }
-      if (bsum.currentlyPlaying) {
+      if (bSummary.currentlyPlaying) {
         return 1;
       }
       return 0;
@@ -76,7 +76,7 @@ class DialogPlayerList extends StatelessWidget {
     return (orientation == Orientation.portrait)
         ? LayoutBuilder(builder: (BuildContext context, BoxConstraints box) {
             var width = box.maxWidth / 2;
-            var minHeight = 50.0;
+            var minHeight = 60.0;
             var ratio = min(width / minHeight, 3.0);
             return GridView.count(
               childAspectRatio: ratio,
