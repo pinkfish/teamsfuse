@@ -295,11 +295,11 @@ class PlayerTileBasketball extends StatelessWidget {
           title: Text(
             loadedPlayer.name,
             style: Theme.of(context).textTheme.headline6.copyWith(
-                fontSize: min(box.maxHeight - 5,
+                fontSize: min((box.maxHeight - 5) / 2,
                     Theme.of(context).textTheme.headline6.fontSize)),
             overflow: TextOverflow.fade,
             textScaleFactor: 1.0,
-            maxLines: 1,
+            maxLines: showSummary ? 1 : 2,
           ),
           /*
           leading: ConstrainedBox(

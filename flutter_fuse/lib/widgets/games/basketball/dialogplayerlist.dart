@@ -49,6 +49,7 @@ class DialogPlayerList extends StatelessWidget {
               playerUid: playerUid,
               gameUid: game.uid,
               scale: scale,
+              showSummary: false,
               shape: ContinuousRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0),
                 side: BorderSide(
@@ -82,6 +83,7 @@ class DialogPlayerList extends StatelessWidget {
               childAspectRatio: ratio,
               crossAxisCount: 2,
               shrinkWrap: true,
+              primary: false,
               children: _populateList(context, orientation),
             );
           })
@@ -89,6 +91,7 @@ class DialogPlayerList extends StatelessWidget {
             childAspectRatio: 2.5,
             crossAxisCount: 4,
             shrinkWrap: true,
+            primary: false,
             children: _populateList(context, orientation),
           );
   }
