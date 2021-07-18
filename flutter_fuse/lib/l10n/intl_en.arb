@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-07-15T19:04:23.691532",
+  "@@last_modified": "2021-07-18T18:12:42.598595",
   "About": "About",
   "@About": {
     "type": "text",
@@ -175,6 +175,11 @@
     "type": "text",
     "placeholders": {}
   },
+  "ADD WITH VIDEO": "ADD WITH VIDEO",
+  "@ADD WITH VIDEO": {
+    "type": "text",
+    "placeholders": {}
+  },
   "Administrator": "Administrator",
   "@Administrator": {
     "type": "text",
@@ -277,7 +282,7 @@
   },
   "No one": "No one",
   "@No one": {
-    "description": "No one in the attencance group",
+    "description": "No one in the attendance group",
     "type": "text",
     "placeholders": {}
   },

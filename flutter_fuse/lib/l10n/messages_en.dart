@@ -227,6 +227,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ADD SEASON" : MessageLookupByLibrary.simpleMessage("ADD SEASON"),
     "ADD TEAM" : MessageLookupByLibrary.simpleMessage("ADD TEAM"),
     "ADD TRAINING" : MessageLookupByLibrary.simpleMessage("ADD TRAINING"),
+    "ADD WITH VIDEO" : MessageLookupByLibrary.simpleMessage("ADD WITH VIDEO"),
     "ALL TEAMS" : MessageLookupByLibrary.simpleMessage("ALL TEAMS"),
     "ASST" : MessageLookupByLibrary.simpleMessage("ASST"),
     "About" : MessageLookupByLibrary.simpleMessage("About"),
