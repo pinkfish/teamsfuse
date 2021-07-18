@@ -132,6 +132,8 @@ class _GameShotDialogState extends State<GameShotDialog> {
         _currentTab++;
       });
     } else {
+      // Finished when the shot location is selected for a not made
+      // ball.
       Navigator.pop(
           context,
           GameShotResult(
@@ -184,15 +186,18 @@ class _GameShotDialogState extends State<GameShotDialog> {
             child: ButtonBar(
               children: [
                 _currentTab == 1 && widget.made
-                    ? FlatButton(
+                    ? TextButton(
                         onPressed: () {
                           setState(() => _currentTab++);
                         },
-                        color: LocalUtilities.isDark(context)
-                            ? themeData.backgroundColor
-                            : themeData.primaryColor,
-                        textColor: Colors.white,
-                        textTheme: ButtonTextTheme.normal,
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              LocalUtilities.isDark(context)
+                                  ? themeData.backgroundColor
+                                  : themeData.primaryColor),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
                         child: _location != null
                             ? Text(MaterialLocalizations.of(context)
                                 .continueButtonLabel)
@@ -209,7 +214,7 @@ class _GameShotDialogState extends State<GameShotDialog> {
             child: ButtonBar(
               children: <Widget>[
                 _currentTab == 2 || (_currentTab == 1 && !widget.made)
-                    ? FlatButton(
+                    ? TextButton(
                         onPressed: () {
                           Navigator.pop(
                             context,
@@ -217,11 +222,14 @@ class _GameShotDialogState extends State<GameShotDialog> {
                                 _selectedIncoming, _location, _selectedAssist),
                           );
                         },
-                        color: LocalUtilities.isDark(context)
-                            ? themeData.backgroundColor
-                            : themeData.primaryColor,
-                        textColor: Colors.white,
-                        textTheme: ButtonTextTheme.normal,
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              LocalUtilities.isDark(context)
+                                  ? themeData.backgroundColor
+                                  : themeData.primaryColor),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
                         child: Text(Messages.of(context).doneButton))
                     : SizedBox(
                         height: 0,
@@ -229,10 +237,12 @@ class _GameShotDialogState extends State<GameShotDialog> {
                       ),
                 Container(
                   margin: const EdgeInsetsDirectional.only(start: 8.0),
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: onStepCancel,
-                    textColor: cancelColor,
-                    textTheme: ButtonTextTheme.normal,
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(cancelColor),
+                    ),
                     child: Text(localizations.cancelButtonLabel),
                   ),
                 ),
