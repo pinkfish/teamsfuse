@@ -32,10 +32,16 @@ class GameShotResult {
 /// and then where on the court the shot was from.
 ///
 class GameShotDialog extends StatefulWidget {
+  /// The game to display.
   final Game game;
+
+  /// The points we made.
   final int points;
+
+  /// If the show was made.
   final bool made;
 
+  /// Show the shot dialog.
   GameShotDialog({@required this.game, this.points, this.made});
 
   @override
@@ -118,12 +124,22 @@ class _GameShotDialogState extends State<GameShotDialog> {
     if (y > 1) {
       y = 1;
     }
-    setState(() {
-      _currentTab++;
-      _location = GameEventLocation((b) => b
-        ..x = x
-        ..y = y);
-    });
+    _location = GameEventLocation((b) => b
+      ..x = x
+      ..y = y);
+    if (widget.made) {
+      setState(() {
+        _currentTab++;
+      });
+    } else {
+      Navigator.pop(
+          context,
+          GameShotResult(
+            _selectedIncoming,
+            _location,
+            _selectedAssist,
+          ));
+    }
   }
 
   void _onStepContinue() {
@@ -167,7 +183,7 @@ class _GameShotDialogState extends State<GameShotDialog> {
             constraints: BoxConstraints.tightFor(height: 48.0),
             child: ButtonBar(
               children: [
-                _currentTab == 1
+                _currentTab == 1 && widget.made
                     ? FlatButton(
                         onPressed: () {
                           setState(() => _currentTab++);
@@ -192,7 +208,7 @@ class _GameShotDialogState extends State<GameShotDialog> {
             constraints: BoxConstraints.tightFor(height: 48.0),
             child: ButtonBar(
               children: <Widget>[
-                _currentTab == 2
+                _currentTab == 2 || (_currentTab == 1 && !widget.made)
                     ? FlatButton(
                         onPressed: () {
                           Navigator.pop(

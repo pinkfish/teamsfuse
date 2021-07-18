@@ -376,11 +376,11 @@ class GameStatsScreen extends StatelessWidget {
       RoundButton(
         borderColor: Colors.red,
         size: buttonSize,
+        onPressed: () =>
+            _doBasicEvent(context, GameEventType.JumpBall, singleGameBloc),
         child: Text(
           Messages.of(context).jumpBallButton,
         ),
-        onPressed: () =>
-            _doBasicEvent(context, GameEventType.JumpBall, singleGameBloc),
       ),
     ];
 
