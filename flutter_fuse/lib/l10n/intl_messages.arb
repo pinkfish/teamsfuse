@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-07-18T18:12:42.598595",
+  "@@last_modified": "2021-07-18T20:49:02.562412",
   "About": "About",
   "@About": {
     "type": "text",
@@ -941,6 +941,17 @@
   },
   "JOIN LEAGUE": "JOIN LEAGUE",
   "@JOIN LEAGUE": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "JMP": "JMP",
+  "@JMP": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Jump Ball": "Jump Ball",
+  "@Jump Ball": {
+    "description": "Jump ball during the game",
     "type": "text",
     "placeholders": {}
   },
