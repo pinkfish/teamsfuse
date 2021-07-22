@@ -24,7 +24,7 @@ class _GameMapViewState extends State<GameMapView> {
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
-      mapType: MapType.hybrid,
+      mapType: MapType.normal,
       initialCameraPosition: CameraPosition(
         target: LatLng(
           widget.game.place.latitude.toDouble(),

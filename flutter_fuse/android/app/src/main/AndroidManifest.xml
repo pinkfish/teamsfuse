@@ -64,7 +64,7 @@
                 android:value="2" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBtXkE9_wRKoDkmZFuF4KFJbk2MyJG2tyA"/>
+            android:value="AIzaSyA5TlMKmEpBkm8pji8KAU93lPYjs_0Ktjs"/>
 
         <meta-data
                 android:name="com.google.firebase.messaging.default_notification_channel_id"
