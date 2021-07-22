@@ -6,6 +6,16 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:package_info/package_info.dart';
 import 'package:universal_io/io.dart';
 
+class _MyPackageInfo {
+  /// The version of the package
+  String version;
+
+  /// The build number to use.
+  String buildNumber;
+
+  _MyPackageInfo({this.version, this.buildNumber});
+}
+
 ///
 /// Analytics class to handle communication with the analytics subsystems
 /// adding in all the various pieces.
@@ -13,7 +23,7 @@ import 'package:universal_io/io.dart';
 class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
   static AnalyticsSubsystemImpl _instance;
 
-  PackageInfo _packageInfo;
+  _MyPackageInfo _packageInfo;
   DeviceInfoPlugin _deviceInfo;
   IosDeviceInfo _iosDeviceInfo;
   AndroidDeviceInfo _androidDeviceInfo;
@@ -55,29 +65,32 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
     assert(_debugMode = true);
 
     // Load the device and package info.
-    _packageInfo = PackageInfo(
-        version: 'unknown',
-        packageName: 'unknown',
-        buildNumber: 'unknown',
-        appName: 'TeamsFuse');
+    _packageInfo = _MyPackageInfo(
+        version: Platform.operatingSystem, buildNumber: 'unknown');
 
     _deviceInfo = DeviceInfoPlugin();
 
     if (Platform.isIOS) {
       PackageInfo.fromPlatform().then((info) {
-        _packageInfo = info;
+        _packageInfo = _MyPackageInfo(
+          version: info.version,
+          buildNumber: info.buildNumber,
+        );
       });
       _deviceInfo.iosInfo.then((info) {
         _iosDeviceInfo = info;
       });
     } else if (Platform.isAndroid) {
       PackageInfo.fromPlatform().then((info) {
-        _packageInfo = info;
+        _packageInfo = _MyPackageInfo(
+          version: info.version,
+          buildNumber: info.buildNumber,
+        );
       });
       _deviceInfo.androidInfo.then((info) {
         _androidDeviceInfo = info;
       });
-    } else {}
+    }
   }
 
   @override

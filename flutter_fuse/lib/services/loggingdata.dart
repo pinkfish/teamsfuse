@@ -10,7 +10,7 @@ import 'package:universal_io/io.dart';
 /// Logging data for the database.
 ///
 class LoggingData extends LoggingDataBase {
-  /// Constrctor for the logging data.
+  /// Constructor for the logging data.
   LoggingData() {
     var plugin = DeviceInfoPlugin();
     if (Platform.isIOS) {
@@ -24,8 +24,8 @@ class LoggingData extends LoggingDataBase {
           'localizedModel': info.localizedModel,
           'identifierForVendor': info.identifierForVendor,
           'utsname': <String, String>{
-            'sysname': info.utsname.sysname,
-            'nodename': info.utsname.nodename,
+            'sysName': info.utsname.sysname,
+            'nodeName': info.utsname.nodename,
             'release': info.utsname.release,
             'version': info.utsname.version,
             'machine': info.utsname.machine,
@@ -70,16 +70,15 @@ class LoggingData extends LoggingDataBase {
       });
     }
     _tags['locale'] = Platform.localeName;
-    _packageInfo = PackageInfo(
-        appName: 'TeamsFuse',
-        version: 'unknown',
-        packageName: 'unknown',
-        buildNumber: 'unknown');
-    PackageInfo.fromPlatform().then((info) {
-      _tags['buildNumber'] = info.buildNumber;
-      _tags['packageName'] = info.packageName;
-      _packageInfo = info;
-    });
+    if (Platform.isAndroid || Platform.isIOS) {
+      PackageInfo.fromPlatform().then((info) {
+        _tags['buildNumber'] = info.buildNumber;
+        _tags['packageName'] = info.packageName;
+        _version = info.version;
+      });
+    } else {
+      _version = Platform.operatingSystem;
+    }
 
     // Fill in the scope for sentry.
   }
@@ -94,14 +93,13 @@ class LoggingData extends LoggingDataBase {
       for (var tag in _tags.entries) {
         await FirebaseCrashlytics.instance.setCustomKey(tag.key, tag.value);
       }
-      await FirebaseCrashlytics.instance
-          .setCustomKey('release', _packageInfo.version);
+      await FirebaseCrashlytics.instance.setCustomKey('release', _version);
     }
   }
 
   final Map<String, dynamic> _extra = <String, dynamic>{};
   final Map<String, String> _tags = <String, String>{};
-  PackageInfo _packageInfo;
+  String _version;
   bool _realDevice = true;
   final bool _debugMode = false;
 
@@ -116,7 +114,7 @@ class LoggingData extends LoggingDataBase {
     FlutterError.dumpErrorToConsole(details, forceReport: true);
     // Don't capture on emulators.
     if (_realDevice && !_debugMode && !kIsWeb) {
-      FirebaseCrashlytics.instance.setCustomKey('lastpath', lastPath);
+      FirebaseCrashlytics.instance.setCustomKey('lastPath', lastPath);
       FirebaseCrashlytics.instance.recordFlutterError(details);
     }
   }
@@ -125,7 +123,7 @@ class LoggingData extends LoggingDataBase {
   void logError(FusedErrorDetails details) async {
     // Don't capture on emulators.
     if (_realDevice && !_debugMode) {
-      await FirebaseCrashlytics.instance.setCustomKey('lastpath', lastPath);
+      await FirebaseCrashlytics.instance.setCustomKey('lastPath', lastPath);
 
       await FirebaseCrashlytics.instance
           .recordError(details.exception, details.stack);

@@ -24,22 +24,26 @@ class _GameMapViewState extends State<GameMapView> {
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
-      mapType: MapType.normal,
+      mapType: MapType.hybrid,
       initialCameraPosition: CameraPosition(
         target: LatLng(
           widget.game.place.latitude.toDouble(),
           widget.game.place.longitude.toDouble(),
         ),
-        zoom: 14.4746,
+        zoom: 15,
       ),
       markers: <Marker>{
         Marker(
-            markerId: MarkerId(widget.game.uid),
-            infoWindow: InfoWindow(
-                title: widget.game.place.name,
-                snippet: widget.game.place.address + widget.game.place.notes),
-            position: LatLng(widget.game.place.latitude.toDouble(),
-                widget.game.place.longitude.toDouble())),
+          markerId: MarkerId(
+            widget.game.uid,
+          ),
+          infoWindow: InfoWindow(
+            title: widget.game.place.name,
+            snippet: widget.game.place.address + widget.game.place.notes,
+          ),
+          position: LatLng(widget.game.place.latitude.toDouble(),
+              widget.game.place.longitude.toDouble()),
+        ),
       },
       myLocationButtonEnabled: false,
       onMapCreated: (GoogleMapController controller) {
