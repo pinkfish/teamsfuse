@@ -1,6 +1,6 @@
 name: flutter_fuse
 description: A way to fuse the teams.
-version: 0.9.19
+version: 0.9.20
 homepage: http://www.teamsfuse.com
 # Not publishing anywhere.
 publish_to: none
