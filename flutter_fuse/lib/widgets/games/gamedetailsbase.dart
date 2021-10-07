@@ -261,23 +261,8 @@ class GameDetailsBase extends StatelessWidget {
     top.add(
       Container(
         height: 250.0,
-        child: Stack(
-          children: <Widget>[
-            Center(
-              child: GameMapView(game.sharedData),
-            ),
-            Positioned(
-              right: 20.0,
-              bottom: 0.0,
-              child: FloatingActionButton(
-                onPressed: () =>
-                    openNavigation != null ? openNavigation(game) : null,
-                backgroundColor: Colors.orange,
-                heroTag: game.uid,
-                child: const Icon(Icons.directions),
-              ),
-            ),
-          ],
+        child: Center(
+          child: GameMapView(game.sharedData),
         ),
       ),
     );
@@ -306,20 +291,37 @@ class GameDetailsBase extends StatelessWidget {
         : ' - $endTimeStr ${tzShortName ?? ''}');
     var body = <Widget>[];
     body.add(
-      ListTile(
-        leading: Icon(Icons.directions),
-        title: Text(
-          '$dateStr $timeStr$timeEnd',
-          style: theme.textTheme.subtitle1.copyWith(color: theme.accentColor),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(game.sharedData.place.name ?? ''),
-            Text(game.sharedData.place.address ?? Messages.of(context).unknown),
-          ],
-        ),
+      Stack(
+        children: [
+          ListTile(
+            leading: Icon(Icons.directions),
+            title: Text(
+              '$dateStr $timeStr$timeEnd',
+              style:
+                  theme.textTheme.subtitle1.copyWith(color: theme.accentColor),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(game.sharedData.place.name ?? ''),
+                Text(game.sharedData.place.address ??
+                    Messages.of(context).unknown),
+              ],
+            ),
+          ),
+          Positioned(
+            right: 5.0,
+            top: 5.0,
+            child: FloatingActionButton(
+              onPressed: () =>
+                  openNavigation != null ? openNavigation(game) : null,
+              backgroundColor: Colors.orange,
+              heroTag: game.uid,
+              child: const Icon(Icons.directions),
+            ),
+          ),
+        ],
       ),
     );
 
