@@ -1,5 +1,7 @@
 scripts/node_modules
 functions/node_modules
+functions/lib/ts
+functions/lib/test
 node_modules
 appengine/lib
 

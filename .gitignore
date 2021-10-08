@@ -1,4 +1,7 @@
 # Most part of this file is created by https://www.gitignore.io
+#
+
+pubspec.lock
 
 ### Node ###
 # Logs
@@ -107,6 +110,11 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+.darttool/
+flutter_fuse/.dart_tool/
+*_isolatedDiff.png
+*_maskedDiff.png
+*_masterImage.png
 
 # Android/IntelliJ
 #
@@ -138,15 +146,6 @@ buck-out/
 */fastlane/Preview.html
 */fastlane/screenshots
 firebase/.firebase/hosting.cHVibGljXHdlYg.cache
-.darttool/
-flutter_fuse/.dart_tool/flutter_build/962b3e4e673ec6f1deff00f24f03cc03/.filecache
-flutter_fuse/.dart_tool/flutter_build/962b3e4e673ec6f1deff00f24f03cc03/app.dill
-flutter_fuse/.dart_tool/flutter_build/962b3e4e673ec6f1deff00f24f03cc03/gen_localizations.stamp
-flutter_fuse/.dart_tool/flutter_build/962b3e4e673ec6f1deff00f24f03cc03/kernel_snapshot.d
-flutter_fuse/.dart_tool/flutter_build/962b3e4e673ec6f1deff00f24f03cc03/outputs.json
-flutter_fuse/.dart_tool/package_config.json
-flutter_fuse/.dart_tool/package_config_subset
-flutter_fuse/.dart_tool/version
 flutter_fuse/.flutter-plugins-dependencies
 flutter_fuse/lib/generated_plugin_registrant.dart
 fusemodel/lib/src/ant/broadcast.g.dart
