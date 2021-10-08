@@ -15,16 +15,20 @@ dependencies:
     sdk: flutter
 
   cloud_firestore: ">=2.2.0 <3.0.0"
-  firebase_auth: ">=1.2.0 <2.0.0"
-  firebase_core: ">=1.2.0 <2.0.0"
-  firebase_storage: ">=8.1.0 <9.0.0"
-  firebase_analytics: ">=8.1.0 <9.0.0"
-  firebase_performance: ">=0.7.0+3 <1.0.0"
-  firebase_crashlytics: ">=2.0.4 <3.0.0"
-  firebase_messaging: ">=10.0.0 <11.0.0"
-  firebase_remote_config: ">=0.10.0 <1.0.0"
-  firebase_dynamic_links: ">=2.0.4 <3.0.0"
-  cached_network_image: ">=3.0.0 <4.0.0"
+  firebase_auth: ">=3.1.3 <4.0.0"
+  firebase_core: ">=1.7.0 <2.0.0"
+  firebase_storage: ">=10.0.5 <11.0.0"
+  firebase_analytics: ">=8.3.3 <9.0.0"
+  firebase_performance: ">=0.7.1+1 <1.0.0"
+  firebase_crashlytics: ">=2.2.3 <3.0.0"
+  firebase_messaging: ">=10.0.8 <11.0.0"
+  firebase_remote_config: ">=0.11.0 <1.0.0"
+  firebase_dynamic_links: ">=2.0.10 <3.0.0"
+  cached_network_image: ">=3.1.0 <4.0.0"
+  charts_common:
+    git:
+      url: https://github.com/pinkfish/charts.git
+      path: charts_common
   charts_flutter:
     git:
       url: https://github.com/pinkfish/charts.git
@@ -44,7 +48,7 @@ dependencies:
 
   flutter_native_timezone: ">=2.0.0 <3.0.0"
   google_maps_flutter: ">=2.0.6 <3.0.0"
-  geolocator: ">=7.2.0 <8.0.0"
+  geolocator: ">=7.7.0 <8.0.0"
   google_api_headers: ">=1.0.0 <2.0.0"
   fusemodel:
     path: ../fusemodel
