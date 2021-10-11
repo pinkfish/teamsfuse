@@ -163,8 +163,8 @@ class TeamResultsBySeason extends StatelessWidget {
             } else {
               var newData = <Widget>[];
               var gameSort = state.games.toList();
-              gameSort.sort((Game g1, Game g2) => g1.sharedData.time
-                  .difference(g2.sharedData.time)
+              gameSort.sort((Game g1, Game g2) => g2.sharedData.time
+                  .difference(g1.sharedData.time)
                   .inMilliseconds);
               TZDateTime lastTime;
               for (var game in gameSort) {
@@ -179,6 +179,7 @@ class TeamResultsBySeason extends StatelessWidget {
                         lastTime.year != game.sharedData.tzTime.year) {
                       showYear = true;
                     }
+                    lastTime = game.sharedData.tzTime;
 
                     String textToShow;
                     var monthDay = MaterialLocalizations.of(context)
