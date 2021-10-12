@@ -45,6 +45,7 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
   int _selectedIndex = 0;
   YoutubePlayerController _youtubeController;
   VideoPlayerController _videoController;
+  bool _invalidUrl = false;
 
   AddMediaBloc _addMediaBloc;
 
@@ -79,6 +80,7 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
         if (_imageFile != null) {
           _showInSnackBar(Messages.of(context).invalidImageFile);
           autoValidate = AutovalidateMode.always;
+          _invalidUrl = true;
           return;
         }
         final bytes = await _imageFile.readAsBytes();
@@ -106,6 +108,7 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
         if (_videoFile != null) {
           _showInSnackBar(Messages.of(context).invalidImageFile);
           autoValidate = AutovalidateMode.always;
+          _invalidUrl = true;
           return;
         }
         final bytes = await _videoFile.readAsBytes();
@@ -127,27 +130,35 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
         print('Invalid thumbnail $_youtubeID');
         if (thumb == null) {
           _showInSnackBar(Messages.of(context).invalidYoutubeURL);
+          _invalidUrl = true;
           return;
         }
-        var data = await NetworkAssetBundle(Uri.parse(thumb)).load('');
-        print('Invalid data $_youtubeID');
-        if (data == null) {
+        try {
+          var data = await NetworkAssetBundle(Uri.parse(thumb)).load('');
+          print('Invalid data $_youtubeID');
+          if (data == null) {
+            _showInSnackBar(Messages.of(context).invalidYoutubeURL);
+            _invalidUrl = true;
+            return;
+          }
+          _addMediaBloc.add(
+            AddMediaEventCommit(
+              seasonUid: game.seasonUid,
+              teamUid: game.teamUid,
+              gameUid: game.uid,
+              playerUid: SeasonPlayerFormField.none,
+              mediaType: MediaType.youtubeID,
+              description: _description,
+              imageFile: data.buffer.asUint8List(),
+              youtubeID: _youtubeID,
+              startAt: game.sharedData.tzTime,
+            ),
+          );
+        } on FlutterError catch (e) {
           _showInSnackBar(Messages.of(context).invalidYoutubeURL);
-          return;
+          autoValidate = AutovalidateMode.always;
+          _invalidUrl = true;
         }
-        _addMediaBloc.add(
-          AddMediaEventCommit(
-            seasonUid: game.seasonUid,
-            teamUid: game.teamUid,
-            gameUid: game.uid,
-            playerUid: SeasonPlayerFormField.none,
-            mediaType: MediaType.youtubeID,
-            description: _description,
-            imageFile: data.buffer.asUint8List(),
-            youtubeID: _youtubeID,
-            startAt: game.sharedData.tzTime,
-          ),
-        );
       }
     } else {
       autoValidate = AutovalidateMode.always;
@@ -277,7 +288,13 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
           maxLines: 5,
           focusNode: _youtubeIdFocusNode,
           keyboardType: TextInputType.url,
-          validator: (v) => Validations.validateYoutubeUrl(context, v),
+          validator: (v) {
+            var val = Validations.validateYoutubeUrl(context, v);
+            if (val == null && _invalidUrl) {
+              return Messages.of(context).invalidUrl;
+            }
+            return val;
+          },
           onChanged: (s) {
             if (Validations.validateYoutubeUrl(context, s) == null) {
               var newS = YoutubePlayer.convertUrlToId(s);

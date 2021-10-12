@@ -444,6 +444,52 @@ class GameDetailsBase extends StatelessWidget {
       );
     }
 
+    // Media
+    if (gameMedia != null) {
+      body.add(
+        ListTile(
+          leading: Icon(Icons.image),
+          title: gameMedia.isEmpty
+              ? Text(Messages.of(context).noMedia)
+              : SizedBox(
+                  height: 90,
+                  child: InkWell(
+                    onTap: () => Navigator.pushNamed(
+                        context, '/Game/Media/View/${game.uid}'),
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: gameMedia
+                          .map<Widget>(
+                            (MediaInfo info) => Container(
+                              height: 80,
+                              child: Center(
+                                child: CachedNetworkImage(
+                                  imageUrl: info.url.toString(),
+                                  height: 80,
+                                  errorWidget: (c, str, e) => Icon(Icons.error),
+                                  placeholder: (c, str) =>
+                                      CircularProgressIndicator(),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ),
+        ),
+      );
+      body.add(ButtonBar(
+        children: [
+          TextButton(
+            onPressed: () => openAddMedia(game),
+            child: Text(Messages.of(context).addMediaButton),
+          ),
+        ],
+      ));
+    }
+
     // Opponent last games.
     if (game.sharedData.type == EventType.Game && !adding) {
       String seasonName;
@@ -533,52 +579,6 @@ class GameDetailsBase extends StatelessWidget {
           ),
         );
       }
-    }
-
-    // Media
-    if (gameMedia != null) {
-      body.add(
-        ListTile(
-          leading: Icon(Icons.image),
-          title: gameMedia.isEmpty
-              ? Text(Messages.of(context).noMedia)
-              : SizedBox(
-                  height: 90,
-                  child: InkWell(
-                    onTap: () => Navigator.pushNamed(
-                        context, '/Game/Media/View/${game.uid}'),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: gameMedia
-                          .map<Widget>(
-                            (MediaInfo info) => Container(
-                              height: 80,
-                              child: Center(
-                                child: CachedNetworkImage(
-                                  imageUrl: info.url.toString(),
-                                  height: 80,
-                                  errorWidget: (c, str, e) => Icon(Icons.error),
-                                  placeholder: (c, str) =>
-                                      CircularProgressIndicator(),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ),
-                ),
-        ),
-      );
-      body.add(ButtonBar(
-        children: [
-          TextButton(
-            onPressed: () => openAddMedia(game),
-            child: Text(Messages.of(context).addMediaButton),
-          ),
-        ],
-      ));
     }
 
     return LayoutBuilder(
