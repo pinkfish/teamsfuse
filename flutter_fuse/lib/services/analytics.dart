@@ -2,6 +2,7 @@ import 'package:device_info/device_info.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:package_info/package_info.dart';
 import 'package:universal_io/io.dart';
@@ -38,9 +39,7 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
     if (_instance == null) {
       _instance = AnalyticsSubsystemImpl(analytics);
       _instance._load();
-      if (Platform.isIOS || Platform.isAndroid) {
-        FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
-      }
+      FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
     }
 
     return _instance;
@@ -49,10 +48,7 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
   /// Sets the user id locally an in the firebase system.
   Future<void> setUserId(String userId) {
     _userId = userId;
-    if (Platform.isAndroid || Platform.isIOS) {
-      return firebase.setUserId(userId);
-    }
-    return null;
+    return firebase.setUserId(userId);
   }
 
   String getUserId() {
@@ -70,7 +66,9 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
 
     _deviceInfo = DeviceInfoPlugin();
 
-    if (Platform.isIOS) {
+    if (kIsWeb) {
+      // Do web specific stuff in here.
+    } else if (Platform.isIOS) {
       PackageInfo.fromPlatform().then((info) {
         _packageInfo = _MyPackageInfo(
           version: info.version,
@@ -95,29 +93,21 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
 
   @override
   Future<void> logSignUp({String signUpMethod}) async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      return _analytics.logSignUp(signUpMethod: signUpMethod);
-    }
+    return _analytics.logSignUp(signUpMethod: signUpMethod);
   }
 
   @override
   Future<void> logLogin() async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      return _analytics.logLogin();
-    }
+    return _analytics.logLogin();
   }
 
   Future<void> logAppOpen() async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      return _analytics.logAppOpen();
-    }
+    return _analytics.logAppOpen();
   }
 
   @override
   void setUserProperty({String name, String value}) {
-    if (Platform.isAndroid || Platform.isIOS) {
-      _analytics.setUserProperty(name: name, value: value);
-    }
+    _analytics.setUserProperty(name: name, value: value);
   }
 
   @override
@@ -127,26 +117,22 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
 
   @override
   TraceProxy newTrace(String name) {
-    if (Platform.isAndroid || Platform.isIOS) {
-      var trace = FirebasePerformance.instance.newTrace(name);
+    var trace = FirebasePerformance.instance.newTrace(name);
 
-      trace.putAttribute('os', Platform.operatingSystem);
-      trace.putAttribute('osVersion', Platform.operatingSystemVersion);
+    trace.putAttribute('os', Platform.operatingSystem);
+    trace.putAttribute('osVersion', Platform.operatingSystemVersion);
 
-      trace.putAttribute('version', _packageInfo.version);
-      trace.putAttribute('build', _packageInfo.buildNumber);
-      if (Platform.isIOS && _iosDeviceInfo != null) {
-        trace.putAttribute(
-            'emulator', _iosDeviceInfo.isPhysicalDevice.toString());
-      }
-      if (Platform.isAndroid && _androidDeviceInfo != null) {
-        trace.putAttribute(
-            'emulator', _androidDeviceInfo.isPhysicalDevice.toString());
-      }
-      return FirebaseTrace(trace);
-    } else {
-      return EmptyFirebaseTrace();
+    trace.putAttribute('version', _packageInfo.version);
+    trace.putAttribute('build', _packageInfo.buildNumber);
+    if (Platform.isIOS && _iosDeviceInfo != null) {
+      trace.putAttribute(
+          'emulator', _iosDeviceInfo.isPhysicalDevice.toString());
     }
+    if (Platform.isAndroid && _androidDeviceInfo != null) {
+      trace.putAttribute(
+          'emulator', _androidDeviceInfo.isPhysicalDevice.toString());
+    }
+    return FirebaseTrace(trace);
   }
 
   ///
@@ -167,37 +153,23 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
   ///
   @override
   Future<void> logEvent({String name, Map<String, String> parameters}) async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      return _analytics.logEvent(name: name, parameters: parameters);
-    }
+    return _analytics.logEvent(name: name, parameters: parameters);
   }
 
   @override
   Future<void> logInviteAccepted(String inviteType, String invitedTo) async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      return _analytics.logShare(
-          contentType: inviteType, itemId: invitedTo, method: 'invite');
-    }
+    return _analytics.logShare(
+        contentType: inviteType, itemId: invitedTo, method: 'invite');
   }
 
   @override
   void recordError(Error error, StackTrace stack) {
-    if (Platform.isAndroid || Platform.isIOS) {
-      FirebaseCrashlytics.instance.recordError(error, stack);
-    } else {
-      print(error);
-      print(stack);
-    }
+    FirebaseCrashlytics.instance.recordError(error, stack);
   }
 
   @override
   void recordException(dynamic error, StackTrace stack) {
-    if (Platform.isAndroid || Platform.isIOS) {
-      FirebaseCrashlytics.instance.recordError(error, stack);
-    } else {
-      print(error);
-      print(stack);
-    }
+    FirebaseCrashlytics.instance.recordError(error, stack);
   }
 }
 
