@@ -45,9 +45,9 @@ void main() async {
 
   tz.initializeTimeZones();
 
-  final analytics = AnalyticsSubsystemImpl.create(FirebaseAnalytics());
+  final analytics = await AnalyticsSubsystemImpl.create(FirebaseAnalytics());
 
-  unawaited(analytics.firebase.logAppOpen());
+  unawaited(analytics.logAppOpen());
 
   // Send error logs up to crashalytics.
   FlutterError.onError = (details) {

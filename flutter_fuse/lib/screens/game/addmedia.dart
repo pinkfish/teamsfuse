@@ -154,7 +154,7 @@ class _AddGameMediaScreenState extends State<AddGameMediaScreen> {
               startAt: game.sharedData.tzTime,
             ),
           );
-        } on FlutterError catch (e) {
+        } on FlutterError {
           _showInSnackBar(Messages.of(context).invalidYoutubeURL);
           autoValidate = AutovalidateMode.always;
           _invalidUrl = true;

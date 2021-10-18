@@ -577,7 +577,6 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
                 AnimatedSize(
                   curve: Curves.fastOutSlowIn,
                   duration: kThemeAnimationDuration,
-                  vsync: this,
                   child: widget.steps[widget.currentStep].content,
                 ),
               ],

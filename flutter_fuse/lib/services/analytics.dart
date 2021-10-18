@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:package_info/package_info.dart';
 import 'package:universal_io/io.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class _MyPackageInfo {
   /// The version of the package
@@ -35,11 +36,15 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
   AnalyticsSubsystemImpl(this._analytics);
 
   /// The instance of the analytics system to use.
-  static AnalyticsSubsystemImpl create(FirebaseAnalytics analytics) {
+  static Future<AnalyticsSubsystemImpl> create(
+      FirebaseAnalytics analytics) async {
     if (_instance == null) {
+      if (kIsWeb) {
+        await SentryFlutter.init((options) => options);
+      }
       _instance = AnalyticsSubsystemImpl(analytics);
       _instance._load();
-      FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
+      await FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
     }
 
     return _instance;
@@ -119,8 +124,13 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
   TraceProxy newTrace(String name) {
     var trace = FirebasePerformance.instance.newTrace(name);
 
-    trace.putAttribute('os', Platform.operatingSystem);
-    trace.putAttribute('osVersion', Platform.operatingSystemVersion);
+    if (kIsWeb) {
+      trace.putAttribute('os', 'web');
+      trace.putAttribute('osVersion', 'x.x');
+    } else {
+      trace.putAttribute('os', Platform.operatingSystem);
+      trace.putAttribute('osVersion', Platform.operatingSystemVersion);
+    }
 
     trace.putAttribute('version', _packageInfo.version);
     trace.putAttribute('build', _packageInfo.buildNumber);
@@ -164,12 +174,20 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
 
   @override
   void recordError(Error error, StackTrace stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack);
+    if (!kIsWeb) {
+      FirebaseCrashlytics.instance.recordError(error, stack);
+    } else {
+      Sentry.captureException(error, stackTrace: stack);
+    }
   }
 
   @override
   void recordException(dynamic error, StackTrace stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack);
+    if (!kIsWeb) {
+      FirebaseCrashlytics.instance.recordError(error, stack);
+    } else {
+      Sentry.captureException(error, stackTrace: stack);
+    }
   }
 }
 

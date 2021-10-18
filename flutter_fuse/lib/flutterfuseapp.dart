@@ -1,5 +1,6 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:fluro/fluro.dart' as fluro;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -184,18 +185,20 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   }
 
   void initDynamicLinks() async {
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-      final deepLink = dynamicLink?.link;
+    if (!kIsWeb) {
+      FirebaseDynamicLinks.instance.onLink(
+          onSuccess: (PendingDynamicLinkData dynamicLink) async {
+        final deepLink = dynamicLink?.link;
 
-      if (deepLink != null &&
-          _authenticationBloc.state is AuthenticationLoggedIn) {
-        await Navigator.pushNamed(context, deepLink.path);
-      }
-    }, onError: (OnLinkErrorException e) async {
-      print('onLinkError');
-      print(e.message);
-    });
+        if (deepLink != null &&
+            _authenticationBloc.state is AuthenticationLoggedIn) {
+          await Navigator.pushNamed(context, deepLink.path);
+        }
+      }, onError: (OnLinkErrorException e) async {
+        print('onLinkError');
+        print(e.message);
+      });
+    }
   }
 
   Future selectNotification(String payload) async {

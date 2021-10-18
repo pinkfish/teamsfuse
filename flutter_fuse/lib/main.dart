@@ -32,7 +32,7 @@ void main() async {
   await Firebase.initializeApp();
 
   // Trace as the first thing in the system.
-  final analytics = AnalyticsSubsystemImpl.create(FirebaseAnalytics());
+  final analytics = await AnalyticsSubsystemImpl.create(FirebaseAnalytics());
 
   final trace = analytics.newTrace('startup');
   trace.start();

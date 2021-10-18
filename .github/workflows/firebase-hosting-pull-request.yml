@@ -50,12 +50,12 @@ jobs:
       - run: flutter test
         working-directory: public_ux
       - run: |
-          flutter build web
+          flutter build web --dart-define=SENTRY_DSN=\"${{ secrets.SENTRY_DSN}}\"
           mkdir -p ../firebase/public/flutter
           cp -fR build/web/* ../firebase/public/flutter
         working-directory: public_ux
       - run: |
-          flutter build web
+          flutter build web --dart-define=SENTRY_DSN=\"${{ secrets.SENTRY_DSN}}\"
           mkdir -p ../firebase/public/flutter_main
           cp -fR build/web/* ../firebase/public/flutter_main
         working-directory: flutter_fuse

@@ -32,7 +32,7 @@ class Notifications {
   final channel = AndroidNotificationChannel(
     channelId,
     channelTitle,
-    channelDescription,
+    description: channelDescription,
     importance: Importance.high,
   );
 
@@ -110,7 +110,7 @@ class Notifications {
             android: AndroidNotificationDetails(
               channelId,
               channelTitle,
-              channelDescription,
+              channelDescription: channelDescription,
               icon: 'app_icon',
             ),
           ),
@@ -161,7 +161,7 @@ class Notifications {
             android: AndroidNotificationDetails(
               channelId,
               channelTitle,
-              channelDescription,
+              channelDescription: channelDescription,
             ),
             iOS: iOSPlatformChannelSpecifics,
           ),
@@ -177,7 +177,7 @@ class Notifications {
           android: AndroidNotificationDetails(
             channelId,
             channelTitle,
-            channelDescription,
+            channelDescription: channelDescription,
           ),
           iOS: iOSPlatformChannelSpecifics,
         ),
@@ -248,7 +248,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         android: AndroidNotificationDetails(
           channelId,
           channelTitle,
-          channelDescription,
+          channelDescription: channelDescription,
           icon: 'app_icon',
         ),
       ),

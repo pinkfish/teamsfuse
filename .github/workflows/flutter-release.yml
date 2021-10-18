@@ -118,12 +118,12 @@ jobs:
       # Run the ios and android build.
       - run: |
           flutter packages get
-          flutter build ${{ matrix.build }} --debug
+          flutter build ${{ matrix.build }} --debug --dart-define=SENTRY_DSN=\"${{ secrets.SENTRY_DSN }}\"
         working-directory: flutter_fuse
         continue-on-error: true
       - run: |
           flutter packages get
-          flutter build ${{ matrix.build }} --debug
+          flutter build ${{ matrix.build }} --debug --dart-define=SENTRY_DSN=\"${{ secrets.SENTRY_DSN }}\"
         working-directory: public_ux
         continue-on-error: true
       - run: flutter test
@@ -158,11 +158,11 @@ jobs:
       # Web specific actions
       - run: |
           flutter config --enable-web
-          flutter build web
+          flutter build web --dart-define=SENTRY_DSN=\"${{ secrets.SENTRY_DSN}}\"
         working-directory: flutter_fuse
         if: ${{ matrix.os == 'web' }}
       - run: |
-          flutter build web
+          flutter build web --dart-define=SENTRY_DSN=\"${{ secrets.SENTRY_DSN}}\"
         working-directory: public_ux
         if: ${{ matrix.os == 'web' }}
       - run: |
