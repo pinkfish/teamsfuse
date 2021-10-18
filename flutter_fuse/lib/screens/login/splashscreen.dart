@@ -101,6 +101,8 @@ class SplashScreen extends StatelessWidget {
               }
             }
             await Future.wait(delayed);
+          } else {
+            await Navigator.pushNamed(context, '/Main/Home');
           }
         }
       });
