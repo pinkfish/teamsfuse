@@ -58,7 +58,7 @@ dependencies:
   image_picker: ">=0.8.1 <1.0.0"
   timezone: ">=0.8.0 <1.0.0"
   tuple: any
-  sliver_calendar: ^0.4.2
+  sliver_calendar: ^1.0.0
   flutter_cache_manager: ">=3.0.2 <4.0.0"
   flutter_keyboard_visibility: ">=5.0.3 <6.0.0"
   flutter_local_notifications: ">=8.1.1 <9.0.0"
