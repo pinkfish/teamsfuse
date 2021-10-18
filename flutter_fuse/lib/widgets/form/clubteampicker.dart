@@ -58,7 +58,6 @@ class _ClubTeamPickerState extends State<ClubTeamPicker> {
   }
 
   List<DropdownMenuItem<Team>> _buildItems(SingleClubState state) {
-    print('Teams for state $state');
     var ret = <DropdownMenuItem<Team>>[];
     if (state.teams.isNotEmpty) {
       var sorted = state.teams.toList();
