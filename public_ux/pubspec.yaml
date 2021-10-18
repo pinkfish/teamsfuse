@@ -12,12 +12,12 @@ dependencies:
   flutter:
     sdk: flutter
 
-  material_design_icons_flutter: ^4.0.5955
-  firebase_analytics: ^8.2.0
+  material_design_icons_flutter: ^5.0.6295
+  firebase_analytics: ^8.3.3
 
   cupertino_icons: ^1.0.3
   algolia: ^1.0.1
-  flutter_markdown: ^0.6.2
+  flutter_markdown: ^0.6.7
   fusemodel:
     path: ../fusemodel
   flutter_fuse:
@@ -27,19 +27,12 @@ dependencies:
   youtube_player_iframe: ">=2.1.0 <3.0.0"
   youtube_player_flutter: ">=8.0.0 <9.0.0"
 
-dependency_overrides:
-  analyzer: ^1.7.1
-  intl: ^0.17.0
-  petitparser: ^4.1.0
-  intl_translation: ^0.17.10+1
-  args: ^2.1.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  golden_toolkit: ^0.9.0
-  intl_translation: ^0.17.10+1
-  mockito: ^5.0.5
+  golden_toolkit: ^0.11.0
+  intl_generator: ^0.2.1
+  mockito: ^5.0.16
 
 # The following section is specific to Flutter.
 flutter:
