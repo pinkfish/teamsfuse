@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -75,18 +76,20 @@ class SplashScreen extends StatelessWidget {
                 .setUserProperty(name: 'developer', value: 'false');
           }
 
-          final links = RepositoryProvider.of<FirebaseDynamicLinks>(context);
-          final data = await links.getInitialLink();
-          final deepLink = data?.link;
-          Navigator.popUntil(context, (route) => route.isFirst);
-          final delayed = [Navigator.pushNamed(context, '/Main/Home')];
-          if (deepLink != null) {
-            var myPath = deepLink.path;
-            if (!myPath.startsWith('/')) {
-              myPath = '/' + myPath;
+          if (!kIsWeb) {
+            final links = RepositoryProvider.of<FirebaseDynamicLinks>(context);
+            final data = await links.getInitialLink();
+            final deepLink = data?.link;
+            Navigator.popUntil(context, (route) => route.isFirst);
+            final delayed = [Navigator.pushNamed(context, '/Main/Home')];
+            if (deepLink != null) {
+              var myPath = deepLink.path;
+              if (!myPath.startsWith('/')) {
+                myPath = '/' + myPath;
+              }
+              print('Push /Main/Home splash');
+              delayed.add(Navigator.pushNamed(context, myPath));
             }
-            print('Push /Main/Home splash');
-            delayed.add(Navigator.pushNamed(context, myPath));
           } else {
             // Check if we came from a notification if it is not a dynamic link.
             final notifications = RepositoryProvider.of<Notifications>(context);
