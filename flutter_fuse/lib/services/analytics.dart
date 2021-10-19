@@ -40,7 +40,8 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
       FirebaseAnalytics analytics) async {
     if (_instance == null) {
       if (kIsWeb) {
-        await SentryFlutter.init((options) => options);
+        await SentryFlutter.init((options) => options
+          ..dsn = Platform.environment['SENTRY_DSN'].replaceAll('"', ''));
       }
       _instance = AnalyticsSubsystemImpl(analytics);
       _instance._load();
