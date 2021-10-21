@@ -1,48 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
   <testsuite name="fastlane.lanes">
-    
-    
-    
-      
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.005061347">
-        
+
+
+
+
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000561818">
+
       </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="1: Switch to android build_and_push_to_play_store_track_github lane" time="0.002057218">
-        
+
+
+      <testcase classname="fastlane.lanes" name="1: update_fastlane" time="81.612143437">
+
+          <failure message="/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/actions/actions_helper.rb:67:in `execute_action'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/runner.rb:255:in `block in execute_action'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/runner.rb:229:in `chdir'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/runner.rb:229:in `execute_action'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/one_off.rb:42:in `run'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/fast_file.rb:177:in `is_platform_block?'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/lane_manager.rb:19:in `cruise_lane'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/command_line_handler.rb:36:in `handle'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/commands_generator.rb:109:in `block (2 levels) in run'&#10;/var/lib/gems/2.5.0/gems/commander-4.6.0/lib/commander/command.rb:187:in `call'&#10;/var/lib/gems/2.5.0/gems/commander-4.6.0/lib/commander/command.rb:157:in `run'&#10;/var/lib/gems/2.5.0/gems/commander-4.6.0/lib/commander/runner.rb:444:in `run_active_command'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane_core/lib/fastlane_core/ui/fastlane_runner.rb:117:in `run!'&#10;/var/lib/gems/2.5.0/gems/commander-4.6.0/lib/commander/delegates.rb:18:in `run!'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/commands_generator.rb:353:in `run'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/commands_generator.rb:42:in `start'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/fastlane/lib/fastlane/cli_tools_distributor.rb:122:in `take_off'&#10;/var/lib/gems/2.5.0/gems/fastlane-2.195.0/bin/fastlane:23:in `&lt;top (required)&gt;'&#10;/usr/local/bin/fastlane:23:in `load'&#10;/usr/local/bin/fastlane:23:in `&lt;main&gt;'&#10;&#10;error generating Scan/DetectValues.html: no implicit conversion of nil into String (TypeError)" />
+
       </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="2: get_github_release" time="0.389375447">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="3: Switch to android create_icons lane" time="0.000335103">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="4: android_appicon" time="1.818782768">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="5: android_appicon" time="20.40571841">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="6: cd ../.. &amp;&amp; flutter build appbundle --target-platform android-arm,android-arm64,android-x64 --build-name=0.9.21 --build-number=465" time="347.743590584">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="7: upload_to_play_store" time="164.26693427">
-        
-      </testcase>
-    
+
   </testsuite>
 </testsuites>
