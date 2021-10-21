@@ -1,11 +1,13 @@
-import 'package:flutter_driver/driver_extension.dart';
-import 'package:flutter_fuse/main.dart' as app;
+import 'dart:io';
+import 'package:integration_test/integration_test_driver_extended.dart';
 
-void main() {
-  // This line enables the extension.
-  enableFlutterDriverExtension();
-
-  // Call the `main()` function of the app, or call `runApp` with
-  // any widget you are interested in testing.
-  app.main();
+Future<void> main() async {
+  await integrationDriver(
+    onScreenshot: (String screenshotName, List<int> screenshotBytes) async {
+      final File image = File('$screenshotName.png');
+      image.writeAsBytesSync(screenshotBytes);
+      // Return false if the screenshot is invalid.
+      return true;
+    },
+  );
 }

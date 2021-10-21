@@ -84,6 +84,8 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   intl_generator: ^0.2.1
   test: any
   mockito: ">=5.0.9 <6.0.0"
