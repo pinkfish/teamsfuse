@@ -27,6 +27,10 @@ void setLocalLocation(String tzName) {
 }
 
 void main() async {
+  return mainInner(true);
+}
+
+void mainInner(bool setupErrorHandler) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
@@ -42,9 +46,11 @@ void main() async {
   unawaited(analytics.logAppOpen());
 
   // Send error logs up to crashalytics.
-  FlutterError.onError = (details) {
-    loggingData.logFlutterError(details);
-  };
+  if (setupErrorHandler) {
+    FlutterError.onError = (details) {
+      loggingData.logFlutterError(details);
+    };
+  }
 
   Bloc.observer = _SimpleBlocDelegate();
   var storageDirectory = Directory('');

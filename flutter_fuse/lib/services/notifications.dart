@@ -216,7 +216,7 @@ class Notifications {
 
   // ignore: close_sinks
   static final _onMessageOpenedAppController =
-      StreamController<RemoteMessage>();
+      StreamController<RemoteMessage>.broadcast();
 
   /// Returns a [Stream] that is called when a user presses a notification message displayed
   /// via FCM.
