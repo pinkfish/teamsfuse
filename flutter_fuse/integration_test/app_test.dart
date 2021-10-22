@@ -28,7 +28,7 @@ void main() {
     });
   }
 
-  testWidgets('screenshot', (WidgetTester tester) async {
+  testWidgets('splash screen', (WidgetTester tester) async {
     // Build the app.
     app.mainInner(false);
 
@@ -96,7 +96,6 @@ void main() {
 
       // FInd the fused drawer.
       expect(find.byType(FusedDrawer), findsOneWidget);
-      await binding.takeScreenshot('screenshot-main');
     });
 
     testWidgets('All Teams Page', (WidgetTester driver) async {
@@ -107,7 +106,6 @@ void main() {
 
       await driver.pumpAndSettle(Duration(seconds: 1));
       expect(find.byType(TeamAnimatedList), findsOneWidget);
-      await binding.takeScreenshot('screenshot-teams');
     });
 
     testWidgets('Add Team, delete team', (WidgetTester driver) async {
