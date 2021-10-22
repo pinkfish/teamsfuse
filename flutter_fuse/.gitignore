@@ -10,5 +10,6 @@ lib/generated/
 lib/services/apikeys.dart
 packages
 pubspec.lock
+key.jks
 .flutter-plugins
 .picasa.ini
