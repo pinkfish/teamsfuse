@@ -19,7 +19,8 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     strategy:
       matrix:
-        os: [ios, android]
+        #os: [ios, android] disable ios for now
+        os: [android]
         include:
           - os: ios
             runs-on: macos-latest
