@@ -168,7 +168,9 @@ jobs:
         if: ${{ matrix.os == 'android' }}
       - name: Set current project
         run: gcloud config set project ${{ secrets.FIREBASE_PROJECT_ID }}
+        if: ${{ matrix.os == 'android' }}
       - name: Run Instrumentation Tests in Firebase Test Lab
-        run: gcloud firebase test android run --type instrumentation --app app-debug/app-debug.apk --test app-debug-androidTest/app-debug-androidTest.apk --device model=Pixel2,version=28,locale=pl,orientation=portrait
+        run: gcloud firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --device model=Pixel2,version=28,locale=pl,orientation=portrait
+        working-directory: flutter_fuse
         if: ${{ matrix.os == 'android' }}
           
