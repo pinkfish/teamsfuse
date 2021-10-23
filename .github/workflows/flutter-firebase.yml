@@ -61,6 +61,7 @@ jobs:
         with:
           ruby-version: "2.7.2"
           bundler-cache: true
+          working-directory: ${{ matrix.subdirectory }}  
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
