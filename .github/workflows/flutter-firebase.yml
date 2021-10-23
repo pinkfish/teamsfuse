@@ -162,7 +162,7 @@ jobs:
         working-directory: flutter_fuse/android
         if: ${{ matrix.os == 'android' }}
       - name: Login to Google Cloud
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@master
         with:
           service_account_key: ${{ secrets.FIREBASETOKEN }}
         if: ${{ matrix.os == 'android' }}
