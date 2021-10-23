@@ -47,8 +47,9 @@ dependencies:
   url_launcher: ">=6.0.2 <7.0.0"
 
   flutter_native_timezone:
-    path: /home/pinkfishfrog/Documents/GitHub/flutter_native_timezone
-  #">=2.0.0 <3.0.0"
+    ">=2.0.0 <3.0.0"
+    #path: /home/pinkfishfrog/Documents/GitHub/flutter_native_timezone
+
   google_maps_flutter: ">=2.0.6 <3.0.0"
   geolocator: ">=7.7.0 <8.0.0"
   google_api_headers: ">=1.0.0 <2.0.0"
