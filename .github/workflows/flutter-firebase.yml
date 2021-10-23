@@ -22,10 +22,10 @@ jobs:
         #os: [ios, android] disable ios for now
         os: [android]
         include:
-          - os: ios
-            runs-on: macos-latest
-            subdirectory: flutter_fuse/ios
-            build: ios
+        #  - os: ios
+        #    runs-on: macos-latest
+        #    subdirectory: flutter_fuse/ios
+        #    build: ios
           - os: android
             runs-on: ubuntu-latest
             subdirectory: flutter_fuse/android
